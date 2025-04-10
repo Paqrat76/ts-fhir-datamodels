@@ -1,0 +1,23 @@
+{
+  "name": "generator",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Code generator for TypeScript classes representing FHIR data models for FHIR resources and complex data types",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage",
+    "compile": "tsc"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.11",
+    "npm": ">=10.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github:Paqrat76/ts-fhir-datamodels/ts-fhir-datamodels.git",
+    "directory": "generator"
+  }
+}

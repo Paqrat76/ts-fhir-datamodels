@@ -2,6 +2,9 @@
 
 ## Feature Set
 
+- Improve test coverage in `fhir-core/src/utility/fhir-parsers.ts`
+- Investigate strategies to resolve required complex data types in `fhir-core` and their inclusion in generated
+  complex types.
 - Investigate strategies to resolve circular references caused by:
   - fhir-contained-resource-parser/getFhirModelParseResults(...)
   - fhir-parsers/getValueXData(...)

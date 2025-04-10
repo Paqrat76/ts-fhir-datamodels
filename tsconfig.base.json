@@ -14,13 +14,10 @@
 
     "module": "node16",
     "target": "es2022",
-    "lib": ["es2022", "esnext.decorators"],
-    "paths": {
-      "@src/*": ["./src/*"]
-    },
+    "lib": ["es2022", "esnext", "esnext.decorators"],
     "moduleDetection": "force",
     "resolveJsonModule": true,
-    "rootDirs": ["./src", "./test"],
+    "rootDirs": ["./src"],
     "types": ["node", "jest"],
 
     "declarationMap": true,

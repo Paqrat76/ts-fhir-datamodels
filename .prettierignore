@@ -2,4 +2,5 @@ CHANGELOG.md
 coverage/
 dist/
 node_modules/
+merged-docs/
 docs/

@@ -54,4 +54,5 @@ dist
 .idea
 
 # TypeDoc
+merged-docs
 docs

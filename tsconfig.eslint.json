@@ -3,5 +3,11 @@
   "compilerOptions": {
     "baseUrl": "."
   },
-  "include": ["./*.mjs", "./src/**/*.ts", "./test/**/*.test.ts", "./test/**/test-*.ts"]
+  "include": [
+    "./*.mjs",
+    "./generator/*.js",
+    "./generator/**/*.ts",
+    "./packages/fhir-core/*.js",
+    "./packages/fhir-core/**/*.ts"
+  ]
 }
