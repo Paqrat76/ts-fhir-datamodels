@@ -2,14 +2,15 @@ import { OptionDefaults } from 'typedoc';
 
 /** @type {Partial<import('typedoc').TypeDocOptions>} */
 const config = {
-  entryPoints: ['src/index.ts'],
-  out: 'docs',
-  excludePrivate: false,
-  includeVersion: true,
-  plugin: ['typedoc-plugin-zod'],
+  name: 'ts-fhir-datamodels',
+  entryPoints: ['packages/*'],
+  entryPointStrategy: 'packages',
+  packageOptions: {
+    entryPoints: ['src/index.ts'],
+  },
+  out: 'merged-docs',
   sort: ['source-order'],
-  blockTags: [...OptionDefaults.blockTags, '@since', '@decorator'],
-  inlineTags: [...OptionDefaults.inlineTags, '@link'],
+  plugin: ['typedoc-plugin-zod'],
 };
 
 export default config;

@@ -76,7 +76,7 @@ The following Luxon capabilities are usd to support FHIR date/time related primi
 
 #### Provided Date/Time Utilities
 
-The [date-time-util.ts](./src/fhir-core/utility/date-time-util.ts) module provides convenience wrappers for
+The [date-time-util.ts](packages/fhir-core/src/utility/date-time-util.ts) module provides convenience wrappers for
 Luxon DataTime parsing and formatting to support FHIR specified date/time primitive data types.
 These are available for independent date handling use cases.
 They have also been wrapped in the FHIR PrimitiveType DateType (interface DateTypeImpl),

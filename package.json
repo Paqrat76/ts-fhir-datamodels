@@ -1,7 +1,8 @@
 {
   "name": "ts-fhir-datamodels",
-  "version": "0.1.0",
-  "description": "TypeScript FHIR data models inspired by HAPI FHIR",
+  "private": true,
+  "version": "0.2.0",
+  "description": "A mono-repository for TypeScript FHIR data models inspired by HAPI FHIR",
   "keywords": [
     "node",
     "typescript",
@@ -10,42 +11,43 @@
     "models"
   ],
   "author": "Joe Paquette <paqrat76@gmail.com>",
-  "homepage": "https://github.com/Paqrat76/typescript-hapi-models-poc/blob/main/README.md",
+  "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/README.md",
   "bugs": {
-    "url": "https://github.com/Paqrat76/typescript-hapi-models-poc/issues",
+    "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
     "email": "paqrat76@gmail.com"
   },
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "main": "index.js",
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs",
-    "build": "tsc",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
-    "lint:docs": "markdownlint './**/*.md' -i '**/node_modules/**' -i '**/CHANGELOG.md'",
-    "prettier": "prettier . --check",
-    "prettier:fix": "prettier . --write",
-    "test": "jest",
-    "coverage": "jest --coverage",
+    "preclean": "rm -rf tsconfig.tsbuildinfo dist coverage merged-docs",
+    "clean": "npm run clean --workspaces --if-present",
+    "build": "npm run compile --workspaces --if-present",
+    "prettier:one": "prettier --check",
+    "prettier": "npm run prettier:one .",
+    "prettier:fix:one": "prettier --write",
+    "prettier:fix": "npm run prettier:fix:one .",
+    "lint": "eslint . --ext ts",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:docs": "markdownlint '**/*.md' -i '**/node_modules/**' -i '**/CHANGELOG.md'",
+    "test": "npm run test --workspaces --if-present",
+    "coverage": "npm run coverage --workspaces --if-present",
     "jest:clear": "jest --clearCache",
-    "typedoc": "typedoc src/index.ts",
+    "typedoc": "typedoc",
+    "typedoc:all": "npm run typedoc --workspaces --if-present",
     "prepare": "husky"
   },
-  "dependencies": {
-    "luxon": "^3.6.1",
-    "zod": "^3.24.2"
-  },
+  "workspaces": [
+    "generator",
+    "packages/fhir-core"
+  ],
   "devDependencies": {
+    "@eslint/js": "^9.24.0",
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.14",
-    "@types/luxon": "^3.6.0",
-    "@types/node": "^22.13.17",
-    "eslint": "^9.23.0",
-    "eslint-config-prettier": "^10.1.1",
+    "@types/luxon": "^3.6.2",
+    "@types/node": "^22.14.0",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-jsdoc": "^50.6.9",
     "eslint-plugin-node-import": "^1.0.4",
@@ -58,14 +60,14 @@
     "prettier": "^3.5.3",
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",
-    "typedoc": "^0.28.1",
+    "typedoc": "^0.28.2",
     "typedoc-plugin-zod": "^1.4.0",
-    "typescript": "~5.8.2",
-    "typescript-eslint": "^8.29.0"
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.29.1"
   },
   "engines": {
-    "node": ">=20.9",
-    "npm": ">=10.1"
+    "node": ">=22.11",
+    "npm": ">=10.9"
   },
   "lint-staged": {
     "*.{json,yaml}": [
