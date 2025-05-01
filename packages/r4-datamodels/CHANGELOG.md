@@ -19,20 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.2.0] - 2025-05-01
-
-### Changed
-
-- Updated dependencies
-
-
-## [0.1.0] - 2025-04-10
+## [0.1.0] - 2025-05-01
 
 ### Added
 
-- Created `packages/fhir-core` project
-  - Moved the `fhir-core` source and test code into `packages/fhir-core`
-
-### Changed
-
-- Updated dependencies and fixed associated lint issues
+- Created initial `packages/r4-datamodels` project for generated FHIR R4 data models

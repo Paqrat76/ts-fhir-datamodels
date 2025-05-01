@@ -2,6 +2,8 @@
 
 ## Feature Set
 
+- Move `Resource`, `DomainResource`, `Extension`, and all code systems and complex data types to be generated
+  - Adjust utilities as needed
 - Improve test coverage in `fhir-core/src/utility/fhir-parsers.ts`
 - Investigate strategies to resolve required complex data types in `fhir-core` and their inclusion in generated
   complex types.

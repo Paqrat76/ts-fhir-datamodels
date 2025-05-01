@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/fhir-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "FHIR core package required by generated FHIR data model packages",
   "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/fhir-core/README.md",
   "bugs": {
@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs",
-    "compile": "tsc",
+    "build": "tsc",
     "test": "jest",
     "coverage": "jest --coverage",
     "jest:clear": "jest --clearCache",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "luxon": "^3.6.1",
-    "zod": "^3.24.2"
+    "zod": "^3.24.3"
   },
   "engines": {
     "node": ">=22.11",

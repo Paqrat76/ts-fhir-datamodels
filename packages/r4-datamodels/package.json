@@ -1,0 +1,36 @@
+{
+  "name": "@paq-ts-fhir/r4-datamodels",
+  "version": "0.1.0",
+  "description": "Generated FHIR R4 data model package",
+  "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/r4-datamodels/README.md",
+  "bugs": {
+    "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
+    "email": "paqrat76@gmail.com"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs src/index.ts src/code-systems src/complex-types src/resources",
+    "compile": "tsc",
+    "typedoc": "typedoc ./src/index.ts"
+  },
+  "dependencies": {
+    "@paq-ts-fhir/fhir-core": "^0.2.0"
+  },
+  "engines": {
+    "node": ">=22.11",
+    "npm": ">=10.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github:Paqrat76/ts-fhir-datamodels/ts-fhir-datamodels.git",
+    "directory": "packages/r4-datamodels"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

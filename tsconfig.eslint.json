@@ -8,6 +8,7 @@
     "./generator/*.js",
     "./generator/**/*.ts",
     "./packages/fhir-core/*.js",
-    "./packages/fhir-core/**/*.ts"
+    "./packages/fhir-core/**/*.ts",
+    "./packages/r4-datamodels/**/*.ts"
   ]
 }
