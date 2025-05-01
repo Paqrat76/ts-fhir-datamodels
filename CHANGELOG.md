@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.0] - 2025-05-01
+
+### Added
+
+- Added support for the initial FHIR R4 data model package (`@paq-ts-fhir/r4-datamodels`)
+
+### Changed
+
+- Updated dev dependencies
+- Updated tooling configurations for the mono-repository
+
+
 ## [0.2.0] - 2025-04-10
 
 ### Added

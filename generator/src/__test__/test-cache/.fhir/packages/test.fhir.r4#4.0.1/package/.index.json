@@ -1,0 +1,65 @@
+{
+  "index-version": 1,
+  "files": [
+    {
+      "filename": "CodeSystem-FHIR-version.json",
+      "resourceType": "CodeSystem",
+      "id": "FHIR-version",
+      "url": "http://hl7.org/fhir/FHIR-version",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-identifier-use.json",
+      "resourceType": "CodeSystem",
+      "id": "identifier-use",
+      "url": "http://hl7.org/fhir/identifier-use",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-narrative-status.json",
+      "resourceType": "CodeSystem",
+      "id": "narrative-status",
+      "url": "http://hl7.org/fhir/narrative-status",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-quantity-comparator.json",
+      "resourceType": "CodeSystem",
+      "id": "quantity-comparator",
+      "url": "http://hl7.org/fhir/quantity-comparator",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "StructureDefinition-Identifier.json",
+      "resourceType": "StructureDefinition",
+      "id": "Identifier",
+      "url": "http://hl7.org/fhir/StructureDefinition/Identifier",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Identifier"
+    },
+    {
+      "filename": "StructureDefinition-Narrative.json",
+      "resourceType": "StructureDefinition",
+      "id": "Narrative",
+      "url": "http://hl7.org/fhir/StructureDefinition/Narrative",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Narrative"
+    },
+    {
+      "filename": "ValueSet-identifier-use.json",
+      "resourceType": "ValueSet",
+      "id": "identifier-use",
+      "url": "http://hl7.org/fhir/ValueSet/identifier-use",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-narrative-status.json",
+      "resourceType": "ValueSet",
+      "id": "narrative-status",
+      "url": "http://hl7.org/fhir/ValueSet/narrative-status",
+      "version": "4.0.1"
+    }
+  ]
+}

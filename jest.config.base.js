@@ -15,12 +15,6 @@ module.exports = {
   },
   testRunner: 'jest-circus/runner',
   collectCoverage: false,
-  collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/__test__/**',
-    '!<rootDir>/src/**/index.ts',
-    '!<rootDir>/dist/**',
-  ],
   coverageReporters: ['text', 'cobertura', 'lcov'],
   coverageDirectory: '<rootDir>/coverage/',
   coverageThreshold: {

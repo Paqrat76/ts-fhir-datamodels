@@ -4,3 +4,5 @@ dist/
 node_modules/
 merged-docs/
 docs/
+test-cache/
+*.hbs

@@ -1,7 +1,7 @@
 {
   "name": "ts-fhir-datamodels",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A mono-repository for TypeScript FHIR data models inspired by HAPI FHIR",
   "keywords": [
     "node",
@@ -21,7 +21,7 @@
   "scripts": {
     "preclean": "rm -rf tsconfig.tsbuildinfo dist coverage merged-docs",
     "clean": "npm run clean --workspaces --if-present",
-    "build": "npm run compile --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
     "prettier:one": "prettier --check",
     "prettier": "npm run prettier:one .",
     "prettier:fix:one": "prettier --write",
@@ -32,38 +32,43 @@
     "test": "npm run test --workspaces --if-present",
     "coverage": "npm run coverage --workspaces --if-present",
     "jest:clear": "jest --clearCache",
-    "typedoc": "typedoc",
-    "typedoc:all": "npm run typedoc --workspaces --if-present",
+    "typedoc:merged": "typedoc",
+    "typedoc": "npm run typedoc --workspaces --if-present",
+    "generate:R4": "ts-node ./generator/index.ts R4",
+    "lint:R4": "eslint ./packages/r4-datamodels --ext ts",
     "prepare": "husky"
   },
   "workspaces": [
+    "packages/fhir-core",
     "generator",
-    "packages/fhir-core"
+    "packages/r4-datamodels"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.24.0",
+    "@eslint/js": "^9.25.1",
     "@jest/globals": "^29.7.0",
+    "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.14",
+    "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
-    "@types/node": "^22.14.0",
-    "eslint": "^9.24.0",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-jest": "^28.11.0",
-    "eslint-plugin-jsdoc": "^50.6.9",
+    "eslint-plugin-jsdoc": "^50.6.11",
     "eslint-plugin-node-import": "^1.0.4",
     "globals": "^16.0.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-circus": "^29.7.0",
-    "lint-staged": "^15.5.0",
+    "lint-staged": "^15.5.1",
     "markdownlint-cli": "^0.44.0",
     "prettier": "^3.5.3",
-    "ts-jest": "^29.3.1",
+    "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
-    "typedoc": "^0.28.2",
-    "typedoc-plugin-zod": "^1.4.0",
+    "typedoc": "^0.28.3",
+    "typedoc-plugin-zod": "^1.4.1",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.29.1"
+    "typescript-eslint": "^8.31.1"
   },
   "engines": {
     "node": ">=22.11",
