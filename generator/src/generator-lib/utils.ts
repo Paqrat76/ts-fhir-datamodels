@@ -23,6 +23,56 @@
 
 import { strict as assert } from 'node:assert';
 import { camelCase, snakeCase, upperFirst } from 'lodash';
+import { DATA_TYPES as CORE_DATA_TYPES } from '@paq-ts-fhir/fhir-core';
+
+/**
+ * FHIR data types
+ *
+ * @remarks
+ * All defined FHIR data types for complex and primitive data types.
+ *
+ * @privateRemarks
+ * 'Element' is included to support the `DataRequirement` complex type.
+ * 'Extension' is included to support the `BackboneType`.
+ *
+ * @category Base Models
+ * @see [DataTypes](https://hl7.org/fhir/R5/datatypes.html)
+ */
+export const DATA_TYPES = [...CORE_DATA_TYPES, 'Element', 'Extension'] as const;
+
+/**
+ * FhirDataType
+ *
+ * @remarks
+ * Type definition based on DATA_TYPES array.
+ *
+ * @category Base Models
+ */
+export type FhirDataType = (typeof DATA_TYPES)[number];
+
+/**
+ * A constant that holds the mappings of FHIR data types.
+ * This object maps specific FHIR data type names to their corresponding FHIR data type representations.
+ *
+ * @category Base Models
+ */
+export const DATA_TYPE_MAPPINGS: Map<FhirDataType, string> = getDataTypeMappings();
+
+/**
+ * Generates a mapping of data type names where the key is the original data type
+ * and the value is a formatted version of the data type string.
+ *
+ * @returns {Map<FhirDataType, string>} A map where each key is a data type and the value
+ * is its corresponding transformed representation.
+ */
+function getDataTypeMappings(): Map<FhirDataType, string> {
+  const map = new Map<FhirDataType, string>();
+  DATA_TYPES.forEach((dt: FhirDataType): void => {
+    const value = /^[a-z].*$/.test(dt) ? `${upperFirst(dt)}Type` : dt;
+    map.set(dt, value);
+  });
+  return map;
+}
 
 /**
  * UnicodeSubstitutions is a collection of objects that map specific Unicode characters
@@ -90,6 +140,17 @@ const UnicodeSubstitutions = {
   COMPARATOR_NOT_EQUAL_TO_OR_GREATER_THAN: { unicodeRegex: /\u003E\u003D/g, replacement: `>=` },
   COMPARATOR_NOT_EQUAL_TO_OR_LESS_THAN: { unicodeRegex: /\u003C\u003D/g, replacement: `<=` },
 };
+
+/**
+ * Logs a formatted message with a specified log level for generators.
+ *
+ * @param {string} level - The severity level of the log (e.g., "info", "warn", "error").
+ * @param {string} message - The message to log.
+ * @returns {void} This function does not return a value.
+ */
+export function generatorLogger(level: string, message: string): void {
+  console.log(`Generator ${level.toUpperCase()}: ${message}`);
+}
 
 /**
  * Replaces all Unicode characters in the provided string with their defined substitutions.

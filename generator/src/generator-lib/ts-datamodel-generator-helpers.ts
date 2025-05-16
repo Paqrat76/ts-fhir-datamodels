@@ -49,6 +49,18 @@ import {
 export type FhirRelease = 'R4' | 'R4B' | 'R5';
 
 /**
+ * Represents the type of a FHIR (Fast Healthcare Interoperability Resources) artifact.
+ *
+ * This type defines the core categories of generated FHIR data models.
+ *
+ * The possible values are:
+ * - 'CodeSystem': Represents a system of codes that define concepts, such as terminologies.
+ * - 'ComplexType': Refers to a data structure that encapsulates multiple values or concepts.
+ * - 'Resource': Represents a FHIR resource, which is a modular unit of healthcare data.
+ */
+export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource';
+
+/**
  * Represents a FHIR package with details about its release, package information,
  * and related configuration paths.
  */
@@ -98,7 +110,7 @@ export interface GeneratedContent {
   /**
    * FHIR artifact type: Resource, ComplexType, CodeSystem
    */
-  fhirType: 'CodeSystem' | 'ComplexType' | 'Resource';
+  fhirType: FhirType;
   /**
    * Generated code content to be written to the file
    */

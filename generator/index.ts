@@ -24,10 +24,7 @@
 import { resolve } from 'node:path';
 import { GeneratorApp } from './src/generator-app';
 import { FhirRelease, GeneratedContent, getFhirPackage } from './src/generator-lib/ts-datamodel-generator-helpers';
-
-const generatorLogger = (level: string, message: string) => {
-  console.log(`Generator ${level.toUpperCase()}: ${message}`);
-};
+import { generatorLogger } from './src/generator-lib/utils';
 
 /**
  * The main function orchestrates the FHIR data model generation process.
@@ -46,7 +43,7 @@ async function main(): Promise<void> {
   const generatedContent: GeneratedContent[] = await generator.generate();
   generatorLogger(
     'info',
-    `Generated ${String(generatedContent.length)} data model(s) for FHIR ${fhirRelease} release using ${fhirPackage.pkgName}@${fhirPackage.pkgVersion}`,
+    `Generated a total of ${String(generatedContent.length)} data model(s) for FHIR ${fhirRelease} release using ${fhirPackage.pkgName}@${fhirPackage.pkgVersion}`,
   );
   generator.writeDataModelsToDisk(generatedContent);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

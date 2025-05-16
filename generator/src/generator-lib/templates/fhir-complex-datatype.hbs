@@ -1,0 +1,223 @@
+/*
+ * Copyright (c) 2025. Joe Paquette
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+import { strict as assert } from 'node:assert';
+import {
+{{#each sdHbs.fhirCoreImports}}
+  {{this}},
+{{/each}}
+} from '@paq-ts-fhir/fhir-core';
+{{#if sdHbs.generatedImports }}
+import {
+{{#each sdHbs.generatedImports}}
+  {{this}},
+{{/each}}
+} from '../index';
+{{/if}}
+
+/**
+ * {{sdHbs.name}} Class
+ *
+ * @remarks
+ * {{{sdHbs.description}}}
+{{#if sdHbs.purpose}}
+ *
+ * {{{sdHbs.purpose}}}
+{{/if}}
+ *
+ * **FHIR Specification**
+{{#if sdHbs.rootElement.short}}
+ * - **Short:** {{{sdHbs.rootElement.short}}}
+{{/if}}
+{{#if sdHbs.rootElement.definition}}
+ * - **Definition:** {{{sdHbs.rootElement.definition}}}
+{{/if}}
+{{#if sdHbs.rootElement.comment}}
+ * - **Comment:** {{{sdHbs.rootElement.comment}}}
+{{/if}}
+{{#if sdHbs.rootElement.requirements}}
+ * - **Requirements:** {{{sdHbs.rootElement.requirements}}}
+{{/if}}
+ * - **FHIR Version:** {{sdHbs.fhirVersion}}
+ *
+ * @category Datatypes: Complex
+ * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
+ */
+export class {{sdHbs.name}} extends DataType implements IBase {
+{{#if sdHbs.requiredConstructor}}
+{{!-- Constructor Required Partial --}}
+{{> constructorRequiredPartial}}
+{{else}}
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+{{/if}}
+
+  /**
+   * Parse the provided `{{sdHbs.name}}` JSON to instantiate the {{sdHbs.name}} data model.
+   *
+   * @param sourceJson - JSON representing FHIR `{{sdHbs.name}}`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{sdHbs.name}}
+   * @returns {{sdHbs.name}} data model or undefined for `{{sdHbs.name}}`
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): {{sdHbs.name}} | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+    const source = isDefined<string>(optSourceField) ? optSourceField : '{{sdHbs.name}}';
+    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+    const instance = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
+    processElementJson(instance, datatypeJsonObj);
+
+    let fieldName: string;
+    let sourceField: string;
+    let primitiveJsonType: 'boolean' | 'number' | 'string';
+
+{{#if sdHbs.hasRequiredFields}}
+    const missingReqdProperties: string[] = [];
+{{/if}}
+
+
+    // TODO: array of field code blocks for parsing
+
+
+{{#if sdHbs.hasRequiredFields}}
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+{{/if}}
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+{{!-- Private Field Declarations Partial --}}
+{{#each sdHbs.elementDefinitions}}
+{{> privateFieldDeclarationPartial edHbs=this }}
+
+{{/each}}
+
+
+// TODO: array of field code blocks for methods
+
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return '{{sdHbs.name}}';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+{{#each sdHbs.elementDefinitions}}
+      this.{{this.fieldName}},
+{{/each}}
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): {{sdHbs.name}} {
+    const dest = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: {{sdHbs.name}}): void {
+    super.copyValues(dest);
+{{#each sdHbs.elementDefinitions}}
+  {{#if this.isOptionalItem}}
+    dest.{{this.fieldName}} = this.{{this.fieldName}}?.copy();
+  {{/if}}
+  {{#if this.isRequiredItem}}
+    dest.{{this.fieldName}} = this.{{this.fieldName}} ? this.{{this.fieldName}}.copy() : null;
+  {{/if}}
+  {{#if this.isOptionalList}}
+    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
+    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
+  {{/if}}
+  {{#if this.isRequiredList}}
+    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
+    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
+  {{/if}}
+{{/each}}
+  }
+
+  /**
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
+   */
+  public override isComplexDataType(): boolean {
+    return true;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+{{#if sdHbs.hasRequiredFields}}
+   * @throws {FhirError} if the instance is missing required properties
+{{/if}}
+   */
+  public override toJSON(): JSON.Value | undefined {
+{{#if sdHbs.hasRequiredFields}}
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+{{else}}
+    if (this.isEmpty()) {
+      return undefined;
+    }
+{{/if}}
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+{{#if sdHbs.hasRequiredFields}}
+    const missingReqdProperties: string[] = [];
+{{/if}}
+
+
+    // TODO: array of field code blocks for serialization
+
+
+{{#if sdHbs.hasRequiredFields}}
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+{{/if}}
+
+    return jsonObj;
+  }
+}

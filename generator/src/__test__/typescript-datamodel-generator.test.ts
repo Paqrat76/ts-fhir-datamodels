@@ -115,17 +115,22 @@ describe('src/typescript-datamodel-generator', () => {
       expect(complexTypes).toBeDefined();
       expect(complexTypes).toHaveLength(39);
 
-      let codeSystems: CodeSystem[] = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
-      expect(codeSystems).toBeDefined();
-      expect(codeSystems.length).toStrictEqual(21);
+      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
+        tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
+      expect(result.codeSystems).toBeDefined();
+      expect(result.codeSystems.length).toStrictEqual(21);
+      expect(result.codeSystemEnumMap).toBeDefined();
+      expect(result.codeSystemEnumMap.size).toStrictEqual(21);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
       expect(resources).toHaveLength(146);
 
-      codeSystems = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
-      expect(codeSystems).toBeDefined();
-      expect(codeSystems.length).toStrictEqual(191);
+      result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
+      expect(result.codeSystems).toBeDefined();
+      expect(result.codeSystems.length).toStrictEqual(191);
+      expect(result.codeSystemEnumMap).toBeDefined();
+      expect(result.codeSystemEnumMap.size).toStrictEqual(191);
     });
 
     it('should generate code system enums for test.fhir.r4', async () => {
@@ -141,9 +146,10 @@ describe('src/typescript-datamodel-generator', () => {
 
       await tsDataModelGenerator.initialize();
 
-      const generatedContent: GeneratedContent[] = tsDataModelGenerator.generateCodeSystemEnumClasses();
-      expect(generatedContent).toBeDefined();
-      expect(generatedContent.length).toBe(2);
+      const result: { generatedContent: GeneratedContent[]; codeSystemEnumMap: Map<string, string> } =
+        tsDataModelGenerator.generateCodeSystemEnumClasses();
+      expect(result.generatedContent).toBeDefined();
+      expect(result.generatedContent.length).toBe(3); // 2 CodeSystems + index.ts
     });
   });
 
@@ -231,17 +237,22 @@ describe('src/typescript-datamodel-generator', () => {
       expect(complexTypes).toBeDefined();
       expect(complexTypes).toHaveLength(40);
 
-      let codeSystems: CodeSystem[] = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
-      expect(codeSystems).toBeDefined();
-      expect(codeSystems.length).toStrictEqual(21);
+      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
+        tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
+      expect(result.codeSystems).toBeDefined();
+      expect(result.codeSystems.length).toStrictEqual(21);
+      expect(result.codeSystemEnumMap).toBeDefined();
+      expect(result.codeSystemEnumMap.size).toStrictEqual(21);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
       expect(resources).toHaveLength(141);
 
-      codeSystems = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
-      expect(codeSystems).toBeDefined();
-      expect(codeSystems.length).toStrictEqual(197);
+      result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
+      expect(result.codeSystems).toBeDefined();
+      expect(result.codeSystems.length).toStrictEqual(197);
+      expect(result.codeSystemEnumMap).toBeDefined();
+      expect(result.codeSystemEnumMap.size).toStrictEqual(197);
     });
   });
 
@@ -325,17 +336,22 @@ describe('src/typescript-datamodel-generator', () => {
       expect(complexTypes).toBeDefined();
       expect(complexTypes).toHaveLength(41);
 
-      let codeSystems: CodeSystem[] = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
-      expect(codeSystems).toBeDefined();
-      expect(codeSystems.length).toStrictEqual(26);
+      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
+        tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
+      expect(result.codeSystems).toBeDefined();
+      expect(result.codeSystems.length).toStrictEqual(26);
+      expect(result.codeSystemEnumMap).toBeDefined();
+      expect(result.codeSystemEnumMap.size).toStrictEqual(26);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
       expect(resources).toHaveLength(158);
 
-      codeSystems = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
-      expect(codeSystems).toBeDefined();
-      expect(codeSystems.length).toStrictEqual(207);
+      result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
+      expect(result.codeSystems).toBeDefined();
+      expect(result.codeSystems.length).toStrictEqual(207);
+      expect(result.codeSystemEnumMap).toBeDefined();
+      expect(result.codeSystemEnumMap.size).toStrictEqual(207);
     });
   });
 });

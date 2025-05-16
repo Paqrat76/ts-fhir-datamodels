@@ -88,3 +88,9 @@ ts-datamodel-generator-helpers.ts module.
 It represents a FHIR package with details about its release, package information, and related configuration paths.
 The configuration is retrieved in the index.ts module from the `function getFhirPackage(fhirRelease: FhirRelease): FhirPackage`
 also in the ts-datamodel-generator-helpers.ts module.
+
+### Code Generator Templates
+
+[Handlebars](https://handlebarsjs.com/) templates are used to define all code generation patterns.
+The Handlebars template engine provides a great deal of flexibility and support for customization.
+It is ideal for generating source code that follows very specific patterns such as our TypeScript FHIR data models.

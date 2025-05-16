@@ -22,13 +22,14 @@
  */
 
 import { resolve } from 'node:path';
-import { readdirSync } from 'node:fs';
+import { readdirSync, rmSync } from 'node:fs';
 import { GeneratorApp } from '../generator-app';
 import { FhirPackage, GeneratedContent } from '../generator-lib/ts-datamodel-generator-helpers';
 
 describe('src/generator-app', () => {
   const testOut = resolve(__dirname, 'test-out', 'test-fhir-r4');
   const testOutCodeSystems = resolve(__dirname, 'test-out', 'test-fhir-r4', 'code-systems');
+  const testOutComplexTypes = resolve(__dirname, 'test-out', 'test-fhir-r4', 'complex-types');
   const testFhirCacheRoot = resolve(__dirname, 'test-cache');
   const testFhirPackage: FhirPackage = {
     release: 'R4',
@@ -38,31 +39,41 @@ describe('src/generator-app', () => {
     pkgLoaderCacheRootPath: testFhirCacheRoot,
   };
 
+  beforeEach(() => {
+    rmSync(testOut, { recursive: true, force: true });
+  });
+
   it('should generate all FHIR R4 artifacts', async () => {
     const generator = new GeneratorApp(testFhirPackage);
     const generatedContent: GeneratedContent[] = await generator.generate();
     expect(generatedContent).toBeDefined();
-    expect(generatedContent.length).toBe(2); // 2 CodeSystemEnums, ??
+    expect(generatedContent.length).toBe(6); // 2 CodeSystemEnums + index.ts, 2 ComplexTypes + index.ts
   });
 
   it('should generate and write all FHIR R4 artifacts', async () => {
     const generator = new GeneratorApp(testFhirPackage);
     const generatedContent: GeneratedContent[] = await generator.generate();
     expect(generatedContent).toBeDefined();
-    expect(generatedContent.length).toBe(2); // 2 CodeSystemEnums, ??
+    expect(generatedContent.length).toBe(6); // 2 CodeSystemEnums + index.ts, 2 ComplexTypes + index.ts
 
     generator.writeDataModelsToDisk(generatedContent);
 
     const testOutput: string[] = readdirSync(testOut);
     expect(testOutput).toBeDefined();
-    expect(testOutput.length).toBe(2);
-    const expectedOutput: string[] = ['index.ts', 'code-systems'];
+    expect(testOutput.length).toBe(3);
+    const expectedOutput: string[] = ['index.ts', 'code-systems', 'complex-types'];
     expect(testOutput).toEqual(expect.arrayContaining(expectedOutput));
 
     const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
     expect(testCodeSystems).toBeDefined();
-    expect(testCodeSystems.length).toBe(2);
-    const expectedCodeSystems: string[] = ['IdentifierUseEnum.ts', 'NarrativeStatusEnum.ts'];
+    expect(testCodeSystems.length).toBe(3);
+    const expectedCodeSystems: string[] = ['index.ts', 'IdentifierUseEnum.ts', 'NarrativeStatusEnum.ts'];
     expect(testCodeSystems).toEqual(expect.arrayContaining(expectedCodeSystems));
+
+    const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
+    expect(testComplexTypes).toBeDefined();
+    expect(testComplexTypes.length).toBe(3);
+    const expectedComplexTypes: string[] = ['index.ts', 'Identifier.ts', 'Narrative.ts'];
+    expect(testComplexTypes).toEqual(expect.arrayContaining(expectedComplexTypes));
   });
 });
