@@ -37,9 +37,11 @@ export interface HbsElementDefinitionType {
   fhirDataType: string;
   code: string;
   choiceTypes: string[] | undefined;
+  choiceDataTypes: string[] | undefined;
   codeSystemName: string | undefined;
   codeSystemEnumName: string | undefined;
   targetProfile: string[] | undefined;
+  targetResource: string[] | undefined;
 }
 
 export interface HbsElementDefinition {
@@ -61,6 +63,9 @@ export interface HbsElementDefinition {
   type: HbsElementDefinitionType;
   isPrimitive: boolean;
   isChoiceType: boolean;
+  isComplexType: boolean;
+  isEnumCodeType: boolean;
+  isReferenceType: boolean;
   isModifier: boolean;
   isModifierReason: string | undefined;
   isSummary: boolean;

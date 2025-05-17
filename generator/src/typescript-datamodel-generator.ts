@@ -123,7 +123,19 @@ export class TypescriptDataModelGenerator {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
     const options: FindResourceInfoOptions = { type: ['Type'] };
     const types = this._packageLoader?.findResourceJSONs('*', options) as StructureDefinition[];
-    return types.filter((sd) => sd.kind === 'complex-type' && !sd.abstract);
+    return types.filter(
+      (sd) =>
+        sd.kind === 'complex-type' &&
+        !sd.abstract &&
+        sd.extension &&
+        sd.extension.findIndex(
+          (ext) =>
+            // This type is still undergoing development and review by the appropriate Workgroups. At this time,
+            // is considered only as a draft design not suitable for production implementation.
+            ext.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status' &&
+            ext.valueCode === 'draft',
+        ) === -1,
+    );
   }
 
   /**

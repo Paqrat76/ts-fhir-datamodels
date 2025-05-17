@@ -90,9 +90,9 @@ export class {{sdHbs.name}} extends DataType implements IBase {
     const instance = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
     processElementJson(instance, datatypeJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    //let fieldName: string;
+    //let sourceField: string;
+    //let primitiveJsonType: 'boolean' | 'number' | 'string';
 
 {{#if sdHbs.hasRequiredFields}}
     const missingReqdProperties: string[] = [];
@@ -113,15 +113,17 @@ export class {{sdHbs.name}} extends DataType implements IBase {
     return instance;
   }
 
+
 {{!-- Private Field Declarations Partial --}}
 {{#each sdHbs.elementDefinitions}}
 {{> privateFieldDeclarationPartial edHbs=this }}
 
 {{/each}}
 
-
-// TODO: array of field code blocks for methods
-
+{{!-- Public Field Methods Partial --}}
+{{#each sdHbs.elementDefinitions}}
+{{> publicFieldMethodsPartial edHbs=this }}
+{{/each}}
 
   /**
    * @returns the FHIR type defined in the FHIR standard

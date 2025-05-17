@@ -1,7 +1,7 @@
 {
   "name": "ts-fhir-datamodels",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A mono-repository for TypeScript FHIR data models inspired by HAPI FHIR",
   "keywords": [
     "node",
@@ -45,14 +45,14 @@
     "packages/r4-datamodels"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^9.27.0",
     "@jest/globals": "^29.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.16",
     "@types/luxon": "^3.6.2",
     "@types/node": "^22.15.18",
-    "eslint": "^9.26.0",
+    "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-jsdoc": "^50.6.17",
@@ -64,7 +64,7 @@
     "lint-staged": "^16.0.0",
     "markdownlint-cli": "^0.44.0",
     "prettier": "^3.5.3",
-    "ts-jest": "^29.3.3",
+    "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.4",
     "typedoc-plugin-zod": "^1.4.1",

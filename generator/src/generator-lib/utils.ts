@@ -68,10 +68,21 @@ export const DATA_TYPE_MAPPINGS: Map<FhirDataType, string> = getDataTypeMappings
 function getDataTypeMappings(): Map<FhirDataType, string> {
   const map = new Map<FhirDataType, string>();
   DATA_TYPES.forEach((dt: FhirDataType): void => {
-    const value = /^[a-z].*$/.test(dt) ? `${upperFirst(dt)}Type` : dt;
+    const value = isPrimitiveType(dt) ? `${upperFirst(dt)}Type` : dt;
     map.set(dt, value);
   });
   return map;
+}
+
+/**
+ * Checks if the given FhirDataType is a primitive type based on its naming convention.
+ * A type is considered primitive if it starts with a lowercase letter.
+ *
+ * @param {FhirDataType} type - The name of the FhirDataType to check.
+ * @returns {boolean} Returns true if the FhirDataType is a primitive type, otherwise false.
+ */
+export function isPrimitiveType(type: FhirDataType): boolean {
+  return /^[a-z].*$/.test(type);
 }
 
 /**

@@ -1,0 +1,6 @@
+{{!-- Public Field Methods Partial Template --}}
+{{~#if edHbs.isPrimitive}}{{> publicFieldMethodsPrimitivePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isChoiceType}}{{> publicFieldMethodsChoicePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isComplexType}}{{> publicFieldMethodsComplexPartial edHbs=this }}{{/if}}
+{{~#if edHbs.isEnumCodeType}}{{> publicFieldMethodsEnumCodePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isReferenceType}}{{> publicFieldMethodsReferencePartial edHbs=this }}{{/if}}

@@ -19,6 +19,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.4.0] - 2025-05-17
+
+### Changed
+
+- Continued development for complex data types adding multiple Handlebars partial templates
+- Tightened the `complex-type` filter to exclude StructureDefinitions having
+  ext.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status' with ext.valueCode === 'draft'
+
+
 ## [0.3.0] - 2025-05-16
 
 ### Added

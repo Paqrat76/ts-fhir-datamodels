@@ -27,3 +27,17 @@ code support files (`*-hbs.ts`).
 The files in the `generator-lib/templates` directory are for the data models,
 Those in the `generator-lib/templates/partials` directory contain Handlebars partial templates for the various patterns
 for class properties and their associated class methods needed within the generated data models.
+
+The Handlebars expressions that map to the "xxxx" variables found in the text-based "templates" in the
+Paqrat76/typescript-hapi-models-poc zTemplates are:
+
+- XxxxParentClassElement.xxxxFieldName => `{{edHbs.path}}`
+- xxxxFieldName => `{{edHbs.fieldName}}`
+- XxxxFieldName => `{{upperFirst edHbs.fieldName}}`
+- XxxxClass => `{{edHbs.type.code}}`
+- XxxxPrimitiveType => `{{edHbs.type.code}}`
+- xxxxPrimitive => `fhir{{upperFirst edHbs.type.fhirDataType}}`
+- xxxxClassEnum => `{{camelCase edHbs.type.codeSystemEnumName}}`
+- XxxxClassEnum => `{{edHbs.type.codeSystemEnumName}}`
+- XxxxChoiceDataType => `{{this}}` in `{{#each edHbs.type.choiceDataTypes}}...{{/each}}`
+- XxxxReferenceTypeList => `{{this}}` in `{{#each edHbs.type.targetResource}}...{{/each}}`

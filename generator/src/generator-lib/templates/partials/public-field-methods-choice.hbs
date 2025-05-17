@@ -1,0 +1,120 @@
+{{!-- Public Field Methods for Choice Types Partial Template --}}
+{{#if this.isOptionalItem}}
+  /**
+   * @returns the `{{edHbs.fieldName}}` property value as a DataType object if defined; else undefined
+   */
+  public get{{upperFirst edHbs.fieldName}}(): DataType | undefined {
+    return this.{{edHbs.fieldName}};
+  }
+
+  /**
+   * Assigns the provided DataType object value to the `{{edHbs.fieldName}}` property.
+   *
+   * @decorator `@ChoiceDataTypes('{{edHbs.path}}')`
+   *
+   * @param value - the `{{edHbs.fieldName}}` object value
+   * @returns this
+   */
+  @ChoiceDataTypes('{{edHbs.path}}')
+  public set{{upperFirst edHbs.fieldName}}(value: DataType | undefined): this {
+    if (isDefined<DataType>(value)) {
+      // assertFhirType<DataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.{{edHbs.fieldName}} = value;
+    } else {
+      this.{{edHbs.fieldName}} = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefined<DataType>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty();
+  }
+
+  // *** NOTE ***
+  // Next "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
+{{#each edHbs.type.choiceDataTypes}}
+
+  /**
+   * @returns the `{{../edHbs.fieldName}}` property value as a {{this}} object if defined; else undefined
+   */
+  public get{{upperFirst ../edHbs.fieldName}}{{this}}(): {{this}} | undefined {
+    if (!isDefined<DataType | undefined>(this.{{../edHbs.fieldName}})) {
+      return undefined;
+    }
+    if (!(this.{{../edHbs.fieldName}} instanceof {{this}})) {
+      throw new InvalidTypeError(
+        `DataType mismatch for {{../edHbs.path}}: Expected {{this}} but encountered ${this.{{../edHbs.fieldName}}.fhirType()}`,
+      );
+    }
+    return this.{{../edHbs.fieldName}};
+  }
+
+  /**
+   * @returns `true` if the `{{../edHbs.fieldName}}` property exists as a {{this}} and has a value; `false` otherwise
+   */
+  public has{{upperFirst ../edHbs.fieldName}}{{this}}(): boolean {
+    return this.has{{upperFirst ../edHbs.fieldName}}() && this.{{../edHbs.fieldName}} instanceof {{this}};
+  }
+{{/each}}
+{{/if}}
+{{#if this.isRequiredItem}}
+  /**
+   * @returns the `{{edHbs.fieldName}}` property value as a DataType object; else null
+   */
+  public get{{upperFirst edHbs.fieldName}}(): DataType | null {
+    return this.{{edHbs.fieldName}};
+  }
+
+  /**
+   * Assigns the provided DataType object value to the `{{edHbs.fieldName}}` property.
+   *
+   * @decorator `@ChoiceDataTypes('{{edHbs.path}}')`
+   *
+   * @param value - the `{{edHbs.fieldName}}` object value
+   * @returns this
+   */
+  @ChoiceDataTypes('{{edHbs.path}}')
+  public set{{upperFirst edHbs.fieldName}}(value: DataType): this {
+    assertIsDefined<DataType>(value, `{{edHbs.path}} is required`);
+    // assertFhirType<DataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+    this.{{edHbs.fieldName}} = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefined<DataType>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty();
+  }
+
+  // *** NOTE ***
+  // Next "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
+{{#each edHbs.type.choiceDataTypes}}
+
+  /**
+   * @returns the `{{../edHbs.fieldName}}` property value as a {{this}} object if defined; else null
+   */
+  public get{{upperFirst ../edHbs.fieldName}}{{this}}(): {{this}} | null {
+    if (!isDefined<DataType>(this.{{../edHbs.fieldName}})) {
+      return null;
+    }
+    if (!(this.{{../edHbs.fieldName}} instanceof {{this}})) {
+      throw new InvalidTypeError(
+        `DataType mismatch for {{../edHbs.path}}: Expected {{this}} but encountered ${this.{{../edHbs.fieldName}}.fhirType()}`,
+      );
+    }
+    return this.{{../edHbs.fieldName}};
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists as a {{this}} and has a value; `false` otherwise
+   */
+  public has{{upperFirst ../edHbs.fieldName}}{{this}}(): boolean {
+    return this.has{{upperFirst ../edHbs.fieldName}}() && this.{{../edHbs.fieldName}} instanceof {{this}};
+  }
+{{/each}}
+{{/if}}
