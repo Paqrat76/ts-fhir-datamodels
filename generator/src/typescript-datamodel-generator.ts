@@ -121,21 +121,20 @@ export class TypescriptDataModelGenerator {
    */
   public getComplexTypes(): StructureDefinition[] {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
+    // 'Type': a StructureDefinition w/ kind "primitive-type", "complex-type", or "datatype" and derivation = "specialization"
     const options: FindResourceInfoOptions = { type: ['Type'] };
     const types = this._packageLoader?.findResourceJSONs('*', options) as StructureDefinition[];
-    return types.filter(
-      (sd) =>
-        sd.kind === 'complex-type' &&
-        !sd.abstract &&
-        sd.extension &&
-        sd.extension.findIndex(
-          (ext) =>
-            // This type is still undergoing development and review by the appropriate Workgroups. At this time,
-            // is considered only as a draft design not suitable for production implementation.
-            ext.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status' &&
-            ext.valueCode === 'draft',
-        ) === -1,
-    );
+    const complexTypes = types.filter((sd) => sd.kind === 'complex-type' && !sd.abstract);
+    // MoneyQuantity and SimpleQuantity have derivation = "constraint" (profile) so add them individually
+    const moneyQuantity = this._packageLoader?.findResourceJSON('MoneyQuantity') as StructureDefinition | undefined;
+    if (moneyQuantity) {
+      complexTypes.push(moneyQuantity);
+    }
+    const simpleQuantity = this._packageLoader?.findResourceJSON('SimpleQuantity') as StructureDefinition | undefined;
+    if (simpleQuantity) {
+      complexTypes.push(simpleQuantity);
+    }
+    return complexTypes;
   }
 
   /**

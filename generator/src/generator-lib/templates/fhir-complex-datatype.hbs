@@ -74,45 +74,8 @@ export class {{sdHbs.name}} extends DataType implements IBase {
   }
 {{/if}}
 
-  /**
-   * Parse the provided `{{sdHbs.name}}` JSON to instantiate the {{sdHbs.name}} data model.
-   *
-   * @param sourceJson - JSON representing FHIR `{{sdHbs.name}}`
-   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{sdHbs.name}}
-   * @returns {{sdHbs.name}} data model or undefined for `{{sdHbs.name}}`
-   */
-  public static parse(sourceJson: JSON.Value, optSourceField?: string): {{sdHbs.name}} | undefined {
-    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
-      return undefined;
-    }
-    const source = isDefined<string>(optSourceField) ? optSourceField : '{{sdHbs.name}}';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
-    const instance = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
-    processElementJson(instance, datatypeJsonObj);
-
-    //let fieldName: string;
-    //let sourceField: string;
-    //let primitiveJsonType: 'boolean' | 'number' | 'string';
-
-{{#if sdHbs.hasRequiredFields}}
-    const missingReqdProperties: string[] = [];
-{{/if}}
-
-
-    // TODO: array of field code blocks for parsing
-
-
-{{#if sdHbs.hasRequiredFields}}
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-{{/if}}
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
-    return instance;
-  }
-
+{{!-- Public Static Parse Method Partial --}}
+{{> publicStaticParseMethodPartial}}
 
 {{!-- Private Field Declarations Partial --}}
 {{#each sdHbs.elementDefinitions}}
@@ -125,60 +88,8 @@ export class {{sdHbs.name}} extends DataType implements IBase {
 {{> publicFieldMethodsPartial edHbs=this }}
 {{/each}}
 
-  /**
-   * @returns the FHIR type defined in the FHIR standard
-   */
-  public override fhirType(): string {
-    return '{{sdHbs.name}}';
-  }
-
-  /**
-   * @returns `true` if the instance is empty; `false` otherwise
-   */
-  public override isEmpty(): boolean {
-    return super.isEmpty() && isElementEmpty(
-{{#each sdHbs.elementDefinitions}}
-      this.{{this.fieldName}},
-{{/each}}
-    );
-  }
-
-  /**
-   * Creates a copy of the current instance.
-   *
-   * @returns the a new instance copied from the current instance
-   */
-  public override copy(): {{sdHbs.name}} {
-    const dest = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
-    this.copyValues(dest);
-    return dest;
-  }
-
-  /**
-   * Copies the current instance's elements into the provided object.
-   *
-   * @param dest - the copied instance
-   * @protected
-   */
-  protected override copyValues(dest: {{sdHbs.name}}): void {
-    super.copyValues(dest);
-{{#each sdHbs.elementDefinitions}}
-  {{#if this.isOptionalItem}}
-    dest.{{this.fieldName}} = this.{{this.fieldName}}?.copy();
-  {{/if}}
-  {{#if this.isRequiredItem}}
-    dest.{{this.fieldName}} = this.{{this.fieldName}} ? this.{{this.fieldName}}.copy() : null;
-  {{/if}}
-  {{#if this.isOptionalList}}
-    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
-    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
-  {{/if}}
-  {{#if this.isRequiredList}}
-    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
-    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
-  {{/if}}
-{{/each}}
-  }
+{{!-- Public Base Methods Partial --}}
+{{> publicBaseMethodsPartial}}
 
   /**
    * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
@@ -187,39 +98,6 @@ export class {{sdHbs.name}} extends DataType implements IBase {
     return true;
   }
 
-  /**
-   * @returns the JSON value or undefined if the instance is empty
-{{#if sdHbs.hasRequiredFields}}
-   * @throws {FhirError} if the instance is missing required properties
-{{/if}}
-   */
-  public override toJSON(): JSON.Value | undefined {
-{{#if sdHbs.hasRequiredFields}}
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
-{{else}}
-    if (this.isEmpty()) {
-      return undefined;
-    }
-{{/if}}
-
-    let jsonObj = super.toJSON() as JSON.Object | undefined;
-    jsonObj ??= {} as JSON.Object;
-
-{{#if sdHbs.hasRequiredFields}}
-    const missingReqdProperties: string[] = [];
-{{/if}}
-
-
-    // TODO: array of field code blocks for serialization
-
-
-{{#if sdHbs.hasRequiredFields}}
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-{{/if}}
-
-    return jsonObj;
-  }
+{{!-- Public toJSON Method Partial --}}
+{{> publicToJSONMethodPartial}}
 }

@@ -31,6 +31,7 @@ import {
   fixPrimitiveElementType,
   getConstructorNulls,
   getFieldName,
+  getNumberOfPrivateFields,
   getNumberOfReqdFields,
   getRequiredConstructorParams,
   HbsElementDefinition,
@@ -42,7 +43,8 @@ import {
 } from './utils-hbs';
 import { ElementDefinition, ElementDefinitionType, StructureDefinition } from '../fhir-artifact-interfaces';
 import { FhirPackage, GeneratedContent } from '../ts-datamodel-generator-helpers';
-import { DATA_TYPE_MAPPINGS, extractNameFromUrl, FhirDataType, isPrimitiveType } from '../utils';
+import { extractNameFromUrl, getPrimitiveJsonType, isPrimitiveType } from '../utils';
+import { DATA_TYPE_MAPPINGS, FhirDataType } from '../FhirDataType';
 
 const classTemplate = readFileSync(resolve(__dirname, 'fhir-complex-datatype.hbs'), 'utf8');
 const constructorRequiredPartial = readFileSync(resolve(__dirname, 'partials', 'constructor-required.hbs'), 'utf8');
@@ -50,6 +52,7 @@ const privateFieldDeclarationPartial = readFileSync(
   resolve(__dirname, 'partials', 'private-field-declaration.hbs'),
   'utf8',
 );
+const publicBaseMethodsPartial = readFileSync(resolve(__dirname, 'partials', 'public-base-methods.hbs'), 'utf8');
 const publicFieldMethodsPartial = readFileSync(resolve(__dirname, 'partials', 'public-field-methods.hbs'), 'utf8');
 const publicFieldMethodsChoicePartial = readFileSync(
   resolve(__dirname, 'partials', 'public-field-methods-choice.hbs'),
@@ -71,6 +74,11 @@ const publicFieldMethodsReferencePartial = readFileSync(
   resolve(__dirname, 'partials', 'public-field-methods-reference.hbs'),
   'utf8',
 );
+const publicStaticParseMethodPartial = readFileSync(
+  resolve(__dirname, 'partials', 'public-static-parse-method.hbs'),
+  'utf8',
+);
+const publicToJSONMethodPartial = readFileSync(resolve(__dirname, 'partials', 'public-toJSON-method.hbs'), 'utf8');
 
 Handlebars.registerHelper('constructorNulls', getConstructorNulls);
 Handlebars.registerHelper('requiredConstructorParams', getRequiredConstructorParams);
@@ -83,12 +91,15 @@ Handlebars.registerHelper('upperFirst', function (source: string): string {
 
 Handlebars.registerPartial('constructorRequiredPartial', constructorRequiredPartial);
 Handlebars.registerPartial('privateFieldDeclarationPartial', privateFieldDeclarationPartial);
+Handlebars.registerPartial('publicBaseMethodsPartial', publicBaseMethodsPartial);
 Handlebars.registerPartial('publicFieldMethodsPartial', publicFieldMethodsPartial);
 Handlebars.registerPartial('publicFieldMethodsChoicePartial', publicFieldMethodsChoicePartial);
 Handlebars.registerPartial('publicFieldMethodsComplexPartial', publicFieldMethodsComplexPartial);
 Handlebars.registerPartial('publicFieldMethodsEnumCodePartial', publicFieldMethodsEnumCodePartial);
 Handlebars.registerPartial('publicFieldMethodsPrimitivePartial', publicFieldMethodsPrimitivePartial);
 Handlebars.registerPartial('publicFieldMethodsReferencePartial', publicFieldMethodsReferencePartial);
+Handlebars.registerPartial('publicStaticParseMethodPartial', publicStaticParseMethodPartial);
+Handlebars.registerPartial('publicToJSONMethodPartial', publicToJSONMethodPartial);
 
 const classGenerator = Handlebars.compile(classTemplate);
 
@@ -135,6 +146,8 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
     let dataType = DATA_TYPE_MAPPINGS.get(typeCode);
     assert(dataType, `Unsupported FHIR type: ${typeCode} for ElementDefinition ${element.path}`);
 
+    const primitiveJsonType = getPrimitiveJsonType(typeCode);
+
     let codeSystemEnumName: string | undefined = undefined;
     if (codeSystemEnumMap.has(element.path)) {
       assert(
@@ -154,6 +167,7 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
     return {
       fhirDataType: typeCode,
       code: dataType,
+      primitiveJsonType: primitiveJsonType,
       choiceTypes: undefined,
       choiceDataTypes: undefined,
       codeSystemName: codeSystemEnumName?.replace('Enum', ''),
@@ -176,6 +190,7 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
     return {
       fhirDataType: 'CHOICE',
       code: 'DataType',
+      primitiveJsonType: undefined,
       choiceTypes: choiceTypes,
       choiceDataTypes: choiceDataTypes,
       codeSystemName: undefined,
@@ -268,9 +283,11 @@ function getSdHbsProperties(
     requirements: fixDescriptiveString(structureDef.snapshot?.element[0]?.requirements),
   } as StructureDefinitionRootElement;
 
-  const numReqdFields = getNumberOfReqdFields(structureDef);
-
   const elementDefinitions: HbsElementDefinition[] = getElementDefinitions(structureDef, codeSystemEnumMap);
+
+  const numReqdFields = getNumberOfReqdFields(elementDefinitions);
+  const numPrivateFields = getNumberOfPrivateFields(elementDefinitions);
+  const hasChoiceFields = elementDefinitions.some((ed: HbsElementDefinition) => ed.isChoiceType);
   const hasCodeSystemEnums = elementDefinitions.some(
     (ed: HbsElementDefinition) => ed.type.codeSystemEnumName !== undefined,
   );
@@ -285,6 +302,9 @@ function getSdHbsProperties(
     rootElement: rootElement,
     numRequiredFields: numReqdFields,
     hasRequiredFields: numReqdFields > 0,
+    hasPrimitiveFields: numPrivateFields > 0,
+    hasOnlyOnePrimitiveField: numPrivateFields === 1,
+    hasChoiceFields: hasChoiceFields,
     hasCodeSystemEnums: hasCodeSystemEnums,
     requiredConstructor: numReqdFields > 0 || hasCodeSystemEnums,
     elementDefinitions: elementDefinitions,
@@ -330,6 +350,9 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
       importsSet.add('ChoiceDataTypesMeta');
       importsSet.add('ChoiceDataTypes');
       importsSet.add('InvalidTypeError');
+      importsSet.add('setPolymorphicValueJson');
+      importsSet.add('parsePolymorphicDataType');
+      importsSet.add('assertIsDefined');
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
         if (choiceType.endsWith('Type')) {
           importsSet.add(choiceType);
@@ -347,6 +370,7 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
       importsSet.add('CodeType');
       importsSet.add('EnumCodeType');
       importsSet.add('assertEnumCodeType');
+      importsSet.add('parseCodeType');
       if (ed.isRequired) {
         importsSet.add('constructorCodeValueAsEnumCodeType');
       }
@@ -354,19 +378,34 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
 
     if (ed.isPrimitive) {
       importsSet.add(ed.type.code);
-      if (ed.isRequired) {
-        importsSet.add('PrimitiveType');
-      }
+      importsSet.add('getPrimitiveTypeJson');
+      importsSet.add('setFhirPrimitiveJson');
       importsSet.add('parseFhirPrimitiveData');
+      importsSet.add(`parse${ed.type.code}`);
       const capPrimitiveType: Capitalize<string> = upperFirst(ed.type.fhirDataType);
       importsSet.add(`fhir${capPrimitiveType}`);
       importsSet.add(`fhir${capPrimitiveType}Schema`);
+      if (ed.isRequired) {
+        importsSet.add('PrimitiveType');
+      }
+    }
+
+    if ((ed.isComplexType || ed.isReferenceType) && !ed.isArray) {
+      importsSet.add('setFhirComplexJson');
     }
 
     if (ed.isArray) {
       importsSet.add('copyListValues');
       importsSet.add('isDefinedList');
       importsSet.add('assertFhirTypeList');
+      if (ed.isPrimitive) {
+        importsSet.add('PrimitiveTypeJson');
+        importsSet.add('setFhirPrimitiveListJson');
+        importsSet.add('getPrimitiveTypeListJson');
+      }
+      if (ed.isComplexType) {
+        importsSet.add('setFhirComplexListJson');
+      }
       if (ed.isRequired) {
         importsSet.add('isDefinedList');
         importsSet.add('assertIsDefinedList');

@@ -19,6 +19,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.5.0] - 2025-05-21
+
+### Added
+
+- Cloned FhirDataType.ts from @paq-ts-fhir/fhir-core to remove its dependency in the Generator project
+
+### Changed
+
+- Continued development for complex data types adding multiple Handlebars partial templates
+- Reverted the `complex-type` filter to previous approach and added 'SimpleQuantity' and 'MoneyQuantity'
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.4.0] - 2025-05-17
 
 ### Changed

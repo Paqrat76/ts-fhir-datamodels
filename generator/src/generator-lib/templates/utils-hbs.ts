@@ -24,7 +24,7 @@
 import { strict as assert } from 'node:assert';
 import { cloneDeep, isNil, upperFirst } from 'lodash';
 import { stripLineBreaks, substituteUnicodeCharacters } from '../utils';
-import { ElementDefinition, ElementDefinitionType, StructureDefinition } from '../fhir-artifact-interfaces';
+import { ElementDefinition, ElementDefinitionType } from '../fhir-artifact-interfaces';
 
 export interface StructureDefinitionRootElement {
   short: string | undefined;
@@ -36,6 +36,7 @@ export interface StructureDefinitionRootElement {
 export interface HbsElementDefinitionType {
   fhirDataType: string;
   code: string;
+  primitiveJsonType: 'boolean' | 'number' | 'string' | undefined;
   choiceTypes: string[] | undefined;
   choiceDataTypes: string[] | undefined;
   codeSystemName: string | undefined;
@@ -81,6 +82,9 @@ export interface HbsStructureDefinition {
   rootElement: StructureDefinitionRootElement;
   numRequiredFields: number;
   hasRequiredFields: boolean;
+  hasPrimitiveFields: boolean;
+  hasOnlyOnePrimitiveField: boolean;
+  hasChoiceFields: boolean;
   hasCodeSystemEnums: boolean;
   requiredConstructor: boolean;
   elementDefinitions: HbsElementDefinition[];
@@ -100,21 +104,35 @@ export function fixDescriptiveString(sourceStr: string | undefined): string | un
 }
 
 /**
- * Calculates the number of required fields in the given structure definition.
+ * Calculates the number of required fields within a given list of `HbsElementDefinition` objects.
  *
- * @param {StructureDefinition} structureDef - The structure definition object containing snapshot and element details.
- * @returns {number} - The count of fields that are required.
+ * @param {HbsElementDefinition[]} hbsEd - An array of `HbsElementDefinition` objects to be checked for required fields.
+ * @returns {number} The count of required fields within the provided array.
  */
-export function getNumberOfReqdFields(structureDef: StructureDefinition): number {
+export function getNumberOfReqdFields(hbsEd: HbsElementDefinition[]): number {
   let numReqdFields = 0;
-
-  structureDef.snapshot?.element.forEach((element) => {
-    if (isRequired(element)) {
+  hbsEd.forEach((ed) => {
+    if (ed.isRequired) {
       numReqdFields++;
     }
   });
-
   return numReqdFields;
+}
+
+/**
+ * Calculates and returns the number of private fields from a given array of HbsElementDefinition objects.
+ *
+ * @param {HbsElementDefinition[]} hbsEd - An array of `HbsElementDefinition` objects to be checked for private fields.
+ * @returns {number} The total number of private fields within the provided array.
+ */
+export function getNumberOfPrivateFields(hbsEd: HbsElementDefinition[]): number {
+  let numPrivateFields = 0;
+  hbsEd.forEach((ed: HbsElementDefinition) => {
+    if (ed.isPrimitive) {
+      numPrivateFields++;
+    }
+  });
+  return numPrivateFields;
 }
 
 /**

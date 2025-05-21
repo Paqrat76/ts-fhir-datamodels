@@ -31,6 +31,7 @@ for class properties and their associated class methods needed within the genera
 The Handlebars expressions that map to the "xxxx" variables found in the text-based "templates" in the
 Paqrat76/typescript-hapi-models-poc zTemplates are:
 
+- XxxxParentClassName => `{{sdHbs.name}}`
 - XxxxParentClassElement.xxxxFieldName => `{{edHbs.path}}`
 - xxxxFieldName => `{{edHbs.fieldName}}`
 - XxxxFieldName => `{{upperFirst edHbs.fieldName}}`
@@ -41,3 +42,4 @@ Paqrat76/typescript-hapi-models-poc zTemplates are:
 - XxxxClassEnum => `{{edHbs.type.codeSystemEnumName}}`
 - XxxxChoiceDataType => `{{this}}` in `{{#each edHbs.type.choiceDataTypes}}...{{/each}}`
 - XxxxReferenceTypeList => `{{this}}` in `{{#each edHbs.type.targetResource}}...{{/each}}`
+- xxxxJsonType => `{{edHbs.type.primitiveJsonType}}`

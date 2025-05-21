@@ -23,67 +23,7 @@
 
 import { strict as assert } from 'node:assert';
 import { camelCase, snakeCase, upperFirst } from 'lodash';
-import { DATA_TYPES as CORE_DATA_TYPES } from '@paq-ts-fhir/fhir-core';
-
-/**
- * FHIR data types
- *
- * @remarks
- * All defined FHIR data types for complex and primitive data types.
- *
- * @privateRemarks
- * 'Element' is included to support the `DataRequirement` complex type.
- * 'Extension' is included to support the `BackboneType`.
- *
- * @category Base Models
- * @see [DataTypes](https://hl7.org/fhir/R5/datatypes.html)
- */
-export const DATA_TYPES = [...CORE_DATA_TYPES, 'Element', 'Extension'] as const;
-
-/**
- * FhirDataType
- *
- * @remarks
- * Type definition based on DATA_TYPES array.
- *
- * @category Base Models
- */
-export type FhirDataType = (typeof DATA_TYPES)[number];
-
-/**
- * A constant that holds the mappings of FHIR data types.
- * This object maps specific FHIR data type names to their corresponding FHIR data type representations.
- *
- * @category Base Models
- */
-export const DATA_TYPE_MAPPINGS: Map<FhirDataType, string> = getDataTypeMappings();
-
-/**
- * Generates a mapping of data type names where the key is the original data type
- * and the value is a formatted version of the data type string.
- *
- * @returns {Map<FhirDataType, string>} A map where each key is a data type and the value
- * is its corresponding transformed representation.
- */
-function getDataTypeMappings(): Map<FhirDataType, string> {
-  const map = new Map<FhirDataType, string>();
-  DATA_TYPES.forEach((dt: FhirDataType): void => {
-    const value = isPrimitiveType(dt) ? `${upperFirst(dt)}Type` : dt;
-    map.set(dt, value);
-  });
-  return map;
-}
-
-/**
- * Checks if the given FhirDataType is a primitive type based on its naming convention.
- * A type is considered primitive if it starts with a lowercase letter.
- *
- * @param {FhirDataType} type - The name of the FhirDataType to check.
- * @returns {boolean} Returns true if the FhirDataType is a primitive type, otherwise false.
- */
-export function isPrimitiveType(type: FhirDataType): boolean {
-  return /^[a-z].*$/.test(type);
-}
+import { FhirDataType } from './FhirDataType';
 
 /**
  * UnicodeSubstitutions is a collection of objects that map specific Unicode characters
@@ -233,4 +173,39 @@ export function extractNameFromUrl(url: string): string {
   assert(urlName, `Invalid url (${url})`);
 
   return makePascalCase(urlName);
+}
+
+/**
+ * Checks if the given FhirDataType is a primitive type based on its naming convention.
+ * A type is considered primitive if it starts with a lowercase letter.
+ *
+ * @param {FhirDataType} type - The name of the FhirDataType to check.
+ * @returns {boolean} Returns true if the FhirDataType is a primitive type, otherwise false.
+ */
+export function isPrimitiveType(type: FhirDataType): boolean {
+  return /^[a-z].*$/.test(type);
+}
+
+/**
+ * Determines the primitive JSON type corresponding to a given FHIR data type.
+ *
+ * @param {FhirDataType} type - The FHIR data type to be mapped to a JSON primitive type.
+ * @returns {'boolean' | 'number' | 'string' | undefined} The JSON primitive type ('boolean', 'number', or 'string') that corresponds to the given FHIR data type, or undefined if no match is found.
+ */
+export function getPrimitiveJsonType(type: FhirDataType): 'boolean' | 'number' | 'string' | undefined {
+  let primitiveJsonType: 'boolean' | 'number' | 'string' | undefined = undefined;
+  if (type === 'boolean') {
+    primitiveJsonType = 'boolean';
+  } else if (
+    type === 'decimal' ||
+    type === 'integer' ||
+    type === 'integer64' ||
+    type === 'positiveInt' ||
+    type === 'unsignedInt'
+  ) {
+    primitiveJsonType = 'number';
+  } else if (isPrimitiveType(type)) {
+    primitiveJsonType = 'string';
+  }
+  return primitiveJsonType;
 }
