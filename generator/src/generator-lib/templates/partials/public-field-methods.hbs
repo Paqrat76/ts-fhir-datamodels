@@ -1,6 +1,6 @@
 {{!-- Public Field Methods Partial Template --}}
-{{~#if edHbs.isPrimitive}}{{> publicFieldMethodsPrimitivePartial edHbs=this }}{{/if}}
-{{~#if edHbs.isChoiceType}}{{> publicFieldMethodsChoicePartial edHbs=this }}{{/if}}
-{{~#if edHbs.isComplexType}}{{> publicFieldMethodsComplexPartial edHbs=this }}{{/if}}
-{{~#if edHbs.isEnumCodeType}}{{> publicFieldMethodsEnumCodePartial edHbs=this }}{{/if}}
-{{~#if edHbs.isReferenceType}}{{> publicFieldMethodsReferencePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isPrimitiveMethods}}{{> publicFieldMethodsPrimitivePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isChoiceMethods}}{{> publicFieldMethodsChoicePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isComplexMethods}}{{> publicFieldMethodsComplexPartial edHbs=this }}{{/if}}
+{{~#if edHbs.isEnumCodeMethods}}{{> publicFieldMethodsEnumCodePartial edHbs=this }}{{/if}}
+{{~#if edHbs.isReferenceMethods}}{{> publicFieldMethodsReferencePartial edHbs=this }}{{/if}}

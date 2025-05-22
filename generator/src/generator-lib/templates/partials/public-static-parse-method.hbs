@@ -18,7 +18,7 @@
     let fieldName: string;
     let sourceField: string;
 {{#if sdHbs.hasPrimitiveFields}}
-    {{#if sdHbs.hasOnlyOnePrimitiveField}}const{{else}}let{{/if}} primitiveJsonType: 'boolean' | 'number' | 'string';
+    {{#unless sdHbs.hasOnlyOnePrimitiveField}}let primitiveJsonType: 'boolean' | 'number' | 'string';{{/unless}}
 {{/if}}
 
 {{#if sdHbs.hasChoiceFields}}
@@ -32,11 +32,11 @@
 
 {{/if}}
 {{#each sdHbs.elementDefinitions}}
-{{#if this.isPrimitive}}
+{{#if this.isPrimitiveMethods}}
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dtJson, dtSiblingJson);
@@ -47,7 +47,7 @@
 {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dtJson, dtSiblingJson);
@@ -64,7 +64,7 @@
 {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
         datatypeJsonObj,
@@ -84,7 +84,7 @@
 {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
         datatypeJsonObj,
@@ -106,7 +106,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isChoiceType}}
+{{#if this.isChoiceMethods}}
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}[x]';
     sourceField = `${source}.${fieldName}`;
@@ -136,7 +136,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isComplexType}}
+{{#if this.isComplexMethods}}
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
@@ -198,7 +198,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isEnumCodeType}}
+{{#if this.isEnumCodeMethods}}
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
@@ -272,7 +272,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isReferenceType}}
+{{#if this.isReferenceMethods}}
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
@@ -342,7 +342,6 @@
     }
 
 {{/if}}
-
     assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }

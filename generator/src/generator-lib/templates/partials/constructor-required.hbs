@@ -3,28 +3,28 @@
     super();
 {{#if sdHbs.hasCodeSystemEnums}}
 
-  {{#each sdHbs.elementDefinitions}}
-    {{#if this.type.codeSystemEnumName}}
+{{#each sdHbs.elementDefinitions}}
+{{#if this.type.codeSystemEnumName}}
     this.{{camelCase this.type.codeSystemEnumName}} = new {{this.type.codeSystemEnumName}}();
-    {{/if}}
-  {{/each}}
+{{/if}}
+{{/each}}
 {{/if}}
 {{#if sdHbs.hasRequiredFields}}
-  {{#each sdHbs.elementDefinitions}}
-    {{#if this.isRequired}}
-      {{#if this.type.codeSystemEnumName}}
+{{#each sdHbs.elementDefinitions}}
+{{#if this.isRequired}}
+{{#if this.type.codeSystemEnumName}}
 
     this.{{this.fieldName}} = constructorCodeValueAsEnumCodeType<{{this.type.codeSystemEnumName}}>(
       {{this.fieldName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
       '{{../sdHbs.name}}.{{this.fieldName}}',
-    );
-      {{else}}
+   );
+{{else}}
 
     this.{{this.fieldName}} = null;
-        {{#if this.isPrimitive}}
-          {{#if this.isArray}}
+{{#if this.isPrimitiveMethods}}
+{{#if this.isArray}}
     if (isDefinedList<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldName}})) {
       if ({{this.fieldName}}[0] instanceof PrimitiveType) {
         this.set{{upperFirst this.fieldName}}Element({{this.fieldName}} as {{this.type.code}}[]);
@@ -32,7 +32,7 @@
         this.set{{upperFirst this.fieldName}}({{this.fieldName}} as fhir{{upperFirst this.type.fhirDataType}}[]);
       }
     }
-          {{else}}
+{{else}}
     if (isDefined<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldName}})) {
       if ({{this.fieldName}} instanceof PrimitiveType) {
         this.set{{upperFirst this.fieldName}}Element({{this.fieldName}});
@@ -40,20 +40,20 @@
         this.set{{upperFirst this.fieldName}}({{this.fieldName}});
       }
     }
-          {{/if}}
-        {{else}}
-          {{#if this.isArray}}
+{{/if}}
+{{else}}
+{{#if this.isArray}}
     if (isDefinedList<{{this.type.code}}>({{this.fieldName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldName}});
     }
-          {{else}}
+{{else}}
     if (isDefined<{{this.type.code}}>({{this.fieldName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldName}});
     }
-          {{/if}}
-        {{/if}}
-      {{/if}}
-    {{/if}}
-  {{/each}}
+{{/if}}
+{{/if}}
+{{/if}}
+{{/if}}
+{{/each}}
 {{/if}}
   }

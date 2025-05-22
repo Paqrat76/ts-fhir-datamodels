@@ -22,9 +22,10 @@
  */
 
 import { strict as assert } from 'node:assert';
-import { cloneDeep, isNil, upperFirst } from 'lodash';
+import { cloneDeep, isEmpty, isNil, upperFirst } from 'lodash';
 import { stripLineBreaks, substituteUnicodeCharacters } from '../utils';
 import { ElementDefinition, ElementDefinitionType } from '../fhir-artifact-interfaces';
+import { DATA_TYPES, FhirDataType } from '../FhirDataType';
 
 export interface StructureDefinitionRootElement {
   short: string | undefined;
@@ -62,11 +63,16 @@ export interface HbsElementDefinition {
   isRequiredItem: boolean;
   isRequiredList: boolean;
   type: HbsElementDefinitionType;
-  isPrimitive: boolean;
+  isPrimitiveType: boolean;
   isChoiceType: boolean;
   isComplexType: boolean;
   isEnumCodeType: boolean;
   isReferenceType: boolean;
+  isPrimitiveMethods: boolean;
+  isChoiceMethods: boolean;
+  isComplexMethods: boolean;
+  isEnumCodeMethods: boolean;
+  isReferenceMethods: boolean;
   isModifier: boolean;
   isModifierReason: string | undefined;
   isSummary: boolean;
@@ -128,7 +134,7 @@ export function getNumberOfReqdFields(hbsEd: HbsElementDefinition[]): number {
 export function getNumberOfPrivateFields(hbsEd: HbsElementDefinition[]): number {
   let numPrivateFields = 0;
   hbsEd.forEach((ed: HbsElementDefinition) => {
-    if (ed.isPrimitive) {
+    if (ed.isPrimitiveType) {
       numPrivateFields++;
     }
   });
@@ -164,6 +170,17 @@ export function isArrayCardinality(element: ElementDefinition): boolean {
 }
 
 /**
+ * Determines whether the given element has a cardinality of 0..0,
+ * which means it is not expected to have any occurrences.
+ *
+ * @param {ElementDefinition} element - The element definition to check, typically containing `min` and `max` properties.
+ * @returns {boolean} Returns true if the element's cardinality is 0..0; otherwise, false.
+ */
+export function is0to0Cardinality(element: ElementDefinition): boolean {
+  return !isNil(element.min) && element.min === 0 && !isEmpty(element.max) && element.max === '0';
+}
+
+/**
  * Modifies an `ElementDefinitionType` to fix specific primitive type inconsistencies
  * observed in certain FHIR StructureDefinitions. For instances where
  * FHIRPath's `System.String` is used in the `code`, it changes it to the primitive `string`.
@@ -189,7 +206,15 @@ export function fixPrimitiveElementType(type: ElementDefinitionType[]): ElementD
   //   deal with those since primitive "data models" are not generated code.
   const clonedType: ElementDefinitionType[] = cloneDeep(type);
   return clonedType.map((edt: ElementDefinitionType) => {
-    if (edt.code === 'http://hl7.org/fhirpath/System.String') {
+    if (
+      edt.extension &&
+      edt.extension.length === 1 &&
+      edt.extension[0]?.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type' &&
+      edt.extension[0].valueUrl &&
+      DATA_TYPES.includes(edt.extension[0].valueUrl as FhirDataType)
+    ) {
+      edt.code = edt.extension[0].valueUrl;
+    } else if (edt.code === 'http://hl7.org/fhirpath/System.String') {
       edt.code = 'string';
     }
     return edt;
@@ -254,7 +279,7 @@ export function getRequiredConstructorParams(elementDefinitions: HbsElementDefin
         ? `${ed.type.code} | CodeType`
         : ed.type.code;
     const primitiveDataType = ` | fhir${upperFirst(ed.type.fhirDataType)}`;
-    const primitiveType = ed.isPrimitive ? (ed.isArray ? `${primitiveDataType}[]` : primitiveDataType) : undefined;
+    const primitiveType = ed.isPrimitiveType ? (ed.isArray ? `${primitiveDataType}[]` : primitiveDataType) : undefined;
     const paramStr = `${fieldName}: ${fieldDataType}${primitiveType ?? ''} | null`;
     requiredConstructorParams.push(paramStr);
   });

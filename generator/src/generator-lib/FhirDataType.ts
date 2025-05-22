@@ -22,7 +22,7 @@
  */
 
 import { upperFirst } from 'lodash';
-import { isPrimitiveType } from './utils';
+import { isPrimitiveDataType } from './utils';
 
 /**
  * FHIR open data types
@@ -162,7 +162,7 @@ export const DATA_TYPE_MAPPINGS: Map<FhirDataType, string> = getDataTypeMappings
 function getDataTypeMappings(): Map<FhirDataType, string> {
   const map = new Map<FhirDataType, string>();
   DATA_TYPES.forEach((dt: FhirDataType): void => {
-    const value = isPrimitiveType(dt) ? `${upperFirst(dt)}Type` : dt;
+    const value = isPrimitiveDataType(dt) ? `${upperFirst(dt)}Type` : dt;
     map.set(dt, value);
   });
   return map;

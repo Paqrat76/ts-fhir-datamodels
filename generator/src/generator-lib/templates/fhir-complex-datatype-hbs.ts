@@ -37,13 +37,14 @@ import {
   HbsElementDefinition,
   HbsElementDefinitionType,
   HbsStructureDefinition,
+  is0to0Cardinality,
   isArrayCardinality,
   isRequired,
   StructureDefinitionRootElement,
 } from './utils-hbs';
 import { ElementDefinition, ElementDefinitionType, StructureDefinition } from '../fhir-artifact-interfaces';
 import { FhirPackage, GeneratedContent } from '../ts-datamodel-generator-helpers';
-import { extractNameFromUrl, getPrimitiveJsonType, isPrimitiveType } from '../utils';
+import { extractNameFromUrl, getPrimitiveJsonType, isPrimitiveDataType } from '../utils';
 import { DATA_TYPE_MAPPINGS, FhirDataType } from '../FhirDataType';
 
 const classTemplate = readFileSync(resolve(__dirname, 'fhir-complex-datatype.hbs'), 'utf8');
@@ -213,9 +214,10 @@ function getElementDefinitions(
   codeSystemEnumMap: Map<string, string>,
 ): HbsElementDefinition[] {
   const elementDefinitions: ElementDefinition[] = structureDef.snapshot?.element ?? [];
-  // Filter out the root ElementDefinition and all elements based on Element (i.e., id, extension)
+  // Filter out the root ElementDefinition and all elements based on Element (i.e., id, extension) and 0..0 cardinality
   const elements = elementDefinitions.filter(
-    (element: ElementDefinition) => element.path.split('.').length > 1 && !element.base?.path.startsWith('Element'),
+    (element: ElementDefinition) =>
+      element.path.split('.').length > 1 && !element.base?.path.startsWith('Element') && !is0to0Cardinality(element),
   );
   assert(
     elements.length > 0,
@@ -227,12 +229,20 @@ function getElementDefinitions(
     const max = element.max ?? '1';
     const isRequiredElement = isRequired(element);
     const isArrayElement = isArrayCardinality(element);
+
     const type: HbsElementDefinitionType = getFhirType(element, codeSystemEnumMap);
-    const isChoiceType = type.fhirDataType === 'CHOICE';
-    const isEnumCodeType = isChoiceType ? false : type.code === 'EnumCodeType';
-    const isReferenceType = isChoiceType ? false : type.code === 'Reference';
-    const isPrimitive = isChoiceType || isEnumCodeType ? false : isPrimitiveType(type.fhirDataType as FhirDataType);
-    const isComplexType = !(isChoiceType || isPrimitive || isEnumCodeType || isReferenceType);
+    const isChoice = type.fhirDataType === 'CHOICE';
+
+    const isEnumCodeType = type.code === 'EnumCodeType';
+    const isReferenceType = type.code === 'Reference';
+    const isPrimitiveType = isChoice ? false : isPrimitiveDataType(type.fhirDataType as FhirDataType);
+    const isComplexType = !(isChoice || isPrimitiveType || isEnumCodeType);
+    // These control Handlebars template processing for the public-field-methods.hbs
+    const isEnumCodeMethods = isChoice ? false : type.code === 'EnumCodeType';
+    const isReferenceMethods = isChoice ? false : type.code === 'Reference';
+    const isPrimitiveMethods =
+      isChoice || isEnumCodeType ? false : isPrimitiveDataType(type.fhirDataType as FhirDataType);
+    const isComplexMethods = !(isChoice || isPrimitiveMethods || isEnumCodeType || isReferenceMethods);
 
     return {
       path: element.path,
@@ -251,11 +261,16 @@ function getElementDefinitions(
       isRequiredItem: isRequiredElement && !isArrayElement,
       isRequiredList: isRequiredElement && isArrayElement,
       type: type,
-      isPrimitive: isPrimitive,
-      isChoiceType: isChoiceType,
+      isPrimitiveType: isPrimitiveType,
+      isChoiceType: isChoice,
       isComplexType: isComplexType,
       isEnumCodeType: isEnumCodeType,
       isReferenceType: isReferenceType,
+      isPrimitiveMethods: isPrimitiveMethods,
+      isChoiceMethods: isChoice,
+      isComplexMethods: isComplexMethods,
+      isEnumCodeMethods: isEnumCodeMethods,
+      isReferenceMethods: isReferenceMethods,
       isModifier: element.isModifier ?? false,
       isModifierReason: fixDescriptiveString(element.isModifierReason),
       isSummary: element.isSummary ?? false,
@@ -360,11 +375,11 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
       });
     }
 
-    if (ed.isReferenceType) {
+    if (ed.isReferenceMethods) {
       importsSet.add('ReferenceTargets');
     }
 
-    if (ed.type.code === 'EnumCodeType') {
+    if (ed.isEnumCodeMethods) {
       importsSet.add('fhirCode');
       importsSet.add('fhirCodeSchema');
       importsSet.add('CodeType');
@@ -376,7 +391,7 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
       }
     }
 
-    if (ed.isPrimitive) {
+    if (ed.isPrimitiveMethods) {
       importsSet.add(ed.type.code);
       importsSet.add('getPrimitiveTypeJson');
       importsSet.add('setFhirPrimitiveJson');
@@ -390,7 +405,7 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
       }
     }
 
-    if ((ed.isComplexType || ed.isReferenceType) && !ed.isArray) {
+    if ((ed.isComplexMethods || ed.isReferenceMethods) && !ed.isArray) {
       importsSet.add('setFhirComplexJson');
     }
 
@@ -398,12 +413,12 @@ function getFhirCoreImports(sdHbsProperties: HbsStructureDefinition): string[] {
       importsSet.add('copyListValues');
       importsSet.add('isDefinedList');
       importsSet.add('assertFhirTypeList');
-      if (ed.isPrimitive) {
+      if (ed.isPrimitiveMethods) {
         importsSet.add('PrimitiveTypeJson');
         importsSet.add('setFhirPrimitiveListJson');
         importsSet.add('getPrimitiveTypeListJson');
       }
-      if (ed.isComplexType) {
+      if (ed.isComplexMethods || ed.isReferenceMethods) {
         importsSet.add('setFhirComplexListJson');
       }
       if (ed.isRequired) {
@@ -438,7 +453,7 @@ function getGeneratedImports(sdHbsProperties: HbsStructureDefinition): string[] 
       });
     }
 
-    if (!ed.isPrimitive && !ed.isEnumCodeType && ed.type.code !== 'DataType' && ed.type.code !== 'CHOICE') {
+    if (ed.isComplexMethods || ed.isReferenceMethods) {
       importsSet.add(ed.type.code);
     }
 

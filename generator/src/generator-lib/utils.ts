@@ -182,7 +182,7 @@ export function extractNameFromUrl(url: string): string {
  * @param {FhirDataType} type - The name of the FhirDataType to check.
  * @returns {boolean} Returns true if the FhirDataType is a primitive type, otherwise false.
  */
-export function isPrimitiveType(type: FhirDataType): boolean {
+export function isPrimitiveDataType(type: FhirDataType): boolean {
   return /^[a-z].*$/.test(type);
 }
 
@@ -204,7 +204,7 @@ export function getPrimitiveJsonType(type: FhirDataType): 'boolean' | 'number' |
     type === 'unsignedInt'
   ) {
     primitiveJsonType = 'number';
-  } else if (isPrimitiveType(type)) {
+  } else if (isPrimitiveDataType(type)) {
     primitiveJsonType = 'string';
   }
   return primitiveJsonType;

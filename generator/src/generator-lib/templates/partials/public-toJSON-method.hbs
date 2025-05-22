@@ -22,7 +22,7 @@
 
 {{/if}}
 {{#each sdHbs.elementDefinitions}}
-{{#if this.isPrimitive}}
+{{#if this.isPrimitiveMethods}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
@@ -53,7 +53,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isChoiceType}}
+{{#if this.isChoiceMethods}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -71,7 +71,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isComplexType}}
+{{#if this.isComplexMethods}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
@@ -102,7 +102,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isEnumCodeType}}
+{{#if this.isEnumCodeMethods}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -134,7 +134,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isReferenceType}}
+{{#if this.isReferenceMethods}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);

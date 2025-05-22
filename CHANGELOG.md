@@ -19,22 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.6.0] - 2025-05-21
+## [0.6.1] - 2025-05-21
 
-### Added
+### Changed
+
+- Minor code tweaks for clean up of generated complex types
+- Updated fhir-core dependencies
+
+
+## [0.6.0] - 2025-05-21
 
 ### Changed
 
 - Updated dev dependencies
 - Updated the generator code for complex data types (work-in-progress)
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 
 ## [0.5.0] - 2025-05-17
