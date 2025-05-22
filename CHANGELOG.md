@@ -19,11 +19,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.6.1] - 2025-05-21
+
+### Changed
+
+- Minor code tweaks for clean up of generated complex types
+- Updated fhir-core dependencies
+
+
+## [0.6.0] - 2025-05-21
+
+### Changed
+
+- Updated dev dependencies
+- Updated the generator code for complex data types (work-in-progress)
+
+
+## [0.5.0] - 2025-05-17
+
+### Added
+
+### Changed
+
+- Updated dev dependencies
+- Updated the generator code for complex data types (work-in-progress)
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.4.0] - 2025-05-16
+
+### Added
+
+- Added the initial generator code for complex types (work-in-progress)
+
+### Changed
+
+- Updated dev dependencies
+- Updated the generator code for code system enums
+- Updated the base generator code
+
+
 ## [0.3.0] - 2025-05-01
 
 ### Added
 
 - Added support for the initial FHIR R4 data model package (`@paq-ts-fhir/r4-datamodels`)
+- Added the initial generator code for code system enums
 
 ### Changed
 

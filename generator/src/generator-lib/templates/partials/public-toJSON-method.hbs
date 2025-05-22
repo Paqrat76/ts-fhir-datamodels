@@ -1,0 +1,177 @@
+{{!-- Public toJSON Method Partial Template --}}
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+{{#if sdHbs.hasRequiredFields}}
+   * @throws {FhirError} if the instance is missing required properties
+{{/if}}
+   */
+  public override toJSON(): JSON.Value | undefined {
+{{#if sdHbs.hasRequiredFields}}
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+{{else}}
+    if (this.isEmpty()) {
+      return undefined;
+    }
+{{/if}}
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+{{#if sdHbs.hasRequiredFields}}
+    const missingReqdProperties: string[] = [];
+
+{{/if}}
+{{#each sdHbs.elementDefinitions}}
+{{#if this.isPrimitiveMethods}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirPrimitiveListJson(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      setFhirPrimitiveListJson(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isChoiceMethods}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setPolymorphicValueJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setPolymorphicValueJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}[x]`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isComplexMethods}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isEnumCodeMethods}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      setFhirPrimitiveListJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    if (this.has{{upperFirst this.fieldName}}Element()) {
+      setFhirPrimitiveListJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isReferenceMethods}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{/each}}
+{{#if sdHbs.hasRequiredFields}}
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+{{/if}}
+    return jsonObj;
+  }

@@ -1,0 +1,197 @@
+{{!-- Public Field Methods for Reference Types Partial Template --}}
+{{#if this.isOptionalItem}}
+  /**
+   * @returns the `{{edHbs.fieldName}}` property value as a Reference object; else an empty Reference object
+   */
+  public get{{upperFirst edHbs.fieldName}}(): Reference {
+    return this.{{edHbs.fieldName}} ?? new Reference();
+  }
+
+  /**
+   * Assigns the provided {{upperFirst edHbs.fieldName}} object value to the `{{edHbs.fieldName}}` property.
+   *
+   * @decorator `@ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}'{{this}}',{{/each}}])`
+   *
+   * @param value - the `{{edHbs.fieldName}}` object value
+   * @returns this
+   */
+  @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
+    '{{this}}',
+  {{/each}}])
+  public set{{upperFirst edHbs.fieldName}}(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.{{edHbs.fieldName}} = value;
+    } else {
+      this.{{edHbs.fieldName}} = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefined<Reference>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty();
+  }
+{{/if}}
+{{#if this.isRequiredItem}}
+  /**
+   * @returns the `{{edHbs.fieldName}}` property value as a Reference object if defined; else null
+   */
+  public get{{upperFirst edHbs.fieldName}}(): Reference | null {
+    return this.{{edHbs.fieldName}};
+  }
+
+  /**
+   * Assigns the provided {{upperFirst edHbs.fieldName}} object value to the `{{edHbs.fieldName}}` property.
+   *
+   * @decorator `@ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}'{{this}}',{{/each}}])`
+   *
+   * @param value - the `{{edHbs.fieldName}}` object value
+   * @returns this
+   */
+  @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
+    '{{this}}',
+  {{/each}}])
+  public set{{upperFirst edHbs.fieldName}}(value: Reference): this {
+    assertIsDefined<Reference>(value, `{{edHbs.path}} is required`);
+    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+    this.{{edHbs.fieldName}} = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefined<Reference>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty();
+  }
+{{/if}}
+{{#if this.isOptionalList}}
+  /**
+   * @returns the `{{edHbs.fieldName}}` property value as a Reference array
+   */
+  public get{{upperFirst edHbs.fieldName}}(): Reference[] {
+    return this.{{edHbs.fieldName}} ?? ([] as Reference[]);
+  }
+
+  /**
+   * Assigns the provided Reference array value to the `{{edHbs.fieldName}}` property.
+   *
+   * @decorator `@ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}'{{this}}',{{/each}}])`
+   *
+   * @param value - the `{{edHbs.fieldName}}` array value
+   * @returns this
+   */
+  @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
+    '{{this}}',
+  {{/each}}])
+  public set{{upperFirst edHbs.fieldName}}(value: Reference[] | undefined): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.{{edHbs.fieldName}} = value;
+    } else {
+      this.{{edHbs.fieldName}} = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Reference value to the `{{edHbs.fieldName}}` array property.
+   *
+   * @decorator `@ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}'{{this}}',{{/each}}])`
+   *
+   * @param value - the `{{edHbs.fieldName}}` value
+   * @returns this
+   */
+  @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
+    '{{this}}',
+  {{/each}}])
+  public add{{upperFirst edHbs.fieldName}}(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.init{{upperFirst edHbs.fieldName}}();
+      this.{{edHbs.fieldName}}?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefinedList<Reference>(this.{{edHbs.fieldName}}) && this.{{edHbs.fieldName}}.some((item: Reference) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `{{edHbs.fieldName}}` property
+   */
+  private init{{upperFirst edHbs.fieldName}}(): void {
+    if (!this.has{{upperFirst edHbs.fieldName}}()) {
+      this.{{edHbs.fieldName}} = [] as Reference[];
+    }
+  }
+{{/if}}
+{{#if this.isRequiredList}}
+  /**
+   * @returns the `{{edHbs.fieldName}}` property value as a Reference array
+   */
+  public get{{upperFirst edHbs.fieldName}}(): Reference[] {
+    return this.{{edHbs.fieldName}} ?? ([] as Reference[]);
+  }
+
+  /**
+   * Assigns the provided Reference array value to the `{{edHbs.fieldName}}` property.
+   *
+   * @decorator `@ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}'{{this}}',{{/each}}])`
+   *
+   * @param value - the `{{edHbs.fieldName}}` array value
+   * @returns this
+   */
+  @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
+    '{{this}}',
+  {{/each}}])
+  public set{{upperFirst edHbs.fieldName}}(value: Reference[]): this {
+    assertIsDefinedList<Reference>(value, `{{edHbs.path}} is required`);
+    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+    this.{{edHbs.fieldName}} = value;
+    return this;
+  }
+
+  /**
+   * Add the provided Reference value to the `{{edHbs.fieldName}}` array property.
+   *
+   * @decorator `@ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}'{{this}}',{{/each}}])`
+   *
+   * @param value - the `{{edHbs.fieldName}}` value
+   * @returns this
+   */
+  @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
+    '{{this}}',
+  {{/each}}])
+  public add{{upperFirst edHbs.fieldName}}(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.init{{upperFirst edHbs.fieldName}}();
+      this.{{edHbs.fieldName}}?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefinedList<Reference>(this.{{edHbs.fieldName}}) && this.{{edHbs.fieldName}}.some((item: Reference) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `{{edHbs.fieldName}}` property
+   */
+  private init{{upperFirst edHbs.fieldName}}(): void {
+    if (!this.has{{upperFirst edHbs.fieldName}}()) {
+      this.{{edHbs.fieldName}} = [] as Reference[];
+    }
+  }
+{{/if}}

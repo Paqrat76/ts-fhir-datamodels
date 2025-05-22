@@ -23,6 +23,7 @@
 
 import { strict as assert } from 'node:assert';
 import { camelCase, snakeCase, upperFirst } from 'lodash';
+import { FhirDataType } from './FhirDataType';
 
 /**
  * UnicodeSubstitutions is a collection of objects that map specific Unicode characters
@@ -90,6 +91,17 @@ const UnicodeSubstitutions = {
   COMPARATOR_NOT_EQUAL_TO_OR_GREATER_THAN: { unicodeRegex: /\u003E\u003D/g, replacement: `>=` },
   COMPARATOR_NOT_EQUAL_TO_OR_LESS_THAN: { unicodeRegex: /\u003C\u003D/g, replacement: `<=` },
 };
+
+/**
+ * Logs a formatted message with a specified log level for generators.
+ *
+ * @param {string} level - The severity level of the log (e.g., "info", "warn", "error").
+ * @param {string} message - The message to log.
+ * @returns {void} This function does not return a value.
+ */
+export function generatorLogger(level: string, message: string): void {
+  console.log(`Generator ${level.toUpperCase()}: ${message}`);
+}
 
 /**
  * Replaces all Unicode characters in the provided string with their defined substitutions.
@@ -161,4 +173,39 @@ export function extractNameFromUrl(url: string): string {
   assert(urlName, `Invalid url (${url})`);
 
   return makePascalCase(urlName);
+}
+
+/**
+ * Checks if the given FhirDataType is a primitive type based on its naming convention.
+ * A type is considered primitive if it starts with a lowercase letter.
+ *
+ * @param {FhirDataType} type - The name of the FhirDataType to check.
+ * @returns {boolean} Returns true if the FhirDataType is a primitive type, otherwise false.
+ */
+export function isPrimitiveDataType(type: FhirDataType): boolean {
+  return /^[a-z].*$/.test(type);
+}
+
+/**
+ * Determines the primitive JSON type corresponding to a given FHIR data type.
+ *
+ * @param {FhirDataType} type - The FHIR data type to be mapped to a JSON primitive type.
+ * @returns {'boolean' | 'number' | 'string' | undefined} The JSON primitive type ('boolean', 'number', or 'string') that corresponds to the given FHIR data type, or undefined if no match is found.
+ */
+export function getPrimitiveJsonType(type: FhirDataType): 'boolean' | 'number' | 'string' | undefined {
+  let primitiveJsonType: 'boolean' | 'number' | 'string' | undefined = undefined;
+  if (type === 'boolean') {
+    primitiveJsonType = 'boolean';
+  } else if (
+    type === 'decimal' ||
+    type === 'integer' ||
+    type === 'integer64' ||
+    type === 'positiveInt' ||
+    type === 'unsignedInt'
+  ) {
+    primitiveJsonType = 'number';
+  } else if (isPrimitiveDataType(type)) {
+    primitiveJsonType = 'string';
+  }
+  return primitiveJsonType;
 }

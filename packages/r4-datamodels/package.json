@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/r4-datamodels",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generated FHIR R4 data model package",
   "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/r4-datamodels/README.md",
   "bugs": {
@@ -19,7 +19,7 @@
     "typedoc": "typedoc ./src/index.ts"
   },
   "dependencies": {
-    "@paq-ts-fhir/fhir-core": "^0.2.0"
+    "@paq-ts-fhir/fhir-core": "^0.3.0"
   },
   "engines": {
     "node": ">=22.11",

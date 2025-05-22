@@ -1,0 +1,347 @@
+{{!-- Public Static Parse Method Partial Template --}}
+  /**
+   * Parse the provided `{{sdHbs.name}}` JSON to instantiate the {{sdHbs.name}} data model.
+   *
+   * @param sourceJson - JSON representing FHIR `{{sdHbs.name}}`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{sdHbs.name}}
+   * @returns {{sdHbs.name}} data model or undefined for `{{sdHbs.name}}`
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): {{sdHbs.name}} | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+    const source = isDefined<string>(optSourceField) ? optSourceField : '{{sdHbs.name}}';
+    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+    const instance = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
+    processElementJson(instance, datatypeJsonObj);
+
+    let fieldName: string;
+    let sourceField: string;
+{{#if sdHbs.hasPrimitiveFields}}
+    {{#unless sdHbs.hasOnlyOnePrimitiveField}}let primitiveJsonType: 'boolean' | 'number' | 'string';{{/unless}}
+{{/if}}
+
+{{#if sdHbs.hasChoiceFields}}
+    const classMetadata: DecoratorMetadataObject | null = {{sdHbs.name}}[Symbol.metadata];
+    const errorMessage = `DecoratorMetadataObject does not exist for {{sdHbs.name}}`;
+    assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
+
+{{/if}}
+{{#if sdHbs.hasRequiredFields}}
+    const missingReqdProperties: string[] = [];
+
+{{/if}}
+{{#each sdHbs.elementDefinitions}}
+{{#if this.isPrimitiveMethods}}
+{{#if this.isOptionalItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    if (fieldName in datatypeJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dtJson, dtSiblingJson);
+      instance.set{{upperFirst this.fieldName}}Element(datatype);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    if (fieldName in datatypeJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.set{{upperFirst this.fieldName}}Element(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    if (fieldName in datatypeJsonObj) {
+      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+        datatypeJsonObj,
+        sourceField,
+        fieldName,
+        primitiveJsonType,
+      );
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+        const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
+        if (datatype !== undefined) {
+          instance.add{{upperFirst this.fieldName}}Element(datatype);
+        }
+      });
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    if (fieldName in datatypeJsonObj) {
+      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+        datatypeJsonObj,
+        sourceField,
+        fieldName,
+        primitiveJsonType,
+      );
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+        const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
+        if (datatype === undefined) {
+          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+        } else {
+          instance.add{{upperFirst this.fieldName}}Element(datatype);
+        }
+      });
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isChoiceMethods}}
+{{#if this.isOptionalItem}}
+    fieldName = '{{this.fieldName}}[x]';
+    sourceField = `${source}.${fieldName}`;
+    const {{this.fieldName}}: DataType | undefined = parsePolymorphicDataType(
+      datatypeJsonObj,
+      sourceField,
+      fieldName,
+      classMetadata,
+    );
+    instance.set{{upperFirst this.fieldName}}({{this.fieldName}});
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    fieldName = '{{this.fieldName}}[x]';
+    sourceField = `${source}.${fieldName}`;
+    const {{this.fieldName}}: DataType | undefined = parsePolymorphicDataType(
+      datatypeJsonObj,
+      sourceField,
+      fieldName,
+      classMetadata,
+    );
+    if ({{this.fieldName}} === undefined) {
+      missingReqdProperties.push(sourceField);
+    } else {
+      instance.set{{upperFirst this.fieldName}}({{this.fieldName}});
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isComplexMethods}}
+{{#if this.isOptionalItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(datatypeJsonObj[fieldName]!, sourceField);
+      instance.set{{upperFirst this.fieldName}}(datatype);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(datatypeJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.set{{upperFirst this.fieldName}}(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.add{{upperFirst this.fieldName}}(datatype);
+        }
+      });
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype === undefined) {
+          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+        } else {
+          instance.add{{upperFirst this.fieldName}}(datatype);
+        }
+      });
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isEnumCodeMethods}}
+{{#if this.isOptionalItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in datatypeJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: CodeType | undefined = parseCodeType(dtJson, dtSiblingJson);
+      instance.set{{upperFirst this.fieldName}}Element(datatype);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in datatypeJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: CodeType | undefined = parseCodeType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.set{{upperFirst this.fieldName}}Element(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in datatypeJsonObj) {
+      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+        datatypeJsonObj,
+        sourceField,
+        fieldName,
+        primitiveJsonType,
+      );
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+        const datatype: CodeType | undefined = parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+        if (datatype !== undefined) {
+          instance.add{{upperFirst this.fieldName}}Element(datatype);
+        }
+      });
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in datatypeJsonObj) {
+      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+        datatypeJsonObj,
+        sourceField,
+        fieldName,
+        primitiveJsonType,
+      );
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+        const datatype: CodeType | undefined = parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+        if (datatype === undefined) {
+          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+        } else {
+          instance.add{{upperFirst this.fieldName}}Element(datatype);
+        }
+      });
+    } else {
+      missingReqdProperties.push(`XxxxParentClassElement.{{this.fieldName}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isReferenceMethods}}
+{{#if this.isOptionalItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(datatypeJsonObj[fieldName]!, sourceField);
+      instance.set{{upperFirst this.fieldName}}(datatype);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(datatypeJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.set{{upperFirst this.fieldName}}(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.add{{upperFirst this.fieldName}}(datatype);
+        }
+      });
+  }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    fieldName = '{{this.fieldName}}';
+    sourceField = `${source}.${fieldName}`;
+    if (fieldName in datatypeJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype === undefined) {
+          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+        } else {
+          instance.add{{upperFirst this.fieldName}}(datatype);
+        }
+      });
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+{{/if}}
+{{/if}}
+{{/each}}
+{{#if sdHbs.hasRequiredFields}}
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+{{/if}}
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }

@@ -22,6 +22,7 @@
  */
 
 import { strict as assert } from 'node:assert';
+import os from 'node:os';
 import { BasePackageLoader, FindResourceInfoOptions, LoadStatus, SafeMode } from 'fhir-package-loader';
 import {
   CodeSystem,
@@ -32,11 +33,14 @@ import {
 } from './generator-lib/fhir-artifact-interfaces';
 import {
   FhirPackage,
+  FhirType,
   GeneratedContent,
   generatorPackageLoader,
   GeneratorPackageLoaderOptions,
 } from './generator-lib/ts-datamodel-generator-helpers';
 import { generateCodeSystemEnum } from './generator-lib/templates/fhir-codesystem-enum-hbs';
+import { generateComplexType } from './generator-lib/templates/fhir-complex-datatype-hbs';
+import { extractNameFromUrl, generatorLogger } from './generator-lib/utils';
 
 const INITIALIZATION_ERROR_MSG = `This TypescriptDataModelGenerator instance must be initialized ('await tsDataModelGenerator.initialize();') before use.`;
 
@@ -117,9 +121,20 @@ export class TypescriptDataModelGenerator {
    */
   public getComplexTypes(): StructureDefinition[] {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
+    // 'Type': a StructureDefinition w/ kind "primitive-type", "complex-type", or "datatype" and derivation = "specialization"
     const options: FindResourceInfoOptions = { type: ['Type'] };
     const types = this._packageLoader?.findResourceJSONs('*', options) as StructureDefinition[];
-    return types.filter((sd) => sd.kind === 'complex-type' && !sd.abstract);
+    const complexTypes = types.filter((sd) => sd.kind === 'complex-type' && !sd.abstract);
+    // MoneyQuantity and SimpleQuantity have derivation = "constraint" (profile) so add them individually
+    const moneyQuantity = this._packageLoader?.findResourceJSON('MoneyQuantity') as StructureDefinition | undefined;
+    if (moneyQuantity) {
+      complexTypes.push(moneyQuantity);
+    }
+    const simpleQuantity = this._packageLoader?.findResourceJSON('SimpleQuantity') as StructureDefinition | undefined;
+    if (simpleQuantity) {
+      complexTypes.push(simpleQuantity);
+    }
+    return complexTypes;
   }
 
   /**
@@ -162,31 +177,40 @@ export class TypescriptDataModelGenerator {
   }
 
   /**
-   * Extracts required CodeSystems from an array of StructureDefinitions based on their value set bindings.
+   * Extracts and returns the required code systems and their associated enum names
+   * from a list of provided StructureDefinition objects. This method ensures that all
+   * required value sets with bindings are resolved to their respective code systems.
    *
-   * @param {StructureDefinition[]} structureDefinitions - An array of StructureDefinition objects to process.
-   *                         It is required that the array is not empty, and each StructureDefinition should have
-   *                         properly defined snapshot element definitions.
-   * @returns {Map<string, CodeSystem>} A map where keys represent the ElementDefinition.path of the value set bindings
-   * and values are the corresponding CodeSystem objects with complete content.
+   * @param {StructureDefinition[]} structureDefinitions - An array of StructureDefinition objects.
+   * These definitions are analyzed to extract value set bindings that are marked as required.
+   * @returns {object} An object containing:
+   *  - `codeSystems` (CodeSystem[]): A list of CodeSystem objects that are marked as complete
+   *    and have concepts defined.
+   *  - `codeSystemEnumMap` (Map<string, string>): A map where the key represents the path from the provided
+   *    StructureDefinition and the value is the generated enum name associated with the code system.
    */
-  public getRequiredCodeSystemsFromStructureDefinitions(structureDefinitions: StructureDefinition[]): CodeSystem[] {
+  public getRequiredCodeSystemsFromStructureDefinitions(structureDefinitions: StructureDefinition[]): {
+    codeSystems: CodeSystem[];
+    codeSystemEnumMap: Map<string, string>;
+  } {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
     assert(structureDefinitions.length > 0, 'structureDefinitions is required');
-    const valueSetBindingUrls: Set<string> = new Set<string>();
-    const codeSystems: CodeSystem[] = [];
+    const valueSetBindingUrls: Map<string, string> = new Map<string, string>();
 
     structureDefinitions.forEach((sd) => {
       assert(sd.snapshot?.element, 'ElementDefinitions must be defined');
       const elementDefinitions: ElementDefinition[] = sd.snapshot.element;
       elementDefinitions.forEach((ed) => {
         if (ed.binding !== undefined && ed.binding.strength === 'required' && ed.binding.valueSet !== undefined) {
-          valueSetBindingUrls.add(ed.binding.valueSet);
+          valueSetBindingUrls.set(ed.path, ed.binding.valueSet);
         }
       });
     });
 
-    valueSetBindingUrls.forEach((value: string) => {
+    const codeSystems: CodeSystem[] = [];
+    const codeSystemEnumNames: Map<string, string> = new Map<string, string>();
+
+    valueSetBindingUrls.forEach((value: string, key: string) => {
       const codeSystem: CodeSystem | undefined = this.getCodeSystemFromBindingValueSetUrl(value);
       if (
         codeSystem !== undefined &&
@@ -194,34 +218,110 @@ export class TypescriptDataModelGenerator {
         codeSystem.concept !== undefined &&
         codeSystem.concept.length > 0
       ) {
+        // CodeSystems can be used in multiple ValueSets/StructureDefinitions, so we capture only its first use
         if (codeSystems.findIndex((cs) => cs.url === codeSystem.url) === -1) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const enumName = `${extractNameFromUrl(codeSystem.url!)}Enum`;
+          codeSystemEnumNames.set(key, enumName);
           codeSystems.push(codeSystem);
         }
       }
     });
 
-    return codeSystems;
+    return { codeSystems, codeSystemEnumMap: codeSystemEnumNames };
   }
 
   /**
-   * Generates an array of `GeneratedContent` objects representing enum classes for code systems.
-   * This method retrieves all required code systems from a set of structure definitions and generates enum classes for each code system.
+   * Generates code system enum classes based on the FHIR structure definitions and required code systems.
    *
-   * @returns {GeneratedContent[]} An array of `GeneratedContent` objects containing the generated enum classes for the specified code systems.
+   * This method processes complex types and resources to determine the necessary code systems
+   * and then generates corresponding code system enum data models. Logs the number of generated enums
+   * along with the associated FHIR package information.
+   *
+   * @returns {object} An object containing:
+   *  - `generatedContent` (GeneratedContent[]): An array of generated enum data models representing code systems.
+   *  - `codeSystemEnumMap` (Map<string, string>): A map where the key represents the path from the source
+   *    StructureDefinition and the value is the generated enum name associated with the code system.
    */
-  public generateCodeSystemEnumClasses(): GeneratedContent[] {
+  public generateCodeSystemEnumClasses(): {
+    generatedContent: GeneratedContent[];
+    codeSystemEnumMap: Map<string, string>;
+  } {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
 
     const generatedContent: Set<GeneratedContent> = new Set<GeneratedContent>();
 
     const allStructureDefinitions: StructureDefinition[] = [...this.getComplexTypes(), ...this.getResources()];
-    const codeSystems: CodeSystem[] = this.getRequiredCodeSystemsFromStructureDefinitions(allStructureDefinitions);
+    const { codeSystems, codeSystemEnumMap } =
+      this.getRequiredCodeSystemsFromStructureDefinitions(allStructureDefinitions);
 
     codeSystems.forEach((value: CodeSystem) => {
       const genContent: GeneratedContent = generateCodeSystemEnum(value, this._fhirPackage);
       generatedContent.add(genContent);
     });
 
+    generatorLogger(
+      'info',
+      `Generated ${String(generatedContent.size)} code system enum data model(s) for FHIR ${this._fhirPackage.release} release using ${this._fhirPackage.pkgName}@${this._fhirPackage.pkgVersion}`,
+    );
+
+    this.generateTypeIndex(generatedContent, 'CodeSystem');
+
+    return {
+      generatedContent: Array.from<GeneratedContent>(generatedContent),
+      codeSystemEnumMap: codeSystemEnumMap,
+    };
+  }
+
+  /**
+   * Generates data model classes for complex types defined in the FHIR package.
+   *
+   * @param {Map<string, string>} codeSystemEnumMap - A mapping of code systems to their corresponding enumerations
+   *                                                  where the key represents the path from the source.
+   * @returns {GeneratedContent[]} An array of generated content objects representing the data model classes for complex types.
+   */
+  public generateComplexTypeClasses(codeSystemEnumMap: Map<string, string>): GeneratedContent[] {
+    assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
+
+    const generatedContent: Set<GeneratedContent> = new Set<GeneratedContent>();
+
+    const complexTypes: StructureDefinition[] = this.getComplexTypes();
+
+    complexTypes.forEach((value: StructureDefinition) => {
+      const genContent: GeneratedContent = generateComplexType(value, codeSystemEnumMap, this._fhirPackage);
+      generatedContent.add(genContent);
+    });
+
+    generatorLogger(
+      'info',
+      `Generated ${String(generatedContent.size)} complex type data model(s) for FHIR ${this._fhirPackage.release} release using ${this._fhirPackage.pkgName}@${this._fhirPackage.pkgVersion}`,
+    );
+
+    this.generateTypeIndex(generatedContent, 'ComplexType');
+
     return Array.from<GeneratedContent>(generatedContent);
+  }
+
+  /**
+   * Generates a type index file by iterating over a set of generated content,
+   * creating export statements for each file, and adding the resulting index content
+   * to the provided set of generated content.
+   *
+   * @param {Set<GeneratedContent>} generatedContent - A set of generated content objects representing files to be indexed.
+   * @param {FhirType} fhirType - The FHIR type associated with the generated content.
+   */
+  private generateTypeIndex(generatedContent: Set<GeneratedContent>, fhirType: FhirType) {
+    const indexEntries: string[] = [];
+    generatedContent.forEach((value: GeneratedContent) => {
+      indexEntries.push(`export * from './${value.filename}';`);
+    });
+    const indexContent: GeneratedContent = {
+      fhirPackage: this._fhirPackage,
+      filename: 'index',
+      fileExtension: 'ts',
+      fhirType: fhirType,
+      fileContents: indexEntries.join(os.EOL).concat(os.EOL),
+    };
+    generatedContent.add(indexContent);
   }
 }

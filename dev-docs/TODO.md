@@ -2,6 +2,8 @@
 
 ## Feature Set
 
+- Handle complex data types that include properties having the `Element` data type (i.e. pseudo-BackboneType).
+- Handle complex data types that extend `BackboneElement` rather than `Element` (i.e., Dosage, ElementDefinition, Timing).
 - Move `Resource`, `DomainResource`, `Extension`, and all code systems and complex data types to be generated
   - Adjust utilities as needed
 - Improve test coverage in `fhir-core/src/utility/fhir-parsers.ts`

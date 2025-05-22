@@ -25,9 +25,10 @@ import { strict as assert } from 'node:assert';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import * as Handlebars from 'handlebars';
+import { fixDescriptiveString } from './utils-hbs';
 import { FhirPackage, GeneratedContent } from '../ts-datamodel-generator-helpers';
 import { CodeSystem, CodeSystemConcept } from '../fhir-artifact-interfaces';
-import { extractNameFromUrl, makeUpperSnakeCase, stripLineBreaks, substituteUnicodeCharacters } from '../utils';
+import { extractNameFromUrl, makeUpperSnakeCase } from '../utils';
 
 const classTemplate = readFileSync(resolve(__dirname, 'fhir-codesystem-enum.hbs'), 'utf8');
 const classGenerator = Handlebars.compile(classTemplate);
@@ -141,10 +142,6 @@ function getCsHbsProperties(codeSystem: CodeSystem, fhirPackage: FhirPackage): H
       }
     }
 
-    const definitionStr = concept.definition
-      ? substituteUnicodeCharacters(stripLineBreaks(concept.definition)).replace(/'/g, `\\'`)
-      : undefined;
-
     return {
       name: codeSystemName,
       enum: enumStr,
@@ -152,16 +149,14 @@ function getCsHbsProperties(codeSystem: CodeSystem, fhirPackage: FhirPackage): H
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       url: codeSystem.url!,
       display: concept.display,
-      definition: definitionStr,
-    };
+      definition: fixDescriptiveString(concept.definition),
+    } as HbsCodeSystemConcept;
   });
 
   return {
     name: codeSystemName,
     url: codeSystem.url,
-    description: codeSystem.description
-      ? substituteUnicodeCharacters(stripLineBreaks(codeSystem.description)).replace(/'/g, `\\'`)
-      : `"description not provided"`,
+    description: fixDescriptiveString(codeSystem.description) ?? `"description not provided"`,
     version: codeSystem.version ?? fhirPackage.pkgVersion,
     caseSensitive: codeSystem.caseSensitive ?? false,
     concept: hbsCodeSystemConcept,

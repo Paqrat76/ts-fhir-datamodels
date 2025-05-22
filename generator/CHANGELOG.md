@@ -19,11 +19,54 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.5.1] - 2025-05-22
+
+### Changed
+
+- Updated dependencies
+- Minor code tweaks for clean up of generated complex types
+
+
+## [0.5.0] - 2025-05-21
+
+### Added
+
+- Cloned FhirDataType.ts from @paq-ts-fhir/fhir-core to remove its dependency in the Generator project
+
+### Changed
+
+- Continued development for complex data types adding multiple Handlebars partial templates
+- Reverted the `complex-type` filter to previous approach and added 'SimpleQuantity' and 'MoneyQuantity'
+
+
+## [0.4.0] - 2025-05-17
+
+### Changed
+
+- Continued development for complex data types adding multiple Handlebars partial templates
+- Tightened the `complex-type` filter to exclude StructureDefinitions having
+  ext.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status' with ext.valueCode === 'draft'
+
+
+## [0.3.0] - 2025-05-16
+
+### Added
+
+- Added code to generate complex data types (work-in-progress)
+
+### Changed
+
+- Updated dependencies
+- Minor updates to CodeSystem Enum class generator
+- Minor updates to TypeScript data model generator
+- Changed approach for generated barrel files from a single top-level file to directory-level files
+
+
 ## [0.2.0] - 2025-05-01
 
 ### Added
 
-- Created the initial code to generate data models and write them to disk in the approprriate NPM package.
+- Created the initial code to generate data models and write them to disk in the appropriate NPM package.
   Only the selected CodeSystem Enum classes are currently generated.
 - Added unit tests for all current code.
 

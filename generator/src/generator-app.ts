@@ -57,10 +57,14 @@ export class GeneratorApp {
     const generatedContent: GeneratedContent[] = [];
 
     // Generate the FHIR CodeSystem Enum classes
-    const codeSystemEnums: GeneratedContent[] = this.tsGenerator.generateCodeSystemEnumClasses();
-    generatedContent.push(...codeSystemEnums);
+    const codeSystemEnumClasses = this.tsGenerator.generateCodeSystemEnumClasses();
+    generatedContent.push(...codeSystemEnumClasses.generatedContent);
 
-    // TODO: add the generation of the complex type FHIR data models
+    // Generate the FHIR ComplexType classes
+    const complexTypeClasses: GeneratedContent[] = this.tsGenerator.generateComplexTypeClasses(
+      codeSystemEnumClasses.codeSystemEnumMap,
+    );
+    generatedContent.push(...complexTypeClasses);
 
     // TODO: Add the generation of the resource FHIR data models
 
@@ -86,7 +90,7 @@ export class GeneratorApp {
 
     emptyDirSync(this._fhirPackage.baseOutputPath);
 
-    const barrelLines: string[] = [];
+    const barrelLines: Set<string> = new Set<string>();
 
     generatedContent.forEach((content) => {
       const filename = content.fileExtension ? `${content.filename}.${content.fileExtension}` : content.filename;
@@ -104,8 +108,8 @@ export class GeneratorApp {
         // 'w' - Open file for writing. The file is created (if it does not exist) or truncated (if it exists).
         outputFileSync(fullFileName, content.fileContents);
 
-        const barrelLine = `export * from './${join(destDir, content.filename)}';`;
-        barrelLines.push(barrelLine);
+        const barrelLine = `export * from './${destDir}';`;
+        barrelLines.add(barrelLine);
       } catch (err) {
         /* istanbul ignore next */
         throw new Error(`Generator.writeArtifactsToDisk:: Error writing artifacts to disk in ${filesOutputPath}.`, {
@@ -114,9 +118,8 @@ export class GeneratorApp {
       }
     });
 
-    assert(generatedContent.length === barrelLines.length, 'Generated content and barrel lines do not match.');
     const barrelOutputPath = resolve(this._fhirPackage.baseOutputPath, 'index.ts');
-    const sortedBarrelLines = barrelLines.sort();
+    const sortedBarrelLines = Array.from(barrelLines).sort();
     outputFileSync(barrelOutputPath, sortedBarrelLines.join(os.EOL).concat(os.EOL));
   }
 }
