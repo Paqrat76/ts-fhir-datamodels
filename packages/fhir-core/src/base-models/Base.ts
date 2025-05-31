@@ -24,8 +24,6 @@
 import * as JSON from '../utility/json-helpers';
 import { IBase } from './IBase';
 
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
-
 /**
  * Abstract Base Class
  *
@@ -52,12 +50,15 @@ export abstract class Base implements IBase {
   protected constructor() {}
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public abstract fhirType(): string;
 
   /**
-   * {@inheritDoc IBase.hasFireType}
+   * Determines if any value in typeNames equals the current fhirType() value
+   *
+   * @param typeNames - array of FHIR type names
+   * @returns true if any value in typeNames equals (case-insensitive) the current fhirType() value; false otherwise
    */
   public hasFireType(...typeNames: string[]): boolean {
     const ft = this.fhirType();
@@ -72,7 +73,7 @@ export abstract class Base implements IBase {
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public abstract isEmpty(): boolean;
 
@@ -92,67 +93,63 @@ export abstract class Base implements IBase {
   protected abstract copyValues(dest: Base): void;
 
   /**
-   * {@inheritDoc IBase.isResource}
+   * @returns `true` if the instance is a FHIR resource; `false` otherwise
    */
   public isResource(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public isComplexDataType(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isPrimitive}
+   * @returns `true` if the instance is a FHIR primitive datatype; `false` otherwise
    */
   public isPrimitive(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isBooleanPrimitive}
+   * @returns `true` if the instance is a FHIR primitive boolean datatype; `false` otherwise
    */
   public isBooleanPrimitive(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isStringPrimitive}
+   * @returns `true` if the instance is a FHIR primitive string-based datatype; `false` otherwise
    */
   public isStringPrimitive(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isNumberPrimitive}
+   * @returns `true` if the instance is a FHIR primitive number-based datatype; `false` otherwise
    */
   public isNumberPrimitive(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isBigIntPrimitive}
+   * @returns `true` if the instance is a FHIR primitive bigint-based datatype; `false` otherwise
    */
   public isBigIntPrimitive(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.isDateTimePrimitive}
+   * @returns `true` if the instance is a FHIR primitive datetime-based datatype; `false` otherwise
    */
   public isDateTimePrimitive(): boolean {
     return false;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value
    */
   public abstract toJSON(): JSON.Value | undefined;
-
-  // TODO: Add additional methods as required
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

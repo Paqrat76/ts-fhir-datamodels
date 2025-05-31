@@ -37,8 +37,6 @@ import { copyListValues, isElementEmpty, validateUrl } from '../utility/fhir-uti
 import * as JSON from '../utility/json-helpers';
 import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '../utility/type-guards';
 
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
-
 /**
  * Abstract DomainResource Class
  *
@@ -205,14 +203,17 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseExtension.getExtension}
+   * @returns the array of `extension` values
    */
   public getExtension(): Extension[] {
     return this.extension ?? ([] as Extension[]);
   }
 
   /**
-   * {@inheritDoc IBaseExtension.setExtension}
+   * Assigns the provided array of Extension values to the `extension` property.
+   *
+   * @param extension - array of Extensions
+   * @returns this
    */
   public setExtension(extension: Extension[] | undefined): this {
     const optErrMsg = `Invalid DomainResource.extension; Provided extension array has an element that is not an instance of Extension.`;
@@ -222,7 +223,15 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseExtension.hasExtension}
+   * Determines if the `extension` property exists.
+   *
+   * @remarks If the url is provided, determines if an Extension having
+   * the provided url exists. If the url is not provided, determines
+   * if the `extension` property exists and has any values.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns `true` if an Extension has the provided url; false otherwise
+   * @throws AssertionError for invalid url
    */
   public hasExtension(url?: fhirUri): boolean {
     if (url) {
@@ -233,7 +242,11 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseExtension.getExtensionByUrl}
+   * Returns the Extension having the provided url.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns the Extension having the provided url
+   * @throws AssertionError for invalid url
    */
   public getExtensionByUrl(url: fhirUri): Extension | undefined {
     validateUrl(url);
@@ -249,7 +262,10 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseExtension.addExtension}
+   * Adds the provided Extension to the `extension` property array.
+   *
+   * @param extension - the Extension value to add to the `extension` property array
+   * @returns this
    */
   public addExtension(extension: Extension | undefined): this {
     if (isDefined<Extension>(extension)) {
@@ -263,7 +279,10 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseExtension.removeExtension}
+   * Removes the Extension having the provided url from the `extension` property array.
+   *
+   * @param url - the url that identifies a specific Extension to remove
+   * @throws AssertionError for invalid url
    */
   public removeExtension(url: fhirUri): void {
     validateUrl(url);
@@ -292,14 +311,17 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.getModifierExtension}
+   * @returns the array of `modifierExtension` values
    */
   public getModifierExtension(): Extension[] {
     return this.modifierExtension ?? ([] as Extension[]);
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.setModifierExtension}
+   * Assigns the provided array of Extension values to the `modifierExtension` property.
+   *
+   * @param extension - array of Extensions
+   * @returns this
    */
   public setModifierExtension(extension: Extension[] | undefined): this {
     const optErrMsg = `Invalid DomainResource.modifierExtension; Provided extension array has an element that is not an instance of Extension.`;
@@ -309,7 +331,15 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.hasModifierExtension}
+   * Determines if the `modifierExtension` property exists.
+   *
+   * @remarks If the url is provided, determines if an Extension having
+   * the provided url exists. If the url is not provided, determines
+   * if the `modifierExtension` property exists and has any values.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns `true` if an Extension has the provided url
+   * @throws AssertionError for invalid url
    */
   public hasModifierExtension(url?: fhirUri): boolean {
     if (url) {
@@ -320,7 +350,11 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.getModifierExtensionByUrl}
+   * Returns the Extension having the provided url.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns the Extension having the provided url
+   * @throws AssertionError for invalid url
    */
   public getModifierExtensionByUrl(url: fhirUri): Extension | undefined {
     validateUrl(url);
@@ -336,7 +370,10 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.addModifierExtension}
+   * Adds the provided Extension to the `modifierExtension` property array.
+   *
+   * @param extension - the Extension value to add to the `modifierExtension` property array
+   * @returns this
    */
   public addModifierExtension(extension: Extension | undefined): this {
     if (isDefined<Extension>(extension)) {
@@ -350,7 +387,10 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.removeModifierExtension}
+   * Removes the Extension having the provided url from the `modifierExtension` property array.
+   *
+   * @param url - the url that identifies a specific Extension to remove
+   * @throws AssertionError for invalid url
    */
   public removeModifierExtension(url: fhirUri): void {
     validateUrl(url);
@@ -385,24 +425,29 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc Base.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public abstract override fhirType(): string;
 
   /**
-   * {@inheritDoc Base.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.text, this.contained, this.extension, this.modifierExtension);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public abstract override copy(): DomainResource;
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: DomainResource): void {
     super.copyValues(dest);
@@ -416,7 +461,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
   }
 
   /**
-   * {@inheritDoc Base.toJSON}
+   * @returns the JSON value
    */
   public override toJSON(): JSON.Value | undefined {
     // super.toJson() will always be defined if only to contain the resourceType property
@@ -441,5 +486,3 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

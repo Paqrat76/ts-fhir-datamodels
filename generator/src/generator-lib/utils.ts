@@ -23,7 +23,7 @@
 
 import { strict as assert } from 'node:assert';
 import { camelCase, snakeCase, upperFirst } from 'lodash';
-import { FhirDataType } from './FhirDataType';
+import { FhirDataType } from './fhir-data-type';
 
 /**
  * UnicodeSubstitutions is a collection of objects that map specific Unicode characters
@@ -155,6 +155,27 @@ export function stripLineBreaks(str: string | undefined | null): string {
   const tempValue = str ?? '';
   const regex = /[\r\n]+/g;
   return tempValue.replace(regex, ' ');
+}
+
+/**
+ * Corrects FHIR hyperlinks in the given string by replacing local HTML paths
+ * with absolute URLs pointing to the HL7 FHIR documentation.
+ *
+ * @example
+ * ```ts
+ * const sourceLink = '[Duration](datatypes.html#Duration)';
+ * const fixedLink = fixFhirHyperLinks(sourceLink);
+ * // fixedLink: '[Duration](https://hl7.org/fhir/datatypes.html#Duration)'
+ * ```
+ *
+ * @param {string} str - The input string containing the hyperlinks to be fixed.
+ * @returns {string} The updated string with fixed FHIR hyperlinks.
+ */
+export function fixFhirHyperLinks(str: string): string {
+  // TODO: Resolve issue with multiple hyperlinks
+  const regex = /]\((.+\.html)/gi;
+  return str.replace(regex, `](https://hl7.org/fhir/$1`);
+  // return str.replaceAll(regex, (_match, p1: string) => `](https://hl7.org/fhir/${p1}`);
 }
 
 /**

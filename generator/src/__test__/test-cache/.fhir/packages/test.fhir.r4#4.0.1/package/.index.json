@@ -2,6 +2,20 @@
   "index-version": 1,
   "files": [
     {
+      "filename": "CodeSystem-abstract-types.json",
+      "resourceType": "CodeSystem",
+      "id": "abstract-types",
+      "url": "http://hl7.org/fhir/abstract-types",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-data-types.json",
+      "resourceType": "CodeSystem",
+      "id": "data-types",
+      "url": "http://hl7.org/fhir/data-types",
+      "version": "4.0.1"
+    },
+    {
       "filename": "CodeSystem-FHIR-version.json",
       "resourceType": "CodeSystem",
       "id": "FHIR-version",
@@ -30,6 +44,29 @@
       "version": "4.0.1"
     },
     {
+      "filename": "CodeSystem-resource-types.json",
+      "resourceType": "CodeSystem",
+      "id": "resource-types",
+      "url": "http://hl7.org/fhir/resource-types",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-sort-direction.json",
+      "resourceType": "CodeSystem",
+      "id": "sort-direction",
+      "url": "http://hl7.org/fhir/sort-direction",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "StructureDefinition-DataRequirement.json",
+      "resourceType": "StructureDefinition",
+      "id": "DataRequirement",
+      "url": "http://hl7.org/fhir/StructureDefinition/DataRequirement",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "DataRequirement"
+    },
+    {
       "filename": "StructureDefinition-Identifier.json",
       "resourceType": "StructureDefinition",
       "id": "Identifier",
@@ -48,6 +85,13 @@
       "type": "Narrative"
     },
     {
+      "filename": "ValueSet-all-types.json",
+      "resourceType": "ValueSet",
+      "id": "all-types",
+      "url": "http://hl7.org/fhir/ValueSet/all-types",
+      "version": "4.0.1"
+    },
+    {
       "filename": "ValueSet-identifier-use.json",
       "resourceType": "ValueSet",
       "id": "identifier-use",
@@ -59,6 +103,13 @@
       "resourceType": "ValueSet",
       "id": "narrative-status",
       "url": "http://hl7.org/fhir/ValueSet/narrative-status",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-sort-direction.json",
+      "resourceType": "ValueSet",
+      "id": "sort-direction",
+      "url": "http://hl7.org/fhir/ValueSet/sort-direction",
       "version": "4.0.1"
     }
   ]

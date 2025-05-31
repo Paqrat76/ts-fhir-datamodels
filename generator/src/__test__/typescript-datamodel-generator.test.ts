@@ -61,7 +61,7 @@ describe('src/typescript-datamodel-generator', () => {
 
       const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
       expect(complexTypes).toBeDefined();
-      expect(complexTypes).toHaveLength(41);
+      expect(complexTypes).toHaveLength(37);
 
       const abstractComplexTypes: StructureDefinition[] = complexTypes.filter((sd) => sd.abstract);
       expect(abstractComplexTypes).toBeDefined();
@@ -113,14 +113,14 @@ describe('src/typescript-datamodel-generator', () => {
 
       const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
       expect(complexTypes).toBeDefined();
-      expect(complexTypes).toHaveLength(41);
+      expect(complexTypes).toHaveLength(37);
 
       let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
         tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
       expect(result.codeSystems).toBeDefined();
-      expect(result.codeSystems.length).toStrictEqual(21);
+      expect(result.codeSystems.length).toStrictEqual(14);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(21);
+      expect(result.codeSystemEnumMap.size).toStrictEqual(14);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
@@ -149,7 +149,7 @@ describe('src/typescript-datamodel-generator', () => {
       const result: { generatedContent: GeneratedContent[]; codeSystemEnumMap: Map<string, string> } =
         tsDataModelGenerator.generateCodeSystemEnumClasses();
       expect(result.generatedContent).toBeDefined();
-      expect(result.generatedContent.length).toBe(3); // 2 CodeSystems + index.ts
+      expect(result.generatedContent.length).toBe(4); // 3 CodeSystems + index.ts
     });
   });
 
@@ -183,7 +183,7 @@ describe('src/typescript-datamodel-generator', () => {
 
       const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
       expect(complexTypes).toBeDefined();
-      expect(complexTypes).toHaveLength(42);
+      expect(complexTypes).toHaveLength(38);
 
       const abstractComplexTypes: StructureDefinition[] = complexTypes.filter((sd) => sd.abstract);
       expect(abstractComplexTypes).toBeDefined();
@@ -235,14 +235,14 @@ describe('src/typescript-datamodel-generator', () => {
 
       const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
       expect(complexTypes).toBeDefined();
-      expect(complexTypes).toHaveLength(42);
+      expect(complexTypes).toHaveLength(38);
 
       let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
         tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
       expect(result.codeSystems).toBeDefined();
-      expect(result.codeSystems.length).toStrictEqual(21);
+      expect(result.codeSystems.length).toStrictEqual(14);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(21);
+      expect(result.codeSystemEnumMap.size).toStrictEqual(14);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
@@ -282,7 +282,7 @@ describe('src/typescript-datamodel-generator', () => {
 
       const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
       expect(complexTypes).toBeDefined();
-      expect(complexTypes).toHaveLength(43);
+      expect(complexTypes).toHaveLength(40);
 
       const abstractComplexTypes: StructureDefinition[] = complexTypes.filter((sd) => sd.abstract);
       expect(abstractComplexTypes).toBeDefined();
@@ -334,14 +334,14 @@ describe('src/typescript-datamodel-generator', () => {
 
       const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
       expect(complexTypes).toBeDefined();
-      expect(complexTypes).toHaveLength(43);
+      expect(complexTypes).toHaveLength(40);
 
       let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
         tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
       expect(result.codeSystems).toBeDefined();
-      expect(result.codeSystems.length).toStrictEqual(26);
+      expect(result.codeSystems.length).toStrictEqual(18);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(26);
+      expect(result.codeSystemEnumMap.size).toStrictEqual(18);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();

@@ -1,16 +1,17 @@
 {{!-- Constructor Required Partial Template --}}
-  constructor({{#if sdHbs.hasRequiredFields}}{{requiredConstructorParams sdHbs.elementDefinitions}}{{/if}}) {
+{{!-- context is a HbsElementComponent --}}
+  constructor({{#if hasRequiredFields}}{{{requiredConstructorParams elementDefinitions}}}{{/if}}) {
     super();
-{{#if sdHbs.hasCodeSystemEnums}}
+{{#if hasCodeSystemEnums}}
 
-{{#each sdHbs.elementDefinitions}}
+{{#each elementDefinitions}}
 {{#if this.type.codeSystemEnumName}}
     this.{{camelCase this.type.codeSystemEnumName}} = new {{this.type.codeSystemEnumName}}();
 {{/if}}
 {{/each}}
 {{/if}}
-{{#if sdHbs.hasRequiredFields}}
-{{#each sdHbs.elementDefinitions}}
+{{#if hasRequiredFields}}
+{{#each elementDefinitions}}
 {{#if this.isRequired}}
 {{#if this.type.codeSystemEnumName}}
 
@@ -18,7 +19,7 @@
       {{this.fieldName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
-      '{{../sdHbs.name}}.{{this.fieldName}}',
+      '{{parentName}}.{{this.fieldName}}',
    );
 {{else}}
 

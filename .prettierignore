@@ -6,3 +6,6 @@ merged-docs/
 docs/
 test-cache/
 *.hbs
+packages/r4-datamodels/
+packages/r4b-datamodels/
+packages/r5-datamodels/

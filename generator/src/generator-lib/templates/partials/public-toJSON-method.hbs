@@ -1,12 +1,13 @@
 {{!-- Public toJSON Method Partial Template --}}
+{{!-- context is a HbsElementComponent --}}
   /**
    * @returns the JSON value or undefined if the instance is empty
-{{#if sdHbs.hasRequiredFields}}
+{{#if hasRequiredFields}}
    * @throws {FhirError} if the instance is missing required properties
 {{/if}}
    */
   public override toJSON(): JSON.Value | undefined {
-{{#if sdHbs.hasRequiredFields}}
+{{#if hasRequiredFields}}
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
 {{else}}
     if (this.isEmpty()) {
@@ -17,11 +18,11 @@
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-{{#if sdHbs.hasRequiredFields}}
+{{#if hasRequiredFields}}
     const missingReqdProperties: string[] = [];
 
 {{/if}}
-{{#each sdHbs.elementDefinitions}}
+{{#each elementDefinitions}}
 {{#if this.isPrimitiveMethods}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
@@ -166,7 +167,7 @@
 {{/if}}
 {{/if}}
 {{/each}}
-{{#if sdHbs.hasRequiredFields}}
+{{#if hasRequiredFields}}
     if (missingReqdProperties.length > 0) {
       const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
       throw new FhirError(errMsg);

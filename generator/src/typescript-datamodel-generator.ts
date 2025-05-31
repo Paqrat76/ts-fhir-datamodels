@@ -121,20 +121,14 @@ export class TypescriptDataModelGenerator {
    */
   public getComplexTypes(): StructureDefinition[] {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
-    // 'Type': a StructureDefinition w/ kind "primitive-type", "complex-type", or "datatype" and derivation = "specialization"
+    // FPL 'Type': a StructureDefinition w/ kind "primitive-type", "complex-type", or "datatype" and derivation = "specialization"
     const options: FindResourceInfoOptions = { type: ['Type'] };
     const types = this._packageLoader?.findResourceJSONs('*', options) as StructureDefinition[];
-    const complexTypes = types.filter((sd) => sd.kind === 'complex-type' && !sd.abstract);
-    // MoneyQuantity and SimpleQuantity have derivation = "constraint" (profile) so add them individually
-    const moneyQuantity = this._packageLoader?.findResourceJSON('MoneyQuantity') as StructureDefinition | undefined;
-    if (moneyQuantity) {
-      complexTypes.push(moneyQuantity);
-    }
-    const simpleQuantity = this._packageLoader?.findResourceJSON('SimpleQuantity') as StructureDefinition | undefined;
-    if (simpleQuantity) {
-      complexTypes.push(simpleQuantity);
-    }
-    return complexTypes;
+
+    // Filter out the Extension complex-type because it is provided in @paq-ts-fhir/fhir-core and is extended in base/Extension.ts
+    return types.filter(
+      (sd) => sd.kind === 'complex-type' && !sd.abstract && sd.type !== 'Extension' && sd.type !== 'ElementDefinition',
+    );
   }
 
   /**

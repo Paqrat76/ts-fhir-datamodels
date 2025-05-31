@@ -100,24 +100,6 @@ export const OPEN_DATA_TYPES = [
 ] as const;
 
 /**
- * FhirOpenDataType
- *
- * @remarks
- * Type definition based on OPEN_DATA_TYPES array.
- *
- * @category Base Models
- */
-export type FhirOpenDataType = (typeof OPEN_DATA_TYPES)[number];
-
-/**
- * FHIR open data types key names (i.e., valueString, valuePeriod, etc.)
- *
- * @category Base Models
- * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
- */
-export const OPEN_DATA_TYPE_KEY_NAMES = OPEN_DATA_TYPES.map((odt) => `value${upperFirst(odt)}`);
-
-/**
  * Non-open data types that are valid data types
  */
 const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail', 'Narrative', 'xhtml'] as const;
@@ -126,13 +108,12 @@ const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail', 'Narra
  * FHIR data types
  *
  * @remarks
- * All defined FHIR data types for complex and primitive data types.
- * Added 'Element' and 'Extension' required by the Generator.
+ * All defined FHIR data types for complex and primitive data types plus `Element`.
  *
  * @category Base Models
- * @see [DataTypes](https://hl7.org/fhir/R5/datatypes.html)
+ * @see [DataTypes](https://hl7.org/fhir/datatypes.html)
  */
-export const DATA_TYPES = [...OPEN_DATA_TYPES, ...NON_OPEN_DATA_TYPES, 'Element', 'Extension'] as const;
+export const DATA_TYPES = [...OPEN_DATA_TYPES, ...NON_OPEN_DATA_TYPES, 'Element'] as const;
 
 /**
  * FhirDataType
