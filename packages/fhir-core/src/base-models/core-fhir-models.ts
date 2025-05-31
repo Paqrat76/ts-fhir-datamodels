@@ -61,8 +61,6 @@ import { assertFhirType, assertFhirTypeList, assertIsDefined, isDefined, isDefin
 
 //region Core Models
 
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
-
 /**
  * Base interface to specify `extension` specific methods used by
  * Element and Resource.
@@ -259,14 +257,17 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBaseExtension.getExtension}
+   * @returns the array of `extension` values
    */
   public getExtension(): Extension[] {
     return this.extension ?? ([] as Extension[]);
   }
 
   /**
-   * {@inheritDoc IBaseExtension.setExtension}
+   * Assigns the provided array of Extension values to the `extension` property.
+   *
+   * @param extension - array of Extensions
+   * @returns this
    */
   public setExtension(extension: Extension[] | undefined): this {
     const optErrMsg = `Invalid Element.extension; Provided extension array has an element that is not an instance of Extension.`;
@@ -276,7 +277,15 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBaseExtension.hasExtension}
+   * Determines if the `extension` property exists.
+   *
+   * @remarks If the url is provided, determines if an Extension having
+   * the provided url exists. If the url is not provided, determines
+   * if the `extension` property exists and has any values.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns `true` if an Extension has the provided url; false otherwise
+   * @throws AssertionError for invalid url
    */
   public hasExtension(url?: fhirUri): boolean {
     if (url !== undefined) {
@@ -287,7 +296,15 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBaseExtension.getExtensionByUrl}
+   * Determines if the `extension` property exists.
+   *
+   * @remarks If the url is provided, determines if an Extension having
+   * the provided url exists. If the url is not provided, determines
+   * if the `extension` property exists and has any values.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns an Extension having the provided url
+   * @throws AssertionError for invalid url
    */
   public getExtensionByUrl(url: fhirUri): Extension | undefined {
     validateUrl(url);
@@ -303,7 +320,10 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBaseExtension.addExtension}
+   * Adds the provided Extension to the `extension` property array.
+   *
+   * @param extension - the Extension value to add to the `extension` property array
+   * @returns this
    */
   public addExtension(extension: Extension | undefined): this {
     if (isDefined<Extension>(extension)) {
@@ -317,7 +337,10 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBaseExtension.removeExtension}
+   * Removes the Extension having the provided url from the `extension` property array.
+   *
+   * @param url - the url that identifies a specific Extension to remove
+   * @throws AssertionError for invalid url
    */
   public removeExtension(url: fhirUri): void {
     validateUrl(url);
@@ -346,26 +369,31 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Element';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return !this.hasId() && !this.hasExtension();
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public abstract override copy(): Element;
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Element): void {
     dest.id = this.id ? String(this.id) : undefined;
@@ -374,7 +402,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value
    */
   public override toJSON(): JSON.Value | undefined {
     if (!this.hasId() && !this.hasExtension()) {
@@ -436,24 +464,35 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
   private modifierExtension?: Extension[] | undefined;
 
   /**
-   * {@inheritDoc IBaseModifierExtension.getModifierExtension}
+   * @returns the array of `modifierExtension` values
    */
   public getModifierExtension(): Extension[] {
     return this.modifierExtension ?? ([] as Extension[]);
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.setModifierExtension}
+   * Assigns the provided array of Extension values to the `modifierExtension` property.
+   *
+   * @param extension - array of Extensions
+   * @returns this
    */
-  public setModifierExtension(modifierExtension: Extension[] | undefined): this {
+  public setModifierExtension(extension: Extension[] | undefined): this {
     const optErrMsg = `Invalid BackboneElement.modifierExtension; Provided extension array has an element that is not an instance of Extension.`;
-    assertFhirTypeList<Extension>(modifierExtension, Extension, optErrMsg);
-    this.modifierExtension = modifierExtension;
+    assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
+    this.modifierExtension = extension;
     return this;
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.hasModifierExtension}
+   * Determines if the `modifierExtension` property exists.
+   *
+   * @remarks If the url is provided, determines if an Extension having
+   * the provided url exists. If the url is not provided, determines
+   * if the `modifierExtension` property exists and has any values.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns `true` if an Extension has the provided url; false otherwise
+   * @throws AssertionError for invalid url
    */
   public hasModifierExtension(url?: fhirUri): boolean {
     if (url !== undefined) {
@@ -464,7 +503,11 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.getModifierExtensionByUrl}
+   * Returns the Extension having the provided url.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns the Extension having the provided url
+   * @throws AssertionError for invalid url
    */
   public getModifierExtensionByUrl(url: fhirUri): Extension | undefined {
     validateUrl(url);
@@ -480,7 +523,10 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.addModifierExtension}
+   * Adds the provided Extension to the `modifierExtension` property array.
+   *
+   * @param extension - the Extension value to add to the `modifierExtension` property array
+   * @returns this
    */
   public addModifierExtension(extension: Extension | undefined): this {
     if (isDefined<Extension>(extension)) {
@@ -494,7 +540,10 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.removeModifierExtension}
+   * Removes the Extension having the provided url from the `modifierExtension` property array.
+   *
+   * @param url - the url that identifies a specific Extension to remove
+   * @throws AssertionError for invalid url
    */
   public removeModifierExtension(url: fhirUri): void {
     validateUrl(url);
@@ -517,7 +566,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    * Determines if `modifierExtension` property exists, and if not, determines if the `modifierExtension`
    * array is empty.
    *
-   * @returns `true` if the `modifierExtension` exists and has at least one element; false otherwise
+   * @returns `true` if the `modifierExtension` property exists and has at least one element; false otherwise
    */
   private existsModifierExtension(): boolean {
     return (
@@ -528,26 +577,31 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'BackboneElement';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.modifierExtension);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public abstract override copy(): BackboneElement;
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: BackboneElement): void {
     super.copyValues(dest);
@@ -556,7 +610,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -597,7 +651,9 @@ export abstract class DataType extends Element implements IBase {
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   abstract override copy(): DataType;
 }
@@ -642,24 +698,30 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
   private modifierExtension?: Extension[] | undefined;
 
   /**
-   * {@inheritDoc IBaseModifierExtension.getModifierExtension}
+   * @returns the array of `modifierExtension` values
    */
   public getModifierExtension(): Extension[] {
     return this.modifierExtension ?? ([] as Extension[]);
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.setModifierExtension}
+   * Assigns the provided array of Extension values to the `modifierExtension` property.
+   *
+   * @param extension - array of Extensions
+   * @returns this
    */
-  public setModifierExtension(modifierExtension: Extension[] | undefined): this {
+  public setModifierExtension(extension: Extension[] | undefined): this {
     const optErrMsg = `Invalid BackboneType.modifierExtension; Provided extension array has an element that is not an instance of Extension.`;
-    assertFhirTypeList<Extension>(modifierExtension, Extension, optErrMsg);
-    this.modifierExtension = modifierExtension;
+    assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
+    this.modifierExtension = extension;
     return this;
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.hasModifierExtension}
+   * Determines if `modifierExtension` property exists for the provided `url`
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns `true` if the `modifierExtension` property exists and has at least one element; false otherwise
    */
   public hasModifierExtension(url?: fhirUri): boolean {
     if (url !== undefined) {
@@ -670,7 +732,11 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.getModifierExtensionByUrl}
+   * Returns the Extension having the provided url.
+   *
+   * @param url - the url that identifies a specific Extension
+   * @returns the Extension having the provided url
+   * @throws AssertionError for invalid url
    */
   public getModifierExtensionByUrl(url: fhirUri): Extension | undefined {
     validateUrl(url);
@@ -686,7 +752,10 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.addModifierExtension}
+   * Adds the provided Extension to the `modifierExtension` property array.
+   *
+   * @param extension - the Extension value to add to the `modifierExtension` property array
+   * @returns this
    */
   public addModifierExtension(extension: Extension | undefined): this {
     if (isDefined<Extension>(extension)) {
@@ -700,7 +769,10 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
   }
 
   /**
-   * {@inheritDoc IBaseModifierExtension.removeModifierExtension}
+   * Removes the Extension having the provided url from the `modifierExtension` property array.
+   *
+   * @param url - the url that identifies a specific Extension to remove
+   * @throws AssertionError for invalid url
    */
   public removeModifierExtension(url: fhirUri): void {
     validateUrl(url);
@@ -734,26 +806,31 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'BackboneType';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.modifierExtension);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public abstract override copy(): BackboneType;
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: BackboneType): void {
     super.copyValues(dest);
@@ -762,7 +839,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -896,26 +973,31 @@ export abstract class PrimitiveType<T> extends DataType implements IBase {
   public abstract parseToPrimitive(value: string): T;
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return !this.hasValue();
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public abstract override copy(): PrimitiveType<T>;
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: PrimitiveType<T>): void {
     super.copyValues(dest);
   }
 
   /**
-   * {@inheritDoc IBase.isPrimitive}
+   * @returns `true` if the instance is a FHIR primitive datatype; `false` otherwise
    */
   public override isPrimitive(): boolean {
     return true;
@@ -1071,21 +1153,23 @@ export class Extension extends Element implements IBase {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Extension';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty() {
     return super.isEmpty() && isElementEmpty(this.value) && !this.hasUrl();
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Extension {
     const dest = new Extension(this.url);
@@ -1094,7 +1178,10 @@ export class Extension extends Element implements IBase {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Extension): void {
     super.copyValues(dest);
@@ -1103,7 +1190,7 @@ export class Extension extends Element implements IBase {
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -1139,8 +1226,6 @@ export class Extension extends Element implements IBase {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns */
 
 //endregion
 

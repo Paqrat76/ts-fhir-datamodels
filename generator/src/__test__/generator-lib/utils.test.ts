@@ -23,6 +23,7 @@
 
 import {
   extractNameFromUrl,
+  fixFhirHyperLinks,
   makePascalCase,
   makeUpperSnakeCase,
   stripLineBreaks,
@@ -67,6 +68,32 @@ describe(`src/generator-lib/utils`, () => {
         const newString = substituteUnicodeCharacters(testString);
         expect(newString).toStrictEqual(expectedString);
       });
+    });
+  });
+
+  describe('fixFhirHyperLinks', () => {
+    it('Should return original string where it does not contain any FHIR hyperlinks', () => {
+      const testString = 'This is a test string';
+      const fixedString = fixFhirHyperLinks(testString);
+      expect(fixedString).toStrictEqual(testString);
+    });
+
+    it('Should return fixed string where it contains a single FHIR hyperlink', () => {
+      const testString = 'This is a test string with a FHIR hyperlink: [Simple FHIRPath Profile](fhirpath.html#simple)';
+      const fixedString = fixFhirHyperLinks(testString);
+      expect(fixedString).toStrictEqual(
+        'This is a test string with a FHIR hyperlink: [Simple FHIRPath Profile](https://hl7.org/fhir/fhirpath.html#simple)',
+      );
+    });
+
+    // TODO: Resolve issue with multiple hyperlinks in fixFhirHyperLinks()
+    it.skip('Should return fixed string where it contains multiple FHIR hyperlinks', () => {
+      const testString =
+        'This is a test string with multiple FHIR hyperlinks: [Simple FHIRPath Profile](fhirpath.html#simple) and another: [Provenance](provenance.HTML#) etc.';
+      const fixedString = fixFhirHyperLinks(testString);
+      expect(fixedString).toStrictEqual(
+        'This is a test string with multiple FHIR hyperlinks: [Simple FHIRPath Profile](https://hl7.org/fhir/fhirpath.html#simple) and [Provenance](https://hl7.org/fhir/provenance.HTML#)',
+      );
     });
   });
 

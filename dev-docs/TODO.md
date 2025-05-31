@@ -2,16 +2,15 @@
 
 ## Feature Set
 
-- Handle complex data types that include properties having the `Element` data type (i.e. pseudo-BackboneType).
-- Handle complex data types that extend `BackboneElement` rather than `Element` (i.e., Dosage, ElementDefinition, Timing).
-- Move `Resource`, `DomainResource`, `Extension`, and all code systems and complex data types to be generated
+- **BUG:** Resolve issue with multiple hyperlinks in utils.ts - `fixFhirHyperLinks()`
+- Move `Resource` and `DomainResource` into generated projects under src/base
   - Adjust utilities as needed
 - Improve test coverage in `fhir-core/src/utility/fhir-parsers.ts`
-- Investigate strategies to resolve required complex data types in `fhir-core` and their inclusion in generated
-  complex types.
 - Investigate strategies to resolve circular references caused by:
   - fhir-contained-resource-parser/getFhirModelParseResults(...)
   - fhir-parsers/getValueXData(...)
+- Consider re-adding complex-type for ElementDefinition
+- Consider re-adding complex-types for the SimpleQuantity and MoneyQuantity profiles
 
 ## Possible Considerations (future roadmap)
 

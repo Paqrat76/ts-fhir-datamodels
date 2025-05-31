@@ -1,42 +1,43 @@
 {{!-- Public Static Parse Method Partial Template --}}
+{{!-- context is a HbsElementComponent --}}
   /**
-   * Parse the provided `{{sdHbs.name}}` JSON to instantiate the {{sdHbs.name}} data model.
+   * Parse the provided `{{componentName}}` JSON to instantiate the {{componentName}} data model.
    *
-   * @param sourceJson - JSON representing FHIR `{{sdHbs.name}}`
-   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{sdHbs.name}}
-   * @returns {{sdHbs.name}} data model or undefined for `{{sdHbs.name}}`
+   * @param sourceJson - JSON representing FHIR `{{componentName}}`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{componentName}}
+   * @returns {{componentName}} data model or undefined for `{{componentName}}`
    */
-  public static parse(sourceJson: JSON.Value, optSourceField?: string): {{sdHbs.name}} | undefined {
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): {{componentName}} | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : '{{sdHbs.name}}';
+    const source = isDefined<string>(optSourceField) ? optSourceField : '{{componentName}}';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
-    const instance = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
+    const instance = new {{componentName}}();
     processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
-{{#if sdHbs.hasPrimitiveFields}}
-    {{#unless sdHbs.hasOnlyOnePrimitiveField}}let primitiveJsonType: 'boolean' | 'number' | 'string';{{/unless}}
+{{#if hasPrimitiveFields}}
+    {{#unless hasOnlyOnePrimitiveField}}let primitiveJsonType: 'boolean' | 'number' | 'string';{{/unless}}
 {{/if}}
 
-{{#if sdHbs.hasChoiceFields}}
-    const classMetadata: DecoratorMetadataObject | null = {{sdHbs.name}}[Symbol.metadata];
-    const errorMessage = `DecoratorMetadataObject does not exist for {{sdHbs.name}}`;
+{{#if hasChoiceFields}}
+    const classMetadata: DecoratorMetadataObject | null = {{componentName}}[Symbol.metadata];
+    const errorMessage = `DecoratorMetadataObject does not exist for {{componentName}}`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
 {{/if}}
-{{#if sdHbs.hasRequiredFields}}
+{{#if hasRequiredFields}}
     const missingReqdProperties: string[] = [];
 
 {{/if}}
-{{#each sdHbs.elementDefinitions}}
+{{#each elementDefinitions}}
 {{#if this.isPrimitiveMethods}}
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dtJson, dtSiblingJson);
@@ -47,7 +48,7 @@
 {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(datatypeJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: {{this.type.code}} | undefined = parse{{this.type.code}}(dtJson, dtSiblingJson);
@@ -64,7 +65,7 @@
 {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
         datatypeJsonObj,
@@ -84,7 +85,7 @@
 {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${source}.${fieldName}`;
-    {{#if ../sdHbs.hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
+    {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in datatypeJsonObj) {
       const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
         datatypeJsonObj,
@@ -335,7 +336,7 @@
 {{/if}}
 {{/if}}
 {{/each}}
-{{#if sdHbs.hasRequiredFields}}
+{{#if hasRequiredFields}}
     if (missingReqdProperties.length > 0) {
       const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
       throw new FhirError(errMsg);

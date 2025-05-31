@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.3] - 2025-05-31
+
+### Changed
+
+- Updated dependencies
+- Eliminated all JSDoc @inheritDoc tags by filling out all header comment blocks to resolve Typedoc warnings
+
+
 ## [0.3.2] - 2025-05-22
 
 ### Changed

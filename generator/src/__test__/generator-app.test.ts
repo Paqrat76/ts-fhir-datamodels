@@ -47,33 +47,38 @@ describe('src/generator-app', () => {
     const generator = new GeneratorApp(testFhirPackage);
     const generatedContent: GeneratedContent[] = await generator.generate();
     expect(generatedContent).toBeDefined();
-    expect(generatedContent.length).toBe(6); // 2 CodeSystemEnums + index.ts, 2 ComplexTypes + index.ts
+    expect(generatedContent.length).toBe(8); // 3 CodeSystemEnums + index.ts, 3 ComplexTypes + index.ts
   });
 
   it('should generate and write all FHIR R4 artifacts', async () => {
     const generator = new GeneratorApp(testFhirPackage);
     const generatedContent: GeneratedContent[] = await generator.generate();
     expect(generatedContent).toBeDefined();
-    expect(generatedContent.length).toBe(6); // 2 CodeSystemEnums + index.ts, 2 ComplexTypes + index.ts
+    expect(generatedContent.length).toBe(8); // 3 CodeSystemEnums + index.ts, 3 ComplexTypes + index.ts
 
     generator.writeDataModelsToDisk(generatedContent);
 
     const testOutput: string[] = readdirSync(testOut);
     expect(testOutput).toBeDefined();
-    expect(testOutput.length).toBe(3);
-    const expectedOutput: string[] = ['index.ts', 'code-systems', 'complex-types'];
+    expect(testOutput.length).toBe(4);
+    const expectedOutput: string[] = ['index.ts', 'code-systems', 'complex-types', 'resources'];
     expect(testOutput).toEqual(expect.arrayContaining(expectedOutput));
 
     const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
     expect(testCodeSystems).toBeDefined();
-    expect(testCodeSystems.length).toBe(3);
-    const expectedCodeSystems: string[] = ['index.ts', 'IdentifierUseEnum.ts', 'NarrativeStatusEnum.ts'];
+    expect(testCodeSystems.length).toBe(4);
+    const expectedCodeSystems: string[] = [
+      'index.ts',
+      'IdentifierUseEnum.ts',
+      'NarrativeStatusEnum.ts',
+      'SortDirectionEnum.ts',
+    ];
     expect(testCodeSystems).toEqual(expect.arrayContaining(expectedCodeSystems));
 
     const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
     expect(testComplexTypes).toBeDefined();
-    expect(testComplexTypes.length).toBe(3);
-    const expectedComplexTypes: string[] = ['index.ts', 'Identifier.ts', 'Narrative.ts'];
+    expect(testComplexTypes.length).toBe(4);
+    const expectedComplexTypes: string[] = ['DataRequirement.ts', 'Identifier.ts', 'Narrative.ts', 'index.ts'];
     expect(testComplexTypes).toEqual(expect.arrayContaining(expectedComplexTypes));
   });
 });

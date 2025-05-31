@@ -1,9 +1,10 @@
 {{!-- Public Base Methods Partial Template --}}
+{{!-- context is a HbsElementComponent --}}
   /**
    * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
-    return '{{sdHbs.name}}';
+    return '{{parentFieldName}}';
   }
 
   /**
@@ -11,9 +12,9 @@
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(
-      {{#each sdHbs.elementDefinitions}}
-        this.{{this.fieldName}},
-      {{/each}}
+  {{#each elementDefinitions}}
+      this.{{this.fieldName}},
+  {{/each}}
     );
   }
 
@@ -22,8 +23,8 @@
    *
    * @returns the a new instance copied from the current instance
    */
-  public override copy(): {{sdHbs.name}} {
-    const dest = new {{sdHbs.name}}({{constructorNulls sdHbs.numRequiredFields}});
+  public override copy(): {{componentName}} {
+    const dest = new {{componentName}}();
     this.copyValues(dest);
     return dest;
   }
@@ -34,22 +35,22 @@
    * @param dest - the copied instance
    * @protected
    */
-  protected override copyValues(dest: {{sdHbs.name}}): void {
+  protected override copyValues(dest: {{componentName}}): void {
     super.copyValues(dest);
-    {{#each sdHbs.elementDefinitions}}
-      {{#if this.isOptionalItem}}
-        dest.{{this.fieldName}} = this.{{this.fieldName}}?.copy();
-      {{/if}}
-      {{#if this.isRequiredItem}}
-        dest.{{this.fieldName}} = this.{{this.fieldName}} ? this.{{this.fieldName}}.copy() : null;
-      {{/if}}
-      {{#if this.isOptionalList}}
-        const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
-        dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
-      {{/if}}
-      {{#if this.isRequiredList}}
-        const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
-        dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
-      {{/if}}
-    {{/each}}
+{{#each elementDefinitions}}
+  {{#if this.isOptionalItem}}
+    dest.{{this.fieldName}} = this.{{this.fieldName}}?.copy();
+  {{/if}}
+  {{#if this.isRequiredItem}}
+    dest.{{this.fieldName}} = this.{{this.fieldName}} ? this.{{this.fieldName}}.copy() : null;
+  {{/if}}
+  {{#if this.isOptionalList}}
+    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
+    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
+  {{/if}}
+  {{#if this.isRequiredList}}
+    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
+    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
+  {{/if}}
+{{/each}}
   }

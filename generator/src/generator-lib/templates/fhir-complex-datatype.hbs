@@ -46,27 +46,27 @@ import {
 {{/if}}
  *
  * **FHIR Specification**
-{{#if sdHbs.rootElement.short}}
- * - **Short:** {{{sdHbs.rootElement.short}}}
+{{#if sdHbs.parentComponent.rootElement.short}}
+ * - **Short:** {{{sdHbs.parentComponent.rootElement.short}}}
 {{/if}}
-{{#if sdHbs.rootElement.definition}}
- * - **Definition:** {{{sdHbs.rootElement.definition}}}
+{{#if sdHbs.parentComponent.rootElement.definition}}
+ * - **Definition:** {{{sdHbs.parentComponent.rootElement.definition}}}
 {{/if}}
-{{#if sdHbs.rootElement.comment}}
- * - **Comment:** {{{sdHbs.rootElement.comment}}}
+{{#if sdHbs.parentComponent.rootElement.comment}}
+ * - **Comment:** {{{sdHbs.parentComponent.rootElement.comment}}}
 {{/if}}
-{{#if sdHbs.rootElement.requirements}}
- * - **Requirements:** {{{sdHbs.rootElement.requirements}}}
+{{#if sdHbs.parentComponent.rootElement.requirements}}
+ * - **Requirements:** {{{sdHbs.parentComponent.rootElement.requirements}}}
 {{/if}}
  * - **FHIR Version:** {{sdHbs.fhirVersion}}
  *
  * @category Datatypes: Complex
  * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
  */
-export class {{sdHbs.name}} extends DataType implements IBase {
-{{#if sdHbs.requiredConstructor}}
+export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements IBase {
+{{#if sdHbs.parentComponent.requiredConstructor}}
 {{!-- Constructor Required Partial --}}
-{{> constructorRequiredPartial}}
+{{> constructorRequiredPartial sdHbs.parentComponent}}
 {{else}}
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
@@ -75,21 +75,21 @@ export class {{sdHbs.name}} extends DataType implements IBase {
 {{/if}}
 
 {{!-- Public Static Parse Method Partial --}}
-{{> publicStaticParseMethodPartial}}
+{{> publicStaticParseMethodPartial sdHbs.parentComponent}}
 
 {{!-- Private Field Declarations Partial --}}
-{{#each sdHbs.elementDefinitions}}
+{{#each sdHbs.parentComponent.elementDefinitions}}
 {{> privateFieldDeclarationPartial edHbs=this }}
 
 {{/each}}
 
 {{!-- Public Field Methods Partial --}}
-{{#each sdHbs.elementDefinitions}}
+{{#each sdHbs.parentComponent.elementDefinitions}}
 {{> publicFieldMethodsPartial edHbs=this }}
 {{/each}}
 
 {{!-- Public Base Methods Partial --}}
-{{> publicBaseMethodsPartial}}
+{{> publicBaseMethodsPartial sdHbs.parentComponent}}
 
   /**
    * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
@@ -99,5 +99,12 @@ export class {{sdHbs.name}} extends DataType implements IBase {
   }
 
 {{!-- Public toJSON Method Partial --}}
-{{> publicToJSONMethodPartial}}
+{{> publicToJSONMethodPartial sdHbs.parentComponent}}
 }
+
+{{!-- Public Component Classes Partial --}}
+{{#if sdHbs.hasChildComponents}}
+{{#each sdHbs.childComponents}}
+{{> fhirComplexComponentPartial compHbs=this }}
+{{/each}}
+{{/if}}

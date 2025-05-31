@@ -1,2 +1,4 @@
 # Temporarily ignore generated content
-src/**
+src/code-systems/**
+src/complex-types/**
+src/resources/**

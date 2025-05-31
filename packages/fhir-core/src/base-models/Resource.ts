@@ -60,8 +60,6 @@ import * as JSON from '../utility/json-helpers';
 import { assertFhirType, assertIsDefined, isDefined } from '../utility/type-guards';
 import { strict as assert } from 'node:assert';
 
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
-
 /**
  * Abstract Resource Class
  *
@@ -371,24 +369,29 @@ export abstract class Resource extends Base implements IBase {
   }
 
   /**
-   * {@inheritDoc Base.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public abstract override fhirType(): string;
 
   /**
-   * {@inheritDoc Base.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public isEmpty(): boolean {
     return isElementEmpty(this.id, this.meta, this.implicitRules, this.language);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public abstract override copy(): Resource;
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected copyValues(dest: Resource): void {
     dest.id = this.id?.copy();
@@ -398,14 +401,14 @@ export abstract class Resource extends Base implements IBase {
   }
 
   /**
-   * {@inheritDoc Base.isResource}
+   * @returns `true` if the instance is a FHIR resource; `false` otherwise
    */
   public override isResource(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc Base.toJSON}
+   * @returns the JSON value
    */
   public override toJSON(): JSON.Value | undefined {
     const jsonObj = { resourceType: this.resourceType() } as JSON.Object;
@@ -429,8 +432,6 @@ export abstract class Resource extends Base implements IBase {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * FHIR ResourceType assertion for any FHIR resource class

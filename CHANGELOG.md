@@ -19,6 +19,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.7.0] - 2025-05-31
+
+### Changed
+
+- Updated dependencies
+- Refactored selected NPM script definitions in package.json
+- Eliminated all JSDoc @inheritDoc tags in fhir-core package
+- Completed generator code for the generation of complex-types
+
+
 ## [0.6.1] - 2025-05-21
 
 ### Changed

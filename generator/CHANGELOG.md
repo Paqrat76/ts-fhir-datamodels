@@ -19,6 +19,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.6.0] - 2025-05-31
+
+### Added
+
+- Additional CodeSystems and StructureDefinitions in test-cache/.fhir for FHIR R4
+
+### Changed
+
+- Updated test suite
+- Refactored generation of index.ts files for base and generated content
+- Completed generator code for the generation of complex-types
+
+### Removed
+
+- Eliminated the generation of complex-types for the SimpleQuantity and MoneyQuantity profiles
+- Eliminated the generation of ElementDefinition complex-type
+
+
 ## [0.5.1] - 2025-05-22
 
 ### Changed
@@ -31,7 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Cloned FhirDataType.ts from @paq-ts-fhir/fhir-core to remove its dependency in the Generator project
+- Cloned fhir-data-type.ts from @paq-ts-fhir/fhir-core to remove its dependency in the Generator project
 
 ### Changed
 

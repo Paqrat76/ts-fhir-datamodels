@@ -30,8 +30,6 @@ import * as JSON from '../utility/json-helpers';
  * @interface
  */
 export interface IBase {
-  // TODO: Add/remove methods as needed
-
   /**
    * @returns the FHIR type defined in the FHIR standard
    */

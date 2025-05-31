@@ -88,9 +88,15 @@ export class GeneratorApp {
       `GeneratorApp.writeDataModelsToDisk:: fhirPackage.baseOutputPath is undefined.`,
     );
 
-    emptyDirSync(this._fhirPackage.baseOutputPath);
+    DESTINATION_SUB_DIRECTORY_MAP.values().forEach((value) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const generatedPath = resolve(this._fhirPackage.baseOutputPath!, value);
+      emptyDirSync(generatedPath);
+    });
 
     const barrelLines: Set<string> = new Set<string>();
+    const baseBarrelLine = `export * from './base';`;
+    barrelLines.add(baseBarrelLine);
 
     generatedContent.forEach((content) => {
       const filename = content.fileExtension ? `${content.filename}.${content.fileExtension}` : content.filename;
