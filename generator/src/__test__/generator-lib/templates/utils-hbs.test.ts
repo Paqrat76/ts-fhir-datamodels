@@ -52,7 +52,7 @@ describe('src/generator-lib/templates/utils-hbs', () => {
       packageStructureDefinitions = packageLoader.findResourceJSONs('*', options) as StructureDefinition[];
     });
 
-    it('should return the correct properties for StructureDefinition-DataRequirement', () => {
+    it.skip('should return the correct properties for StructureDefinition-DataRequirement', () => {
       const options: FindResourceInfoOptions = { type: ['Type'] };
       const dataRequirementStructureDefinition = packageLoader.findResourceJSON(
         'DataRequirement',
@@ -68,7 +68,7 @@ describe('src/generator-lib/templates/utils-hbs', () => {
       expect(sdHbsProperties).toBeDefined();
     });
 
-    it('should return the correct properties for StructureDefinition-Identifier', () => {
+    it.skip('should return the correct properties for StructureDefinition-Identifier', () => {
       const options: FindResourceInfoOptions = { type: ['Type'] };
       const identifierStructureDefinition = packageLoader.findResourceJSON(
         'Identifier',

@@ -19,6 +19,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.7.0] - 2025-06-18
+
+### Added
+
+- Selected .fhir cache FHIR artifacts
+- Generator for FHIR resources
+- Base models (`src/generator-lib/base`) to be copied into generated data model projects
+
+### Changed
+
+- Updated some tests
+- Updated fhir-data-types for generator requirements
+- Updated Handlebars templates and utilities
+
+### Removed
+
+- Selected .fhir cache FHIR artifacts
+
+### Fixed
+
+- **BUG:** Resolved issue with multiple hyperlinks in utils.ts - `fixFhirHyperLinks()`
+
 ## [0.6.0] - 2025-05-31
 
 ### Added

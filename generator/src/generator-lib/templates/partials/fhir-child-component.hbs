@@ -1,4 +1,4 @@
-{{!-- FHIR ComplexType Component Partial Template --}}
+{{!-- FHIR Child Component Partial Template --}}
 {{!-- context (compHbs) is a HbsElementComponent --}}
 
 /**
@@ -19,7 +19,7 @@
  * - **Requirements:** {{{compHbs.rootElement.requirements}}}
 {{/if}}
  *
- * @category Datatypes: Complex
+ * @category DataModel: {{upperCamelCase compHbs.parentKind}}
  * @see [FHIR {{compHbs.parentType}}]({{{compHbs.parentUrl}}})
  */
 export class {{compHbs.componentName}} extends {{compHbs.baseDefinitionType}} {

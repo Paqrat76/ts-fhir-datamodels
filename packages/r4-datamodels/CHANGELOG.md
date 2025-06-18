@@ -19,6 +19,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.0] - 2025-06-18
+
+### Added
+
+- Usage Notes documentation to be included in generated TypeDocs
+
+### Changed
+
+- Updated dependencies
+- index.ts in src/base
+
+### Removed
+
+- Moved base directory and files into the Generator project to be copied into the generated content directory structure
+
+
 ## [0.2.0] - 2025-05-31
 
 ### Added

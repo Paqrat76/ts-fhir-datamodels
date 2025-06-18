@@ -2,14 +2,10 @@
 
 ## Feature Set
 
-- **BUG:** Resolve issue with multiple hyperlinks in utils.ts - `fixFhirHyperLinks()`
-- Move `Resource` and `DomainResource` into generated projects under src/base
-  - Adjust utilities as needed
 - Improve test coverage in `fhir-core/src/utility/fhir-parsers.ts`
 - Investigate strategies to resolve circular references caused by:
   - fhir-contained-resource-parser/getFhirModelParseResults(...)
   - fhir-parsers/getValueXData(...)
-- Consider re-adding complex-type for ElementDefinition
 - Consider re-adding complex-types for the SimpleQuantity and MoneyQuantity profiles
 
 ## Possible Considerations (future roadmap)

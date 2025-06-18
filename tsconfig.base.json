@@ -14,7 +14,7 @@
 
     "module": "node16",
     "target": "es2022",
-    "lib": ["es2022", "esnext", "esnext.decorators"],
+    "lib": ["esnext", "esnext.decorators", "es2022"],
     "moduleDetection": "force",
     "resolveJsonModule": true,
     "rootDirs": ["./src"],

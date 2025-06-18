@@ -2,17 +2,31 @@
   "index-version": 1,
   "files": [
     {
-      "filename": "CodeSystem-abstract-types.json",
+      "filename": "CodeSystem-audit-event-action.json",
       "resourceType": "CodeSystem",
-      "id": "abstract-types",
-      "url": "http://hl7.org/fhir/abstract-types",
+      "id": "audit-event-action",
+      "url": "http://hl7.org/fhir/audit-event-action",
       "version": "4.0.1"
     },
     {
-      "filename": "CodeSystem-data-types.json",
+      "filename": "CodeSystem-audit-event-outcome.json",
       "resourceType": "CodeSystem",
-      "id": "data-types",
-      "url": "http://hl7.org/fhir/data-types",
+      "id": "audit-event-outcome",
+      "url": "http://hl7.org/fhir/audit-event-outcome",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-days-of-week.json",
+      "resourceType": "CodeSystem",
+      "id": "days-of-week",
+      "url": "http://hl7.org/fhir/days-of-week",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-event-timing.json",
+      "resourceType": "CodeSystem",
+      "id": "event-timing",
+      "url": "http://hl7.org/fhir/event-timing",
       "version": "4.0.1"
     },
     {
@@ -37,6 +51,13 @@
       "version": "4.0.1"
     },
     {
+      "filename": "CodeSystem-network-type.json",
+      "resourceType": "CodeSystem",
+      "id": "network-type",
+      "url": "http://hl7.org/fhir/network-type",
+      "version": "4.0.1"
+    },
+    {
       "filename": "CodeSystem-quantity-comparator.json",
       "resourceType": "CodeSystem",
       "id": "quantity-comparator",
@@ -44,36 +65,56 @@
       "version": "4.0.1"
     },
     {
-      "filename": "CodeSystem-resource-types.json",
+      "filename": "CodeSystem-v3-TimingEvent.json",
       "resourceType": "CodeSystem",
-      "id": "resource-types",
-      "url": "http://hl7.org/fhir/resource-types",
-      "version": "4.0.1"
+      "id": "v3-TimingEvent",
+      "url": "http://terminology.hl7.org/CodeSystem/v3-TimingEvent",
+      "version": "2018-08-12"
     },
     {
-      "filename": "CodeSystem-sort-direction.json",
-      "resourceType": "CodeSystem",
-      "id": "sort-direction",
-      "url": "http://hl7.org/fhir/sort-direction",
-      "version": "4.0.1"
-    },
-    {
-      "filename": "StructureDefinition-DataRequirement.json",
+      "filename": "StructureDefinition-AuditEvent.json",
       "resourceType": "StructureDefinition",
-      "id": "DataRequirement",
-      "url": "http://hl7.org/fhir/StructureDefinition/DataRequirement",
+      "id": "AuditEvent",
+      "url": "http://hl7.org/fhir/StructureDefinition/AuditEvent",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "AuditEvent"
+    },
+    {
+      "filename": "StructureDefinition-CodeableConcept.json",
+      "resourceType": "StructureDefinition",
+      "id": "CodeableConcept",
+      "url": "http://hl7.org/fhir/StructureDefinition/CodeableConcept",
       "version": "4.0.1",
       "kind": "complex-type",
-      "type": "DataRequirement"
+      "type": "CodeableConcept"
     },
     {
-      "filename": "StructureDefinition-Identifier.json",
+      "filename": "StructureDefinition-Coding.json",
       "resourceType": "StructureDefinition",
-      "id": "Identifier",
-      "url": "http://hl7.org/fhir/StructureDefinition/Identifier",
+      "id": "Coding",
+      "url": "http://hl7.org/fhir/StructureDefinition/Coding",
       "version": "4.0.1",
       "kind": "complex-type",
-      "type": "Identifier"
+      "type": "Coding"
+    },
+    {
+      "filename": "StructureDefinition-Dosage.json",
+      "resourceType": "StructureDefinition",
+      "id": "Dosage",
+      "url": "http://hl7.org/fhir/StructureDefinition/Dosage",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Dosage"
+    },
+    {
+      "filename": "StructureDefinition-Duration.json",
+      "resourceType": "StructureDefinition",
+      "id": "Duration",
+      "url": "http://hl7.org/fhir/StructureDefinition/Duration",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Duration"
     },
     {
       "filename": "StructureDefinition-Narrative.json",
@@ -85,17 +126,85 @@
       "type": "Narrative"
     },
     {
-      "filename": "ValueSet-all-types.json",
+      "filename": "StructureDefinition-Period.json",
+      "resourceType": "StructureDefinition",
+      "id": "Period",
+      "url": "http://hl7.org/fhir/StructureDefinition/Period",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Period"
+    },
+    {
+      "filename": "StructureDefinition-Quantity.json",
+      "resourceType": "StructureDefinition",
+      "id": "Quantity",
+      "url": "http://hl7.org/fhir/StructureDefinition/Quantity",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Quantity"
+    },
+    {
+      "filename": "StructureDefinition-Range.json",
+      "resourceType": "StructureDefinition",
+      "id": "Range",
+      "url": "http://hl7.org/fhir/StructureDefinition/Range",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Range"
+    },
+    {
+      "filename": "StructureDefinition-Ratio.json",
+      "resourceType": "StructureDefinition",
+      "id": "Ratio",
+      "url": "http://hl7.org/fhir/StructureDefinition/Ratio",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Ratio"
+    },
+    {
+      "filename": "StructureDefinition-Reference.json",
+      "resourceType": "StructureDefinition",
+      "id": "Reference",
+      "url": "http://hl7.org/fhir/StructureDefinition/Reference",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Reference"
+    },
+    {
+      "filename": "StructureDefinition-Timing.json",
+      "resourceType": "StructureDefinition",
+      "id": "Timing",
+      "url": "http://hl7.org/fhir/StructureDefinition/Timing",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Timing"
+    },
+    {
+      "filename": "ValueSet-audit-event-action.json",
       "resourceType": "ValueSet",
-      "id": "all-types",
-      "url": "http://hl7.org/fhir/ValueSet/all-types",
+      "id": "audit-event-action",
+      "url": "http://hl7.org/fhir/ValueSet/audit-event-action",
       "version": "4.0.1"
     },
     {
-      "filename": "ValueSet-identifier-use.json",
+      "filename": "ValueSet-audit-event-outcome.json",
       "resourceType": "ValueSet",
-      "id": "identifier-use",
-      "url": "http://hl7.org/fhir/ValueSet/identifier-use",
+      "id": "audit-event-outcome",
+      "url": "http://hl7.org/fhir/ValueSet/audit-event-outcome",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-days-of-week.json",
+      "resourceType": "ValueSet",
+      "id": "days-of-week",
+      "url": "http://hl7.org/fhir/ValueSet/days-of-week",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-event-timing.json",
+      "resourceType": "ValueSet",
+      "id": "event-timing",
+      "url": "http://hl7.org/fhir/ValueSet/event-timing",
       "version": "4.0.1"
     },
     {
@@ -106,10 +215,24 @@
       "version": "4.0.1"
     },
     {
-      "filename": "ValueSet-sort-direction.json",
+      "filename": "ValueSet-network-type.json",
       "resourceType": "ValueSet",
-      "id": "sort-direction",
-      "url": "http://hl7.org/fhir/ValueSet/sort-direction",
+      "id": "network-type",
+      "url": "http://hl7.org/fhir/ValueSet/network-type",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-quantity-comparator.json",
+      "resourceType": "ValueSet",
+      "id": "quantity-comparator",
+      "url": "http://hl7.org/fhir/ValueSet/quantity-comparator",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-units-of-time.json",
+      "resourceType": "ValueSet",
+      "id": "units-of-time",
+      "url": "http://hl7.org/fhir/ValueSet/units-of-time",
       "version": "4.0.1"
     }
   ]

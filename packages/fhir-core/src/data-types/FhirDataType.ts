@@ -36,7 +36,7 @@ import { upperFirst } from '../utility/common-util';
  * @category Base Models
  * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
  */
-export const OPEN_DATA_TYPES = [
+export const OPEN_DATA_TYPES: string[] = [
   // Primitive Types
   'base64Binary',
   'boolean',
@@ -79,6 +79,7 @@ export const OPEN_DATA_TYPES = [
   'Ratio',
   'RatioRange', // added in FHIR R5
   'Reference',
+  'RelativeTime', // added in FHIR R6
   'SampledData',
   'Signature',
   'Timing',
@@ -119,7 +120,12 @@ export const OPEN_DATA_TYPE_KEY_NAMES = OPEN_DATA_TYPES.map((odt) => `value${upp
 /**
  * Non-open data types that are valid data types
  */
-const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail', 'Narrative', 'xhtml'] as const;
+export const NON_OPEN_DATA_TYPES: string[] = [
+  'MonetaryComponent',
+  'VirtualServiceDetail',
+  'Narrative',
+  'xhtml',
+] as const;
 
 /**
  * FHIR data types

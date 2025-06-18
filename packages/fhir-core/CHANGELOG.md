@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.4] - 2025-06-18
+
+### Changed
+
+- Updated dependencies
+- Updated FHIR-related parsers
+
+
 ## [0.3.3] - 2025-05-31
 
 ### Changed

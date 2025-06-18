@@ -24,7 +24,7 @@
 import { strict as assert } from 'node:assert';
 import * as os from 'node:os';
 import { join, resolve } from 'node:path';
-import { emptyDirSync, ensureDirSync, outputFileSync } from 'fs-extra';
+import { copySync, emptyDirSync, ensureDirSync, outputFileSync } from 'fs-extra';
 import { TypescriptDataModelGenerator } from './typescript-datamodel-generator';
 import { FhirPackage, GeneratedContent } from './generator-lib/ts-datamodel-generator-helpers';
 
@@ -66,7 +66,11 @@ export class GeneratorApp {
     );
     generatedContent.push(...complexTypeClasses);
 
-    // TODO: Add the generation of the resource FHIR data models
+    // Generate the FHIR Resource classes
+    const resourceClasses: GeneratedContent[] = this.tsGenerator.generateResourceClasses(
+      codeSystemEnumClasses.codeSystemEnumMap,
+    );
+    generatedContent.push(...resourceClasses);
 
     return generatedContent;
   }
@@ -88,11 +92,16 @@ export class GeneratorApp {
       `GeneratorApp.writeDataModelsToDisk:: fhirPackage.baseOutputPath is undefined.`,
     );
 
+    const baseOutputPath = resolve(this._fhirPackage.baseOutputPath);
+
     DESTINATION_SUB_DIRECTORY_MAP.values().forEach((value) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const generatedPath = resolve(this._fhirPackage.baseOutputPath!, value);
+      const generatedPath = join(baseOutputPath, value);
       emptyDirSync(generatedPath);
     });
+
+    // Copy handcrafted base models and support files
+    const baseModelPath = resolve(__dirname, 'generator-lib', 'base');
+    copySync(baseModelPath, join(baseOutputPath, 'base'));
 
     const barrelLines: Set<string> = new Set<string>();
     const baseBarrelLine = `export * from './base';`;
@@ -103,8 +112,7 @@ export class GeneratorApp {
       //const destDir = this.getDestinationSubDirectory(content);
       const destDir: string | undefined = DESTINATION_SUB_DIRECTORY_MAP.get(content.fhirType);
       assert(destDir, `GeneratorApp.writeDataModelsToDisk:: Unknown FHIR type: ${content.fhirType}`);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const filesOutputPath = resolve(this._fhirPackage.baseOutputPath!, destDir);
+      const filesOutputPath = join(baseOutputPath, destDir);
 
       try {
         ensureDirSync(filesOutputPath);
@@ -124,7 +132,7 @@ export class GeneratorApp {
       }
     });
 
-    const barrelOutputPath = resolve(this._fhirPackage.baseOutputPath, 'index.ts');
+    const barrelOutputPath = resolve(baseOutputPath, 'index.ts');
     const sortedBarrelLines = Array.from(barrelLines).sort();
     outputFileSync(barrelOutputPath, sortedBarrelLines.join(os.EOL).concat(os.EOL));
   }
@@ -146,6 +154,7 @@ export class GeneratorApp {
  * @type {Map<string, string>}
  */
 const DESTINATION_SUB_DIRECTORY_MAP: Map<string, string> = new Map<string, string>([
+  ['Base', 'base'],
   ['CodeSystem', 'code-systems'],
   ['ComplexType', 'complex-types'],
   ['Resource', 'resources'],

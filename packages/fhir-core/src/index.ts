@@ -70,5 +70,6 @@ export * from './utility/date-time-util';
 export * from './utility/decorators';
 export * from './utility/fhir-parsers';
 export * from './utility/fhir-util';
+export * from './utility/FhirDataTypeParser';
 export * as JSON from './utility/json-helpers';
 export * from './utility/type-guards';

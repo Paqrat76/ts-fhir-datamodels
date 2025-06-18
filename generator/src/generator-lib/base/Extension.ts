@@ -98,12 +98,11 @@ import {
  * - **Definition:** Optional Extension Element - found in all resources.
  * - **FHIR Version:** 4.0.1
  *
- * @category Datatypes: Complex
+ * @category Base Models
  * @see [FHIR Extension](http://hl7.org/fhir/StructureDefinition/Extension)
  * @see [FHIR Extensibility](https://hl7.org/fhir/extensibility.html)
  */
 export class Extension extends CoreExtension {
-
   /**
    * Parse the provided `Extension` JSON to instantiate the Extension data model.
    *

@@ -90,7 +90,135 @@ const UnicodeSubstitutions = {
   COMPARATOR_NOT_EQUAL_TO: { unicodeRegex: /\u003D\u003D/g, replacement: `!=` },
   COMPARATOR_NOT_EQUAL_TO_OR_GREATER_THAN: { unicodeRegex: /\u003E\u003D/g, replacement: `>=` },
   COMPARATOR_NOT_EQUAL_TO_OR_LESS_THAN: { unicodeRegex: /\u003C\u003D/g, replacement: `<=` },
+  // ESLint: no-irregular-whitespace (https://eslint.org/docs/latest/rules/no-irregular-whitespace)
+  NBSP: { unicodeRegex: /\u00A0/g, replacement: ` ` },
+  OGSP: { unicodeRegex: /\u1680/g, replacement: ` ` },
+  MVS: { unicodeRegex: /\u180E/g, replacement: ` ` },
+  BOM: { unicodeRegex: /\ufeff/g, replacement: ` ` },
+  NQSP: { unicodeRegex: /\u2000/g, replacement: ` ` },
+  MQSP: { unicodeRegex: /\u2001/g, replacement: ` ` },
+  ENSP: { unicodeRegex: /\u2002/g, replacement: ` ` },
+  EMSP: { unicodeRegex: /\u2003/g, replacement: ` ` },
+  FSP: { unicodeRegex: /\u2007/g, replacement: ` ` },
+  PUNCSP: { unicodeRegex: /\u2008/g, replacement: ` ` },
+  THSP: { unicodeRegex: /\u2009/g, replacement: ` ` },
+  HSP: { unicodeRegex: /\u200A/g, replacement: ` ` },
+  ZWSP: { unicodeRegex: /\u200B/g, replacement: ` ` },
+  LSEP: { unicodeRegex: /\u2028/g, replacement: ` ` },
+  PSEP: { unicodeRegex: /\u2029/g, replacement: ` ` },
+  NNBSP: { unicodeRegex: /\u202F/g, replacement: ` ` },
+  MMSP: { unicodeRegex: /\u205f/g, replacement: ` ` },
+  IDSP: { unicodeRegex: /\u3000/g, replacement: ` ` },
 };
+
+/**
+ * A constant array containing all reserved keywords in TypeScript.
+ *
+ * @remarks
+ * These keywords have a predefined meaning in TypeScript and cannot be used as identifiers such as variable names, function names, or any other custom identifiers.
+ * Attempting to use these words as identifiers will result in a syntax error.
+ *
+ * The list includes:
+ * - Control flow keywords (e.g., `if`, `else`, `while`, `for`, `break`, `continue`, `switch`, `case`, `throw`, `try`, `catch`, `finally`)
+ * - Variable declarations and type-related keywords (e.g., `let`, `const`, `var`, `type`, `interface`, `enum`, `class`, `implements`, `extends`)
+ * - Function-related keywords (e.g., `function`, `return`, `async`, `await`)
+ * - Visibility and property modifiers (e.g., `private`, `protected`, `public`, `readonly`, `static`, `declare`, `override`)
+ * - Operators and expressions (e.g., `instanceof`, `typeof`, `keyof`, `new`, `delete`, `yield`, `in`, `as`, `is`, `infer`, `unique`, `from`)
+ * - Values (e.g., `true`, `false`, `null`, `undefined`, `void`, `never`, `unknown`)
+ * - Modules and import/export statements (e.g., `module`, `namespace`, `import`, `export`, `require`, `default`, `of`, `get`, `set`)
+ * - Other reserved words (e.g., `asserts`, `abstract`, `debugger`, `with`, `super`, `this`, `package`)
+ *
+ * This array is declared as a constant (`as const`), meaning its content is treated as a read-only tuple of string literals.
+ *
+ * @privateRemarks
+ * This list was constructed by WebStorm AI Assistant
+ * AI Assistant message: "list of quoted typescript reserved keywords separated by commas"
+ */
+const TS_RESERVED_WORDS = [
+  'abstract',
+  'as',
+  'asserts',
+  'async',
+  'await',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'debugger',
+  'declare',
+  'default',
+  'delete',
+  'do',
+  'else',
+  'enum',
+  'export',
+  'extends',
+  'false',
+  'finally',
+  'for',
+  'from',
+  'function',
+  'get',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'infer',
+  'instanceof',
+  'interface',
+  'is',
+  'keyof',
+  'let',
+  'module',
+  'namespace',
+  'never',
+  'new',
+  'null',
+  'of',
+  'override',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'readonly',
+  'require',
+  'return',
+  'set',
+  'static',
+  'super',
+  'switch',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'type',
+  'typeof',
+  'undefined',
+  'unique',
+  'unknown',
+  'var',
+  'void',
+  'while',
+  'with',
+  'yield',
+] as const;
+
+/**
+ * A Set that contains all TypeScript reserved words.
+ *
+ * This variable holds a collection of reserved keywords in TypeScript,
+ * which typically cannot be used as identifiers such as variable names,
+ * function names, etc.
+ *
+ * This data is commonly used to validate or restrict the usage of
+ * certain words in TypeScript code to ensure compatibility and prevent
+ * conflicts with the language's syntax and reserved identifiers.
+ *
+ * @type {ReadonlySet<string>}
+ */
+export const TS_RESERVED_WORDS_SET: ReadonlySet<string> = new Set<string>(TS_RESERVED_WORDS);
 
 /**
  * Logs a formatted message with a specified log level for generators.
@@ -172,10 +300,10 @@ export function stripLineBreaks(str: string | undefined | null): string {
  * @returns {string} The updated string with fixed FHIR hyperlinks.
  */
 export function fixFhirHyperLinks(str: string): string {
-  // TODO: Resolve issue with multiple hyperlinks
-  const regex = /]\((.+\.html)/gi;
-  return str.replace(regex, `](https://hl7.org/fhir/$1`);
-  // return str.replaceAll(regex, (_match, p1: string) => `](https://hl7.org/fhir/${p1}`);
+  // NOTE: Typedocs will issue a `[warning]` for hyperlink strings containing invalid content.
+  //       If this occurs, we might need to update the allowable characters (`[...]`) below to include new characters
+  const regex = /([-A-Za-z0-9]+\.html[-#A-Za-z0-9.]*\))/gi;
+  return str.replace(regex, `https://hl7.org/fhir/$1`);
 }
 
 /**

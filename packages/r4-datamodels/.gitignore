@@ -1,4 +1,3 @@
 # Temporarily ignore generated content
-src/code-systems/**
-src/complex-types/**
-src/resources/**
+src
+src/index.ts
