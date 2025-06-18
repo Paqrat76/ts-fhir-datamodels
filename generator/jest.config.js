@@ -17,6 +17,7 @@ module.exports = {
   },
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
+    '!<rootDir>/src/generator-lib/base/*.ts',
     '!<rootDir>/src/**/index.ts',
     '!<rootDir>/src/__test__/**',
     '!<rootDir>/dist/**',

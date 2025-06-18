@@ -183,3 +183,62 @@ export async function generatorPackageLoader(options: GeneratorPackageLoaderOpti
 
   return new BasePackageLoader(packageDB, packageCache, registryClient, buildClient, options);
 }
+
+/**
+ * Generates the contents of a license file for a given year.
+ *
+ * @returns {string[]} An array of strings representing the lines of the license file content.
+ */
+export function generateLicenseContent(): string[] {
+  const licenseContent: string[] = [];
+
+  licenseContent.push('/*');
+  licenseContent.push(` * Copyright (c) ${String(new Date().getFullYear())}. Joe Paquette`);
+  licenseContent.push(' *');
+  licenseContent.push(' * Permission is hereby granted, free of charge, to any person obtaining a copy');
+  licenseContent.push(' * of this software and associated documentation files (the "Software"), to deal');
+  licenseContent.push(' * in the Software without restriction, including without limitation the rights');
+  licenseContent.push(' * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell');
+  licenseContent.push(' * copies of the Software, and to permit persons to whom the Software is');
+  licenseContent.push(' * furnished to do so, subject to the following conditions:');
+  licenseContent.push(' *');
+  licenseContent.push(' * The above copyright notice and this permission notice shall be included in all');
+  licenseContent.push(' * copies or substantial portions of the Software.');
+  licenseContent.push(' *');
+  licenseContent.push(' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR');
+  licenseContent.push(' * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,');
+  licenseContent.push(' * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE');
+  licenseContent.push(' * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER');
+  licenseContent.push(' * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,');
+  licenseContent.push(' * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE');
+  licenseContent.push(' * SOFTWARE.');
+  licenseContent.push(' *');
+  licenseContent.push(' */');
+
+  return licenseContent;
+}
+
+/**
+ * Generates the content for a module file as an array of strings.
+ *
+ * @param {string} moduleName - The name of the module for which content is generated.
+ * @returns {string[]} An array of strings, where each string represents a line of module content.
+ */
+export function generateModuleContent(moduleName: string): string[] {
+  const moduleContent: string[] = [];
+
+  moduleContent.push('/**');
+  moduleContent.push(` * This file is generated from by the FHIR Package Generator.`);
+  moduleContent.push(' * DO NOT make any modifications!');
+  moduleContent.push(' * ');
+  moduleContent.push(` * ${moduleName} Module`);
+  moduleContent.push(' *');
+  moduleContent.push(
+    ' * For questions, suggestions, or bugs, please open an issue at [GitHub ts-fhir-datamodels/issues](https://github.com/Paqrat76/ts-fhir-datamodels/issues).',
+  );
+  moduleContent.push(' *');
+  moduleContent.push(' * @packageDocumentation');
+  moduleContent.push(' */');
+
+  return moduleContent;
+}

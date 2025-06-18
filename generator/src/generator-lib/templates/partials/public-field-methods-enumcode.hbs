@@ -1,98 +1,98 @@
 {{!-- Public Field Methods for EnumCodeType Types Partial Template --}}
 {{#if this.isOptionalItem}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a EnumCodeType if defined; else undefined
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType if defined; else undefined
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType | undefined {
-    return this.{{edHbs.fieldName}};
+    return this.{{edHbs.fieldIdentifierName}};
   }
 
   /**
-   * Assigns the provided EnumCodeType value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided EnumCodeType value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param enumType - the `{{edHbs.fieldName}}` value
+   * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
       const errMsgPrefix = 'Invalid {{edHbs.path}}';
       assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
-      this.{{edHbs.fieldName}} = enumType;
+      this.{{edHbs.fieldIdentifierName}} = enumType;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}EnumType(): boolean {
-    return isDefined<EnumCodeType>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty() && this.{{edHbs.fieldName}}.fhirCodeEnumeration.length > 0;
+    return isDefined<EnumCodeType>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty() && this.{{edHbs.fieldIdentifierName}}.fhirCodeEnumeration.length > 0;
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a CodeType if defined; else undefined
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType if defined; else undefined
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType | undefined {
-    if (this.{{edHbs.fieldName}} === undefined) {
+    if (this.{{edHbs.fieldIdentifierName}} === undefined) {
       return undefined;
     }
-    return this.{{edHbs.fieldName}} as CodeType;
+    return this.{{edHbs.fieldIdentifierName}} as CodeType;
   }
 
   /**
-   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of CodeType.`;
       assertFhirType<CodeType>(element, CodeType, optErrMsg);
-      this.{{edHbs.fieldName}} = new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}});
+      this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}});
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhirCode if defined; else undefined
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode if defined; else undefined
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode | undefined {
-    if (this.{{edHbs.fieldName}} === undefined) {
+    if (this.{{edHbs.fieldIdentifierName}} === undefined) {
       return undefined;
     }
-    return this.{{edHbs.fieldName}}.fhirCode.code;
+    return this.{{edHbs.fieldIdentifierName}}.fhirCode.code;
   }
 
   /**
-   * Assigns the provided primitive value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
       const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of fhirCode.`;
-      this.{{edHbs.fieldName}} = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}});
+      this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}});
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
@@ -100,90 +100,89 @@
 {{/if}}
 {{#if this.isRequiredItem}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a EnumCodeType if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType if defined; else null
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType | null {
-    return this.{{edHbs.fieldName}};
+    return this.{{edHbs.fieldIdentifierName}};
   }
 
   /**
-   * Assigns the provided EnumCodeType value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided EnumCodeType value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param enumType - the `{{edHbs.fieldName}}` value
+   * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, `{{edHbs.path}} is required`);
     const errMsgPrefix = `Invalid {{edHbs.path}}`;
     assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
-    this.{{edHbs.fieldName}} = enumType;
+    this.{{edHbs.fieldIdentifierName}} = enumType;
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}EnumType(): boolean {
-    return isDefined<EnumCodeType>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty() && this.{{edHbs.fieldName}}.fhirCodeEnumeration.length > 0;
+    return isDefined<EnumCodeType>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty() && this.{{edHbs.fieldIdentifierName}}.fhirCodeEnumeration.length > 0;
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a CodeType if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType if defined; else null
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType | null {
-    if (this.{{edHbs.fieldName}} === null) {
+    if (this.{{edHbs.fieldIdentifierName}} === null) {
       return null;
     }
-    return this.{{edHbs.fieldName}} as CodeType;
+    return this.{{edHbs.fieldIdentifierName}} as CodeType;
   }
 
   /**
-   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType): this {
     assertIsDefined<CodeType>(element, `{{edHbs.path}} is required`);
     const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of CodeType.`;
     assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.{{edHbs.fieldName}} = new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}});
+    this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}});
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhirCode if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode if defined; else null
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode | null {
-    if (this.{{edHbs.fieldName}} === null) {
+    if (this.{{edHbs.fieldIdentifierName}} === null) {
       return null;
     }
-    return this.{{edHbs.fieldName}}.fhirCode.code;
+    return this.{{edHbs.fieldIdentifierName}}.fhirCode.code;
   }
 
   /**
-   * Assigns the provided primitive value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, `{{edHbs.path}} is required`);
     const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
-    this.{{edHbs.fieldName}} = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase
-      edHbs.type.codeSystemEnumName}});
+    this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}});
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
@@ -191,33 +190,33 @@
 {{/if}}
 {{#if this.isOptionalList}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a EnumCodeType array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType array
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType[] {
-    return this.{{edHbs.fieldName}} ?? ([] as EnumCodeType[]);
+    return this.{{edHbs.fieldIdentifierName}} ?? ([] as EnumCodeType[]);
   }
 
   /**
-   * Assigns the provided EnumCodeType array value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided EnumCodeType array value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param enumType - the `{{edHbs.fieldName}}` array value
+   * @param enumType - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
       const errMsgPrefix = `Invalid {{edHbs.path}}`;
       assertEnumCodeTypeList<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
-      this.{{edHbs.fieldName}} = enumType;
+      this.{{edHbs.fieldIdentifierName}} = enumType;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided EnumCodeType value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided EnumCodeType value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param enumType - the `{{edHbs.fieldName}}` value
+   * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
@@ -225,32 +224,32 @@
       const errMsgPrefix = `Invalid {{edHbs.path}})`;
       assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
       this.init{{upperFirst edHbs.fieldName}}();
-      this.{{edHbs.fieldName}}?.push(enumType);
+      this.{{edHbs.fieldIdentifierName}}?.push(enumType);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}EnumType(): boolean {
-    return isDefinedList<EnumCodeType>(this.{{edHbs.fieldName}}) && this.{{edHbs.fieldName}}.some((item: EnumCodeType) => !item.isEmpty()) && this.{{edHbs.fieldName}}.every((item: EnumCodeType) => item.fhirCodeEnumeration.length > 0);
+    return isDefinedList<EnumCodeType>(this.{{edHbs.fieldIdentifierName}}) && this.{{edHbs.fieldIdentifierName}}.some((item: EnumCodeType) => !item.isEmpty()) && this.{{edHbs.fieldIdentifierName}}.every((item: EnumCodeType) => item.fhirCodeEnumeration.length > 0);
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a CodeType array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType array
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType[] {
-    if (this.{{edHbs.fieldName}} === undefined) {
+    if (this.{{edHbs.fieldIdentifierName}} === undefined) {
       return [] as CodeType[];
     }
-    return this.{{edHbs.fieldName}} as CodeType[];
+    return this.{{edHbs.fieldIdentifierName}} as CodeType[];
   }
 
   /**
-   * Assigns the provided PrimitiveType array value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided PrimitiveType array value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` array value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType[] | undefined): this {
@@ -261,17 +260,17 @@
       element.forEach((type: CodeType) => {
         enumCodeTypes.push(new EnumCodeType(type, this.{{camelCase edHbs.type.codeSystemEnumName}}));
       });
-      this.{{edHbs.fieldName}} = enumCodeTypes;
+      this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided PrimitiveType value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided PrimitiveType value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined): this {
@@ -279,36 +278,36 @@
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of CodeType.`;
       assertFhirType<CodeType>(element, CodeType, optErrMsg);
       this.init{{upperFirst edHbs.fieldName}}();
-      this.{{edHbs.fieldName}}?.push(new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}}));
+      this.{{edHbs.fieldIdentifierName}}?.push(new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}}));
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhirCode array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode array
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode[] {
-    if (this.{{edHbs.fieldName}} === undefined) {
+    if (this.{{edHbs.fieldIdentifierName}} === undefined) {
       return [] as fhirCode[];
     }
     const values = [] as fhirCode[];
-    for (const item of this.{{edHbs.fieldName}}) {
+    for (const item of this.{{edHbs.fieldIdentifierName}}) {
       values.push(item.fhirCode.code);
     }
     return values;
   }
 
   /**
-   * Assigns the provided primitive value array to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value array to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value array
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
@@ -319,70 +318,70 @@
       value.forEach((val: fhirCode) => {
         enumCodeTypes.push(new EnumCodeType(parseFhirPrimitiveData(val, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
       });
-      this.{{edHbs.fieldName}} = enumCodeTypes;
+      this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided primitive value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided primitive value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
       this.init{{upperFirst edHbs.fieldName}}();
       const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of fhirCode.`;
-      this.{{edHbs.fieldName}}?.push(new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
+      this.{{edHbs.fieldIdentifierName}}?.push(new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
   }
 
   /**
-   * Initialize the {{edHbs.fieldName}} property
+   * Initialize the {{edHbs.fieldIdentifierName}} property
    */
   private init{{upperFirst edHbs.fieldName}}(): void {
     if(!this.has{{upperFirst edHbs.fieldName}}EnumType()) {
-      this.{{edHbs.fieldName}} = [] as EnumCodeType[];
+      this.{{edHbs.fieldIdentifierName}} = [] as EnumCodeType[];
     }
   }
 {{/if}}
 {{#if this.isRequiredList}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a EnumCodeType array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType array
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType[] {
-    return this.{{edHbs.fieldName}} ?? ([] as EnumCodeType[]);
+    return this.{{edHbs.fieldIdentifierName}} ?? ([] as EnumCodeType[]);
   }
 
   /**
-   * Assigns the provided EnumCodeType array value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided EnumCodeType array value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param enumType - the `{{edHbs.fieldName}}` array value
+   * @param enumType - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType[]): this {
     assertIsDefinedList<EnumCodeType>(enumType, `{{edHbs.path}} is required`);
     const errMsgPrefix = `Invalid {{edHbs.path}}`;
     assertEnumCodeTypeList<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
-    this.{{edHbs.fieldName}} = enumType;
+    this.{{edHbs.fieldIdentifierName}} = enumType;
     return this;
   }
 
   /**
-   * Add the provided EnumCodeType value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided EnumCodeType value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param enumType - the `{{edHbs.fieldName}}` value
+   * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
@@ -390,32 +389,32 @@
       const errMsgPrefix = `Invalid {{edHbs.path}})`;
       assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
       this.init{{upperFirst edHbs.fieldName}}();
-      this.{{edHbs.fieldName}}?.push(enumType);
+      this.{{edHbs.fieldIdentifierName}}?.push(enumType);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}EnumType(): boolean {
-    return isDefinedList<EnumCodeType>(this.{{edHbs.fieldName}}) && this.{{edHbs.fieldName}}.some((item: EnumCodeType) => !item.isEmpty()) && this.{{edHbs.fieldName}}.every((item: EnumCodeType) => item.fhirCodeEnumeration.length > 0);
+    return isDefinedList<EnumCodeType>(this.{{edHbs.fieldIdentifierName}}) && this.{{edHbs.fieldIdentifierName}}.some((item: EnumCodeType) => !item.isEmpty()) && this.{{edHbs.fieldIdentifierName}}.every((item: EnumCodeType) => item.fhirCodeEnumeration.length > 0);
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a CodeType array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType array
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType[] {
-    if (this.{{edHbs.fieldName}} === null) {
+    if (this.{{edHbs.fieldIdentifierName}} === null) {
       return [] as CodeType[];
     }
-    return this.{{edHbs.fieldName}} as CodeType[];
+    return this.{{edHbs.fieldIdentifierName}} as CodeType[];
   }
 
   /**
-   * Assigns the provided PrimitiveType array value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided PrimitiveType array value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` array value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType[]): this {
@@ -426,14 +425,14 @@
     element.forEach((type: CodeType) => {
       enumCodeTypes.push(new EnumCodeType(type, this.{{camelCase edHbs.type.codeSystemEnumName}}));
     });
-    this.{{edHbs.fieldName}} = enumCodeTypes;
+    this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
     return this;
   }
 
   /**
-   * Add the provided PrimitiveType value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided PrimitiveType value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined): this {
@@ -441,36 +440,36 @@
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of CodeType.`;
       assertFhirType<CodeType>(element, CodeType, optErrMsg);
       this.init{{upperFirst edHbs.fieldName}}();
-      this.{{edHbs.fieldName}}?.push(new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}}));
+      this.{{edHbs.fieldIdentifierName}}?.push(new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}}));
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhirCode array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode array
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode[] {
-    if (this.{{edHbs.fieldName}} === null) {
+    if (this.{{edHbs.fieldIdentifierName}} === null) {
       return [] as fhirCode[];
     }
     const values = [] as fhirCode[];
-    for (const item of this.{{edHbs.fieldName}}) {
+    for (const item of this.{{edHbs.fieldIdentifierName}}) {
       values.push(item.fhirCode.code);
     }
     return values;
   }
 
   /**
-   * Assigns the provided primitive value array to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value array to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value array
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
@@ -481,38 +480,38 @@
     value.forEach((val: fhirCode) => {
       enumCodeTypes.push(new EnumCodeType(parseFhirPrimitiveData(val, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
     });
-    this.{{edHbs.fieldName}} = enumCodeTypes;
+    this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
     return this;
   }
 
   /**
-   * Add the provided primitive value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided primitive value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
       this.init{{upperFirst edHbs.fieldName}}();
       const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of fhirCode.`;
-      this.{{edHbs.fieldName}}?.push(new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
+      this.{{edHbs.fieldIdentifierName}}?.push(new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}EnumType();
   }
 
   /**
-   * Initialize the {{edHbs.fieldName}} property
+   * Initialize the {{edHbs.fieldIdentifierName}} property
    */
   private init{{upperFirst edHbs.fieldName}}(): void {
     if(!this.has{{upperFirst edHbs.fieldName}}EnumType()) {
-      this.{{edHbs.fieldName}} = [] as EnumCodeType[];
+      this.{{edHbs.fieldIdentifierName}} = [] as EnumCodeType[];
     }
   }
 {{/if}}

@@ -1,0 +1,33 @@
+{{!-- Public Field Methods for Resource Types Partial Template --}}
+{{#if this.isOptionalItem}}
+  /**
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a Resource object if defined; else undefined
+   */
+  public get{{upperFirst edHbs.fieldName}}(): Resource | undefined {
+    return this.{{edHbs.fieldIdentifierName}};
+  }
+
+  /**
+   * Assigns the provided Resource object value to the `{{edHbs.fieldIdentifierName}}` property.
+   *
+   * @param value - the `{{edHbs.fieldIdentifierName}}` object value
+   * @returns this
+   */
+  public set{{upperFirst edHbs.fieldName}}(value: Resource | undefined): this {
+    if (isDefined<Resource>(value)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of Resource.`;
+      assertFhirResourceType(value, optErrMsg);
+      this.{{edHbs.fieldIdentifierName}} = value;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
+   */
+  public has{{upperFirst edHbs.fieldName}}(): boolean {
+    return isDefined<Resource>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty();
+  }
+{{/if}}

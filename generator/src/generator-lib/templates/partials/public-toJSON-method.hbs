@@ -23,7 +23,38 @@
 
 {{/if}}
 {{#each elementDefinitions}}
-{{#if this.isPrimitiveMethods}}
+{{#if this.isBackboneType}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirBackboneElementJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirBackboneElementJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{#if this.isOptionalList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirBackboneElementListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    }
+
+{{/if}}
+{{#if this.isRequiredList}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      setFhirBackboneElementListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
+    } else {
+      missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isPrimitiveType}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
@@ -54,7 +85,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isChoiceMethods}}
+{{#if this.isChoiceType}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -72,7 +103,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isComplexMethods}}
+{{#if this.isComplexType}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
@@ -103,7 +134,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isEnumCodeMethods}}
+{{#if this.isEnumCodeType}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -135,7 +166,7 @@
 
 {{/if}}
 {{/if}}
-{{#if this.isReferenceMethods}}
+{{#if this.isReferenceType}}
 {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
@@ -162,6 +193,15 @@
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       missingReqdProperties.push(`{{this.path}}`);
+    }
+
+{{/if}}
+{{/if}}
+{{#if this.isResourceType}}
+{{#if this.isOptionalItem}}
+    if (this.has{{upperFirst this.fieldName}}()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirResourceJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
     }
 
 {{/if}}

@@ -25,20 +25,22 @@ import { strict as assert } from 'node:assert';
 import { camelCase, cloneDeep, isEmpty, isNil, upperFirst } from 'lodash';
 import {
   extractNameFromUrl,
+  fixFhirHyperLinks,
   getPrimitiveJsonType,
   isPrimitiveDataType,
   stripLineBreaks,
   substituteUnicodeCharacters,
+  TS_RESERVED_WORDS_SET,
 } from '../utils';
 import { ElementDefinition, ElementDefinitionType, StructureDefinition } from '../fhir-artifact-interfaces';
-import { DATA_TYPE_MAPPINGS, DATA_TYPES, FhirDataType } from '../fhir-data-type';
+import { DATA_TYPE_MAPPINGS, DATA_TYPES } from '../fhir-data-type';
 import { FhirPackage } from '../ts-datamodel-generator-helpers';
 
-export interface StructureDefinitionRootElement {
-  short: string | undefined;
-  definition: string | undefined;
-  comment: string | undefined;
-  requirements: string | undefined;
+interface StructureDefinitionRootElement {
+  short?: string;
+  definition?: string;
+  comment?: string;
+  requirements?: string;
 }
 
 export interface HbsElementComponentRoot extends StructureDefinitionRootElement {
@@ -51,24 +53,25 @@ export interface HbsElementComponentRoot extends StructureDefinitionRootElement 
 export interface HbsElementDefinitionType {
   fhirDataType: string;
   code: string;
-  primitiveJsonType: 'boolean' | 'number' | 'string' | undefined;
-  choiceTypes: string[] | undefined;
-  choiceDataTypes: string[] | undefined;
-  codeSystemName: string | undefined;
-  codeSystemEnumName: string | undefined;
-  targetProfile: string[] | undefined;
-  targetResource: string[] | undefined;
+  primitiveJsonType?: 'boolean' | 'number' | 'string';
+  choiceTypes?: string[];
+  choiceDataTypes?: string[];
+  codeSystemName?: string;
+  codeSystemEnumName?: string;
+  targetProfile?: string[];
+  targetResource?: string[];
 }
 
 export interface HbsElementDefinition {
   path: string;
   fieldName: string;
-  short: string | undefined;
-  definition: string | undefined;
-  comment: string | undefined;
-  requirements: string | undefined;
+  fieldIdentifierName: string;
+  short?: string;
+  definition?: string;
+  comment?: string;
+  requirements?: string;
   min: number;
-  max: string;
+  max: `${number}` | '*';
   cardinality: string;
   isRequired: boolean;
   isArray: boolean;
@@ -77,18 +80,15 @@ export interface HbsElementDefinition {
   isRequiredItem: boolean;
   isRequiredList: boolean;
   type: HbsElementDefinitionType;
-  isPrimitiveType: boolean;
-  isChoiceType: boolean;
+  isBackboneType: boolean;
+  isChoiceType: boolean; // NOTE: FHIR "open" data types are treated as "choice" data types in ElementDefinition.type
   isComplexType: boolean;
   isEnumCodeType: boolean;
+  isPrimitiveType: boolean;
   isReferenceType: boolean;
-  isPrimitiveMethods: boolean;
-  isChoiceMethods: boolean;
-  isComplexMethods: boolean;
-  isEnumCodeMethods: boolean;
-  isReferenceMethods: boolean;
+  isResourceType: boolean;
   isModifier: boolean;
-  isModifierReason: string | undefined;
+  isModifierReason?: string;
   isSummary: boolean;
 }
 
@@ -100,18 +100,26 @@ export interface HbsElementComponent {
   parentFieldName: string;
   componentName: string;
   baseDefinitionType: string;
+  isComponentResource: boolean;
+  isComponentDomainResource: boolean;
+  isComponentBackboneElement: boolean;
+  isComponentBackboneType: boolean;
+  isComponentDataType: boolean;
+  isComponentElement: boolean;
+  hasParsableDataType: boolean;
   // StructureDefinitionRootElement for parent component; HbsElementComponentRoot for child components
   rootElement: StructureDefinitionRootElement | HbsElementComponentRoot;
   numRequiredFields: number;
   hasRequiredFields: boolean;
+  hasResourceFields: boolean;
   hasPrimitiveFields: boolean;
-  hasOnlyOnePrimitiveField: boolean;
+  hasOnlyOnePrimitiveField: boolean; // Refer to the comment block in the body of getNumberOfPrimitiveFields()
   hasChoiceFields: boolean;
   hasCodeSystemEnums: boolean;
   requiredConstructor: boolean;
   elementDefinitions: HbsElementDefinition[];
   fhirCoreImports: string[];
-  generatedImports: string[] | undefined;
+  generatedImports: string[];
 }
 
 export interface HbsStructureDefinition {
@@ -121,13 +129,13 @@ export interface HbsStructureDefinition {
   kind: string;
   baseDefinitionType: string;
   description: string;
-  purpose: string | undefined;
+  purpose?: string;
   fhirVersion: string;
   parentComponent: HbsElementComponent;
   hasChildComponents: boolean;
-  childComponents: HbsElementComponent[] | undefined;
+  childComponents?: HbsElementComponent[];
   fhirCoreImports: string[];
-  generatedImports: string[] | undefined;
+  generatedImports: string[];
 }
 
 /**
@@ -167,14 +175,11 @@ export function getSdHbsProperties(
     hasChildComponents: !isEmpty(childComponents),
     childComponents: childComponents,
     fhirCoreImports: [] as string[],
-    generatedImports: undefined,
+    generatedImports: [] as string[],
   } as HbsStructureDefinition;
 
   let fhirCoreImportsSet = new Set(parentComponent.fhirCoreImports);
-  let generatedImportsSet =
-    parentComponent.generatedImports && parentComponent.generatedImports.length > 0
-      ? new Set<string>(parentComponent.generatedImports)
-      : new Set<string>();
+  let generatedImportsSet = new Set<string>(parentComponent.generatedImports);
 
   if (childComponents && childComponents.length > 0) {
     let childCoreImportsSet = new Set<string>();
@@ -188,7 +193,7 @@ export function getSdHbsProperties(
           childCoreImportsSet = new Set([...childComponent.fhirCoreImports, ...childCoreImportsSet]);
         }
       }
-      if (childComponent.generatedImports && childComponent.generatedImports.length > 0) {
+      if (childComponent.generatedImports.length > 0) {
         if (childGeneratedImportsSet.size === 0) {
           childGeneratedImportsSet = new Set(childComponent.generatedImports);
         } else {
@@ -210,10 +215,78 @@ export function getSdHbsProperties(
   }
 
   sdHbsProperties.fhirCoreImports = Array.from(fhirCoreImportsSet).sort();
-  sdHbsProperties.generatedImports =
-    generatedImportsSet.size === 0 ? undefined : Array.from(generatedImportsSet).sort();
+  sdHbsProperties.generatedImports = Array.from(generatedImportsSet).sort();
 
   return sdHbsProperties;
+}
+
+/**
+ * Derives and returns an HbsElementDefinition object based on the provided ElementDefinition
+ * and a mapping of code systems.
+ *
+ * @param {ElementDefinition} element - The definition of the FHIR ElementDefinition.
+ * @param {Map<string, string>} codeSystemEnumMap - A mapping of code systems to corresponding enumerations
+ *                                                  used in the FHIR model.
+ * @returns {HbsElementDefinition} A comprehensive representation of the element
+ */
+function getHbsElementDefinition(
+  element: ElementDefinition,
+  codeSystemEnumMap: Map<string, string>,
+): HbsElementDefinition {
+  const nameResults = getFieldNames(element);
+  assert(nameResults, 'nameResults must be non-empty');
+
+  const min = element.min ?? 0;
+  const max = element.max ?? '1';
+  const isRequiredElement = isRequired(element);
+  const isArrayElement = isArrayCardinality(element);
+
+  const type: HbsElementDefinitionType = getFhirType(element, codeSystemEnumMap);
+  const isChoice = type.fhirDataType === 'CHOICE';
+
+  const isBackboneType = isChoice ? false : type.fhirDataType === 'BackboneElement';
+  const isEnumCodeType = isChoice ? false : type.code === 'EnumCodeType';
+  const isPrimitiveType = isChoice || isBackboneType || isEnumCodeType ? false : isPrimitiveDataType(type.fhirDataType);
+  const isReferenceType = isChoice ? false : type.code === 'Reference';
+  const isResourceType = isChoice ? false : type.code === 'Resource';
+  const isComplexType = !(
+    isChoice ||
+    isBackboneType ||
+    isEnumCodeType ||
+    isPrimitiveType ||
+    isReferenceType ||
+    isResourceType
+  );
+
+  return {
+    path: element.path,
+    fieldName: nameResults.fieldName,
+    fieldIdentifierName: nameResults.fieldIdentifierName,
+    short: fixDescriptiveString(element.short),
+    definition: fixDescriptiveString(element.definition),
+    comment: fixDescriptiveString(element.comment),
+    requirements: fixDescriptiveString(element.requirements),
+    min: min,
+    max: max,
+    cardinality: `${String(min)}..${max}`,
+    isRequired: isRequiredElement,
+    isArray: isArrayElement,
+    isOptionalItem: !isRequiredElement && !isArrayElement,
+    isOptionalList: !isRequiredElement && isArrayElement,
+    isRequiredItem: isRequiredElement && !isArrayElement,
+    isRequiredList: isRequiredElement && isArrayElement,
+    type: type,
+    isBackboneType: isBackboneType,
+    isChoiceType: isChoice,
+    isComplexType: isComplexType,
+    isEnumCodeType: isEnumCodeType,
+    isPrimitiveType: isPrimitiveType,
+    isReferenceType: isReferenceType,
+    isResourceType: isResourceType,
+    isModifier: element.isModifier ?? false,
+    isModifierReason: fixDescriptiveString(element.isModifierReason),
+    isSummary: element.isSummary ?? false,
+  } as HbsElementDefinition;
 }
 
 /**
@@ -242,8 +315,10 @@ function getParentElementComponent(
 
   const parentElementDefinitions: HbsElementDefinition[] = getParentElementDefinitions(structureDef, codeSystemEnumMap);
 
+  const hasParsableTypes = hasParsableDataType(baseDefinitionType, parentElementDefinitions);
+  const hasResourceFields = parentElementDefinitions.some((ed: HbsElementDefinition) => ed.isResourceType);
   const numReqdFields = getNumberOfReqdFields(parentElementDefinitions);
-  const numPrivateFields = getNumberOfPrivateFields(parentElementDefinitions);
+  const numPrimitiveFields = getNumberOfPrimitiveFields(parentElementDefinitions);
   const hasChoiceFields = parentElementDefinitions.some((ed: HbsElementDefinition) => ed.isChoiceType);
   const hasCodeSystemEnums = parentElementDefinitions.some(
     (ed: HbsElementDefinition) => ed.type.codeSystemEnumName !== undefined,
@@ -253,20 +328,29 @@ function getParentElementComponent(
     parentUrl: structureDef.url,
     parentName: structureDef.name,
     parentType: structureDef.type,
+    parentKind: structureDef.kind,
     parentFieldName: structureDef.name,
     componentName: structureDef.type,
     baseDefinitionType: baseDefinitionType,
+    isComponentResource: baseDefinitionType === 'Resource',
+    isComponentDomainResource: baseDefinitionType === 'DomainResource',
+    isComponentBackboneElement: false,
+    isComponentBackboneType: baseDefinitionType === 'BackboneType',
+    isComponentDataType: baseDefinitionType === 'DataType',
+    isComponentElement: false,
+    hasParsableDataType: hasParsableTypes,
     rootElement: rootElement,
     numRequiredFields: numReqdFields,
     hasRequiredFields: numReqdFields > 0,
-    hasPrimitiveFields: numPrivateFields > 0,
-    hasOnlyOnePrimitiveField: numPrivateFields === 1,
+    hasResourceFields: hasResourceFields,
+    hasPrimitiveFields: numPrimitiveFields > 0,
+    hasOnlyOnePrimitiveField: numPrimitiveFields === 1,
     hasChoiceFields: hasChoiceFields,
     hasCodeSystemEnums: hasCodeSystemEnums,
     requiredConstructor: numReqdFields > 0 || hasCodeSystemEnums,
     elementDefinitions: parentElementDefinitions,
     fhirCoreImports: [] as string[],
-    generatedImports: undefined,
+    generatedImports: [] as string[],
   } as HbsElementComponent;
 
   parentElementComponent.fhirCoreImports = getFhirCoreImports(parentElementComponent);
@@ -293,9 +377,11 @@ function getParentElementDefinitions(
       element.path.split('.').length === 2 &&
       element.base &&
       !(
-        element.base.path.startsWith('Element') ||
-        element.base.path.startsWith('BackboneType') ||
-        element.base.path.startsWith('BackboneElement')
+        element.base.path.startsWith('Element.') ||
+        element.base.path.startsWith('BackboneType.') ||
+        element.base.path.startsWith('BackboneElement.') ||
+        element.base.path.startsWith('Resource.') ||
+        element.base.path.startsWith('DomainResource.')
       ) &&
       !is0to0Cardinality(element),
   );
@@ -305,56 +391,7 @@ function getParentElementDefinitions(
   );
 
   return parentElements.map((element: ElementDefinition): HbsElementDefinition => {
-    const min = element.min ?? 0;
-    const max = element.max ?? '1';
-    const isRequiredElement = isRequired(element);
-    const isArrayElement = isArrayCardinality(element);
-
-    const type: HbsElementDefinitionType = getFhirType(element, codeSystemEnumMap);
-    const isChoice = type.fhirDataType === 'CHOICE';
-
-    const isEnumCodeType = type.code === 'EnumCodeType';
-    const isReferenceType = type.code === 'Reference';
-    const isPrimitiveType = isChoice ? false : isPrimitiveDataType(type.fhirDataType as FhirDataType);
-    const isComplexType = !(isChoice || isPrimitiveType || isEnumCodeType);
-    // These control Handlebars template processing for the public-field-methods.hbs
-    const isEnumCodeMethods = isChoice ? false : type.code === 'EnumCodeType';
-    const isReferenceMethods = isChoice ? false : type.code === 'Reference';
-    const isPrimitiveMethods =
-      isChoice || isEnumCodeType ? false : isPrimitiveDataType(type.fhirDataType as FhirDataType);
-    const isComplexMethods = !(isChoice || isPrimitiveMethods || isEnumCodeType || isReferenceMethods);
-
-    return {
-      path: element.path,
-      fieldName: getFieldName(element.path),
-      short: fixDescriptiveString(element.short),
-      definition: fixDescriptiveString(element.definition),
-      comment: fixDescriptiveString(element.comment),
-      requirements: fixDescriptiveString(element.requirements),
-      min: min,
-      max: max,
-      cardinality: `${String(min)}..${max}`,
-      isRequired: isRequiredElement,
-      isArray: isArrayElement,
-      isOptionalItem: !isRequiredElement && !isArrayElement,
-      isOptionalList: !isRequiredElement && isArrayElement,
-      isRequiredItem: isRequiredElement && !isArrayElement,
-      isRequiredList: isRequiredElement && isArrayElement,
-      type: type,
-      isPrimitiveType: isPrimitiveType,
-      isChoiceType: isChoice,
-      isComplexType: isComplexType,
-      isEnumCodeType: isEnumCodeType,
-      isReferenceType: isReferenceType,
-      isPrimitiveMethods: isPrimitiveMethods,
-      isChoiceMethods: isChoice,
-      isComplexMethods: isComplexMethods,
-      isEnumCodeMethods: isEnumCodeMethods,
-      isReferenceMethods: isReferenceMethods,
-      isModifier: element.isModifier ?? false,
-      isModifierReason: fixDescriptiveString(element.isModifierReason),
-      isSummary: element.isSummary ?? false,
-    } as HbsElementDefinition;
+    return getHbsElementDefinition(element, codeSystemEnumMap);
   });
 }
 
@@ -418,14 +455,17 @@ function getChildElementComponents(
 
   const hbsElementComponents = [] as HbsElementComponent[];
   hbsElementComponentRoots.forEach((hbsElementComponentRoot: HbsElementComponentRoot) => {
+    const componentDefinitionType = upperFirst(camelCase(hbsElementComponentRoot.typeCode));
     const componentElementDefinitions: HbsElementDefinition[] = getChildComponentElementDefinitions(
       hbsElementComponentRoot,
       structureDef,
       codeSystemEnumMap,
     );
 
+    const hasParsableTypes = hasParsableDataType(componentDefinitionType, componentElementDefinitions);
+    const hasResourceFields = componentElementDefinitions.some((ed: HbsElementDefinition) => ed.isResourceType);
     const numReqdFields = getNumberOfReqdFields(componentElementDefinitions);
-    const numPrivateFields = getNumberOfPrivateFields(componentElementDefinitions);
+    const numPrimitiveFields = getNumberOfPrimitiveFields(componentElementDefinitions);
     const hasChoiceFields = componentElementDefinitions.some((ed: HbsElementDefinition) => ed.isChoiceType);
     const hasCodeSystemEnums = componentElementDefinitions.some(
       (ed: HbsElementDefinition) => ed.type.codeSystemEnumName !== undefined,
@@ -435,20 +475,29 @@ function getChildElementComponents(
       parentUrl: structureDef.url,
       parentName: structureDef.name,
       parentType: structureDef.type,
+      parentKind: structureDef.kind,
       parentFieldName: hbsElementComponentRoot.path,
       componentName: hbsElementComponentRoot.componentName,
-      baseDefinitionType: upperFirst(camelCase(hbsElementComponentRoot.typeCode)),
+      baseDefinitionType: componentDefinitionType,
+      isComponentResource: false,
+      isComponentDomainResource: false,
+      isComponentBackboneElement: componentDefinitionType === 'BackboneElement',
+      isComponentBackboneType: componentDefinitionType === 'BackboneType',
+      isComponentDataType: false,
+      isComponentElement: componentDefinitionType === 'Element',
+      hasParsableDataType: hasParsableTypes,
       rootElement: hbsElementComponentRoot,
       numRequiredFields: numReqdFields,
       hasRequiredFields: numReqdFields > 0,
-      hasPrimitiveFields: numPrivateFields > 0,
-      hasOnlyOnePrimitiveField: numPrivateFields === 1,
+      hasResourceFields: hasResourceFields,
+      hasPrimitiveFields: numPrimitiveFields > 0,
+      hasOnlyOnePrimitiveField: numPrimitiveFields === 1,
       hasChoiceFields: hasChoiceFields,
       hasCodeSystemEnums: hasCodeSystemEnums,
       requiredConstructor: numReqdFields > 0 || hasCodeSystemEnums,
       elementDefinitions: componentElementDefinitions,
       fhirCoreImports: [] as string[],
-      generatedImports: undefined,
+      generatedImports: [] as string[],
     } as HbsElementComponent;
 
     elementComponent.fhirCoreImports = getFhirCoreImports(elementComponent);
@@ -479,68 +528,20 @@ function getChildComponentElementDefinitions(
   const componentElementDefinitions = elementDefinitions.filter(
     (element: ElementDefinition) =>
       element.path !== hbsElementComponentRoot.path &&
-      element.path.startsWith(hbsElementComponentRoot.path) &&
+      element.path.split('.').length === hbsElementComponentRoot.componentLevel + 1 &&
+      element.path.startsWith(`${hbsElementComponentRoot.path}.`) &&
       element.base &&
       !(
-        element.base.path.startsWith('Element') ||
-        element.base.path.startsWith('BackboneType') ||
-        element.base.path.startsWith('BackboneElement')
+        element.base.path.startsWith('Element.') ||
+        element.base.path.startsWith('BackboneType.') ||
+        element.base.path.startsWith('BackboneElement.')
       ) &&
       !is0to0Cardinality(element),
   );
   assert(componentElementDefinitions.length > 0, 'componentElementDefinitions must be non-empty');
 
   return componentElementDefinitions.map((element: ElementDefinition): HbsElementDefinition => {
-    const min = element.min ?? 0;
-    const max = element.max ?? '1';
-    const isRequiredElement = isRequired(element);
-    const isArrayElement = isArrayCardinality(element);
-
-    const type: HbsElementDefinitionType = getFhirType(element, codeSystemEnumMap);
-    const isChoice = type.fhirDataType === 'CHOICE';
-
-    const isEnumCodeType = type.code === 'EnumCodeType';
-    const isReferenceType = type.code === 'Reference';
-    const isPrimitiveType = isChoice ? false : isPrimitiveDataType(type.fhirDataType as FhirDataType);
-    const isComplexType = !(isChoice || isPrimitiveType || isEnumCodeType);
-    // These control Handlebars template processing for the public-field-methods.hbs
-    const isEnumCodeMethods = isChoice ? false : type.code === 'EnumCodeType';
-    const isReferenceMethods = isChoice ? false : type.code === 'Reference';
-    const isPrimitiveMethods =
-      isChoice || isEnumCodeType ? false : isPrimitiveDataType(type.fhirDataType as FhirDataType);
-    const isComplexMethods = !(isChoice || isPrimitiveMethods || isEnumCodeType || isReferenceMethods);
-
-    return {
-      path: element.path,
-      fieldName: getFieldName(element.path),
-      short: fixDescriptiveString(element.short),
-      definition: fixDescriptiveString(element.definition),
-      comment: fixDescriptiveString(element.comment),
-      requirements: fixDescriptiveString(element.requirements),
-      min: min,
-      max: max,
-      cardinality: `${String(min)}..${max}`,
-      isRequired: isRequiredElement,
-      isArray: isArrayElement,
-      isOptionalItem: !isRequiredElement && !isArrayElement,
-      isOptionalList: !isRequiredElement && isArrayElement,
-      isRequiredItem: isRequiredElement && !isArrayElement,
-      isRequiredList: isRequiredElement && isArrayElement,
-      type: type,
-      isPrimitiveType: isPrimitiveType,
-      isChoiceType: isChoice,
-      isComplexType: isComplexType,
-      isEnumCodeType: isEnumCodeType,
-      isReferenceType: isReferenceType,
-      isPrimitiveMethods: isPrimitiveMethods,
-      isChoiceMethods: isChoice,
-      isComplexMethods: isComplexMethods,
-      isEnumCodeMethods: isEnumCodeMethods,
-      isReferenceMethods: isReferenceMethods,
-      isModifier: element.isModifier ?? false,
-      isModifierReason: fixDescriptiveString(element.isModifierReason),
-      isSummary: element.isSummary ?? false,
-    } as HbsElementDefinition;
+    return getHbsElementDefinition(element, codeSystemEnumMap);
   });
 }
 
@@ -552,6 +553,14 @@ function getChildComponentElementDefinitions(
  * @returns {HbsElementDefinitionType} The resolved type information for the FHIR element.type.
  */
 function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, string>): HbsElementDefinitionType {
+  if (!element.type && element.contentReference) {
+    // ElementDefinition is for an element having a "component"/child class that is shared in other "component"/child classes
+    return {
+      fhirDataType: 'BackboneElement',
+      code: `${upperFirst(camelCase(element.contentReference.substring(1)))}Component`,
+    } as HbsElementDefinitionType;
+  }
+
   assert(element.type, `ElementDefinition.type is expected to exist for ElementDefinition ${element.path}`);
   const elementTypes: ElementDefinitionType[] = fixPrimitiveElementType(element.type);
 
@@ -562,8 +571,9 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
     let typeTargetProfile: string[] | undefined;
     let targetResource: string[] | undefined;
 
-    const typeCode = elementTypes[0]?.code as FhirDataType;
-    if (typeCode === 'Element') {
+    const typeCode = elementTypes[0]?.code;
+    assert(typeCode, 'elementTypes[0]?.code must exist');
+    if (typeCode === 'Element' || typeCode === 'BackboneElement') {
       dataType = `${upperFirst(camelCase(element.path))}Component`;
     } else {
       dataType = DATA_TYPE_MAPPINGS.get(typeCode);
@@ -571,11 +581,7 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
 
       primitiveJsonType = getPrimitiveJsonType(typeCode);
 
-      if (codeSystemEnumMap.has(element.path)) {
-        assert(
-          dataType === 'CodeType',
-          `Invalid source FHIR type (${dataType}) for ElementDefinition ${element.path}; Expected 'CodeType'`,
-        );
+      if (dataType === 'CodeType' && codeSystemEnumMap.has(element.path)) {
         codeSystemEnumName = codeSystemEnumMap.get(element.path);
         // This CodeSystem is represented by a generated enum; therefore, its data type must be EnumCodeType
         dataType = 'EnumCodeType';
@@ -591,8 +597,6 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
       fhirDataType: typeCode,
       code: dataType,
       primitiveJsonType: primitiveJsonType,
-      choiceTypes: undefined,
-      choiceDataTypes: undefined,
       codeSystemName: codeSystemEnumName?.replace('Enum', ''),
       codeSystemEnumName: codeSystemEnumName,
       targetProfile: typeTargetProfile,
@@ -605,7 +609,7 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
 
     elementTypes.forEach((edType: ElementDefinitionType) => {
       choiceTypes.push(edType.code);
-      const dataType = DATA_TYPE_MAPPINGS.get(edType.code as FhirDataType);
+      const dataType = DATA_TYPE_MAPPINGS.get(edType.code);
       assert(dataType, `Unsupported FHIR type: ${edType.code} for ElementDefinition ${element.path}`);
       choiceDataTypes.push(dataType);
     });
@@ -613,56 +617,66 @@ function getFhirType(element: ElementDefinition, codeSystemEnumMap: Map<string, 
     return {
       fhirDataType: 'CHOICE',
       code: 'DataType',
-      primitiveJsonType: undefined,
       choiceTypes: choiceTypes,
       choiceDataTypes: choiceDataTypes,
-      codeSystemName: undefined,
-      codeSystemEnumName: undefined,
-      targetProfile: undefined,
-      targetResource: undefined,
     } as HbsElementDefinitionType;
   }
 }
 
 /**
- * Generates and returns a sorted array of FHIR core import statements required for a given StructureDefinition.
+ * Generates and returns an array of unique FHIR core imports based on the specified component properties.
  *
- * @param {HbsStructureDefinition} componentProperties - The StructureDefinition properties for which the imports are calculated. Includes details like required fields and element definitions.
- * @returns {string[]} A sorted array of unique import strings needed for the specified StructureDefinition.
+ * @param {HbsElementComponent} componentProperties - The properties of the component containing metadata
+ *                                                    for generating appropriate FHIR core imports.
+ * @returns {string[]} An array of sorted, unique strings representing the necessary FHIR core imports.
  */
 function getFhirCoreImports(componentProperties: HbsElementComponent): string[] {
+  const BASE_DEFINITION_TYPES = new Set(['DataType', 'BackboneElement', 'BackboneType', 'Element']);
+
   const importsSet = new Set<string>();
 
-  // Core imports for all complex types
-  // TODO: update for all resources
+  // Core imports for all data models
   importsSet.add('IBase');
   importsSet.add('INSTANCE_EMPTY_ERROR_MSG');
   importsSet.add('JSON');
   importsSet.add('isDefined');
   importsSet.add('isElementEmpty');
   importsSet.add('isEmpty');
-  importsSet.add('processElementJson');
   importsSet.add('assertFhirType');
+  importsSet.add('FhirDataTypeParser');
 
-  if (['DataType', 'Element', 'BackboneType', 'BackboneElement'].includes(componentProperties.baseDefinitionType)) {
+  if (BASE_DEFINITION_TYPES.has(componentProperties.baseDefinitionType)) {
     importsSet.add(componentProperties.baseDefinitionType);
   }
 
-  if (componentProperties.hasRequiredFields) {
-    importsSet.add('assertIsDefined');
-    importsSet.add('FhirError');
-    importsSet.add('REQUIRED_PROPERTIES_DO_NOT_EXIST');
-    importsSet.add('REQUIRED_PROPERTIES_REQD_IN_JSON');
-  }
-
   componentProperties.elementDefinitions.forEach((ed: HbsElementDefinition) => {
+    if (ed.isBackboneType) {
+      if (ed.isArray) {
+        importsSet.add('setFhirBackboneElementListJson');
+      } else {
+        importsSet.add('setFhirBackboneElementJson');
+      }
+    }
+
+    if (ed.isRequired) {
+      importsSet.add('FhirError');
+      importsSet.add('REQUIRED_PROPERTIES_DO_NOT_EXIST');
+      importsSet.add('REQUIRED_PROPERTIES_REQD_IN_JSON');
+      if (ed.isArray) {
+        importsSet.add('isDefinedList');
+        importsSet.add('assertIsDefinedList');
+      } else {
+        importsSet.add('isDefined');
+        importsSet.add('assertIsDefined');
+      }
+    }
+
     if (ed.type.choiceDataTypes && ed.type.choiceDataTypes.length > 0) {
       importsSet.add('DataType');
       importsSet.add('ChoiceDataTypesMeta');
       importsSet.add('ChoiceDataTypes');
       importsSet.add('InvalidTypeError');
       importsSet.add('setPolymorphicValueJson');
-      importsSet.add('parsePolymorphicDataType');
       importsSet.add('assertIsDefined');
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
         if (choiceType.endsWith('Type')) {
@@ -671,29 +685,32 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       });
     }
 
-    if (ed.isReferenceMethods) {
-      importsSet.add('ReferenceTargets');
-    }
-
-    if (ed.isEnumCodeMethods) {
+    if (ed.isEnumCodeType) {
       importsSet.add('fhirCode');
       importsSet.add('fhirCodeSchema');
       importsSet.add('CodeType');
       importsSet.add('EnumCodeType');
       importsSet.add('assertEnumCodeType');
       importsSet.add('parseCodeType');
+      importsSet.add('getPrimitiveTypeJson');
+      importsSet.add('setFhirPrimitiveJson');
+      importsSet.add('parseFhirPrimitiveData');
       if (ed.isRequired) {
-        importsSet.add('constructorCodeValueAsEnumCodeType');
+        if (ed.isArray) {
+          importsSet.add('constructorCodeValueAsEnumCodeTypeList');
+        } else {
+          importsSet.add('constructorCodeValueAsEnumCodeType');
+        }
       }
     }
 
-    if (ed.isPrimitiveMethods) {
+    if (ed.isPrimitiveType) {
       importsSet.add(ed.type.code);
       importsSet.add('getPrimitiveTypeJson');
       importsSet.add('setFhirPrimitiveJson');
       importsSet.add('parseFhirPrimitiveData');
       importsSet.add(`parse${ed.type.code}`);
-      const capPrimitiveType: Capitalize<string> = upperFirst(ed.type.fhirDataType);
+      const capPrimitiveType = upperFirst(ed.type.fhirDataType);
       importsSet.add(`fhir${capPrimitiveType}`);
       importsSet.add(`fhir${capPrimitiveType}Schema`);
       if (ed.isRequired) {
@@ -701,7 +718,7 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       }
     }
 
-    if ((ed.isComplexMethods || ed.isReferenceMethods) && !ed.isArray) {
+    if ((ed.isComplexType || ed.isReferenceType) && !ed.isArray) {
       importsSet.add('setFhirComplexJson');
     }
 
@@ -709,20 +726,19 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       importsSet.add('copyListValues');
       importsSet.add('isDefinedList');
       importsSet.add('assertFhirTypeList');
-      if (ed.isPrimitiveMethods) {
+      if (ed.isPrimitiveType) {
         importsSet.add('PrimitiveTypeJson');
         importsSet.add('setFhirPrimitiveListJson');
         importsSet.add('getPrimitiveTypeListJson');
       }
-      if (ed.isEnumCodeMethods) {
+      if (ed.isEnumCodeType) {
         importsSet.add('assertEnumCodeTypeList');
+        importsSet.add('PrimitiveTypeJson');
+        importsSet.add('setFhirPrimitiveListJson');
+        importsSet.add('getPrimitiveTypeListJson');
       }
-      if (ed.isComplexMethods || ed.isReferenceMethods) {
+      if (ed.isComplexType || ed.isReferenceType) {
         importsSet.add('setFhirComplexListJson');
-      }
-      if (ed.isRequired) {
-        importsSet.add('isDefinedList');
-        importsSet.add('assertIsDefinedList');
       }
     }
   });
@@ -731,20 +747,27 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
 }
 
 /**
- * Generates a sorted list of imports based on the provided HBS structure definition.
- * The method extracts unique type codes and code system enum names if they meet certain conditions
- * and returns them as an alphabetically sorted array.
+ * Generates and returns a list of import statements required for a component based on its properties and element definitions.
  *
- * @param {HbsStructureDefinition} componentProperties - The structure definition containing element definitions
- * to process for generating imports.
- * @returns {string[] | undefined} An alphabetically sorted array of unique import strings if any are generated,
- * or undefined if no imports are required.
+ * @param {HbsElementComponent} componentProperties - The properties of the component, which include base definitions,
+ *                                                    resource flags, and element definitions.
+ * @returns {string[]} An array of unique and sorted import statements necessary for the component.
  */
-function getGeneratedImports(componentProperties: HbsElementComponent): string[] | undefined {
+function getGeneratedImports(componentProperties: HbsElementComponent): string[] {
+  const EXCLUDED_TYPES = new Set(['Element', 'BackboneElement', 'BackboneType']);
+  const BASE_RESOURCE_TYPES = new Set(['Resource', 'DomainResource']);
+
   const importsSet = new Set<string>();
 
-  if (['Resource', 'DomainResource'].includes(componentProperties.baseDefinitionType)) {
+  importsSet.add('PARSABLE_DATATYPE_MAP');
+
+  if (BASE_RESOURCE_TYPES.has(componentProperties.baseDefinitionType)) {
     importsSet.add(componentProperties.baseDefinitionType);
+  }
+
+  if (componentProperties.isComponentResource || componentProperties.isComponentDomainResource) {
+    importsSet.add('FhirResourceParser');
+    importsSet.add('FhirResourceType');
   }
 
   componentProperties.elementDefinitions.forEach((ed: HbsElementDefinition) => {
@@ -756,10 +779,19 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
       });
     }
 
-    if (ed.isComplexMethods || ed.isReferenceMethods) {
-      if (DATA_TYPE_MAPPINGS.has(ed.type.code as FhirDataType)) {
+    if (ed.isComplexType || ed.isReferenceType) {
+      if (DATA_TYPE_MAPPINGS.has(ed.type.code)) {
         importsSet.add(ed.type.code);
       }
+    }
+
+    if (ed.isReferenceType) {
+      importsSet.add('ReferenceTargets');
+    }
+
+    if (ed.isResourceType) {
+      importsSet.add('assertFhirResourceType');
+      importsSet.add('setFhirResourceJson');
     }
 
     if (ed.type.codeSystemEnumName) {
@@ -767,7 +799,10 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
     }
   });
 
-  return importsSet.size === 0 ? undefined : Array.from(importsSet).sort();
+  // Remove excluded types
+  EXCLUDED_TYPES.forEach((type) => importsSet.delete(type));
+
+  return Array.from(importsSet).sort();
 }
 
 //region Handlebars Helper Functions
@@ -786,7 +821,7 @@ export function getRequiredConstructorParams(elementDefinitions: HbsElementDefin
 
   const requiredConstructorParams = [] as string[];
   requiredElementDefinitions.forEach((ed) => {
-    const fieldName = ed.fieldName;
+    const fieldIdentifierName = ed.fieldIdentifierName;
     const fieldDataType = ed.isArray
       ? ed.type.code === 'EnumCodeType'
         ? `${ed.type.code}[] | CodeType[]`
@@ -796,7 +831,7 @@ export function getRequiredConstructorParams(elementDefinitions: HbsElementDefin
         : ed.type.code;
     const primitiveDataType = ` | fhir${upperFirst(ed.type.fhirDataType)}`;
     const primitiveType = ed.isPrimitiveType ? (ed.isArray ? `${primitiveDataType}[]` : primitiveDataType) : undefined;
-    const paramStr = `${fieldName}: ${fieldDataType}${primitiveType ?? ''} | null = null`;
+    const paramStr = `${fieldIdentifierName}: ${fieldDataType}${primitiveType ?? ''} | null = null`;
     requiredConstructorParams.push(paramStr);
   });
 
@@ -806,21 +841,18 @@ export function getRequiredConstructorParams(elementDefinitions: HbsElementDefin
 //endregion
 
 //region Common Utilities
-
 /**
- * Processes a given string by performing specific transformations like removing line breaks,
- * substituting Unicode characters, and escaping single quotes. If the input is undefined, it returns undefined.
+ * Processes a given string to remove line breaks, substitute Unicode characters, fix FHIR hyperlinks,
+ * and escape single quotes, returning the modified string.
  *
- * @param {string | undefined} sourceStr - The input string to be processed. It can be a string or undefined.
- * @returns {string | undefined} - The transformed string with the applied changes, or undefined if the input is undefined.
+ * @param {string | undefined} sourceStr - The input string to process. Can be undefined.
+ * @returns {string | undefined} The processed string with modifications applied, or undefined if the input was undefined.
  */
 export function fixDescriptiveString(sourceStr: string | undefined): string | undefined {
   if (sourceStr === undefined) {
     return undefined;
   }
-  // TODO: Resolve issue with multiple hyperlinks in fixFhirHyperLinks()
-  //return fixFhirHyperLinks(substituteUnicodeCharacters(stripLineBreaks(sourceStr))).replace(/'/g, `\\'`);
-  return substituteUnicodeCharacters(stripLineBreaks(sourceStr)).replace(/'/g, `\\'`);
+  return fixFhirHyperLinks(substituteUnicodeCharacters(stripLineBreaks(sourceStr))).replace(/'/g, `\\'`);
 }
 
 /**
@@ -840,19 +872,43 @@ export function getNumberOfReqdFields(hbsEd: HbsElementDefinition[]): number {
 }
 
 /**
- * Calculates and returns the number of private fields from a given array of HbsElementDefinition objects.
+ * Calculates the number of primitive and enum code fields in a provided array of HbsElementDefinition objects.
  *
- * @param {HbsElementDefinition[]} hbsEd - An array of `HbsElementDefinition` objects to be checked for private fields.
- * @returns {number} The total number of private fields within the provided array.
+ * @param {HbsElementDefinition[]} hbsEd - An array of HbsElementDefinition objects to evaluate.
+ * @returns {number} The count of fields that are classified as primitive or enum code types.
  */
-export function getNumberOfPrivateFields(hbsEd: HbsElementDefinition[]): number {
+export function getNumberOfPrimitiveFields(hbsEd: HbsElementDefinition[]): number {
   let numPrivateFields = 0;
   hbsEd.forEach((ed: HbsElementDefinition) => {
-    if (ed.isPrimitiveType) {
+    // Used in HbsElementComponent.hasPrimitiveFields and HbsElementComponent.hasOnlyOnePrimitiveField
+    // where these values are used in "Public Static Parse Method Partial Template" managing the
+    // `primitiveJsonType` variable in the `parse()` method. The EnumCodeType value is parsed as
+    // a primitive 'code' data type; therefore, for this use case, EnumCodeType must be counted as
+    // a primitive data type.
+    if (ed.isPrimitiveType || ed.isEnumCodeType) {
       numPrivateFields++;
     }
   });
   return numPrivateFields;
+}
+
+/**
+ * Determines whether a given component definition type or HbsElementDefinition array
+ * contains parsable data types based on specific conditions.
+ *
+ * @param {string} componentDefinitionType - The type of the component definition (e.g., 'BackboneElement', 'BackboneType', 'Element').
+ * @param {HbsElementDefinition[]} hbsEd - An array of HbsElementDefinition objects to check for specific types.
+ * @returns {boolean} - Returns true if the component definition type or the HbsElementDefinition array
+ *                     contains parsable types, otherwise false.
+ */
+export function hasParsableDataType(componentDefinitionType: string, hbsEd: HbsElementDefinition[]): boolean {
+  const hasParsableBase =
+    componentDefinitionType === 'DataType' ||
+    componentDefinitionType === 'BackboneElement' ||
+    componentDefinitionType === 'BackboneType' ||
+    componentDefinitionType === 'Element';
+  const hasParsableTypes = hbsEd.some((ed) => ed.isChoiceType || ed.isComplexType || ed.isReferenceType);
+  return hasParsableBase || hasParsableTypes;
 }
 
 /**
@@ -925,7 +981,7 @@ export function fixPrimitiveElementType(type: ElementDefinitionType[]): ElementD
       edt.extension.length === 1 &&
       edt.extension[0]?.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type' &&
       edt.extension[0].valueUrl &&
-      DATA_TYPES.includes(edt.extension[0].valueUrl as FhirDataType)
+      DATA_TYPES.includes(edt.extension[0].valueUrl)
     ) {
       edt.code = edt.extension[0].valueUrl;
     } else if (edt.code === 'http://hl7.org/fhirpath/System.String') {
@@ -936,22 +992,37 @@ export function fixPrimitiveElementType(type: ElementDefinitionType[]): ElementD
 }
 
 /**
- * Extracts and returns the field name from a given element path.
+ * Extracts field names and their corresponding identifier names from an element definition.
  *
- * @param {string} elementPath - The complete path of the element as a string.
- * @returns {string} The extracted field name from the given element path.
+ * @param {ElementDefinition} element - The element definition object containing a `path` property.
+ * @returns {{ fieldName: string; fieldIdentifierName: string } | undefined} An object containing the extracted field name and field identifier name,
+ * or `undefined` if the path contains only a single part.
  */
-export function getFieldName(elementPath: string): string {
-  const pathParts = elementPath.split('.');
+export function getFieldNames(
+  element: ElementDefinition,
+): { fieldName: string; fieldIdentifierName: string } | undefined {
+  const pathParts = element.path.split('.');
   if (pathParts.length === 1) {
-    return '';
+    return undefined;
   }
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   let fieldName = pathParts[pathParts.length - 1]!;
   if (fieldName.endsWith('[x]') || fieldName.endsWith('[X]')) {
     fieldName = fieldName.substring(0, fieldName.length - 3);
   }
-  return fieldName;
+  let fieldIdentifierName = TS_RESERVED_WORDS_SET.has(fieldName) ? `${fieldName}_` : fieldName;
+
+  // Anomalies in FHIR specifications where the field name duplicates a generated field method name
+  // Override these name anomalies
+  if (element.path === 'ClaimResponse.addItem') {
+    fieldIdentifierName = `addItem_`;
+  }
+  if (element.path === 'ExplanationOfBenefit.addItem') {
+    fieldIdentifierName = `addItem_`;
+  }
+
+  return { fieldName, fieldIdentifierName };
 }
 
 /**

@@ -32,7 +32,7 @@
  */
 
 import { strict as assert } from 'node:assert';
-import { BackboneElement, DataType, Extension } from '../base-models/core-fhir-models';
+import { BackboneElement, BackboneType, DataType, Extension } from '../base-models/core-fhir-models';
 import { DomainResource } from '../base-models/DomainResource';
 import { FhirResourceType } from '../base-models/FhirResourceType';
 import { Resource } from '../base-models/Resource';
@@ -236,6 +236,56 @@ export function processBackboneElementJson(instance: BackboneElement, dataJson: 
   if ('modifierExtension' in backboneElement) {
     const modifierExtensions = [] as Extension[];
     const modifierExtensionArray = backboneElement['modifierExtension'] as JSON.Array;
+    for (const extensionJson of modifierExtensionArray) {
+      const extension: Extension | undefined = parseExtension(extensionJson as JSON.Object);
+      if (extension !== undefined) {
+        modifierExtensions.push(extension);
+      }
+    }
+    if (modifierExtensions.length > 0) {
+      instance.setModifierExtension(modifierExtensions);
+    }
+  }
+}
+
+/**
+ * Add `Element.id` and/or `Element.extension` and/or `BackboneType.modifierExtension` to the BackboneType instance.
+ *
+ * @param instance - instance of BackboneType on which to add Element/BackboneType properties from dataJson
+ * @param dataJson - Data JSON containing Element/BackboneType properties, if any
+ *
+ * @category Utilities: FHIR Parsers
+ */
+export function processBackboneTypeJson(instance: BackboneType, dataJson: JSON.Value | undefined): void {
+  assertIsDefined<BackboneType>(instance, `Provided instance is undefined/null`);
+  if (!JSON.hasFhirData(dataJson)) {
+    return;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const backboneType: JSON.Object = JSON.asObject(dataJson!, `${instance.constructor.name} BackboneType`);
+
+  if ('id' in backboneType) {
+    instance.setId(JSON.asString(backboneType['id'], `${instance.constructor.name}.id`));
+  }
+
+  if ('extension' in backboneType) {
+    const extensions = [] as Extension[];
+    const extensionArray = backboneType['extension'] as JSON.Array;
+    for (const extensionJson of extensionArray) {
+      const extension: Extension | undefined = parseExtension(extensionJson as JSON.Object);
+      if (extension !== undefined) {
+        extensions.push(extension);
+      }
+    }
+    if (extensions.length > 0) {
+      instance.setExtension(extensions);
+    }
+  }
+
+  if ('modifierExtension' in backboneType) {
+    const modifierExtensions = [] as Extension[];
+    const modifierExtensionArray = backboneType['modifierExtension'] as JSON.Array;
     for (const extensionJson of modifierExtensionArray) {
       const extension: Extension | undefined = parseExtension(extensionJson as JSON.Object);
       if (extension !== undefined) {
@@ -577,6 +627,7 @@ export function getPrimitiveTypeListJson(
  * @category Type Guards/Assertions
  */
 export function assertFhirResourceTypeJson(dataJsonObj: JSON.Object, fhirResourceType: FhirResourceType): void {
+  // TODO: Move into testing utility - Only used in tests
   assertIsDefined<JSON.Object>(dataJsonObj, `The dataJsonObj argument is undefined/null.`);
   assertIsDefined<FhirResourceType>(fhirResourceType, `The fhirResourceType argument is undefined/null.`);
   assert(!isEmpty(fhirResourceType), `The fhirResourceType argument is empty.`);

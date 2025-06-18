@@ -15,41 +15,50 @@
 {{#if this.isRequired}}
 {{#if this.type.codeSystemEnumName}}
 
-    this.{{this.fieldName}} = constructorCodeValueAsEnumCodeType<{{this.type.codeSystemEnumName}}>(
-      {{this.fieldName}},
+{{#if this.isArray}}
+    this.{{this.fieldIdentifierName}} = constructorCodeValueAsEnumCodeTypeList<{{this.type.codeSystemEnumName}}>(
+      {{this.fieldIdentifierName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
       '{{parentName}}.{{this.fieldName}}',
-   );
+    );
+{{else}}
+    this.{{this.fieldIdentifierName}} = constructorCodeValueAsEnumCodeType<{{this.type.codeSystemEnumName}}>(
+      {{this.fieldIdentifierName}},
+      {{this.type.codeSystemEnumName}},
+      this.{{camelCase this.type.codeSystemEnumName}},
+      '{{parentName}}.{{this.fieldName}}',
+    );
+{{/if}}
 {{else}}
 
-    this.{{this.fieldName}} = null;
-{{#if this.isPrimitiveMethods}}
+    this.{{this.fieldIdentifierName}} = null;
+{{#if this.isPrimitiveType}}
 {{#if this.isArray}}
-    if (isDefinedList<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldName}})) {
-      if ({{this.fieldName}}[0] instanceof PrimitiveType) {
-        this.set{{upperFirst this.fieldName}}Element({{this.fieldName}} as {{this.type.code}}[]);
+    if (isDefinedList<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldIdentifierName}})) {
+      if ({{this.fieldIdentifierName}}[0] instanceof PrimitiveType) {
+        this.set{{upperFirst this.fieldName}}Element({{this.fieldIdentifierName}} as {{this.type.code}}[]);
       } else {
-        this.set{{upperFirst this.fieldName}}({{this.fieldName}} as fhir{{upperFirst this.type.fhirDataType}}[]);
+        this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}} as fhir{{upperFirst this.type.fhirDataType}}[]);
       }
     }
 {{else}}
-    if (isDefined<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldName}})) {
-      if ({{this.fieldName}} instanceof PrimitiveType) {
-        this.set{{upperFirst this.fieldName}}Element({{this.fieldName}});
+    if (isDefined<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldIdentifierName}})) {
+      if ({{this.fieldIdentifierName}} instanceof PrimitiveType) {
+        this.set{{upperFirst this.fieldName}}Element({{this.fieldIdentifierName}});
       } else {
-        this.set{{upperFirst this.fieldName}}({{this.fieldName}});
+        this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
       }
     }
 {{/if}}
 {{else}}
 {{#if this.isArray}}
-    if (isDefinedList<{{this.type.code}}>({{this.fieldName}})) {
-      this.set{{upperFirst this.fieldName}}({{this.fieldName}});
+    if (isDefinedList<{{this.type.code}}>({{this.fieldIdentifierName}})) {
+      this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
 {{else}}
-    if (isDefined<{{this.type.code}}>({{this.fieldName}})) {
-      this.set{{upperFirst this.fieldName}}({{this.fieldName}});
+    if (isDefined<{{this.type.code}}>({{this.fieldIdentifierName}})) {
+      this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
 {{/if}}
 {{/if}}

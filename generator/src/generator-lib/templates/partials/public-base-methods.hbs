@@ -13,7 +13,7 @@
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(
   {{#each elementDefinitions}}
-      this.{{this.fieldName}},
+      this.{{this.fieldIdentifierName}},
   {{/each}}
     );
   }
@@ -39,18 +39,18 @@
     super.copyValues(dest);
 {{#each elementDefinitions}}
   {{#if this.isOptionalItem}}
-    dest.{{this.fieldName}} = this.{{this.fieldName}}?.copy();
+    dest.{{this.fieldIdentifierName}} = this.{{this.fieldIdentifierName}}?.copy();
   {{/if}}
   {{#if this.isRequiredItem}}
-    dest.{{this.fieldName}} = this.{{this.fieldName}} ? this.{{this.fieldName}}.copy() : null;
+    dest.{{this.fieldIdentifierName}} = this.{{this.fieldIdentifierName}} ? this.{{this.fieldIdentifierName}}.copy() : null;
   {{/if}}
   {{#if this.isOptionalList}}
-    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
-    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
+    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldIdentifierName}});
+    dest.{{this.fieldIdentifierName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
   {{/if}}
   {{#if this.isRequiredList}}
-    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldName}});
-    dest.{{this.fieldName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
+    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldIdentifierName}});
+    dest.{{this.fieldIdentifierName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
   {{/if}}
 {{/each}}
   }

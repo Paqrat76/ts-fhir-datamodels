@@ -36,6 +36,11 @@ export default tsEslint.config(
     '**/*.[m|c]js',
     'jest.config.base.js',
     '**/jest.config.js',
+    '**/test-cache/**',
+    '**/test-out/**',
+    // Ignore TypeScript files in the generator project due to unresolved dependencies.
+    // These files can be linted in the rX-datamodels projects when linting the generated content.
+    'generator/src/generator-lib/base/*.ts',
   ]),
   {
     name: 'base',

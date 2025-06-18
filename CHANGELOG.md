@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.8.0] - 2025-06-18
+
+### Added
+
+- Generator for FHIR resources
+
+### Changed
+
+- Updated dependencies
+- Updated `packages/r4-datamodels` project
+- Updated `packages/fhir-core` project
+- Updated `generator` project
+- Updated minimum Node/NPM to LTS "Jod"
+
 ## [0.7.0] - 2025-05-31
 
 ### Changed

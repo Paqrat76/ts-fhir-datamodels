@@ -43,7 +43,7 @@ async function main(): Promise<void> {
   const generatedContent: GeneratedContent[] = await generator.generate();
   generatorLogger(
     'info',
-    `Generated a total of ${String(generatedContent.length)} data model(s) for FHIR ${fhirRelease} release using ${fhirPackage.pkgName}@${fhirPackage.pkgVersion}`,
+    `Generated a total of ${String(generatedContent.length)} data models and support files for FHIR ${fhirRelease} release using ${fhirPackage.pkgName}@${fhirPackage.pkgVersion}`,
   );
   generator.writeDataModelsToDisk(generatedContent);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

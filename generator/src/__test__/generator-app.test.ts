@@ -23,62 +23,118 @@
 
 import { resolve } from 'node:path';
 import { readdirSync, rmSync } from 'node:fs';
+import * as os from 'node:os';
 import { GeneratorApp } from '../generator-app';
 import { FhirPackage, GeneratedContent } from '../generator-lib/ts-datamodel-generator-helpers';
 
 describe('src/generator-app', () => {
-  const testOut = resolve(__dirname, 'test-out', 'test-fhir-r4');
-  const testOutCodeSystems = resolve(__dirname, 'test-out', 'test-fhir-r4', 'code-systems');
-  const testOutComplexTypes = resolve(__dirname, 'test-out', 'test-fhir-r4', 'complex-types');
-  const testFhirCacheRoot = resolve(__dirname, 'test-cache');
-  const testFhirPackage: FhirPackage = {
-    release: 'R4',
-    pkgName: 'test.fhir.r4',
-    pkgVersion: '4.0.1',
-    baseOutputPath: testOut,
-    pkgLoaderCacheRootPath: testFhirCacheRoot,
-  };
+  describe('generator-app using partial FHIR cache', () => {
+    const testOut = resolve(__dirname, 'test-out', 'test-fhir-r4');
+    const testOutCodeSystems = resolve(__dirname, 'test-out', 'test-fhir-r4', 'code-systems');
+    const testOutComplexTypes = resolve(__dirname, 'test-out', 'test-fhir-r4', 'complex-types');
+    const testOutResources = resolve(__dirname, 'test-out', 'test-fhir-r4', 'resources');
+    const testFhirCacheRoot = resolve(__dirname, 'test-cache');
+    const testFhirPackage: FhirPackage = {
+      release: 'R4',
+      pkgName: 'test.fhir.r4',
+      pkgVersion: '4.0.1',
+      baseOutputPath: testOut,
+      pkgLoaderCacheRootPath: testFhirCacheRoot,
+    };
 
-  beforeEach(() => {
-    rmSync(testOut, { recursive: true, force: true });
+    beforeEach(() => {
+      rmSync(testOut, { recursive: true, force: true });
+    });
+
+    it('should generate FHIR R4 artifacts from test cache', async () => {
+      const generator = new GeneratorApp(testFhirPackage);
+      const generatedContent: GeneratedContent[] = await generator.generate();
+      expect(generatedContent).toBeDefined();
+      // 6 CodeSystemEnums + index.ts
+      // 11 ComplexTypes + index.ts + parsable-datatype-map.ts
+      // 1 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+      expect(generatedContent.length).toBe(24);
+    });
+
+    it('should generate and write all FHIR R4 artifacts from test cache', async () => {
+      const generator = new GeneratorApp(testFhirPackage);
+      const generatedContent: GeneratedContent[] = await generator.generate();
+      expect(generatedContent).toBeDefined();
+      // 6 CodeSystemEnums + index.ts
+      // 11 ComplexTypes + index.ts + parsable-datatype-map.ts
+      // 1 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+      expect(generatedContent.length).toBe(24);
+
+      generator.writeDataModelsToDisk(generatedContent);
+
+      const testOutput: string[] = readdirSync(testOut);
+      expect(testOutput).toBeDefined();
+      expect(testOutput.length).toBe(5);
+      const expectedOutput: string[] = ['base', 'code-systems', 'complex-types', 'index.ts', 'resources'];
+      expect(testOutput).toEqual(expectedOutput);
+
+      const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
+      expect(testCodeSystems).toBeDefined();
+      expect(testCodeSystems.length).toBe(7);
+      const expectedCodeSystems: string[] = [
+        'AuditEventActionEnum.ts',
+        'AuditEventOutcomeEnum.ts',
+        'DaysOfWeekEnum.ts',
+        'NarrativeStatusEnum.ts',
+        'NetworkTypeEnum.ts',
+        'QuantityComparatorEnum.ts',
+        'index.ts',
+      ];
+      expect(testCodeSystems).toEqual(expectedCodeSystems);
+
+      const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
+      expect(testComplexTypes).toBeDefined();
+      expect(testComplexTypes.length).toBe(13);
+      const expectedComplexTypes: string[] = [
+        'CodeableConcept.ts',
+        'Coding.ts',
+        'Dosage.ts',
+        'Duration.ts',
+        'Narrative.ts',
+        'Period.ts',
+        'Quantity.ts',
+        'Range.ts',
+        'Ratio.ts',
+        'Reference.ts',
+        'Timing.ts',
+        'index.ts',
+        'parsable-datatype-map.ts',
+      ];
+      expect(testComplexTypes).toEqual(expectedComplexTypes);
+
+      const testResources: string[] = readdirSync(testOutResources);
+      expect(testResources).toBeDefined();
+      expect(testResources.length).toBe(4);
+      const expectedResources: string[] = [
+        'AuditEvent.ts',
+        'index.ts',
+        'parsable-resource-map.ts',
+        'resource-types.ts',
+      ];
+      expect(testResources).toEqual(expectedResources);
+    });
   });
 
-  it('should generate all FHIR R4 artifacts', async () => {
-    const generator = new GeneratorApp(testFhirPackage);
-    const generatedContent: GeneratedContent[] = await generator.generate();
-    expect(generatedContent).toBeDefined();
-    expect(generatedContent.length).toBe(8); // 3 CodeSystemEnums + index.ts, 3 ComplexTypes + index.ts
-  });
+  describe('generator-app using full FHIR cache for debugging', () => {
+    const testOut = resolve(__dirname, 'test-out', 'test-fhir-r4');
+    const testFhirPackage: FhirPackage = {
+      release: 'R4',
+      pkgName: 'hl7.fhir.r4.core',
+      pkgVersion: '4.0.1',
+      baseOutputPath: testOut,
+      pkgLoaderCacheRootPath: os.homedir(),
+    };
 
-  it('should generate and write all FHIR R4 artifacts', async () => {
-    const generator = new GeneratorApp(testFhirPackage);
-    const generatedContent: GeneratedContent[] = await generator.generate();
-    expect(generatedContent).toBeDefined();
-    expect(generatedContent.length).toBe(8); // 3 CodeSystemEnums + index.ts, 3 ComplexTypes + index.ts
-
-    generator.writeDataModelsToDisk(generatedContent);
-
-    const testOutput: string[] = readdirSync(testOut);
-    expect(testOutput).toBeDefined();
-    expect(testOutput.length).toBe(4);
-    const expectedOutput: string[] = ['index.ts', 'code-systems', 'complex-types', 'resources'];
-    expect(testOutput).toEqual(expect.arrayContaining(expectedOutput));
-
-    const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
-    expect(testCodeSystems).toBeDefined();
-    expect(testCodeSystems.length).toBe(4);
-    const expectedCodeSystems: string[] = [
-      'index.ts',
-      'IdentifierUseEnum.ts',
-      'NarrativeStatusEnum.ts',
-      'SortDirectionEnum.ts',
-    ];
-    expect(testCodeSystems).toEqual(expect.arrayContaining(expectedCodeSystems));
-
-    const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
-    expect(testComplexTypes).toBeDefined();
-    expect(testComplexTypes.length).toBe(4);
-    const expectedComplexTypes: string[] = ['DataRequirement.ts', 'Identifier.ts', 'Narrative.ts', 'index.ts'];
-    expect(testComplexTypes).toEqual(expect.arrayContaining(expectedComplexTypes));
+    it.skip('should generate data models for debugging', async () => {
+      const generator = new GeneratorApp(testFhirPackage);
+      // Add conditional breakpoints in generator code as needed
+      const generatedContent: GeneratedContent[] = await generator.generate();
+      expect(generatedContent).toBeDefined();
+    });
   });
 });

@@ -86,13 +86,16 @@ describe(`src/generator-lib/utils`, () => {
       );
     });
 
-    // TODO: Resolve issue with multiple hyperlinks in fixFhirHyperLinks()
-    it.skip('Should return fixed string where it contains multiple FHIR hyperlinks', () => {
-      const testString =
-        'This is a test string with multiple FHIR hyperlinks: [Simple FHIRPath Profile](fhirpath.html#simple) and another: [Provenance](provenance.HTML#) etc.';
-      const fixedString = fixFhirHyperLinks(testString);
+    it('Should return fixed string where it contains multiple FHIR hyperlinks', () => {
+      const testStrings = [
+        'Multiple FHIR hyperlinks',
+        ': [Simple FHIRPath Profile](fhirpath.HTML#simple)',
+        'and [Provenance.signature](provenance-definitions.html#Provenance.signature)',
+        'etc.',
+      ];
+      const fixedString = fixFhirHyperLinks(testStrings.join(' '));
       expect(fixedString).toStrictEqual(
-        'This is a test string with multiple FHIR hyperlinks: [Simple FHIRPath Profile](https://hl7.org/fhir/fhirpath.html#simple) and [Provenance](https://hl7.org/fhir/provenance.HTML#)',
+        'Multiple FHIR hyperlinks : [Simple FHIRPath Profile](https://hl7.org/fhir/fhirpath.HTML#simple) and [Provenance.signature](https://hl7.org/fhir/provenance-definitions.html#Provenance.signature) etc.',
       );
     });
   });

@@ -59,7 +59,7 @@
   ])
 {{/if}}
 {{#if edHbs.isRequired}}
-  private {{edHbs.fieldName}}: {{edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | null;
+  private {{edHbs.fieldIdentifierName}}: {{edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | null;
 {{else}}
-  private {{edHbs.fieldName}}?: {{edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | undefined;
+  private {{edHbs.fieldIdentifierName}}?: {{edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | undefined;
 {{/if}}

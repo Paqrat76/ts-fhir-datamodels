@@ -1,62 +1,62 @@
 {{!-- Public Field Methods for Primitive Types Partial Template --}}
 {{#if this.isOptionalItem}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a {{edHbs.type.code}} object if defined; else an empty {{edHbs.type.code}} object
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} object if defined; else an empty {{edHbs.type.code}} object
    */
   public get{{upperFirst edHbs.fieldName}}Element(): {{edHbs.type.code}} {
-    return this.{{edHbs.fieldName}} ?? new {{edHbs.type.code}}();
+    return this.{{edHbs.fieldIdentifierName}} ?? new {{edHbs.type.code}}();
   }
 
   /**
-   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}} | undefined): this {
     if (isDefined<{{edHbs.type.code}}>(element)) {
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of {{edHbs.type.code}}.`;
       assertFhirType<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
-      this.{{edHbs.fieldName}} = element;
+      this.{{edHbs.fieldIdentifierName}} = element;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
-    return isDefined<{{edHbs.type.code}}>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty();
+    return isDefined<{{edHbs.type.code}}>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty();
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} if defined; else undefined
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} if defined; else undefined
    */
   public get{{upperFirst edHbs.fieldName}}(): fhir{{upperFirst edHbs.type.fhirDataType}} | undefined {
-    return this.{{edHbs.fieldName}}?.getValue();
+    return this.{{edHbs.fieldIdentifierName}}?.getValue();
   }
 
   /**
-   * Assigns the provided primitive value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}} | undefined): this {
     if (isDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {
       const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
-      this.{{edHbs.fieldName}} = new {{edHbs.type.code}}(parseFhirPrimitiveData(value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
+      this.{{edHbs.fieldIdentifierName}} = new {{edHbs.type.code}}(parseFhirPrimitiveData(value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}Element();
@@ -64,60 +64,60 @@
 {{/if}}
 {{#if this.isRequiredItem}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a {{edHbs.type.code}} object if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} object if defined; else null
    */
   public get{{upperFirst edHbs.fieldName}}Element(): {{edHbs.type.code}} | null {
-    return this.{{edHbs.fieldName}};
+    return this.{{edHbs.fieldIdentifierName}};
   }
 
   /**
-   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided PrimitiveType value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}): this {
     assertIsDefined<{{edHbs.type.code}}>(element, `{{edHbs.path}} is required`);
     const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of {{edHbs.type.code}}.`;
     assertFhirType<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
-    this.{{edHbs.fieldName}} = element;
+    this.{{edHbs.fieldIdentifierName}} = element;
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
-    return isDefined<{{edHbs.type.code}}>(this.{{edHbs.fieldName}}) && !this.{{edHbs.fieldName}}.isEmpty();
+    return isDefined<{{edHbs.type.code}}>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty();
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} if defined; else null
    */
   public get{{upperFirst edHbs.fieldName}}(): fhir{{upperFirst edHbs.type.fhirDataType}} | null {
-    if (this.{{edHbs.fieldName}}?.getValue() === undefined) {
+    if (this.{{edHbs.fieldIdentifierName}}?.getValue() === undefined) {
       return null;
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.{{edHbs.fieldName}}.getValue()!;
+    return this.{{edHbs.fieldIdentifierName}}.getValue()!;
   }
 
   /**
-   * Assigns the provided primitive value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}): this {
     assertIsDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value, `{{edHbs.path}} is required`);
     const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
-    this.{{edHbs.fieldName}} = new {{edHbs.type.code}}(parseFhirPrimitiveData(value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
+    this.{{edHbs.fieldIdentifierName}} = new {{edHbs.type.code}}(parseFhirPrimitiveData(value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}Element();
@@ -125,33 +125,33 @@
 {{/if}}
 {{#if this.isOptionalList}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a {{edHbs.type.code}} array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} array
    */
   public get{{upperFirst edHbs.fieldName}}Element(): {{edHbs.type.code}}[] {
-    return this.{{edHbs.fieldName}} ?? ([] as {{edHbs.type.code}}[]);
+    return this.{{edHbs.fieldIdentifierName}} ?? ([] as {{edHbs.type.code}}[]);
   }
 
   /**
-   * Assigns the provided {{edHbs.type.code}} array value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided {{edHbs.type.code}} array value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` array value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}[] | undefined): this {
     if (isDefinedList<{{edHbs.type.code}}>(element)) {
       const optErrMsg = `Invalid {{edHbs.path}}; Provided value array has an element that is not an instance of {{edHbs.type.code}}.`;
       assertFhirTypeList<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
-      this.{{edHbs.fieldName}} = element;
+      this.{{edHbs.fieldIdentifierName}} = element;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided {{edHbs.type.code}} value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided {{edHbs.type.code}} value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}} | undefined): this {
@@ -159,38 +159,38 @@
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of {{edHbs.type.code}}.`;
       assertFhirType<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
       this.init{{upperFirst edHbs.fieldName}}();
-      this.{{edHbs.fieldName}}?.push(element);
+      this.{{edHbs.fieldIdentifierName}}?.push(element);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
-    return isDefinedList<{{edHbs.type.code}}>(this.{{edHbs.fieldName}}) && this.{{edHbs.fieldName}}.some((item: {{edHbs.type.code}}) => !item.isEmpty());
+    return isDefinedList<{{edHbs.type.code}}>(this.{{edHbs.fieldIdentifierName}}) && this.{{edHbs.fieldIdentifierName}}.some((item: {{edHbs.type.code}}) => !item.isEmpty());
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} array
    */
   public get{{upperFirst edHbs.fieldName}}(): fhir{{upperFirst edHbs.type.fhirDataType}}[] {
     this.init{{upperFirst edHbs.fieldName}}();
     const {{edHbs.fieldName}}Values = [] as fhir{{upperFirst edHbs.type.fhirDataType}}[];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    for (const {{edHbs.fieldName}} of this.{{edHbs.fieldName}}!) {
-      const value = {{edHbs.fieldName}}.getValue();
+    for (const arrayItem of this.{{edHbs.fieldIdentifierName}}!) {
+      const value = arrayItem.getValue();
       if (value !== undefined) {
-          {{edHbs.fieldName}}Values.push(value);
+        {{edHbs.fieldName}}Values.push(value);
       }
     }
     return {{edHbs.fieldName}}Values;
   }
 
   /**
-   * Assigns the provided primitive value array to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value array to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value array
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
@@ -202,17 +202,17 @@
         const element = new {{edHbs.type.code}}(parseFhirPrimitiveData({{edHbs.fieldName}}Value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
         {{edHbs.fieldName}}Elements.push(element);
       }
-      this.{{edHbs.fieldName}} = {{edHbs.fieldName}}Elements;
+      this.{{edHbs.fieldIdentifierName}} = {{edHbs.fieldName}}Elements;
     } else {
-      this.{{edHbs.fieldName}} = undefined;
+      this.{{edHbs.fieldIdentifierName}} = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided primitive value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided primitive value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}} | undefined): this {
@@ -226,47 +226,47 @@
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}Element();
   }
 
   /**
-   * Initialize the `{{edHbs.fieldName}}` property
+   * Initialize the `{{edHbs.fieldIdentifierName}}` property
    */
   private init{{upperFirst edHbs.fieldName}}(): void {
     if (!this.has{{upperFirst edHbs.fieldName}}()) {
-      this.{{edHbs.fieldName}} = [] as {{edHbs.type.code}}[];
+      this.{{edHbs.fieldIdentifierName}} = [] as {{edHbs.type.code}}[];
     }
   }
 {{/if}}
 {{#if this.isRequiredList}}
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a {{edHbs.type.code}} array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} array
    */
   public get{{upperFirst edHbs.fieldName}}Element(): {{edHbs.type.code}}[] {
-    return this.{{edHbs.fieldName}} ?? ([] as {{edHbs.type.code}}[]);
+    return this.{{edHbs.fieldIdentifierName}} ?? ([] as {{edHbs.type.code}}[]);
   }
 
   /**
-   * Assigns the provided {{edHbs.type.code}} array value to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided {{edHbs.type.code}} array value to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param element - the `{{edHbs.fieldName}}` array value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}[]): this {
     assertIsDefinedList<{{edHbs.type.code}}>(element, `{{edHbs.path}} is required`);
     const optErrMsg = `Invalid {{edHbs.path}}; Provided value array has an element that is not an instance of {{edHbs.type.code}}.`;
     assertFhirTypeList<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
-    this.{{edHbs.fieldName}} = element;
+    this.{{edHbs.fieldIdentifierName}} = element;
     return this;
   }
 
   /**
-   * Add the provided {{edHbs.type.code}} value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided {{edHbs.type.code}} value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param element - the `{{edHbs.fieldName}}` value
+   * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}): this {
@@ -274,27 +274,27 @@
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of {{edHbs.type.code}}.`;
       assertFhirType<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
       this.init{{upperFirst edHbs.fieldName}}();
-      this.{{edHbs.fieldName}}?.push(element);
+      this.{{edHbs.fieldIdentifierName}}?.push(element);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}Element(): boolean {
-    return isDefinedList<{{edHbs.type.code}}>(this.{{edHbs.fieldName}}) && this.{{edHbs.fieldName}}.some((item: {{edHbs.type.code}}) => !item.isEmpty());
+    return isDefinedList<{{edHbs.type.code}}>(this.{{edHbs.fieldIdentifierName}}) && this.{{edHbs.fieldIdentifierName}}.some((item: {{edHbs.type.code}}) => !item.isEmpty());
   }
 
   /**
-   * @returns the `{{edHbs.fieldName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} array
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhir{{upperFirst edHbs.type.fhirDataType}} array
    */
   public get{{upperFirst edHbs.fieldName}}(): fhir{{upperFirst edHbs.type.fhirDataType}}[] {
     this.init{{upperFirst edHbs.fieldName}}();
     const {{edHbs.fieldName}}Values = [] as fhir{{upperFirst edHbs.type.fhirDataType}}[];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    for (const {{edHbs.fieldName}} of this.{{edHbs.fieldName}}!) {
-      const value = {{edHbs.fieldName}}.getValue();
+    for (const arrayItem of this.{{edHbs.fieldIdentifierName}}!) {
+      const value = arrayItem.getValue();
       if (value !== undefined) {
         {{edHbs.fieldName}}Values.push(value);
       }
@@ -303,9 +303,9 @@
   }
 
   /**
-   * Assigns the provided primitive value array to the `{{edHbs.fieldName}}` property.
+   * Assigns the provided primitive value array to the `{{edHbs.fieldIdentifierName}}` property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value array
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
@@ -317,14 +317,14 @@
       const element = new {{edHbs.type.code}}(parseFhirPrimitiveData({{edHbs.fieldName}}Value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
       {{edHbs.fieldName}}Elements.push(element);
     }
-    this.{{edHbs.fieldName}} = {{edHbs.fieldName}}Elements;
+    this.{{edHbs.fieldIdentifierName}} = {{edHbs.fieldName}}Elements;
     return this;
   }
 
   /**
-   * Add the provided primitive value to the `{{edHbs.fieldName}}` array property.
+   * Add the provided primitive value to the `{{edHbs.fieldIdentifierName}}` array property.
    *
-   * @param value - the `{{edHbs.fieldName}}` value
+   * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}): this {
@@ -338,18 +338,18 @@
   }
 
   /**
-   * @returns `true` if the `{{edHbs.fieldName}}` property exists and has a value; `false` otherwise
+   * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
     return this.has{{upperFirst edHbs.fieldName}}Element();
   }
 
   /**
-   * Initialize the `{{edHbs.fieldName}}` property
+   * Initialize the `{{edHbs.fieldIdentifierName}}` property
    */
   private init{{upperFirst edHbs.fieldName}}(): void {
     if (!this.has{{upperFirst edHbs.fieldName}}()) {
-      this.{{edHbs.fieldName}} = [] as {{edHbs.type.code}}[];
+      this.{{edHbs.fieldIdentifierName}} = [] as {{edHbs.type.code}}[];
     }
   }
 {{/if}}

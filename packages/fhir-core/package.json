@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/fhir-core",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "FHIR core package required by generated FHIR data model packages",
   "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/fhir-core/README.md",
   "bugs": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "luxon": "^3.6.1",
-    "zod": "^3.25.42"
+    "zod": "^3.25.67"
   },
   "engines": {
     "node": ">=22.11",
