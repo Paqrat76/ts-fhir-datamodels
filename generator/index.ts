@@ -23,8 +23,12 @@
 
 import { resolve } from 'node:path';
 import { GeneratorApp } from './src/generator-app';
-import { FhirRelease, GeneratedContent, getFhirPackage } from './src/generator-lib/ts-datamodel-generator-helpers';
-import { generatorLogger } from './src/generator-lib/utils';
+import {
+  FhirRelease,
+  GeneratedContent,
+  generatorLogger,
+  getFhirPackage,
+} from './src/generator-lib/ts-datamodel-generator-helpers';
 
 /**
  * The main function orchestrates the FHIR data model generation process.

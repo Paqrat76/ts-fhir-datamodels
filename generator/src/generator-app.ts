@@ -1,3 +1,5 @@
+// noinspection JSValidateJSDoc
+
 /*
  * Copyright (c) 2025. Joe Paquette
  *
@@ -108,8 +110,8 @@ export class GeneratorApp {
     barrelLines.add(baseBarrelLine);
 
     generatedContent.forEach((content) => {
+      /* istanbul ignore next */
       const filename = content.fileExtension ? `${content.filename}.${content.fileExtension}` : content.filename;
-      //const destDir = this.getDestinationSubDirectory(content);
       const destDir: string | undefined = DESTINATION_SUB_DIRECTORY_MAP.get(content.fhirType);
       assert(destDir, `GeneratorApp.writeDataModelsToDisk:: Unknown FHIR type: ${content.fhirType}`);
       const filesOutputPath = join(baseOutputPath, destDir);

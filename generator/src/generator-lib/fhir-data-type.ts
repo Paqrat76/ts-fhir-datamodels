@@ -1,3 +1,5 @@
+// noinspection JSValidateJSDoc
+
 /*
  * Copyright (c) 2025. Joe Paquette
  *
@@ -22,8 +24,88 @@
  */
 
 import { upperFirst } from 'lodash';
-import { NON_OPEN_DATA_TYPES, OPEN_DATA_TYPES } from '@paq-ts-fhir/fhir-core';
-import { isPrimitiveDataType } from './utils';
+import { isPrimitiveDataType } from './templates/utils-hbs';
+
+/**
+ * FHIR open data types
+ *
+ * @remarks
+ * Some elements do not have a specified type. The type is represented by the wildcard symbol "*".
+ * In these cases, the element type may be one of these.
+ * Open types are used in the following places: ElementDefinition, Extension, Parameters, Task, and Transport (R5).
+ *
+ * NOTE: This set of data types is a subset of DATA_TYPES.
+ *
+ * @category Base Models
+ * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
+ */
+const OPEN_DATA_TYPES = [
+  // Primitive Types
+  'base64Binary',
+  'boolean',
+  'canonical',
+  'code',
+  'date',
+  'dateTime',
+  'decimal',
+  'id',
+  'instant',
+  'integer',
+  'integer64', // added in FHIR R5
+  'markdown',
+  'oid',
+  'positiveInt',
+  'string',
+  'time',
+  'unsignedInt',
+  'uri',
+  'url',
+  'uuid',
+  // Datatypes
+  'Address',
+  'Age',
+  'Annotation',
+  'Attachment',
+  'CodeableConcept',
+  'CodeableReference', // added in FHIR R5
+  'Coding',
+  'ContactPoint',
+  'Count',
+  'Distance',
+  'Duration',
+  'HumanName',
+  'Identifier',
+  'Money',
+  'Period',
+  'Quantity',
+  'Range',
+  'Ratio',
+  'RatioRange', // added in FHIR R5
+  'Reference',
+  'RelativeTime', // added in FHIR R6
+  'SampledData',
+  'Signature',
+  'Timing',
+  // Metadata Types
+  'Availability', // added in FHIR R5
+  'ContactDetail',
+  'Contributor', // removed in R5
+  'DataRequirement',
+  'Expression',
+  'ExtendedContactDetail', // added in FHIR R5
+  'ParameterDefinition',
+  'RelatedArtifact',
+  'TriggerDefinition',
+  'UsageContext',
+  // Special Types
+  'Dosage',
+  'Meta',
+] as const;
+
+/**
+ * Non-open data types that are valid data types
+ */
+const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail', 'Narrative', 'xhtml'] as const;
 
 /**
  * Non-open data types that are valid data types representing structural data types
@@ -78,7 +160,7 @@ export type FhirDataType = (typeof DATA_TYPES)[number];
  *
  * @category Base Models
  */
-export const DATA_TYPE_MAPPINGS: Map<FhirDataType, string> = getDataTypeMappings();
+export const DATA_TYPE_MAPPINGS: ReadonlyMap<FhirDataType, string> = getDataTypeMappings();
 
 /**
  * Generates a mapping of data type names where the key is the original data type
@@ -87,11 +169,12 @@ export const DATA_TYPE_MAPPINGS: Map<FhirDataType, string> = getDataTypeMappings
  * @returns {Map<FhirDataType, string>} A map where each key is a data type and the value
  * is its corresponding transformed representation.
  */
-function getDataTypeMappings(): Map<FhirDataType, string> {
+function getDataTypeMappings(): ReadonlyMap<FhirDataType, string> {
   const map = new Map<FhirDataType, string>();
-  DATA_TYPES.forEach((dt: FhirDataType): void => {
-    const value = isPrimitiveDataType(dt) ? `${upperFirst(dt)}Type` : dt;
-    map.set(dt, value);
+  DATA_TYPES.forEach((dt: string): void => {
+    const value: string = isPrimitiveDataType(dt as FhirDataType) ? `${upperFirst(dt)}Type` : dt;
+    map.set(dt as FhirDataType, value);
   });
-  return map;
+  const dtRoMap: ReadonlyMap<FhirDataType, string> = new Map<FhirDataType, string>(map);
+  return dtRoMap;
 }
