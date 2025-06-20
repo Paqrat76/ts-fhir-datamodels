@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.9.0] - 2025-06-20
+
+### Changed
+
+- Updated dependencies
+- Added/updated Generator unit tests to achieve >90% code coverage
+
+
 ## [0.8.0] - 2025-06-18
 
 ### Added

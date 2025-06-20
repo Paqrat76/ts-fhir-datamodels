@@ -25,6 +25,7 @@ import * as os from 'node:os';
 import { resolve } from 'node:path';
 import {
   FhirPackage,
+  generatorLogger,
   generatorPackageLoader,
   GeneratorPackageLoaderOptions,
   getFhirPackage,
@@ -32,6 +33,25 @@ import {
 import { BasePackageLoader, LoadStatus, SafeMode } from 'fhir-package-loader';
 
 describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
+  describe('generatorLogger', () => {
+    // Ref: https://sqlpey.com/javascript/top-4-ways-to-test-console-log-output-with-jest/#solution-3-comprehensive-mocking-setup
+
+    const originalLog = console.log;
+
+    beforeEach(() => {
+      console.log = jest.fn();
+    });
+
+    afterAll(() => {
+      console.log = originalLog;
+    });
+
+    it('Should log to console', () => {
+      generatorLogger('info', 'This is a test message.');
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Generator INFO: This is a test message.'));
+    });
+  });
+
   describe('getFhirPackage', () => {
     it('should return the correct FhirPackage for FHIR R4', () => {
       const expected = {

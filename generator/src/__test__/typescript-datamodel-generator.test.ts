@@ -78,13 +78,13 @@ describe('src/typescript-datamodel-generator', () => {
       // From http://hl7.org/fhir/StructureDefinition/Narrative,
       // the ElementDefinition.binding.valueSet = "http://hl7.org/fhir/ValueSet/narrative-status|4.0.1"
 
-      // Test with version
+      // Test with a version
       let bindingValueSetUrl = 'http://hl7.org/fhir/ValueSet/narrative-status|4.0.1';
       let codeSystem: CodeSystem | undefined =
         tsDataModelGenerator.getCodeSystemFromBindingValueSetUrl(bindingValueSetUrl);
       expect(codeSystem).toBeDefined();
 
-      // Test without version
+      // Test without a version
       bindingValueSetUrl = 'http://hl7.org/fhir/ValueSet/narrative-status';
       codeSystem = tsDataModelGenerator.getCodeSystemFromBindingValueSetUrl(bindingValueSetUrl);
       expect(codeSystem).toBeDefined();
@@ -112,7 +112,7 @@ describe('src/typescript-datamodel-generator', () => {
       expect(complexTypes).toBeDefined();
       expect(complexTypes).toHaveLength(38);
 
-      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
+      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: ReadonlyMap<string, string> } =
         tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
       expect(result.codeSystems).toBeDefined();
       expect(result.codeSystems.length).toStrictEqual(21);
@@ -181,13 +181,13 @@ describe('src/typescript-datamodel-generator', () => {
       // From http://hl7.org/fhir/StructureDefinition/Narrative,
       // the ElementDefinition.binding.valueSet = "http://hl7.org/fhir/ValueSet/narrative-status|4.3.0"
 
-      // Test with version
+      // Test with a version
       let bindingValueSetUrl = 'http://hl7.org/fhir/ValueSet/narrative-status|4.3.0';
       let codeSystem: CodeSystem | undefined =
         tsDataModelGenerator.getCodeSystemFromBindingValueSetUrl(bindingValueSetUrl);
       expect(codeSystem).toBeDefined();
 
-      // Test without version
+      // Test without a version
       bindingValueSetUrl = 'http://hl7.org/fhir/ValueSet/narrative-status';
       codeSystem = tsDataModelGenerator.getCodeSystemFromBindingValueSetUrl(bindingValueSetUrl);
       expect(codeSystem).toBeDefined();
@@ -215,7 +215,7 @@ describe('src/typescript-datamodel-generator', () => {
       expect(complexTypes).toBeDefined();
       expect(complexTypes).toHaveLength(39);
 
-      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
+      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: ReadonlyMap<string, string> } =
         tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
       expect(result.codeSystems).toBeDefined();
       expect(result.codeSystems.length).toStrictEqual(21);
@@ -280,13 +280,13 @@ describe('src/typescript-datamodel-generator', () => {
       // From http://hl7.org/fhir/StructureDefinition/Narrative,
       // the ElementDefinition.binding.valueSet = "http://hl7.org/fhir/ValueSet/narrative-status|5.0.0"
 
-      // Test with version
+      // Test with a version
       let bindingValueSetUrl = 'http://hl7.org/fhir/ValueSet/narrative-status|5.0.0';
       let codeSystem: CodeSystem | undefined =
         tsDataModelGenerator.getCodeSystemFromBindingValueSetUrl(bindingValueSetUrl);
       expect(codeSystem).toBeDefined();
 
-      // Test without version
+      // Test without a version
       bindingValueSetUrl = 'http://hl7.org/fhir/ValueSet/narrative-status';
       codeSystem = tsDataModelGenerator.getCodeSystemFromBindingValueSetUrl(bindingValueSetUrl);
       expect(codeSystem).toBeDefined();
@@ -314,7 +314,7 @@ describe('src/typescript-datamodel-generator', () => {
       expect(complexTypes).toBeDefined();
       expect(complexTypes).toHaveLength(41);
 
-      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: Map<string, string> } =
+      let result: { codeSystems: CodeSystem[]; codeSystemEnumMap: ReadonlyMap<string, string> } =
         tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(complexTypes);
       expect(result.codeSystems).toBeDefined();
       expect(result.codeSystems.length).toStrictEqual(26);

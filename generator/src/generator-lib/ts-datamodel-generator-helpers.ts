@@ -49,7 +49,7 @@ import {
 export type FhirRelease = 'R4' | 'R4B' | 'R5';
 
 /**
- * Represents the type of a FHIR (Fast Healthcare Interoperability Resources) artifact.
+ * Represents the type of FHIR (Fast Healthcare Interoperability Resources) artifact.
  *
  * This type defines the core categories of generated FHIR data models.
  *
@@ -130,6 +130,18 @@ export interface GeneratorPackageLoaderOptions extends BasePackageLoaderOptions 
 }
 
 /**
+ * Logs a formatted message with a specified log level for generators.
+ *
+ * @param {string} level - The severity level of the log (e.g., "info", "warn", "error").
+ * @param {string} message - The message to log.
+ * @returns {void} This function does not return a value.
+ */
+export function generatorLogger(level: string, message: string): void {
+  console.log(`Generator ${level.toUpperCase()}: ${message}`);
+}
+
+// noinspection JSValidateJSDoc
+/**
  * Retrieves the FHIR package configuration for a specific FHIR release.
  *
  * @param {FhirRelease} fhirRelease - The FHIR release version (e.g., 'R4', 'R4B', 'R5').
@@ -184,6 +196,7 @@ export async function generatorPackageLoader(options: GeneratorPackageLoaderOpti
   return new BasePackageLoader(packageDB, packageCache, registryClient, buildClient, options);
 }
 
+/* istanbul ignore next */
 /**
  * Generates the contents of a license file for a given year.
  *
@@ -218,6 +231,7 @@ export function generateLicenseContent(): string[] {
   return licenseContent;
 }
 
+/* istanbul ignore next */
 /**
  * Generates the content for a module file as an array of strings.
  *

@@ -19,6 +19,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.8.0] - 2025-06-20
+
+### Changed
+
+- Combined/refactored utilities into util-hbs.ts
+- Converted selected Maps and Sets into ReadonlyMap<> and ReadonlySet<>
+- Refactored handling of Handlebars helpers
+- Performed minor code cleanup
+- Added/updated Generator unit tests to achieve >90% code coverage
+
+
 ## [0.7.0] - 2025-06-18
 
 ### Added

@@ -1,3 +1,5 @@
+// noinspection JSValidateJSDoc
+
 /*
  * Copyright (c) 2025. Joe Paquette
  *
@@ -38,13 +40,14 @@ import {
   GeneratedContent,
   generateLicenseContent,
   generateModuleContent,
+  generatorLogger,
   generatorPackageLoader,
   GeneratorPackageLoaderOptions,
 } from './generator-lib/ts-datamodel-generator-helpers';
 import { generateCodeSystemEnum } from './generator-lib/templates/fhir-codesystem-enum-hbs';
 import { generateComplexType } from './generator-lib/templates/fhir-complex-datatype-hbs';
-import { extractNameFromUrl, generatorLogger } from './generator-lib/utils';
 import { generateResource } from './generator-lib/templates/fhir-resource-hbs';
+import { extractNameFromUrl } from './generator-lib/templates/utils-hbs';
 
 const INITIALIZATION_ERROR_MSG = `This TypescriptDataModelGenerator instance must be initialized ('await tsDataModelGenerator.initialize();') before use.`;
 
@@ -187,7 +190,7 @@ export class TypescriptDataModelGenerator {
    */
   public getRequiredCodeSystemsFromStructureDefinitions(structureDefinitions: StructureDefinition[]): {
     codeSystems: CodeSystem[];
-    codeSystemEnumMap: Map<string, string>;
+    codeSystemEnumMap: ReadonlyMap<string, string>;
   } {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
     assert(structureDefinitions.length > 0, 'structureDefinitions is required');
@@ -224,7 +227,9 @@ export class TypescriptDataModelGenerator {
       }
     });
 
-    return { codeSystems, codeSystemEnumMap: codeSystemEnumNames };
+    const readonlyEnumNames: ReadonlyMap<string, string> = new Map<string, string>(codeSystemEnumNames);
+
+    return { codeSystems, codeSystemEnumMap: readonlyEnumNames };
   }
 
   /**
@@ -241,7 +246,7 @@ export class TypescriptDataModelGenerator {
    */
   public generateCodeSystemEnumClasses(): {
     generatedContent: GeneratedContent[];
-    codeSystemEnumMap: Map<string, string>;
+    codeSystemEnumMap: ReadonlyMap<string, string>;
   } {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
 
@@ -272,11 +277,11 @@ export class TypescriptDataModelGenerator {
   /**
    * Generates data model classes for complex types defined in the FHIR package.
    *
-   * @param {Map<string, string>} codeSystemEnumMap - A mapping of code systems to their corresponding enumerations
+   * @param {ReadonlyMap<string, string>} codeSystemEnumMap - A mapping of code systems to their corresponding enumerations
    *                                                  where the key represents the path from the source.
    * @returns {GeneratedContent[]} An array of generated content objects representing the data model classes for complex types.
    */
-  public generateComplexTypeClasses(codeSystemEnumMap: Map<string, string>): GeneratedContent[] {
+  public generateComplexTypeClasses(codeSystemEnumMap: ReadonlyMap<string, string>): GeneratedContent[] {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
 
     const generatedContent: Set<GeneratedContent> = new Set<GeneratedContent>();
@@ -304,11 +309,11 @@ export class TypescriptDataModelGenerator {
   /**
    * Generates data model classes for resources defined in the FHIR package.
    *
-   * @param {Map<string, string>} codeSystemEnumMap - A mapping of code systems to their corresponding enumerations
+   * @param {ReadonlyMap<string, string>} codeSystemEnumMap - A mapping of code systems to their corresponding enumerations
    *                                                  where the key represents the path from the source.
    * @returns {GeneratedContent[]} An array of generated content objects representing the data model classes for resources.
    */
-  public generateResourceClasses(codeSystemEnumMap: Map<string, string>): GeneratedContent[] {
+  public generateResourceClasses(codeSystemEnumMap: ReadonlyMap<string, string>): GeneratedContent[] {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
 
     const generatedContent: Set<GeneratedContent> = new Set<GeneratedContent>();

@@ -25,10 +25,9 @@ import { strict as assert } from 'node:assert';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import * as Handlebars from 'handlebars';
-import { fixDescriptiveString } from './utils-hbs';
+import { extractNameFromUrl, fixDescriptiveString, makeUpperSnakeCase } from './utils-hbs';
 import { FhirPackage, GeneratedContent } from '../ts-datamodel-generator-helpers';
 import { CodeSystem, CodeSystemConcept } from '../fhir-artifact-interfaces';
-import { extractNameFromUrl, makeUpperSnakeCase } from '../utils';
 
 const classTemplate = readFileSync(resolve(__dirname, 'fhir-codesystem-enum.hbs'), 'utf8');
 const classGenerator = Handlebars.compile(classTemplate);
@@ -116,7 +115,7 @@ ComparatorEnumNameMap.set('!=', 'NOT_EQUAL_TO');
  * @param {FhirPackage} fhirPackage - The FHIR package providing additional metadata such as package version.
  * @returns {HbsCodeSystem} - The transformed HbsCodeSystem object containing structured properties, such as concepts, name, URL, and metadata.
  */
-function getCsHbsProperties(codeSystem: CodeSystem, fhirPackage: FhirPackage): HbsCodeSystem {
+export function getCsHbsProperties(codeSystem: CodeSystem, fhirPackage: FhirPackage): HbsCodeSystem {
   assert(codeSystem.url, 'CodeSystem.url is expected to exist');
 
   const codeSystemName = extractNameFromUrl(codeSystem.url);
