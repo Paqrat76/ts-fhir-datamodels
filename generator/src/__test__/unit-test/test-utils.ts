@@ -26,8 +26,8 @@ import {
   FhirPackage,
   generatorPackageLoader,
   GeneratorPackageLoaderOptions,
-} from '../generator-lib/ts-datamodel-generator-helpers';
-import { HbsStructureDefinition } from '../generator-lib/templates/utils-hbs';
+} from '../../generator-lib/ts-datamodel-generator-helpers';
+import { HbsStructureDefinition } from '../../generator-lib/templates/utils-hbs';
 
 /**
  * Returns the generatorPackageLoader() implementation of the BasePackageLoader using SafeMode.CLONE

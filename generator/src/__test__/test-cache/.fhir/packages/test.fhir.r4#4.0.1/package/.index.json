@@ -16,6 +16,20 @@
       "version": "4.0.1"
     },
     {
+      "filename": "CodeSystem-consent-state-codes.json",
+      "resourceType": "CodeSystem",
+      "id": "consent-state-codes",
+      "url": "http://hl7.org/fhir/consent-state-codes",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-contributor-type.json",
+      "resourceType": "CodeSystem",
+      "id": "contributor-type",
+      "url": "http://hl7.org/fhir/contributor-type",
+      "version": "4.0.1"
+    },
+    {
       "filename": "CodeSystem-days-of-week.json",
       "resourceType": "CodeSystem",
       "id": "days-of-week",
@@ -65,11 +79,34 @@
       "version": "4.0.1"
     },
     {
+      "filename": "CodeSystem-task-code.json",
+      "resourceType": "CodeSystem",
+      "id": "task-code",
+      "url": "http://hl7.org/fhir/CodeSystem/task-code",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-task-status.json",
+      "resourceType": "CodeSystem",
+      "id": "task-status",
+      "url": "http://hl7.org/fhir/task-status",
+      "version": "4.0.1"
+    },
+    {
       "filename": "CodeSystem-v3-TimingEvent.json",
       "resourceType": "CodeSystem",
       "id": "v3-TimingEvent",
       "url": "http://terminology.hl7.org/CodeSystem/v3-TimingEvent",
       "version": "2018-08-12"
+    },
+    {
+      "filename": "StructureDefinition-Address.json",
+      "resourceType": "StructureDefinition",
+      "id": "Address",
+      "url": "http://hl7.org/fhir/StructureDefinition/Address",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Address"
     },
     {
       "filename": "StructureDefinition-AuditEvent.json",
@@ -117,6 +154,24 @@
       "type": "Duration"
     },
     {
+      "filename": "StructureDefinition-HumanName.json",
+      "resourceType": "StructureDefinition",
+      "id": "HumanName",
+      "url": "http://hl7.org/fhir/StructureDefinition/HumanName",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "HumanName"
+    },
+    {
+      "filename": "StructureDefinition-Identifier.json",
+      "resourceType": "StructureDefinition",
+      "id": "Identifier",
+      "url": "http://hl7.org/fhir/StructureDefinition/Identifier",
+      "version": "4.0.1",
+      "kind": "complex-type",
+      "type": "Identifier"
+    },
+    {
       "filename": "StructureDefinition-Narrative.json",
       "resourceType": "StructureDefinition",
       "id": "Narrative",
@@ -124,6 +179,15 @@
       "version": "4.0.1",
       "kind": "complex-type",
       "type": "Narrative"
+    },
+    {
+      "filename": "StructureDefinition-Parameters.json",
+      "resourceType": "StructureDefinition",
+      "id": "Parameters",
+      "url": "http://hl7.org/fhir/StructureDefinition/Parameters",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "Parameters"
     },
     {
       "filename": "StructureDefinition-Period.json",
@@ -194,6 +258,20 @@
       "version": "4.0.1"
     },
     {
+      "filename": "ValueSet-consent-state-codes.json",
+      "resourceType": "ValueSet",
+      "id": "consent-state-codes",
+      "url": "http://hl7.org/fhir/ValueSet/consent-state-codes",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-contributor-type.json",
+      "resourceType": "ValueSet",
+      "id": "contributor-type",
+      "url": "http://hl7.org/fhir/ValueSet/contributor-type",
+      "version": "4.0.1"
+    },
+    {
       "filename": "ValueSet-days-of-week.json",
       "resourceType": "ValueSet",
       "id": "days-of-week",
@@ -226,6 +304,20 @@
       "resourceType": "ValueSet",
       "id": "quantity-comparator",
       "url": "http://hl7.org/fhir/ValueSet/quantity-comparator",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-task-code.json",
+      "resourceType": "ValueSet",
+      "id": "task-code",
+      "url": "http://hl7.org/fhir/ValueSet/task-code",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-task-status.json",
+      "resourceType": "ValueSet",
+      "id": "task-status",
+      "url": "http://hl7.org/fhir/ValueSet/task-status",
       "version": "4.0.1"
     },
     {

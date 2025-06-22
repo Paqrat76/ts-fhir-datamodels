@@ -22,9 +22,9 @@
  */
 
 import * as os from 'node:os';
-import { TypescriptDataModelGenerator } from '../typescript-datamodel-generator';
-import { CodeSystem, StructureDefinition } from '../generator-lib/fhir-artifact-interfaces';
-import { FhirPackage, getFhirPackage } from '../generator-lib/ts-datamodel-generator-helpers';
+import { TypescriptDataModelGenerator } from '../../typescript-datamodel-generator';
+import { CodeSystem, StructureDefinition } from '../../generator-lib/fhir-artifact-interfaces';
+import { FhirPackage, getFhirPackage } from '../../generator-lib/ts-datamodel-generator-helpers';
 
 describe('src/typescript-datamodel-generator', () => {
   describe('FHIR R4', () => {

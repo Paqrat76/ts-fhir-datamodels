@@ -24,8 +24,8 @@
 import { resolve } from 'node:path';
 import { readdirSync, rmSync } from 'node:fs';
 import * as os from 'node:os';
-import { GeneratorApp } from '../generator-app';
-import { FhirPackage, GeneratedContent } from '../generator-lib/ts-datamodel-generator-helpers';
+import { GeneratorApp } from '../../generator-app';
+import { FhirPackage, GeneratedContent } from '../../generator-lib/ts-datamodel-generator-helpers';
 
 describe('src/generator-app', () => {
   describe('generator-app using partial FHIR cache', () => {
@@ -33,7 +33,7 @@ describe('src/generator-app', () => {
     const testOutCodeSystems = resolve(__dirname, 'test-out', 'test-fhir-r4', 'code-systems');
     const testOutComplexTypes = resolve(__dirname, 'test-out', 'test-fhir-r4', 'complex-types');
     const testOutResources = resolve(__dirname, 'test-out', 'test-fhir-r4', 'resources');
-    const testFhirCacheRoot = resolve(__dirname, 'test-cache');
+    const testFhirCacheRoot = resolve(__dirname, '..', 'test-cache');
     const testFhirPackage: FhirPackage = {
       release: 'R4',
       pkgName: 'test.fhir.r4',
@@ -50,20 +50,20 @@ describe('src/generator-app', () => {
       const generator = new GeneratorApp(testFhirPackage);
       const generatedContent: GeneratedContent[] = await generator.generate();
       expect(generatedContent).toBeDefined();
-      // 6 CodeSystemEnums + index.ts
-      // 11 ComplexTypes + index.ts + parsable-datatype-map.ts
-      // 1 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-      expect(generatedContent.length).toBe(24);
+      // 10 CodeSystemEnums + index.ts
+      // 14 ComplexTypes + index.ts + parsable-datatype-map.ts
+      // 4 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+      expect(generatedContent.length).toBe(34);
     });
 
     it('should generate and write all FHIR R4 artifacts from test cache', async () => {
       const generator = new GeneratorApp(testFhirPackage);
       const generatedContent: GeneratedContent[] = await generator.generate();
       expect(generatedContent).toBeDefined();
-      // 6 CodeSystemEnums + index.ts
-      // 11 ComplexTypes + index.ts + parsable-datatype-map.ts
-      // 1 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-      expect(generatedContent.length).toBe(24);
+      // 10 CodeSystemEnums + index.ts
+      // 14 ComplexTypes + index.ts + parsable-datatype-map.ts
+      // 4 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+      expect(generatedContent.length).toBe(34);
 
       generator.writeDataModelsToDisk(generatedContent);
 
@@ -75,26 +75,33 @@ describe('src/generator-app', () => {
 
       const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
       expect(testCodeSystems).toBeDefined();
-      expect(testCodeSystems.length).toBe(7);
+      expect(testCodeSystems.length).toBe(11);
       const expectedCodeSystems: string[] = [
         'AuditEventActionEnum.ts',
         'AuditEventOutcomeEnum.ts',
+        'ConsentStateCodesEnum.ts',
+        'ContributorTypeEnum.ts',
         'DaysOfWeekEnum.ts',
         'NarrativeStatusEnum.ts',
         'NetworkTypeEnum.ts',
         'QuantityComparatorEnum.ts',
+        'TaskCodeEnum.ts',
+        'TaskStatusEnum.ts',
         'index.ts',
       ];
       expect(testCodeSystems).toEqual(expectedCodeSystems);
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(13);
+      expect(testComplexTypes.length).toBe(16);
       const expectedComplexTypes: string[] = [
+        'Address.ts',
         'CodeableConcept.ts',
         'Coding.ts',
         'Dosage.ts',
         'Duration.ts',
+        'HumanName.ts',
+        'Identifier.ts',
         'Narrative.ts',
         'Period.ts',
         'Quantity.ts',
@@ -109,9 +116,12 @@ describe('src/generator-app', () => {
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(4);
+      expect(testResources.length).toBe(7);
       const expectedResources: string[] = [
         'AuditEvent.ts',
+        'Parameters.ts',
+        'SimplePersonModel.ts',
+        'TestDataModel.ts',
         'index.ts',
         'parsable-resource-map.ts',
         'resource-types.ts',

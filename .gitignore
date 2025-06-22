@@ -58,4 +58,4 @@ merged-docs
 docs
 
 # Test output
-**/__test__/test-out/
+**/__test__/**/test-out/

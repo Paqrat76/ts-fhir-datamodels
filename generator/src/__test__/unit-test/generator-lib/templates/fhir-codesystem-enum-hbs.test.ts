@@ -23,13 +23,13 @@
 
 import { resolve } from 'node:path';
 import { BasePackageLoader, FindResourceInfoOptions } from 'fhir-package-loader';
-import { FhirPackage, GeneratedContent } from '../../../generator-lib/ts-datamodel-generator-helpers';
-import { CodeSystem } from '../../../generator-lib/fhir-artifact-interfaces';
-import { generateCodeSystemEnum } from '../../../generator-lib/templates/fhir-codesystem-enum-hbs';
+import { FhirPackage, GeneratedContent } from '../../../../generator-lib/ts-datamodel-generator-helpers';
+import { CodeSystem } from '../../../../generator-lib/fhir-artifact-interfaces';
+import { generateCodeSystemEnum } from '../../../../generator-lib/templates/fhir-codesystem-enum-hbs';
 import { getGeneratorPackageLoader } from '../../test-utils';
 
 describe('src/generator-lib/templates/fhir-codesystem-enum-hbs', () => {
-  const testFhirCacheRoot = resolve(__dirname, '../..', 'test-cache');
+  const testFhirCacheRoot = resolve(__dirname, '../../..', 'test-cache');
 
   let testFhirPackage: FhirPackage;
   let packageLoader: BasePackageLoader;

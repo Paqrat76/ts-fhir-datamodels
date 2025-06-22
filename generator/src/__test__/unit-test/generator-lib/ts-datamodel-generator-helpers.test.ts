@@ -29,7 +29,7 @@ import {
   generatorPackageLoader,
   GeneratorPackageLoaderOptions,
   getFhirPackage,
-} from '../../generator-lib/ts-datamodel-generator-helpers';
+} from '../../../generator-lib/ts-datamodel-generator-helpers';
 import { BasePackageLoader, LoadStatus, SafeMode } from 'fhir-package-loader';
 
 describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
@@ -105,7 +105,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
       const options: GeneratorPackageLoaderOptions = {
         log: fplLogger,
         safeMode: SafeMode.FREEZE,
-        cacheRootPath: resolve(__dirname, '..', 'test-cache'),
+        cacheRootPath: resolve(__dirname, '..', '..', 'test-cache'),
       };
 
       const packageLoader: BasePackageLoader = await generatorPackageLoader(options);

@@ -22,13 +22,13 @@
  */
 
 import { resolve } from 'node:path';
-import { FhirPackage } from '../../../generator-lib/ts-datamodel-generator-helpers';
+import { FhirPackage } from '../../../../generator-lib/ts-datamodel-generator-helpers';
 import { BasePackageLoader, FindResourceInfoOptions } from 'fhir-package-loader';
 import {
   ElementDefinition,
   ElementDefinitionType,
   StructureDefinition,
-} from '../../../generator-lib/fhir-artifact-interfaces';
+} from '../../../../generator-lib/fhir-artifact-interfaces';
 import {
   extractNameFromUrl,
   fixDescriptiveString,
@@ -52,8 +52,8 @@ import {
   makeUpperSnakeCase,
   stripLineBreaks,
   substituteUnicodeCharacters,
-} from '../../../generator-lib/templates/utils-hbs';
-import { TypescriptDataModelGenerator } from '../../../typescript-datamodel-generator';
+} from '../../../../generator-lib/templates/utils-hbs';
+import { TypescriptDataModelGenerator } from '../../../../typescript-datamodel-generator';
 import { getGeneratorPackageLoader, testAuditEventSdHbs } from '../../test-utils';
 
 describe('src/generator-lib/templates/utils-hbs', () => {
@@ -663,7 +663,7 @@ describe('src/generator-lib/templates/utils-hbs', () => {
   });
 
   describe('getSdHbsProperties', () => {
-    const testFhirCacheRoot = resolve(__dirname, '../..', 'test-cache');
+    const testFhirCacheRoot = resolve(__dirname, '../../..', 'test-cache');
 
     let testFhirPackage: FhirPackage;
     let packageLoader: BasePackageLoader;
