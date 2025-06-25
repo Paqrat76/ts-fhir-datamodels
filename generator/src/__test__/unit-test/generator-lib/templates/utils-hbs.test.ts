@@ -663,7 +663,7 @@ describe('src/generator-lib/templates/utils-hbs', () => {
   });
 
   describe('getSdHbsProperties', () => {
-    const testFhirCacheRoot = resolve(__dirname, '../../..', 'test-cache');
+    const testFhirCacheRoot = resolve(__dirname, '../..', 'utest-cache');
 
     let testFhirPackage: FhirPackage;
     let packageLoader: BasePackageLoader;
@@ -680,53 +680,194 @@ describe('src/generator-lib/templates/utils-hbs', () => {
       packageLoader = await getGeneratorPackageLoader(testFhirPackage);
       tsDataModelGenerator = new TypescriptDataModelGenerator(testFhirPackage);
       await tsDataModelGenerator.initialize();
-      const options: FindResourceInfoOptions = { type: ['Type'] };
+      const options: FindResourceInfoOptions = { type: ['Type', 'Resource'] };
       packageStructureDefinitions = packageLoader.findResourceJSONs('*', options) as StructureDefinition[];
     });
 
-    it('should return the correct properties for StructureDefinition-Dosage', () => {
-      const options: FindResourceInfoOptions = { type: ['Type'] };
-      const dosageStructureDefinition = packageLoader.findResourceJSON('Dosage', options) as StructureDefinition;
-      const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+    describe('ComplexTypes HbsProperties', () => {
+      it('should return the correct properties for StructureDefinition-CodeableConcept', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('CodeableConcept', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
 
-      const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
-        dosageStructureDefinition,
-        result.codeSystemEnumMap,
-        testFhirPackage,
-      );
-      expect(sdHbsProperties).toBeDefined();
-      expect(sdHbsProperties).toMatchSnapshot();
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Coding', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Coding', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-ContactPoint', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('ContactPoint', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Duration', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Duration', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Identifier', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Identifier', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Meta', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Meta', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Narrative', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Narrative', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Period', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Period', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Reference', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Reference', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Signature', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Signature', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
+
+      it('should return the correct properties for StructureDefinition-Timing', () => {
+        const options: FindResourceInfoOptions = { type: ['Type'] };
+        const structureDefinition = packageLoader.findResourceJSON('Timing', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
     });
 
-    it('should return the correct properties for StructureDefinition-Narrative', () => {
-      const options: FindResourceInfoOptions = { type: ['Type'] };
-      const narrativeStructureDefinition = packageLoader.findResourceJSON('Narrative', options) as StructureDefinition;
-      const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+    describe('Resources HbsProperties', () => {
+      it('should return the correct properties for StructureDefinition-Bundle', () => {
+        const options: FindResourceInfoOptions = { type: ['Resource'] };
+        const structureDefinition = packageLoader.findResourceJSON('Bundle', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
 
-      const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
-        narrativeStructureDefinition,
-        result.codeSystemEnumMap,
-        testFhirPackage,
-      );
-      expect(sdHbsProperties).toBeDefined();
-      expect(sdHbsProperties).toMatchSnapshot();
-    });
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
 
-    it('should return the correct properties for StructureDefinition-AuditEvent', () => {
-      const options: FindResourceInfoOptions = { type: ['Resource'] };
-      const auditEventStructureDefinition = packageLoader.findResourceJSON(
-        'AuditEvent',
-        options,
-      ) as StructureDefinition;
-      const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+      it('should return the correct properties for StructureDefinition-PractitionerRole', () => {
+        const options: FindResourceInfoOptions = { type: ['Resource'] };
+        const structureDefinition = packageLoader.findResourceJSON('PractitionerRole', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
 
-      const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
-        auditEventStructureDefinition,
-        result.codeSystemEnumMap,
-        testFhirPackage,
-      );
-      expect(sdHbsProperties).toBeDefined();
-      expect(sdHbsProperties).toMatchSnapshot();
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
     });
   });
 });

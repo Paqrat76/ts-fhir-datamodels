@@ -117,7 +117,8 @@ describe('src/typescript-datamodel-generator', () => {
       expect(result.codeSystems).toBeDefined();
       expect(result.codeSystems.length).toStrictEqual(21);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(21);
+      // result.codeSystemEnumMap.size >= result.codeSystems.length due to CodeSystem re-use across StructureDefinitions
+      expect(result.codeSystemEnumMap.size).toStrictEqual(25);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
@@ -125,9 +126,10 @@ describe('src/typescript-datamodel-generator', () => {
 
       result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
       expect(result.codeSystems).toBeDefined();
-      expect(result.codeSystems.length).toStrictEqual(191);
+      expect(result.codeSystems.length).toStrictEqual(182);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(191);
+      // result.codeSystemEnumMap.size >= result.codeSystems.length due to CodeSystem re-use across StructureDefinitions
+      expect(result.codeSystemEnumMap.size).toStrictEqual(305);
     });
   });
 
@@ -220,7 +222,8 @@ describe('src/typescript-datamodel-generator', () => {
       expect(result.codeSystems).toBeDefined();
       expect(result.codeSystems.length).toStrictEqual(21);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(21);
+      // result.codeSystemEnumMap.size >= result.codeSystems.length due to CodeSystem re-use across StructureDefinitions
+      expect(result.codeSystemEnumMap.size).toStrictEqual(25);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
@@ -228,9 +231,10 @@ describe('src/typescript-datamodel-generator', () => {
 
       result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
       expect(result.codeSystems).toBeDefined();
-      expect(result.codeSystems.length).toStrictEqual(197);
+      expect(result.codeSystems.length).toStrictEqual(189);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(197);
+      // result.codeSystemEnumMap.size >= result.codeSystems.length due to CodeSystem re-use across StructureDefinitions
+      expect(result.codeSystemEnumMap.size).toStrictEqual(320);
     });
   });
 
@@ -319,7 +323,8 @@ describe('src/typescript-datamodel-generator', () => {
       expect(result.codeSystems).toBeDefined();
       expect(result.codeSystems.length).toStrictEqual(26);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(26);
+      // result.codeSystemEnumMap.size >= result.codeSystems.length due to CodeSystem re-use across StructureDefinitions
+      expect(result.codeSystemEnumMap.size).toStrictEqual(32);
 
       const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
       expect(resources).toBeDefined();
@@ -327,9 +332,36 @@ describe('src/typescript-datamodel-generator', () => {
 
       result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(resources);
       expect(result.codeSystems).toBeDefined();
-      expect(result.codeSystems.length).toStrictEqual(207);
+      expect(result.codeSystems.length).toStrictEqual(202);
       expect(result.codeSystemEnumMap).toBeDefined();
-      expect(result.codeSystemEnumMap.size).toStrictEqual(207);
+      // result.codeSystemEnumMap.size >= result.codeSystems.length due to CodeSystem re-use across StructureDefinitions
+      expect(result.codeSystemEnumMap.size).toStrictEqual(339);
+    });
+  });
+
+  describe('TypescriptDataModelGenerator using full FHIR cache for debugging', () => {
+    it.skip('should be defined and properly initialized for DEBUGGING', async () => {
+      const fhirPackage: FhirPackage = getFhirPackage('R4');
+      const tsDataModelGenerator = new TypescriptDataModelGenerator(fhirPackage);
+      expect(tsDataModelGenerator).toBeDefined();
+
+      await tsDataModelGenerator.initialize();
+      // Add conditional breakpoints in TypescriptDataModelGenerator code as needed
+
+      // const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
+      // expect(resources).toBeDefined();
+      //
+      // const filteredResources = resources.filter((sd) => {
+      //   return sd.snapshot.element.some((ed) => {
+      //     if (ed.max && ed.max !== '1' && ed.type && ed.type.length > 0) {
+      //       return ed.type.some((t) => t.code === 'code');
+      //     }
+      //   });
+      // });
+      // expect(filteredResources).toBeDefined();
+
+      // const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
+      // expect(complexTypes).toBeDefined();
     });
   });
 });

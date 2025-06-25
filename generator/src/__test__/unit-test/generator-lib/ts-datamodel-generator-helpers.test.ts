@@ -105,7 +105,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
       const options: GeneratorPackageLoaderOptions = {
         log: fplLogger,
         safeMode: SafeMode.FREEZE,
-        cacheRootPath: resolve(__dirname, '..', '..', 'test-cache'),
+        cacheRootPath: resolve(__dirname, '..', 'utest-cache'),
       };
 
       const packageLoader: BasePackageLoader = await generatorPackageLoader(options);

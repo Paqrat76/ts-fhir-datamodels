@@ -1,0 +1,509 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-bundle-type 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "document",
+      "definition": "The bundle is a document. The first resource is a Composition.",
+      "display": "Document",
+      "enum": "DOCUMENT",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "message",
+      "definition": "The bundle is a message. The first resource is a MessageHeader.",
+      "display": "Message",
+      "enum": "MESSAGE",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "transaction",
+      "definition": "The bundle is a transaction - intended to be processed by a server as an atomic commit.",
+      "display": "Transaction",
+      "enum": "TRANSACTION",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "transaction-response",
+      "definition": "The bundle is a transaction response. Because the response is a transaction response, the transaction has succeeded, and all responses are error free.",
+      "display": "Transaction Response",
+      "enum": "TRANSACTION_RESPONSE",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "batch",
+      "definition": "The bundle is a set of actions - intended to be processed by a server as a group of independent actions.",
+      "display": "Batch",
+      "enum": "BATCH",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "batch-response",
+      "definition": "The bundle is a batch response. Note that as a batch, some responses may indicate failure and others success.",
+      "display": "Batch Response",
+      "enum": "BATCH_RESPONSE",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "history",
+      "definition": "The bundle is a list of resources from a history interaction on a server.",
+      "display": "History List",
+      "enum": "HISTORY",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "searchset",
+      "definition": "The bundle is a list of resources returned as a result of a search/query interaction, operation, or message.",
+      "display": "Search Results",
+      "enum": "SEARCHSET",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+    {
+      "code": "collection",
+      "definition": "The bundle is a set of resources collected into a single package for ease of distribution that imposes no processing obligations or behavioral rules beyond persistence.",
+      "display": "Collection",
+      "enum": "COLLECTION",
+      "name": "BundleType",
+      "url": "http://hl7.org/fhir/bundle-type",
+    },
+  ],
+  "description": "Indicates the purpose of a bundle - how it is intended to be used.",
+  "name": "BundleType",
+  "url": "http://hl7.org/fhir/bundle-type",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-contact-point-system 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "phone",
+      "definition": "The value is a telephone number used for voice calls. Use of full international numbers starting with + is recommended to enable automatic dialing support but not required.",
+      "display": "Phone",
+      "enum": "PHONE",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+    {
+      "code": "fax",
+      "definition": "The value is a fax machine. Use of full international numbers starting with + is recommended to enable automatic dialing support but not required.",
+      "display": "Fax",
+      "enum": "FAX",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+    {
+      "code": "email",
+      "definition": "The value is an email address.",
+      "display": "Email",
+      "enum": "EMAIL",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+    {
+      "code": "pager",
+      "definition": "The value is a pager number. These may be local pager numbers that are only usable on a particular pager system.",
+      "display": "Pager",
+      "enum": "PAGER",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+    {
+      "code": "url",
+      "definition": "A contact that is not a phone, fax, pager or email address and is expressed as a URL.  This is intended for various institutional or personal contacts including web sites, blogs, Skype, Twitter, Facebook, etc. Do not use for email addresses.",
+      "display": "URL",
+      "enum": "URL",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+    {
+      "code": "sms",
+      "definition": "A contact that can be used for sending an sms message (e.g. mobile phones, some landlines).",
+      "display": "SMS",
+      "enum": "SMS",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+    {
+      "code": "other",
+      "definition": "A contact that is not a phone, fax, page or email address and is not expressible as a URL.  E.g. Internal mail address.  This SHOULD NOT be used for contacts that are expressible as a URL (e.g. Skype, Twitter, Facebook, etc.)  Extensions may be used to distinguish "other" contact types.",
+      "display": "Other",
+      "enum": "OTHER",
+      "name": "ContactPointSystem",
+      "url": "http://hl7.org/fhir/contact-point-system",
+    },
+  ],
+  "description": "Telecommunications form for contact point.",
+  "name": "ContactPointSystem",
+  "url": "http://hl7.org/fhir/contact-point-system",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-contact-point-use 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "home",
+      "definition": "A communication contact point at a home; attempted contacts for business purposes might intrude privacy and chances are one will contact family or other household members instead of the person one wishes to call. Typically used with urgent cases, or if no other contacts are available.",
+      "display": "Home",
+      "enum": "HOME",
+      "name": "ContactPointUse",
+      "url": "http://hl7.org/fhir/contact-point-use",
+    },
+    {
+      "code": "work",
+      "definition": "An office contact point. First choice for business related contacts during business hours.",
+      "display": "Work",
+      "enum": "WORK",
+      "name": "ContactPointUse",
+      "url": "http://hl7.org/fhir/contact-point-use",
+    },
+    {
+      "code": "temp",
+      "definition": "A temporary contact point. The period can provide more detailed information.",
+      "display": "Temp",
+      "enum": "TEMP",
+      "name": "ContactPointUse",
+      "url": "http://hl7.org/fhir/contact-point-use",
+    },
+    {
+      "code": "old",
+      "definition": "This contact point is no longer in use (or was never correct, but retained for records).",
+      "display": "Old",
+      "enum": "OLD",
+      "name": "ContactPointUse",
+      "url": "http://hl7.org/fhir/contact-point-use",
+    },
+    {
+      "code": "mobile",
+      "definition": "A telecommunication device that moves and stays with its owner. May have characteristics of all other use codes, suitable for urgent matters, not the first choice for routine business.",
+      "display": "Mobile",
+      "enum": "MOBILE",
+      "name": "ContactPointUse",
+      "url": "http://hl7.org/fhir/contact-point-use",
+    },
+  ],
+  "description": "Use of contact point.",
+  "name": "ContactPointUse",
+  "url": "http://hl7.org/fhir/contact-point-use",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-days-of-week 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "mon",
+      "definition": "Monday.",
+      "display": "Monday",
+      "enum": "MON",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+    {
+      "code": "tue",
+      "definition": "Tuesday.",
+      "display": "Tuesday",
+      "enum": "TUE",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+    {
+      "code": "wed",
+      "definition": "Wednesday.",
+      "display": "Wednesday",
+      "enum": "WED",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+    {
+      "code": "thu",
+      "definition": "Thursday.",
+      "display": "Thursday",
+      "enum": "THU",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+    {
+      "code": "fri",
+      "definition": "Friday.",
+      "display": "Friday",
+      "enum": "FRI",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+    {
+      "code": "sat",
+      "definition": "Saturday.",
+      "display": "Saturday",
+      "enum": "SAT",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+    {
+      "code": "sun",
+      "definition": "Sunday.",
+      "display": "Sunday",
+      "enum": "SUN",
+      "name": "DaysOfWeek",
+      "url": "http://hl7.org/fhir/days-of-week",
+    },
+  ],
+  "description": "The days of the week.",
+  "name": "DaysOfWeek",
+  "url": "http://hl7.org/fhir/days-of-week",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-http-verb 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "GET",
+      "definition": "HTTP GET Command.",
+      "display": "GET",
+      "enum": "GET",
+      "name": "HttpVerb",
+      "url": "http://hl7.org/fhir/http-verb",
+    },
+    {
+      "code": "HEAD",
+      "definition": "HTTP HEAD Command.",
+      "display": "HEAD",
+      "enum": "HEAD",
+      "name": "HttpVerb",
+      "url": "http://hl7.org/fhir/http-verb",
+    },
+    {
+      "code": "POST",
+      "definition": "HTTP POST Command.",
+      "display": "POST",
+      "enum": "POST",
+      "name": "HttpVerb",
+      "url": "http://hl7.org/fhir/http-verb",
+    },
+    {
+      "code": "PUT",
+      "definition": "HTTP PUT Command.",
+      "display": "PUT",
+      "enum": "PUT",
+      "name": "HttpVerb",
+      "url": "http://hl7.org/fhir/http-verb",
+    },
+    {
+      "code": "DELETE",
+      "definition": "HTTP DELETE Command.",
+      "display": "DELETE",
+      "enum": "DELETE",
+      "name": "HttpVerb",
+      "url": "http://hl7.org/fhir/http-verb",
+    },
+    {
+      "code": "PATCH",
+      "definition": "HTTP PATCH Command.",
+      "display": "PATCH",
+      "enum": "PATCH",
+      "name": "HttpVerb",
+      "url": "http://hl7.org/fhir/http-verb",
+    },
+  ],
+  "description": "HTTP verbs (in the HTTP command line). See [HTTP rfc](https://tools.ietf.org/html/rfc7231) for details.",
+  "name": "HttpVerb",
+  "url": "http://hl7.org/fhir/http-verb",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-identifier-use 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "usual",
+      "definition": "The identifier recommended for display and use in real-world interactions.",
+      "display": "Usual",
+      "enum": "USUAL",
+      "name": "IdentifierUse",
+      "url": "http://hl7.org/fhir/identifier-use",
+    },
+    {
+      "code": "official",
+      "definition": "The identifier considered to be most trusted for the identification of this item. Sometimes also known as "primary" and "main". The determination of "official" is subjective and implementation guides often provide additional guidelines for use.",
+      "display": "Official",
+      "enum": "OFFICIAL",
+      "name": "IdentifierUse",
+      "url": "http://hl7.org/fhir/identifier-use",
+    },
+    {
+      "code": "temp",
+      "definition": "A temporary identifier.",
+      "display": "Temp",
+      "enum": "TEMP",
+      "name": "IdentifierUse",
+      "url": "http://hl7.org/fhir/identifier-use",
+    },
+    {
+      "code": "secondary",
+      "definition": "An identifier that was assigned in secondary use - it serves to identify the object in a relative context, but cannot be consistently assigned to the same object again in a different context.",
+      "display": "Secondary",
+      "enum": "SECONDARY",
+      "name": "IdentifierUse",
+      "url": "http://hl7.org/fhir/identifier-use",
+    },
+    {
+      "code": "old",
+      "definition": "The identifier id no longer considered valid, but may be relevant for search purposes.  E.g. Changes to identifier schemes, account merges, etc.",
+      "display": "Old",
+      "enum": "OLD",
+      "name": "IdentifierUse",
+      "url": "http://hl7.org/fhir/identifier-use",
+    },
+  ],
+  "description": "Identifies the purpose for this identifier, if known .",
+  "name": "IdentifierUse",
+  "url": "http://hl7.org/fhir/identifier-use",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-narrative-status 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "generated",
+      "definition": "The contents of the narrative are entirely generated from the core elements in the content.",
+      "display": "Generated",
+      "enum": "GENERATED",
+      "name": "NarrativeStatus",
+      "url": "http://hl7.org/fhir/narrative-status",
+    },
+    {
+      "code": "extensions",
+      "definition": "The contents of the narrative are entirely generated from the core elements in the content and some of the content is generated from extensions. The narrative SHALL reflect the impact of all modifier extensions.",
+      "display": "Extensions",
+      "enum": "EXTENSIONS",
+      "name": "NarrativeStatus",
+      "url": "http://hl7.org/fhir/narrative-status",
+    },
+    {
+      "code": "additional",
+      "definition": "The contents of the narrative may contain additional information not found in the structured data. Note that there is no computable way to determine what the extra information is, other than by human inspection.",
+      "display": "Additional",
+      "enum": "ADDITIONAL",
+      "name": "NarrativeStatus",
+      "url": "http://hl7.org/fhir/narrative-status",
+    },
+    {
+      "code": "empty",
+      "definition": "The contents of the narrative are some equivalent of "No human-readable text provided in this case".",
+      "display": "Empty",
+      "enum": "EMPTY",
+      "name": "NarrativeStatus",
+      "url": "http://hl7.org/fhir/narrative-status",
+    },
+  ],
+  "description": "The status of a resource narrative.",
+  "name": "NarrativeStatus",
+  "url": "http://hl7.org/fhir/narrative-status",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-quantity-comparator 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "<",
+      "definition": "The actual value is less than the given value.",
+      "display": "Less than",
+      "enum": "LESS_THAN",
+      "name": "QuantityComparator",
+      "url": "http://hl7.org/fhir/quantity-comparator",
+    },
+    {
+      "code": "<=",
+      "definition": "The actual value is less than or equal to the given value.",
+      "display": "Less or Equal to",
+      "enum": "LESS_THAN_OR_EQUAL_TO",
+      "name": "QuantityComparator",
+      "url": "http://hl7.org/fhir/quantity-comparator",
+    },
+    {
+      "code": ">=",
+      "definition": "The actual value is greater than or equal to the given value.",
+      "display": "Greater or Equal to",
+      "enum": "GREATER_THAN_OR_EQUAL_TO",
+      "name": "QuantityComparator",
+      "url": "http://hl7.org/fhir/quantity-comparator",
+    },
+    {
+      "code": ">",
+      "definition": "The actual value is greater than the given value.",
+      "display": "Greater than",
+      "enum": "GREATER_THAN",
+      "name": "QuantityComparator",
+      "url": "http://hl7.org/fhir/quantity-comparator",
+    },
+  ],
+  "description": "How the Quantity should be understood and represented.",
+  "name": "QuantityComparator",
+  "url": "http://hl7.org/fhir/quantity-comparator",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-search-entry-mode 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "match",
+      "definition": "This resource matched the search specification.",
+      "display": "Match",
+      "enum": "MATCH",
+      "name": "SearchEntryMode",
+      "url": "http://hl7.org/fhir/search-entry-mode",
+    },
+    {
+      "code": "include",
+      "definition": "This resource is returned because it is referred to from another resource in the search set.",
+      "display": "Include",
+      "enum": "INCLUDE",
+      "name": "SearchEntryMode",
+      "url": "http://hl7.org/fhir/search-entry-mode",
+    },
+    {
+      "code": "outcome",
+      "definition": "An OperationOutcome that provides additional information about the processing of a search.",
+      "display": "Outcome",
+      "enum": "OUTCOME",
+      "name": "SearchEntryMode",
+      "url": "http://hl7.org/fhir/search-entry-mode",
+    },
+  ],
+  "description": "Why an entry is in the result set - whether it\\'s included as a match or because of an _include requirement, or to convey information or warning information about the search process.",
+  "name": "SearchEntryMode",
+  "url": "http://hl7.org/fhir/search-entry-mode",
+  "version": "4.0.1",
+}
+`;

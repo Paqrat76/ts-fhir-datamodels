@@ -28,7 +28,12 @@ import * as os from 'node:os';
 import { join, resolve } from 'node:path';
 import { copySync, emptyDirSync, ensureDirSync, outputFileSync } from 'fs-extra';
 import { TypescriptDataModelGenerator } from './typescript-datamodel-generator';
-import { FhirPackage, GeneratedContent } from './generator-lib/ts-datamodel-generator-helpers';
+import {
+  FhirPackage,
+  GeneratedContent,
+  generateLicenseContent,
+  generateModuleContent,
+} from './generator-lib/ts-datamodel-generator-helpers';
 
 /**
  * Represents the main application class responsible for generating and managing FHIR-based TypeScript data models.
@@ -134,9 +139,15 @@ export class GeneratorApp {
       }
     });
 
+    const fileLines: string[] = [
+      ...generateLicenseContent(),
+      '',
+      ...generateModuleContent(`index.ts`),
+      '',
+      ...Array.from(barrelLines).sort(),
+    ];
     const barrelOutputPath = resolve(baseOutputPath, 'index.ts');
-    const sortedBarrelLines = Array.from(barrelLines).sort();
-    outputFileSync(barrelOutputPath, sortedBarrelLines.join(os.EOL).concat(os.EOL));
+    outputFileSync(barrelOutputPath, fileLines.join(os.EOL).concat(os.EOL));
   }
 }
 

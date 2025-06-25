@@ -39,8 +39,6 @@ patterns used to create the data models result is correct code.
 The primary custom FHIR data model shall support the following requirements:
 
 - Extends `DomainResource`
-  - **NOTE:** The FHIR `Parameters` resource that extends `Resource` will be included in the test `.fhir` cache
-    rather than defining a custom FHIR `StructureDefinition`.
 - Contains nested `BackboneElement`s
 - Contains a shared `BackboneElement` (`StructureDefinition.contentReference`)
 - Fields to represent the following data element types
@@ -93,7 +91,6 @@ The primary custom FHIR data model shall support the following requirements:
 - All get/set/has methods for each single field as appropriate for the data type
 - All get/set/has/add/init methods for each list field as appropriate for the data type
 - The `copyValues()` method uses the following patterns for each of the four cardinality characteristics:
-
   - Optional single field (cardinality `0..1`)
 
     ```typescript
@@ -149,52 +146,46 @@ BackboneElement nesting:
 ### TestDataModel Class Definitions
 
 - TestDataModel (`DomainResource`)
-
   - `resourceType`: `TestDataModel`
   - `fhirType()` => `TestDataModel`
   - choice01[x]?: `Range` | `Quantity` | `undefined`;
   - resource01?: `Resource` | `undefined`;
-  - backbonePrimitive0x?: `TestDataModelPrimitiveComponent[]` | `undefined`;
-  - backboneComplex01?: `TestDataModelComplexComponent` | `undefined`;
+  - backbonePrimitive0x?: `TestDataModelPrimitiveComponent[]` | `undefined`
+  - backboneComplex01?: `TestDataModelComplexComponent` | `undefined`
 
 - TestDataModelPrimitiveComponent (`BackboneElement`)
-
-  - primitive01?: `DateTimeType` | `undefined`;
-  - primitive0x?: `IntegerType[]` | `undefined`;
-  - primitive11: `BooleanType` | `null`;
-  - primitive1x: `StringType[]` | `null`;
-  - choice11[x]: `UriType` | `StringType` | `null`;
+  - primitive01?: `DateTimeType` | `undefined`
+  - primitive0x?: `IntegerType[]` | `undefined`
+  - primitive11: `BooleanType` | `null`
+  - primitive1x: `StringType[]` | `null`
+  - choice11[x]: `UriType` | `StringType` | `null`
 
 - TestDataModelComplexComponent (`BackboneElement`)
-
-  - complex01?: `HumanName` | `undefined`;
-  - complex0x?: `Address`[] | `undefined`;
-  - complex11: `Dosage` | `null`;
-  - complex1x: `Period[]` | `null`;
-  - backboneReference11: `TestDataModelReferenceComponent` | `null`;
+  - complex01?: `HumanName` | `undefined`
+  - complex0x?: `Address`[] | `undefined`
+  - complex11: `Dosage` | `null`
+  - complex1x: `Period[]` | `null`
+  - backboneReference11: `TestDataModelReferenceComponent` | `null`
 
 - TestDataModelReferenceComponent (`BackboneElement`)
-
-  - reference01?: `Reference` | `undefined`; // ANY
-  - reference0x?: `Reference[]` | `undefined`; // `Practitioner`, `PractitionerRole`, `Organization`
-  - reference11: `Reference` | `null`; // `Patient`, `SimplePersonModel` (for testing `contained`)
-  - reference1x: `Reference[]` | `null`; // `Condition`
-  - backboneEnumCode1x: `TestDataModelEnumCodeComponent[]` | `null`;
+  - reference01?: `Reference` | `undefined` // ANY
+  - reference0x?: `Reference[]` | `undefined` // `Practitioner`, `PractitionerRole`, `Organization`
+  - reference11: `Reference` | `null` // `Patient`, `SimplePersonModel` (for testing `contained`)
+  - reference1x: `Reference[]` | `null` // `Condition`
+  - backboneEnumCode1x: `TestDataModelEnumCodeComponent[]` | `null`
 
 - TestDataModelEnumCodeComponent (`BackboneElement`)
-
-  - enumCode01?: `EnumCodeType` | `undefined`; // `TaskCodeEnum`
-  - enumCode0x?: `EnumCodeType[]` | `undefined`; // `ContributorTypeEnum`
-  - enumCode11: `EnumCodeType` | `null`; // `TaskStatusEnum`
-  - enumCode1x: `EnumCodeType[]` | `null`; // `ConsentStateEnum`
-  - backbonePrimitive01?: `TestDataModelPrimitiveComponent` | `undefined`;
+  - enumCode01?: `EnumCodeType` | `undefined` // `TaskCodeEnum`
+  - enumCode0x?: `EnumCodeType[]` | `undefined` // `ContributorTypeEnum`
+  - enumCode11: `EnumCodeType` | `null` // `TaskStatusEnum`
+  - enumCode1x: `EnumCodeType[]` | `null` // `ConsentStateEnum`
+  - backbonePrimitive01?: `TestDataModelPrimitiveComponent` | `undefined` (`StructureDefinition.contentReference`)
 
 ### SimplePersonModel Class Definition
 
 **NOTE:** Used for `DomainResource.contained` testing
 
 - SimplePersonModel (`DomainResource`)
-
   - `resourceType`: `SimplePersonModel`
   - `fhirType()` => `SimplePersonModel`
   - identifier?: Identifier | undefined;

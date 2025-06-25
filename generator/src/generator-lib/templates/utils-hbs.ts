@@ -100,6 +100,7 @@ export interface HbsElementComponent {
   isComponentDataType: boolean;
   isComponentElement: boolean;
   hasParsableDataType: boolean;
+  hasParsableResource: boolean;
   // StructureDefinitionRootElement for parent component; HbsElementComponentRoot for child components
   rootElement: StructureDefinitionRootElement | HbsElementComponentRoot;
   numRequiredFields: number;
@@ -127,6 +128,7 @@ export interface HbsStructureDefinition {
   parentComponent: HbsElementComponent;
   hasChildComponents: boolean;
   childComponents?: HbsElementComponent[];
+  hasSymbolMetadata: boolean;
   fhirCoreImports: string[];
   generatedImports: string[];
 }
@@ -150,10 +152,14 @@ export function getSdHbsProperties(
 
   const hbsElementComponentRoots = getHbsElementComponentRoots(structureDef);
 
+  let hasChildChoiceFields = false;
   let childComponents: HbsElementComponent[] | undefined = undefined;
   if (hbsElementComponentRoots.length > 0) {
     childComponents = getChildElementComponents(structureDef, codeSystemEnumMap, hbsElementComponentRoots);
+    hasChildChoiceFields = childComponents.some((component: HbsElementComponent) => component.hasChoiceFields);
   }
+
+  const hasSymbolMetadata = parentComponent.hasChoiceFields || hasChildChoiceFields;
 
   const sdHbsProperties = {
     url: structureDef.url,
@@ -167,6 +173,7 @@ export function getSdHbsProperties(
     parentComponent: parentComponent,
     hasChildComponents: !isEmpty(childComponents),
     childComponents: childComponents,
+    hasSymbolMetadata: hasSymbolMetadata,
     fhirCoreImports: [] as string[],
     generatedImports: [] as string[],
   } as HbsStructureDefinition;
@@ -310,6 +317,7 @@ function getParentElementComponent(
   const parentElementDefinitions: HbsElementDefinition[] = getParentElementDefinitions(structureDef, codeSystemEnumMap);
 
   const hasParsableTypes = hasParsableDataType(baseDefinitionType, parentElementDefinitions);
+  const hasParsableResources = hasParsableResource(baseDefinitionType, parentElementDefinitions);
   const hasResourceFields = parentElementDefinitions.some((ed: HbsElementDefinition) => ed.isResourceType);
   const numReqdFields = getNumberOfReqdFields(parentElementDefinitions);
   const numPrimitiveFields = getNumberOfPrimitiveFields(parentElementDefinitions);
@@ -333,6 +341,7 @@ function getParentElementComponent(
     isComponentDataType: baseDefinitionType === 'DataType',
     isComponentElement: false,
     hasParsableDataType: hasParsableTypes,
+    hasParsableResource: hasParsableResources,
     rootElement: rootElement,
     numRequiredFields: numReqdFields,
     hasRequiredFields: numReqdFields > 0,
@@ -457,6 +466,7 @@ function getChildElementComponents(
     );
 
     const hasParsableTypes = hasParsableDataType(componentDefinitionType, componentElementDefinitions);
+    const hasParsableResources = hasParsableResource(componentDefinitionType, componentElementDefinitions);
     const hasResourceFields = componentElementDefinitions.some((ed: HbsElementDefinition) => ed.isResourceType);
     const numReqdFields = getNumberOfReqdFields(componentElementDefinitions);
     const numPrimitiveFields = getNumberOfPrimitiveFields(componentElementDefinitions);
@@ -480,6 +490,7 @@ function getChildElementComponents(
       isComponentDataType: false,
       isComponentElement: componentDefinitionType === 'Element',
       hasParsableDataType: hasParsableTypes,
+      hasParsableResource: hasParsableResources,
       rootElement: hbsElementComponentRoot,
       numRequiredFields: numReqdFields,
       hasRequiredFields: numReqdFields > 0,
@@ -787,6 +798,7 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
     }
 
     if (ed.isResourceType) {
+      importsSet.add('Resource');
       importsSet.add('assertFhirResourceType');
       importsSet.add('setFhirResourceJson');
     }
@@ -1235,6 +1247,20 @@ export function hasParsableDataType(componentDefinitionType: string, hbsEd: HbsE
     componentDefinitionType === 'Element';
   const hasParsableTypes = hbsEd.some((ed) => ed.isChoiceType || ed.isComplexType || ed.isReferenceType);
   return hasParsableBase || hasParsableTypes;
+}
+
+/**
+ * Determines whether a given component definition type or HbsElementDefinition array
+ * contains parsable data types based on specific conditions.
+ *
+ * @param {string} componentDefinitionType - The type of the component definition (e.g., 'DomainResource', 'Resource').
+ * @param {HbsElementDefinition[]} hbsEd - An array of HbsElementDefinition objects to check for resource type.
+ * @returns {boolean} Returns true if a parsable resource exists, otherwise false.
+ */
+export function hasParsableResource(componentDefinitionType: string, hbsEd: HbsElementDefinition[]): boolean {
+  const hasParsableBase = componentDefinitionType === 'DomainResource' || componentDefinitionType === 'Resource';
+  const hasParsableResources = hbsEd.some((ed) => ed.isResourceType);
+  return hasParsableBase || hasParsableResources;
 }
 
 /**
