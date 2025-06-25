@@ -42,7 +42,6 @@ GitHub: [hapifhir/hapi-fhir](https://github.com/hapifhir/hapi-fhir)
 GitHub: [hapifhir/org.hl7.fhir.core](https://github.com/hapifhir/org.hl7.fhir.core)
 
 - Core FHIR R4: [org.hl7.fhir.r4](https://github.com/hapifhir/org.hl7.fhir.core/tree/master/org.hl7.fhir.r4/src/main/java/org/hl7/fhir/r4)
-
   - Element model classes: [org.hl7.fhir.r4.elementmodel](https://github.com/hapifhir/org.hl7.fhir.core/tree/master/org.hl7.fhir.r4/src/main/java/org/hl7/fhir/r4/elementmodel)
   - FHIR datatype and resource classes: [org.hl7.fhir.r4.model](https://github.com/hapifhir/org.hl7.fhir.core/tree/master/org.hl7.fhir.r4/src/main/java/org/hl7/fhir/r4/model)
     - Includes `XxxxType` that extends `PrimitiveType<T>` that extends `Type`
@@ -86,7 +85,6 @@ The FHIR primitive data types are defined using the Zod library.
 
 - FHIR [JSON Representation of Resources](https://hl7.org/fhir/R5/json.html#2.6.2)
 - FHIR [JSON representation of primitive elements](https://hl7.org/fhir/R5/json.html#primitive)
-
   - **Representation**
     - FHIR elements with primitive datatypes are represented in two parts:
       - A JSON property with the name of the element, which has a JSON type of `number`, `boolean`, or `string`
@@ -96,7 +94,6 @@ The FHIR primitive data types are defined using the Zod library.
       `JSON string` which has the same content as that specified for the relevant datatype. Whitespace is always
       significant (i.e. no leading and trailing spaces for non-strings).
   - **Repeating Primitives (`x..*`)**
-
     - In the case where the primitive element may repeat, it is represented in two arrays. `JSON null` values are used
       to fill out both arrays so that the `id` and/or `extension` are aligned with the matching value in the first array.
 
@@ -142,7 +139,6 @@ returning a populated instance of the FHIR data model.
 ### Luxon
 
 - **References**
-
   - NPM [Luxon](https://www.npmjs.com/package/luxon)
   - Home [Luxon](https://moment.github.io/luxon/#/)
     - [Changing the default zone](https://moment.github.io/luxon/#/zones?id=changing-the-default-zone)

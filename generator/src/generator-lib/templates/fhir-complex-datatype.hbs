@@ -43,12 +43,17 @@ import {
   {{this}},
 {{/each}}
 } from '@paq-ts-fhir/fhir-core';
-{{#if sdHbs.generatedImports }}
+{{#if sdHbs.generatedImports}}
 import {
 {{#each sdHbs.generatedImports}}
   {{this}},
 {{/each}}
 } from '../index';
+{{/if}}
+{{#if sdHbs.hasSymbolMetadata}}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Symbol.metadata polyfill secret sauce for decorator metadata
+(Symbol.metadata as any) ??= Symbol('Symbol.metadata');
 {{/if}}
 
 /**

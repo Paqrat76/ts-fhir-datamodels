@@ -2,11 +2,12 @@
 
 ## Feature Set
 
-- Improve test coverage in `fhir-core/src/utility/fhir-parsers.ts`
+- **BUG:** Generated Enum classes do not handle hierarchical code levels
+  (https://hl7.org/fhir/codesystem-name-use.html and http://hl7.org/fhir/trigger-type)
 - Investigate strategies to resolve circular references caused by:
   - fhir-contained-resource-parser/getFhirModelParseResults(...)
   - fhir-parsers/getValueXData(...)
-- Consider re-adding complex-types for the SimpleQuantity and MoneyQuantity profiles
+- Consider re-adding profiled complex-types (e.g., SimpleQuantity, MoneyQuantity)
 
 ## Possible Considerations (future roadmap)
 

@@ -82,7 +82,7 @@ interface HbsCodeSystemConcept {
  * including its identifier, descriptive details, versioning, and case sensitivity,
  * along with the associated list of concepts defining the code system's taxonomy or terminology.
  */
-interface HbsCodeSystem {
+export interface HbsCodeSystem {
   name: string;
   url: string;
   description: string | undefined;

@@ -12,20 +12,11 @@
       return undefined;
     }
 
-{{#if isComponentResource}}
-    const fhirResourceParser = new FhirResourceParser(PARSABLE_DATATYPE_MAP);
-{{/if}}
-{{#if isComponentDomainResource}}
-    const fhirResourceParser = new FhirResourceParser(PARSABLE_DATATYPE_MAP);
-{{/if}}
-{{#if hasResourceFields}}
+{{#if hasParsableResource}}
     const fhirResourceParser = new FhirResourceParser(PARSABLE_DATATYPE_MAP);
 {{/if}}
 {{#if hasParsableDataType}}
-    // hasParsableDataType: {{hasParsableDataType}}
     const fhirDataTypeParser = new FhirDataTypeParser(PARSABLE_DATATYPE_MAP);
-{{else}}
-    // hasParsableDataType: {{hasParsableDataType}}
 {{/if}}
 
     const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : '{{componentName}}';

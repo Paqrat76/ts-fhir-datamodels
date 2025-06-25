@@ -56,12 +56,18 @@ const INITIALIZATION_ERROR_MSG = `This TypescriptDataModelGenerator instance mus
  */
 export class TypescriptDataModelGenerator {
   private readonly _fhirPackage: FhirPackage;
+  private _isDebug: boolean;
   private _packageLoader: BasePackageLoader | undefined;
   private isInitialized = false;
+
+  private tsGenLogger = (level: string, message: string) => {
+    console.log(`TS Generator ${level.toUpperCase()}: ${message}`);
+  };
 
   constructor(fhirPackage: FhirPackage) {
     assert(fhirPackage, 'fhirPackage is required.');
 
+    this._isDebug = fhirPackage.debug ?? false;
     this._fhirPackage = fhirPackage;
   }
 
@@ -89,7 +95,6 @@ export class TypescriptDataModelGenerator {
     const fplLogger = (level: string, message: string) => {
       console.log(`FPL ${level.toUpperCase()}: ${message}`);
     };
-
     const options: GeneratorPackageLoaderOptions = {
       log: fplLogger,
       safeMode: SafeMode.FREEZE,
@@ -171,6 +176,8 @@ export class TypescriptDataModelGenerator {
           }
         }
       }
+    } else if (this._isDebug) {
+      this.tsGenLogger('warn', `ValueSet ${valueSetUrl} does not exist or have a 'compose' element.`);
     }
     return undefined;
   }
@@ -200,7 +207,14 @@ export class TypescriptDataModelGenerator {
       assert(sd.snapshot?.element, 'ElementDefinitions must be defined');
       const elementDefinitions: ElementDefinition[] = sd.snapshot.element;
       elementDefinitions.forEach((ed) => {
-        if (ed.binding !== undefined && ed.binding.strength === 'required' && ed.binding.valueSet !== undefined) {
+        if (
+          ed.type !== undefined &&
+          ed.type.length === 1 &&
+          ed.type[0]?.code === 'code' &&
+          ed.binding !== undefined &&
+          ed.binding.strength === 'required' &&
+          ed.binding.valueSet !== undefined
+        ) {
           valueSetBindingUrls.set(ed.path, ed.binding.valueSet);
         }
       });
@@ -219,11 +233,11 @@ export class TypescriptDataModelGenerator {
       ) {
         // CodeSystems can be used in multiple ValueSets/StructureDefinitions, so we capture only its first use
         if (codeSystems.findIndex((cs) => cs.url === codeSystem.url) === -1) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const enumName = `${extractNameFromUrl(codeSystem.url!)}Enum`;
-          codeSystemEnumNames.set(key, enumName);
           codeSystems.push(codeSystem);
         }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const enumName = `${extractNameFromUrl(codeSystem.url!)}Enum`;
+        codeSystemEnumNames.set(key, enumName);
       }
     });
 
@@ -411,7 +425,6 @@ export class TypescriptDataModelGenerator {
       importParsable = '@paq-ts-fhir/fhir-core';
     } else {
       mapName = 'PARSABLE_RESOURCE_MAP';
-      // parsableType = `ParsableResource<Resource | BackboneElement>`;
       parsableType = `ParsableResource<Resource>`;
       parsableTypeName = 'ParsableResource';
       parsableModelType = 'Resource';
@@ -437,11 +450,6 @@ export class TypescriptDataModelGenerator {
     const mapEntries: string[] = [`export const ${mapName} = new Map<string, ${parsableType}>();`];
 
     generatedContent.forEach((genContent: GeneratedContent) => {
-      // assert(genContent.fileClassNames && genContent.fileClassNames.length > 0, 'fileClassNames must be defined.');
-      // genContent.fileClassNames.forEach((className: string) => {
-      //   imports.push(`import { ${className} } from './${genContent.filename}';`);
-      //   mapEntries.push(`${mapName}.set('${className}', ${className});`);
-      // });
       imports.push(`import { ${genContent.filename} } from './${genContent.filename}';`);
       mapEntries.push(`${mapName}.set('${genContent.filename}', ${genContent.filename});`);
     });

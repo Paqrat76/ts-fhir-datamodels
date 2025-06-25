@@ -85,6 +85,13 @@ export interface FhirPackage {
    * FHIR cache root path. Defaults to `os.homedir()` in function getFhirPackage().
    */
   pkgLoaderCacheRootPath: string;
+  /**
+   * A boolean flag indicating whether debugging mode is enabled or not.
+   * When set to `true`, the application may output additional logs or debug information
+   * to help with development or troubleshooting.
+   * When set to `false` or undefined, debugging features are disabled.
+   */
+  debug?: boolean;
 }
 
 /**

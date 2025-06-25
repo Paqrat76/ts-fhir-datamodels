@@ -19,6 +19,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.10.0] - 2025-06-25
+
+### Added
+
+- Separate fhir-cache (.fhir) directories into separate unit and functional test caches
+- Separate `generator-app.test.ts` for functional testing
+- `generateLicenseContent()` and `generateModuleContent()` for generated content
+
+### Changed
+
+- Reorganized generator testing into separate unit and functional test directories
+- Updated unit tests
+
+### Removed
+
+- Original `test-cache` directory
+- Commented out code blocks
+
+### Fixed
+
+- Several minor bugs revealed by updated tests
+
+
+## [0.9.0] - 2025-06-22
+
+### Added
+
+- FHIR Shorthand Sushi project with `*.fsh` files that define custom FHIR resources used only for Generator functional testing
+- FHIR artifacts to `test-cache` to support functional testing
+
+### Changed
+
+- Restructured the `__test__` directory to support both generator unit tests and generated data model functional testing
+
+
 ## [0.8.0] - 2025-06-20
 
 ### Changed
