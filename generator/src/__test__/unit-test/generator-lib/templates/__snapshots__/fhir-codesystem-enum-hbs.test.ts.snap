@@ -384,6 +384,74 @@ exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties
 }
 `;
 
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-name-use 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "usual",
+      "definition": "Known as/conventional/the one you normally use.",
+      "display": "Usual",
+      "enum": "USUAL",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+    {
+      "code": "official",
+      "definition": "The formal name as registered in an official (government) registry, but which name might not be commonly used. May be called "legal name".",
+      "display": "Official",
+      "enum": "OFFICIAL",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+    {
+      "code": "temp",
+      "definition": "A temporary name. Name.period can provide more detailed information. This may also be used for temporary names assigned at birth or in emergency situations.",
+      "display": "Temp",
+      "enum": "TEMP",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+    {
+      "code": "nickname",
+      "definition": "A name that is used to address the person in an informal manner, but is not part of their formal or usual name.",
+      "display": "Nickname",
+      "enum": "NICKNAME",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+    {
+      "code": "anonymous",
+      "definition": "Anonymous assigned name, alias, or pseudonym (used to protect a person\\'s identity for privacy reasons).",
+      "display": "Anonymous",
+      "enum": "ANONYMOUS",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+    {
+      "code": "old",
+      "definition": "This name is no longer in use (or was never correct, but retained for records).",
+      "display": "Old",
+      "enum": "OLD",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+    {
+      "code": "maiden",
+      "definition": "A name used prior to changing name because of marriage. This name use is for use by applications that collect and store names that were used prior to a marriage. Marriage naming customs vary greatly around the world, and are constantly changing. This term is not gender specific. The use of this term does not imply any particular history for a person\\'s name.",
+      "display": "Name changed for Marriage",
+      "enum": "MAIDEN",
+      "name": "NameUse",
+      "url": "http://hl7.org/fhir/name-use",
+    },
+  ],
+  "description": "The use of a human name.",
+  "name": "NameUse",
+  "url": "http://hl7.org/fhir/name-use",
+  "version": "4.0.1",
+}
+`;
+
 exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-narrative-status 1`] = `
 {
   "caseSensitive": true,
@@ -504,6 +572,82 @@ exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties
   "description": "Why an entry is in the result set - whether it\\'s included as a match or because of an _include requirement, or to convey information or warning information about the search process.",
   "name": "SearchEntryMode",
   "url": "http://hl7.org/fhir/search-entry-mode",
+  "version": "4.0.1",
+}
+`;
+
+exports[`src/generator-lib/templates/fhir-codesystem-enum-hbs getCsHbsProperties should return the correct HbsCodeSystem properties for CodeSystem-trigger-type 1`] = `
+{
+  "caseSensitive": true,
+  "concept": [
+    {
+      "code": "named-event",
+      "definition": "The trigger occurs in response to a specific named event, and no other information about the trigger is specified. Named events are completely pre-coordinated, and the formal semantics of the trigger are not provided.",
+      "display": "Named Event",
+      "enum": "NAMED_EVENT",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "periodic",
+      "definition": "The trigger occurs at a specific time or periodically as described by a timing or schedule. A periodic event cannot have any data elements, but may have a name assigned as a shorthand for the event.",
+      "display": "Periodic",
+      "enum": "PERIODIC",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "data-changed",
+      "definition": "The trigger occurs whenever data of a particular type is changed in any way, either added, modified, or removed.",
+      "display": "Data Changed",
+      "enum": "DATA_CHANGED",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "data-added",
+      "definition": "The trigger occurs whenever data of a particular type is added.",
+      "display": "Data Added",
+      "enum": "DATA_ADDED",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "data-modified",
+      "definition": "The trigger occurs whenever data of a particular type is modified.",
+      "display": "Data Updated",
+      "enum": "DATA_MODIFIED",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "data-removed",
+      "definition": "The trigger occurs whenever data of a particular type is removed.",
+      "display": "Data Removed",
+      "enum": "DATA_REMOVED",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "data-accessed",
+      "definition": "The trigger occurs whenever data of a particular type is accessed.",
+      "display": "Data Accessed",
+      "enum": "DATA_ACCESSED",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+    {
+      "code": "data-access-ended",
+      "definition": "The trigger occurs whenever access to data of a particular type is completed.",
+      "display": "Data Access Ended",
+      "enum": "DATA_ACCESS_ENDED",
+      "name": "TriggerType",
+      "url": "http://hl7.org/fhir/trigger-type",
+    },
+  ],
+  "description": "The type of trigger.",
+  "name": "TriggerType",
+  "url": "http://hl7.org/fhir/trigger-type",
   "version": "4.0.1",
 }
 `;

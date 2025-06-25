@@ -1516,6 +1516,13 @@ export class NameUseEnum implements IFhirCodeEnum {
     'Old',
     'This name is no longer in use (or was never correct, but retained for records).',
   );
+  public static readonly MAIDEN = new FhirCodeDefinition(
+    'MAIDEN',
+    'maiden',
+    'http://hl7.org/fhir/name-use',
+    'Name changed for Marriage',
+    'A name used prior to changing name because of marriage. This name use is for use by applications that collect and store names that were used prior to a marriage. Marriage naming customs vary greatly around the world, and are constantly changing. This term is not gender specific. The use of this term does not imply any particular history for a person\\'s name.',
+  );
 
   // NULL added to help check for non-existent value
   public static readonly NULL = new FhirCodeDefinition('NULL', \`null\`);
@@ -1531,6 +1538,7 @@ export class NameUseEnum implements IFhirCodeEnum {
       NameUseEnum.NICKNAME,
       NameUseEnum.ANONYMOUS,
       NameUseEnum.OLD,
+      NameUseEnum.MAIDEN,
       NameUseEnum.NULL
     ];
   }
@@ -1557,6 +1565,8 @@ export class NameUseEnum implements IFhirCodeEnum {
       return NameUseEnum.ANONYMOUS;
     } else if (NameUseEnum.OLD.code === code) {
       return NameUseEnum.OLD;
+    } else if (NameUseEnum.MAIDEN.code === code) {
+      return NameUseEnum.MAIDEN;
     } else if (NameUseEnum.NULL.code === code) {
       return NameUseEnum.NULL;
     } else {
@@ -2580,6 +2590,27 @@ export class TriggerTypeEnum implements IFhirCodeEnum {
     'Data Changed',
     'The trigger occurs whenever data of a particular type is changed in any way, either added, modified, or removed.',
   );
+  public static readonly DATA_ADDED = new FhirCodeDefinition(
+    'DATA_ADDED',
+    'data-added',
+    'http://hl7.org/fhir/trigger-type',
+    'Data Added',
+    'The trigger occurs whenever data of a particular type is added.',
+  );
+  public static readonly DATA_MODIFIED = new FhirCodeDefinition(
+    'DATA_MODIFIED',
+    'data-modified',
+    'http://hl7.org/fhir/trigger-type',
+    'Data Updated',
+    'The trigger occurs whenever data of a particular type is modified.',
+  );
+  public static readonly DATA_REMOVED = new FhirCodeDefinition(
+    'DATA_REMOVED',
+    'data-removed',
+    'http://hl7.org/fhir/trigger-type',
+    'Data Removed',
+    'The trigger occurs whenever data of a particular type is removed.',
+  );
   public static readonly DATA_ACCESSED = new FhirCodeDefinition(
     'DATA_ACCESSED',
     'data-accessed',
@@ -2606,6 +2637,9 @@ export class TriggerTypeEnum implements IFhirCodeEnum {
       TriggerTypeEnum.NAMED_EVENT,
       TriggerTypeEnum.PERIODIC,
       TriggerTypeEnum.DATA_CHANGED,
+      TriggerTypeEnum.DATA_ADDED,
+      TriggerTypeEnum.DATA_MODIFIED,
+      TriggerTypeEnum.DATA_REMOVED,
       TriggerTypeEnum.DATA_ACCESSED,
       TriggerTypeEnum.DATA_ACCESS_ENDED,
       TriggerTypeEnum.NULL
@@ -2628,6 +2662,12 @@ export class TriggerTypeEnum implements IFhirCodeEnum {
       return TriggerTypeEnum.PERIODIC;
     } else if (TriggerTypeEnum.DATA_CHANGED.code === code) {
       return TriggerTypeEnum.DATA_CHANGED;
+    } else if (TriggerTypeEnum.DATA_ADDED.code === code) {
+      return TriggerTypeEnum.DATA_ADDED;
+    } else if (TriggerTypeEnum.DATA_MODIFIED.code === code) {
+      return TriggerTypeEnum.DATA_MODIFIED;
+    } else if (TriggerTypeEnum.DATA_REMOVED.code === code) {
+      return TriggerTypeEnum.DATA_REMOVED;
     } else if (TriggerTypeEnum.DATA_ACCESSED.code === code) {
       return TriggerTypeEnum.DATA_ACCESSED;
     } else if (TriggerTypeEnum.DATA_ACCESS_ENDED.code === code) {

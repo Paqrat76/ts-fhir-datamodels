@@ -47,72 +47,88 @@ describe('src/generator-lib/templates/fhir-codesystem-enum-hbs', () => {
   describe('getCsHbsProperties', () => {
     it('should return the correct HbsCodeSystem properties for CodeSystem-bundle-type', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('bundle-type', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('bundle-type', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-contact-point-system', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('contact-point-system', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('contact-point-system', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-contact-point-use', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('contact-point-use', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('contact-point-use', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-days-of-week', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('days-of-week', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('days-of-week', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-http-verb', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('http-verb', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('http-verb', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-identifier-use', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('identifier-use', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('identifier-use', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
+      expect(hbsCodeSystem).toBeDefined();
+      expect(hbsCodeSystem).toMatchSnapshot();
+    });
+
+    it('should return the correct HbsCodeSystem properties for CodeSystem-name-use', () => {
+      const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
+      const codeSystem = packageLoader.findResourceJSON('name-use', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-narrative-status', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('narrative-status', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('narrative-status', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-quantity-comparator', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('quantity-comparator', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('quantity-comparator', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
     it('should return the correct HbsCodeSystem properties for CodeSystem-search-entry-mode', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
-      const fhirVersionCodeSystem = packageLoader.findResourceJSON('search-entry-mode', options) as CodeSystem;
-      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(fhirVersionCodeSystem, testFhirPackage);
+      const codeSystem = packageLoader.findResourceJSON('search-entry-mode', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
+      expect(hbsCodeSystem).toBeDefined();
+      expect(hbsCodeSystem).toMatchSnapshot();
+    });
+
+    it('should return the correct HbsCodeSystem properties for CodeSystem-trigger-type', () => {
+      const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
+      const codeSystem = packageLoader.findResourceJSON('trigger-type', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
       expect(hbsCodeSystem).toBeDefined();
       expect(hbsCodeSystem).toMatchSnapshot();
     });

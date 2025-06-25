@@ -125,7 +125,42 @@ export function getCsHbsProperties(codeSystem: CodeSystem, fhirPackage: FhirPack
     `${codeSystemName} does not contain a valid CodeSystem.concept`,
   );
 
-  const hbsCodeSystemConcept: HbsCodeSystemConcept[] = codeSystem.concept.map((concept: CodeSystemConcept) => {
+  const flattenedHbsCodeSystemConcepts: HbsCodeSystemConcept[] = flattenHbsCodeSystemConcepts(
+    codeSystem.concept,
+    codeSystemName,
+    codeSystem.url,
+  );
+  assert(
+    flattenedHbsCodeSystemConcepts.length > 0,
+    `${codeSystemName} does not contain any CodeSystem.concept entries`,
+  );
+
+  return {
+    name: codeSystemName,
+    url: codeSystem.url,
+    description: fixDescriptiveString(codeSystem.description) ?? `"description not provided"`,
+    version: codeSystem.version ?? fhirPackage.pkgVersion,
+    caseSensitive: codeSystem.caseSensitive ?? false,
+    concept: flattenedHbsCodeSystemConcepts,
+  } as HbsCodeSystem;
+}
+
+/**
+ * Flattens a nested structure of CodeSystemConcepts into a flat list of HbsCodeSystemConcepts.
+ *
+ * @param {CodeSystemConcept[]} concepts - An array of CodeSystemConcept objects, potentially including nested concepts.
+ * @param {string} codeSystemName - The name of the code system to be applied to all concepts.
+ * @param {string} codeSystemUrl - The URL of the code system to be applied to all concepts.
+ * @returns {HbsCodeSystemConcept[]} A flat array of HbsCodeSystemConcept objects derived from the input structure.
+ */
+function flattenHbsCodeSystemConcepts(
+  concepts: CodeSystemConcept[],
+  codeSystemName: string,
+  codeSystemUrl: string,
+): HbsCodeSystemConcept[] {
+  const returnHbsCodeSystemConcepts: HbsCodeSystemConcept[] = [];
+
+  concepts.forEach((concept: CodeSystemConcept) => {
     const codeStr = concept.code;
 
     let enumStr: string;
@@ -141,23 +176,25 @@ export function getCsHbsProperties(codeSystem: CodeSystem, fhirPackage: FhirPack
       }
     }
 
-    return {
+    const hbsCodeSystemConcept = {
       name: codeSystemName,
       enum: enumStr,
       code: codeStr,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      url: codeSystem.url!,
+      url: codeSystemUrl,
       display: concept.display,
       definition: fixDescriptiveString(concept.definition),
     } as HbsCodeSystemConcept;
+    returnHbsCodeSystemConcepts.push(hbsCodeSystemConcept);
+
+    if (concept.concept && concept.concept.length > 0) {
+      const childHbsCodeSystemConcepts: HbsCodeSystemConcept[] = flattenHbsCodeSystemConcepts(
+        concept.concept,
+        codeSystemName,
+        codeSystemUrl,
+      );
+      returnHbsCodeSystemConcepts.push(...childHbsCodeSystemConcepts);
+    }
   });
 
-  return {
-    name: codeSystemName,
-    url: codeSystem.url,
-    description: fixDescriptiveString(codeSystem.description) ?? `"description not provided"`,
-    version: codeSystem.version ?? fhirPackage.pkgVersion,
-    caseSensitive: codeSystem.caseSensitive ?? false,
-    concept: hbsCodeSystemConcept,
-  } as HbsCodeSystem;
+  return returnHbsCodeSystemConcepts;
 }
