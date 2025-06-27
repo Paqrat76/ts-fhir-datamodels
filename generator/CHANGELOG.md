@@ -23,7 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- TypeScript script to generate the FHIR data models for functional testing
+
 ### Changed
+
+- Updated the generator test FHIR caches
+- Refactored how to set debug mode for the generator
+- Changed referenced resources in TestDataModel StructureDefinition to reduce the number of dependencies
 
 ### Deprecated
 
@@ -32,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Bug where CodeSystem hierarchical code levels were not handled
+- Bug where more than one field has an EnumCodeType using the same Enum class resulting in duplicate declarations
 
 ### Security
 

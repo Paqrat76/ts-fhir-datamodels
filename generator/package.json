@@ -1,7 +1,7 @@
 {
   "name": "generator",
   "private": true,
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Code generator for TypeScript classes representing FHIR data models for FHIR resources and complex data types",
   "license": "MIT",
   "main": "index.js",
@@ -9,8 +9,10 @@
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage sushi/output src/__test__/unit-test/test-out src/__test__/functional-test/test-out",
     "compile": "tsc",
+    "generate:ftest": "ts-node src/generate-ftest-src.ts",
     "test": "jest",
     "test:unit": "jest ./src/__test__/unit-test",
+    "pretest:functional": "npm run generate:ftest",
     "test:functional": "jest ./src/__test__/functional-test",
     "coverage": "jest --coverage",
     "jest:clear": "jest --clearCache",

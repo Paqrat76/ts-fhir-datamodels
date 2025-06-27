@@ -27,33 +27,32 @@ import { GeneratorApp } from '../../generator-app';
 import { FhirPackage, GeneratedContent } from '../../generator-lib/ts-datamodel-generator-helpers';
 
 describe('src/generator-app functional test suite', () => {
-  const testOut = resolve(__dirname, '../../', 'generated-func-test-src');
+  const testOut = resolve(__dirname, '../../', 'generated-ftest-src');
   const testOutBase = join(testOut, 'base');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
   const testFhirCacheRoot = resolve(__dirname, 'ftest-cache');
+  const testFhirPackage: FhirPackage = {
+    release: 'R4',
+    pkgName: 'test.fhir.r4',
+    pkgVersion: '4.0.1',
+    baseOutputPath: testOut,
+    pkgLoaderCacheRootPath: testFhirCacheRoot,
+  };
+  // 25 CodeSystemEnums + index.ts
+  // 34 ComplexTypes + index.ts + parsable-datatype-map.ts
+  // 12 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+  const EXPECTED_NUM_GENERATED_MODELS = 77;
 
   describe('generator-app generate and write', () => {
-    const testFhirPackage: FhirPackage = {
-      release: 'R4',
-      pkgName: 'test.fhir.r4',
-      pkgVersion: '4.0.1',
-      baseOutputPath: testOut,
-      pkgLoaderCacheRootPath: testFhirCacheRoot,
-      debug: true,
-    };
-
     beforeAll(async () => {
       rmSync(testOut, { recursive: true, force: true });
 
       const generator = new GeneratorApp(testFhirPackage);
       const generatedContent: GeneratedContent[] = await generator.generate();
       expect(generatedContent).toBeDefined();
-      // 22 CodeSystemEnums + index.ts
-      // 44 ComplexTypes + index.ts + parsable-datatype-map.ts
-      // 7 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-      expect(generatedContent.length).toBe(79);
+      expect(generatedContent.length).toBe(EXPECTED_NUM_GENERATED_MODELS);
       generator.writeDataModelsToDisk(generatedContent);
     });
 
@@ -81,7 +80,7 @@ describe('src/generator-app functional test suite', () => {
 
       const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
       expect(testCodeSystems).toBeDefined();
-      expect(testCodeSystems.length).toBe(23);
+      expect(testCodeSystems.length).toBe(26);
       // NOTE: There should NOT be any Enum classes for certain cases such as:
       // - ValueSet http://hl7.org/fhir/ValueSet/all-languages (non-FHIR code system - http://tools.ietf.org/html/bcp47)
       // - ValueSet http://hl7.org/fhir/ValueSet/currencies (non-FHIR code system - https://www.iso.org/iso-4217-currency-codes.html)
@@ -99,35 +98,36 @@ describe('src/generator-app functional test suite', () => {
         'ContactPointUseEnum.ts',
         'ContributorTypeEnum.ts',
         'DaysOfWeekEnum.ts',
+        'DeviceNametypeEnum.ts',
+        'DeviceStatusEnum.ts',
+        'EndpointStatusEnum.ts',
         'IdentifierUseEnum.ts',
         'LinkTypeEnum.ts',
+        'LocationModeEnum.ts',
+        'LocationStatusEnum.ts',
         'NameUseEnum.ts',
         'NarrativeStatusEnum.ts',
         'OperationParameterUseEnum.ts',
-        'PriceComponentTypeEnum.ts',
-        'PublicationStatusEnum.ts',
         'QuantityComparatorEnum.ts',
         'RelatedArtifactTypeEnum.ts',
-        'SearchComparatorEnum.ts',
         'SortDirectionEnum.ts',
         'TaskCodeEnum.ts',
         'TaskStatusEnum.ts',
         'TriggerTypeEnum.ts',
+        'UdiEntryTypeEnum.ts',
         'index.ts',
       ];
       expect(testCodeSystems).toEqual(expectedCodeSystems);
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(46);
+      expect(testComplexTypes.length).toBe(36);
       const expectedComplexTypes: string[] = [
         'Address.ts',
         'Age.ts',
         'Annotation.ts',
         'Attachment.ts',
-        'Availability.ts',
         'CodeableConcept.ts',
-        'CodeableReference.ts',
         'Coding.ts',
         'ContactDetail.ts',
         'ContactPoint.ts',
@@ -138,33 +138,25 @@ describe('src/generator-app functional test suite', () => {
         'Dosage.ts',
         'Duration.ts',
         'Expression.ts',
-        'ExtendedContactDetail.ts',
         'HumanName.ts',
         'Identifier.ts',
-        'MarketingStatus.ts',
         'Meta.ts',
-        'MonetaryComponent.ts',
         'Money.ts',
         'Narrative.ts',
         'ParameterDefinition.ts',
         'Period.ts',
-        'Population.ts',
         'ProdCharacteristic.ts',
         'ProductShelfLife.ts',
         'Quantity.ts',
         'Range.ts',
         'Ratio.ts',
-        'RatioRange.ts',
         'Reference.ts',
         'RelatedArtifact.ts',
-        'RelativeTime.ts',
         'SampledData.ts',
         'Signature.ts',
-        'SubstanceAmount.ts',
         'Timing.ts',
         'TriggerDefinition.ts',
         'UsageContext.ts',
-        'VirtualServiceDetail.ts',
         'index.ts',
         'parsable-datatype-map.ts',
       ];
@@ -172,13 +164,18 @@ describe('src/generator-app functional test suite', () => {
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(10);
+      expect(testResources.length).toBe(15);
       const expectedResources: string[] = [
-        'Condition.ts',
+        'Device.ts',
+        'DeviceDefinition.ts',
+        'Endpoint.ts',
+        'HealthcareService.ts',
+        'Location.ts',
         'Organization.ts',
         'Patient.ts',
         'Practitioner.ts',
         'PractitionerRole.ts',
+        'RelatedPerson.ts',
         'SimplePersonModel.ts',
         'TestDataModel.ts',
         'index.ts',
@@ -190,28 +187,17 @@ describe('src/generator-app functional test suite', () => {
   });
 
   describe('generator-app verify generated content', () => {
-    const testFhirPackage: FhirPackage = {
-      release: 'R4',
-      pkgName: 'test.fhir.r4',
-      pkgVersion: '4.0.1',
-      baseOutputPath: testOut,
-      pkgLoaderCacheRootPath: testFhirCacheRoot,
-      debug: false,
-    };
     let generatedContent: GeneratedContent[];
 
     beforeAll(async () => {
-      const generator = new GeneratorApp(testFhirPackage);
+      const generator = new GeneratorApp(testFhirPackage, true);
       generatedContent = await generator.generate();
       return expect(generatedContent).resolves;
     });
 
     it('should consistently create GeneratedContent[]', () => {
       expect(generatedContent).toBeDefined();
-      // 22 CodeSystemEnums + index.ts
-      // 44 ComplexTypes + index.ts + parsable-datatype-map.ts
-      // 7 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-      expect(generatedContent.length).toBe(79);
+      expect(generatedContent.length).toBe(EXPECTED_NUM_GENERATED_MODELS);
 
       generatedContent.forEach((generatedContentItem: GeneratedContent) => {
         expect(generatedContentItem).toBeDefined();

@@ -49,10 +49,10 @@ describe('src/generator-app unit test suite', () => {
       const generator = new GeneratorApp(testFhirPackage);
       const generatedContent: GeneratedContent[] = await generator.generate();
       expect(generatedContent).toBeDefined();
-      // 8 CodeSystemEnums + index.ts
+      // 13 CodeSystemEnums + index.ts
       // 11 ComplexTypes + index.ts + parsable-datatype-map.ts
-      // 2 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-      expect(generatedContent.length).toBe(27);
+      // 3 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+      expect(generatedContent.length).toBe(33);
       generator.writeDataModelsToDisk(generatedContent);
     });
 
@@ -80,7 +80,7 @@ describe('src/generator-app unit test suite', () => {
 
       const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
       expect(testCodeSystems).toBeDefined();
-      expect(testCodeSystems.length).toBe(9);
+      expect(testCodeSystems.length).toBe(14);
       const expectedCodeSystems: string[] = [
         'BundleTypeEnum.ts',
         'ContactPointSystemEnum.ts',
@@ -89,7 +89,12 @@ describe('src/generator-app unit test suite', () => {
         'HttpVerbEnum.ts',
         'IdentifierUseEnum.ts',
         'NarrativeStatusEnum.ts',
+        'PublicationStatusEnum.ts',
+        'ResourceTypesEnum.ts',
+        'SearchComparatorEnum.ts',
         'SearchEntryModeEnum.ts',
+        'SearchModifierCodeEnum.ts',
+        'SearchParamTypeEnum.ts',
         'index.ts',
       ];
       expect(testCodeSystems).toEqual(expectedCodeSystems);
@@ -116,10 +121,11 @@ describe('src/generator-app unit test suite', () => {
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(5);
+      expect(testResources.length).toBe(6);
       const expectedResources: string[] = [
         'Bundle.ts',
         'PractitionerRole.ts',
+        'SearchParameter.ts',
         'index.ts',
         'parsable-resource-map.ts',
         'resource-types.ts',
@@ -138,10 +144,10 @@ describe('src/generator-app unit test suite', () => {
     });
 
     it('should consistently create GeneratedContent[]', () => {
-      // 8 CodeSystemEnums + index.ts
+      // 13 CodeSystemEnums + index.ts
       // 11 ComplexTypes + index.ts + parsable-datatype-map.ts
-      // 2 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-      expect(generatedContent.length).toBe(27);
+      // 3 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
+      expect(generatedContent.length).toBe(33);
 
       generatedContent.forEach((generatedContentItem: GeneratedContent) => {
         expect(generatedContentItem).toBeDefined();

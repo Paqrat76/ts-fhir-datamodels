@@ -5,8 +5,10 @@
 {{#if hasCodeSystemEnums}}
 
 {{#each elementDefinitions}}
-{{#if this.type.codeSystemEnumName}}
+{{#if this.isEnumCodeType}}
+{{#unless this.type.isDupeCodeSystemName}}
     this.{{camelCase this.type.codeSystemEnumName}} = new {{this.type.codeSystemEnumName}}();
+{{/unless}}
 {{/if}}
 {{/each}}
 {{/if}}

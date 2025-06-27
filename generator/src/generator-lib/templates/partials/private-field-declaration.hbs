@@ -1,5 +1,6 @@
 {{!-- Private Field Declaration Partial Template --}}
 {{#if edHbs.isEnumCodeType}}
+{{#unless edHbs.type.isDupeCodeSystemName}}
   /**
    * FHIR CodeSystem: {{edHbs.type.codeSystemName}}
    *
@@ -7,6 +8,7 @@
    */
   private readonly {{camelCase edHbs.type.codeSystemEnumName}}: {{edHbs.type.codeSystemEnumName}};
 
+{{/unless}}
 {{/if}}
   /**
    * {{edHbs.path}} Element

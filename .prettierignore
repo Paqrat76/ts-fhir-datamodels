@@ -7,7 +7,7 @@ docs/
 ftest-cache/
 utest-cache/
 *.hbs
-generator/src/generated-func-test-src/
+generator/src/generated-ftest-src/
 packages/r4-datamodels/
 packages/r4b-datamodels/
 packages/r5-datamodels/

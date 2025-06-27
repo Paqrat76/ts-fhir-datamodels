@@ -1,7 +1,7 @@
 {
   "name": "ts-fhir-datamodels",
   "private": true,
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "A mono-repository for TypeScript FHIR data models inspired by HAPI FHIR",
   "keywords": [
     "node",
@@ -41,6 +41,7 @@
     "lint:R4:ComplexTypes": "eslint --ext ts ./packages/r4-datamodels/src/complex-types",
     "lint:R4:Resources": "eslint --ext ts ./packages/r4-datamodels/src/resources",
     "lint:R4:Resources:log": "eslint --ext ts ./packages/r4-datamodels/src/resources -o lint-resources.log",
+    "compile:R4": "npm run compile --workspace=packages/r4-datamodels",
     "prepare": "husky"
   },
   "workspaces": [

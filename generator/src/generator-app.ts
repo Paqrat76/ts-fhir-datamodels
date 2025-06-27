@@ -42,11 +42,11 @@ export class GeneratorApp {
   private readonly _fhirPackage: FhirPackage;
   private readonly tsGenerator: TypescriptDataModelGenerator;
 
-  constructor(fhirPackage: FhirPackage) {
+  constructor(fhirPackage: FhirPackage, debug = false) {
     assert(fhirPackage, 'fhirPackage is required.');
 
     this._fhirPackage = fhirPackage;
-    this.tsGenerator = new TypescriptDataModelGenerator(fhirPackage);
+    this.tsGenerator = new TypescriptDataModelGenerator(fhirPackage, debug);
   }
 
   /**

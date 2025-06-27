@@ -56,7 +56,7 @@ const INITIALIZATION_ERROR_MSG = `This TypescriptDataModelGenerator instance mus
  */
 export class TypescriptDataModelGenerator {
   private readonly _fhirPackage: FhirPackage;
-  private _isDebug: boolean;
+  private readonly _isDebug: boolean;
   private _packageLoader: BasePackageLoader | undefined;
   private isInitialized = false;
 
@@ -64,11 +64,11 @@ export class TypescriptDataModelGenerator {
     console.log(`TS Generator ${level.toUpperCase()}: ${message}`);
   };
 
-  constructor(fhirPackage: FhirPackage) {
+  constructor(fhirPackage: FhirPackage, debug = false) {
     assert(fhirPackage, 'fhirPackage is required.');
 
-    this._isDebug = fhirPackage.debug ?? false;
     this._fhirPackage = fhirPackage;
+    this._isDebug = debug;
   }
 
   /**

@@ -58,10 +58,24 @@
       "version": "4.0.1"
     },
     {
-      "filename": "CodeSystem-event-timing.json",
+      "filename": "CodeSystem-device-nametype.json",
       "resourceType": "CodeSystem",
-      "id": "event-timing",
-      "url": "http://hl7.org/fhir/event-timing",
+      "id": "device-nametype",
+      "url": "http://hl7.org/fhir/device-nametype",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-device-status.json",
+      "resourceType": "CodeSystem",
+      "id": "device-status",
+      "url": "http://hl7.org/fhir/device-status",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-endpoint-status.json",
+      "resourceType": "CodeSystem",
+      "id": "endpoint-status",
+      "url": "http://hl7.org/fhir/endpoint-status",
       "version": "4.0.1"
     },
     {
@@ -76,6 +90,20 @@
       "resourceType": "CodeSystem",
       "id": "link-type",
       "url": "http://hl7.org/fhir/link-type",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-location-mode.json",
+      "resourceType": "CodeSystem",
+      "id": "location-mode",
+      "url": "http://hl7.org/fhir/location-mode",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "CodeSystem-location-status.json",
+      "resourceType": "CodeSystem",
+      "id": "location-status",
+      "url": "http://hl7.org/fhir/location-status",
       "version": "4.0.1"
     },
     {
@@ -100,21 +128,6 @@
       "version": "4.0.1"
     },
     {
-      "filename": "CodeSystem-price-component-type.json",
-      "resourceType": "CodeSystem",
-      "id": "price-component-type",
-      "url": "http://hl7.org/fhir/price-component-type",
-      "version": "5.0.0",
-      "content": "complete"
-    },
-    {
-      "filename": "CodeSystem-publication-status.json",
-      "resourceType": "CodeSystem",
-      "id": "publication-status",
-      "url": "http://hl7.org/fhir/publication-status",
-      "version": "4.0.1"
-    },
-    {
       "filename": "CodeSystem-quantity-comparator.json",
       "resourceType": "CodeSystem",
       "id": "quantity-comparator",
@@ -126,13 +139,6 @@
       "resourceType": "CodeSystem",
       "id": "related-artifact-type",
       "url": "http://hl7.org/fhir/related-artifact-type",
-      "version": "4.0.1"
-    },
-    {
-      "filename": "CodeSystem-search-comparator.json",
-      "resourceType": "CodeSystem",
-      "id": "search-comparator",
-      "url": "http://hl7.org/fhir/search-comparator",
       "version": "4.0.1"
     },
     {
@@ -164,20 +170,56 @@
       "version": "4.0.1"
     },
     {
-      "filename": "CodeSystem-v3-TimingEvent.json",
+      "filename": "CodeSystem-udi-entry-type.json",
       "resourceType": "CodeSystem",
-      "id": "v3-TimingEvent",
-      "url": "http://terminology.hl7.org/CodeSystem/v3-TimingEvent",
-      "version": "2018-08-12"
+      "id": "udi-entry-type",
+      "url": "http://hl7.org/fhir/udi-entry-type",
+      "version": "4.0.1"
     },
     {
-      "filename": "StructureDefinition-Condition.json",
+      "filename": "StructureDefinition-Device.json",
       "resourceType": "StructureDefinition",
-      "id": "Condition",
-      "url": "http://hl7.org/fhir/StructureDefinition/Condition",
+      "id": "Device",
+      "url": "http://hl7.org/fhir/StructureDefinition/Device",
       "version": "4.0.1",
       "kind": "resource",
-      "type": "Condition"
+      "type": "Device"
+    },
+    {
+      "filename": "StructureDefinition-DeviceDefinition.json",
+      "resourceType": "StructureDefinition",
+      "id": "DeviceDefinition",
+      "url": "http://hl7.org/fhir/StructureDefinition/DeviceDefinition",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "DeviceDefinition"
+    },
+    {
+      "filename": "StructureDefinition-Endpoint.json",
+      "resourceType": "StructureDefinition",
+      "id": "Endpoint",
+      "url": "http://hl7.org/fhir/StructureDefinition/Endpoint",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "Endpoint"
+    },
+    {
+      "filename": "StructureDefinition-HealthcareService.json",
+      "resourceType": "StructureDefinition",
+      "id": "HealthcareService",
+      "url": "http://hl7.org/fhir/StructureDefinition/HealthcareService",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "HealthcareService"
+    },
+    {
+      "filename": "StructureDefinition-Location.json",
+      "resourceType": "StructureDefinition",
+      "id": "Location",
+      "url": "http://hl7.org/fhir/StructureDefinition/Location",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "Location"
     },
     {
       "filename": "StructureDefinition-Organization.json",
@@ -214,6 +256,15 @@
       "version": "4.0.1",
       "kind": "resource",
       "type": "PractitionerRole"
+    },
+    {
+      "filename": "StructureDefinition-RelatedPerson.json",
+      "resourceType": "StructureDefinition",
+      "id": "RelatedPerson",
+      "url": "http://hl7.org/fhir/StructureDefinition/RelatedPerson",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "RelatedPerson"
     },
     {
       "filename": "StructureDefinition-SimplePersonModel.json",
@@ -270,15 +321,6 @@
       "type": "Attachment"
     },
     {
-      "filename": "StructureDefinition-Availability.json",
-      "resourceType": "StructureDefinition",
-      "id": "Availability",
-      "url": "http://hl7.org/fhir/StructureDefinition/Availability",
-      "version": "5.0.0",
-      "kind": "complex-type",
-      "type": "Availability"
-    },
-    {
       "filename": "StructureDefinition-CodeableConcept.json",
       "resourceType": "StructureDefinition",
       "id": "CodeableConcept",
@@ -286,15 +328,6 @@
       "version": "4.0.1",
       "kind": "complex-type",
       "type": "CodeableConcept"
-    },
-    {
-      "filename": "StructureDefinition-CodeableReference.json",
-      "resourceType": "StructureDefinition",
-      "id": "CodeableReference",
-      "url": "http://hl7.org/fhir/StructureDefinition/CodeableReference",
-      "version": "5.0.0",
-      "kind": "complex-type",
-      "type": "CodeableReference"
     },
     {
       "filename": "StructureDefinition-Coding.json",
@@ -342,15 +375,6 @@
       "type": "Count"
     },
     {
-      "filename": "StructureDefinition-Dosage.json",
-      "resourceType": "StructureDefinition",
-      "id": "Dosage",
-      "url": "http://hl7.org/fhir/StructureDefinition/Dosage",
-      "version": "4.0.1",
-      "kind": "complex-type",
-      "type": "Dosage"
-    },
-    {
       "filename": "StructureDefinition-DataRequirement.json",
       "resourceType": "StructureDefinition",
       "id": "DataRequirement",
@@ -396,15 +420,6 @@
       "type": "Expression"
     },
     {
-      "filename": "StructureDefinition-ExtendedContactDetail.json",
-      "resourceType": "StructureDefinition",
-      "id": "ExtendedContactDetail",
-      "url": "http://hl7.org/fhir/StructureDefinition/ExtendedContactDetail",
-      "version": "5.0.0",
-      "kind": "complex-type",
-      "type": "ExtendedContactDetail"
-    },
-    {
       "filename": "StructureDefinition-HumanName.json",
       "resourceType": "StructureDefinition",
       "id": "HumanName",
@@ -423,15 +438,6 @@
       "type": "Identifier"
     },
     {
-      "filename": "StructureDefinition-MarketingStatus.json",
-      "resourceType": "StructureDefinition",
-      "id": "MarketingStatus",
-      "url": "http://hl7.org/fhir/StructureDefinition/MarketingStatus",
-      "version": "4.0.1",
-      "kind": "complex-type",
-      "type": "MarketingStatus"
-    },
-    {
       "filename": "StructureDefinition-Meta.json",
       "resourceType": "StructureDefinition",
       "id": "Meta",
@@ -439,15 +445,6 @@
       "version": "4.0.1",
       "kind": "complex-type",
       "type": "Meta"
-    },
-    {
-      "filename": "StructureDefinition-MonetaryComponent.json",
-      "resourceType": "StructureDefinition",
-      "id": "MonetaryComponent",
-      "url": "http://hl7.org/fhir/StructureDefinition/MonetaryComponent",
-      "version": "5.0.0",
-      "kind": "complex-type",
-      "type": "MonetaryComponent"
     },
     {
       "filename": "StructureDefinition-Money.json",
@@ -484,15 +481,6 @@
       "version": "4.0.1",
       "kind": "complex-type",
       "type": "Period"
-    },
-    {
-      "filename": "StructureDefinition-Population.json",
-      "resourceType": "StructureDefinition",
-      "id": "Population",
-      "url": "http://hl7.org/fhir/StructureDefinition/Population",
-      "version": "4.0.1",
-      "kind": "complex-type",
-      "type": "Population"
     },
     {
       "filename": "StructureDefinition-ProdCharacteristic.json",
@@ -540,15 +528,6 @@
       "type": "Ratio"
     },
     {
-      "filename": "StructureDefinition-RatioRange.json",
-      "resourceType": "StructureDefinition",
-      "id": "RatioRange",
-      "url": "http://hl7.org/fhir/StructureDefinition/RatioRange",
-      "version": "5.0.0",
-      "kind": "complex-type",
-      "type": "RatioRange"
-    },
-    {
       "filename": "StructureDefinition-Reference.json",
       "resourceType": "StructureDefinition",
       "id": "Reference",
@@ -567,16 +546,6 @@
       "type": "RelatedArtifact"
     },
     {
-      "filename": "StructureDefinition-RelativeTime.json",
-      "resourceType": "StructureDefinition",
-      "id": "RelativeTime",
-      "url": "http://hl7.org/fhir/StructureDefinition/RelativeTime",
-      "version": "6.0.0-ballot3",
-      "kind": "complex-type",
-      "type": "RelativeTime",
-      "derivation": "specialization"
-    },
-    {
       "filename": "StructureDefinition-SampledData.json",
       "resourceType": "StructureDefinition",
       "id": "SampledData",
@@ -593,15 +562,6 @@
       "version": "4.0.1",
       "kind": "complex-type",
       "type": "Signature"
-    },
-    {
-      "filename": "StructureDefinition-SubstanceAmount.json",
-      "resourceType": "StructureDefinition",
-      "id": "SubstanceAmount",
-      "url": "http://hl7.org/fhir/StructureDefinition/SubstanceAmount",
-      "version": "4.0.1",
-      "kind": "complex-type",
-      "type": "SubstanceAmount"
     },
     {
       "filename": "StructureDefinition-Timing.json",
@@ -631,15 +591,6 @@
       "type": "UsageContext"
     },
     {
-      "filename": "StructureDefinition-VirtualServiceDetail.json",
-      "resourceType": "StructureDefinition",
-      "id": "VirtualServiceDetail",
-      "url": "http://hl7.org/fhir/StructureDefinition/VirtualServiceDetail",
-      "version": "5.0.0",
-      "kind": "complex-type",
-      "type": "VirtualServiceDetail"
-    },
-    {
       "filename": "ValueSet-address-type.json",
       "resourceType": "ValueSet",
       "id": "address-type",
@@ -661,10 +612,31 @@
       "version": "4.0.1"
     },
     {
+      "filename": "ValueSet-all-types.json",
+      "resourceType": "ValueSet",
+      "id": "all-types",
+      "url": "http://hl7.org/fhir/ValueSet/all-types",
+      "version": "4.0.1"
+    },
+    {
       "filename": "ValueSet-consent-state-codes.json",
       "resourceType": "ValueSet",
       "id": "consent-state-codes",
       "url": "http://hl7.org/fhir/ValueSet/consent-state-codes",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-contact-point-system.json",
+      "resourceType": "ValueSet",
+      "id": "contact-point-system",
+      "url": "http://hl7.org/fhir/ValueSet/contact-point-system",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-contact-point-use.json",
+      "resourceType": "ValueSet",
+      "id": "contact-point-use",
+      "url": "http://hl7.org/fhir/ValueSet/contact-point-use",
       "version": "4.0.1"
     },
     {
@@ -675,10 +647,38 @@
       "version": "4.0.1"
     },
     {
+      "filename": "ValueSet-currencies.json",
+      "resourceType": "ValueSet",
+      "id": "currencies",
+      "url": "http://hl7.org/fhir/ValueSet/currencies",
+      "version": "4.0.1"
+    },
+    {
       "filename": "ValueSet-days-of-week.json",
       "resourceType": "ValueSet",
       "id": "days-of-week",
       "url": "http://hl7.org/fhir/ValueSet/days-of-week",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-device-nametype.json",
+      "resourceType": "ValueSet",
+      "id": "device-nametype",
+      "url": "http://hl7.org/fhir/ValueSet/device-nametype",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-device-status.json",
+      "resourceType": "ValueSet",
+      "id": "device-status",
+      "url": "http://hl7.org/fhir/ValueSet/device-status",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-endpoint-status.json",
+      "resourceType": "ValueSet",
+      "id": "endpoint-status",
+      "url": "http://hl7.org/fhir/ValueSet/endpoint-status",
       "version": "4.0.1"
     },
     {
@@ -696,10 +696,38 @@
       "version": "4.0.1"
     },
     {
+      "filename": "ValueSet-languages.json",
+      "resourceType": "ValueSet",
+      "id": "languages",
+      "url": "http://hl7.org/fhir/ValueSet/languages",
+      "version": "4.0.1"
+    },
+    {
       "filename": "ValueSet-link-type.json",
       "resourceType": "ValueSet",
       "id": "link-type",
       "url": "http://hl7.org/fhir/ValueSet/link-type",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-location-mode.json",
+      "resourceType": "ValueSet",
+      "id": "location-mode",
+      "url": "http://hl7.org/fhir/ValueSet/location-mode",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-location-status.json",
+      "resourceType": "ValueSet",
+      "id": "location-status",
+      "url": "http://hl7.org/fhir/ValueSet/location-status",
+      "version": "4.0.1"
+    },
+    {
+      "filename": "ValueSet-mimetypes.json",
+      "resourceType": "ValueSet",
+      "id": "mimetypes",
+      "url": "http://hl7.org/fhir/ValueSet/mimetypes",
       "version": "4.0.1"
     },
     {
@@ -721,20 +749,6 @@
       "resourceType": "ValueSet",
       "id": "operation-parameter-use",
       "url": "http://hl7.org/fhir/ValueSet/operation-parameter-use",
-      "version": "5.0.0"
-    },
-    {
-      "filename": "ValueSet-price-component-type.json",
-      "resourceType": "ValueSet",
-      "id": "price-component-type",
-      "url": "http://hl7.org/fhir/ValueSet/price-component-type",
-      "version": "5.0.0"
-    },
-    {
-      "filename": "ValueSet-publication-status.json",
-      "resourceType": "ValueSet",
-      "id": "publication-status",
-      "url": "http://hl7.org/fhir/ValueSet/publication-status",
       "version": "4.0.1"
     },
     {
@@ -780,18 +794,18 @@
       "version": "4.0.1"
     },
     {
+      "filename": "ValueSet-udi-entry-type.json",
+      "resourceType": "ValueSet",
+      "id": "udi-entry-type",
+      "url": "http://hl7.org/fhir/ValueSet/udi-entry-type",
+      "version": "4.0.1"
+    },
+    {
       "filename": "ValueSet-units-of-time.json",
       "resourceType": "ValueSet",
       "id": "units-of-time",
       "url": "http://hl7.org/fhir/ValueSet/units-of-time",
       "version": "4.0.1"
-    },
-    {
-      "filename": "ValueSet-value-filter-comparator.json",
-      "resourceType": "ValueSet",
-      "id": "value-filter-comparator",
-      "url": "http://hl7.org/fhir/ValueSet/value-filter-comparator",
-      "version": "5.0.0"
     }
   ]
 }

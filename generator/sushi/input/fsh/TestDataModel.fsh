@@ -50,9 +50,9 @@ Description:    "Represents a FHIR data model for a non-existent FHIR StructureD
 * backboneComplex01.backboneReference11.reference01 ^requirements = "Optional single 'Reference(any)' data type"
 * backboneComplex01.backboneReference11.reference0x 0..* Reference(Practitioner or PractitionerRole or Organization) "backboneReference11.reference0x"
 * backboneComplex01.backboneReference11.reference0x ^requirements = "Optional list of 'Reference(Practitioner or PractitionerRole or Organization)' data type"
-* backboneComplex01.backboneReference11.reference11 1..1 Reference(Patient or SimplePersonModel) "backboneReference11.reference11"
+* backboneComplex01.backboneReference11.reference11 1..1 Reference(SimplePersonModel) "backboneReference11.reference11"
 * backboneComplex01.backboneReference11.reference11 ^requirements = "Required single 'Reference(Patient or SimplePersonModel)' data type"
-* backboneComplex01.backboneReference11.reference1x 1..* Reference(Condition) "backboneReference11.reference1x"
+* backboneComplex01.backboneReference11.reference1x 1..* Reference(HealthcareService) "backboneReference11.reference1x"
 * backboneComplex01.backboneReference11.reference1x ^requirements = "Required list of 'Reference(Condition)' data type"
 
 * backboneComplex01.backboneReference11.backboneEnumCode1x 1..* BackboneElement "backboneEnumCode1x"

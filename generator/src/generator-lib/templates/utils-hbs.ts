@@ -51,6 +51,7 @@ export interface HbsElementDefinitionType {
   choiceDataTypes?: string[];
   codeSystemName?: string;
   codeSystemEnumName?: string;
+  isDupeCodeSystemName: boolean;
   targetProfile?: string[];
   targetResource?: string[];
 }
@@ -393,9 +394,14 @@ function getParentElementDefinitions(
     `StructureDefinition.snapshot.element is expected to have at least one element in ${structureDef.name}`,
   );
 
-  return parentElements.map((element: ElementDefinition): HbsElementDefinition => {
-    return getHbsElementDefinition(element, codeSystemEnumMap);
-  });
+  const parentHbsElementDefinitions: HbsElementDefinition[] = parentElements.map(
+    (element: ElementDefinition): HbsElementDefinition => {
+      return getHbsElementDefinition(element, codeSystemEnumMap);
+    },
+  );
+  fixDuplicateCodeSystemEnums(parentHbsElementDefinitions);
+
+  return parentHbsElementDefinitions;
 }
 
 /**
@@ -545,9 +551,14 @@ function getChildComponentElementDefinitions(
   );
   assert(componentElementDefinitions.length > 0, 'componentElementDefinitions must be non-empty');
 
-  return componentElementDefinitions.map((element: ElementDefinition): HbsElementDefinition => {
-    return getHbsElementDefinition(element, codeSystemEnumMap);
-  });
+  const childHbsElementDefinitions: HbsElementDefinition[] = componentElementDefinitions.map(
+    (element: ElementDefinition): HbsElementDefinition => {
+      return getHbsElementDefinition(element, codeSystemEnumMap);
+    },
+  );
+  fixDuplicateCodeSystemEnums(childHbsElementDefinitions);
+
+  return childHbsElementDefinitions;
 }
 
 /**
@@ -607,6 +618,7 @@ function getFhirType(
       primitiveJsonType: primitiveJsonType,
       codeSystemName: codeSystemEnumName?.replace('Enum', ''),
       codeSystemEnumName: codeSystemEnumName,
+      isDupeCodeSystemName: false, // Default to false; override if necessary in fixDuplicateCodeSystemEnums()
       targetProfile: typeTargetProfile,
       targetResource: targetResource,
     } as HbsElementDefinitionType;
@@ -629,6 +641,37 @@ function getFhirType(
       choiceDataTypes: choiceDataTypes,
     } as HbsElementDefinitionType;
   }
+}
+
+/**
+ * Identifies and fixes duplicate code system names within the provided HbsElementDefinition objects.
+ * It marks all but the first occurrence of a duplicate HbsElementDefinitionType.codeSystemName as a duplicate
+ * by setting the isDupeCodeSystemName property to true.
+ *
+ * @param {HbsElementDefinition[]} hbsElementDefinitions - An array of HbsElementDefinition objects to process.
+ * Each element may contain a type with a codeSystemName field that is checked for duplicates.
+ */
+function fixDuplicateCodeSystemEnums(hbsElementDefinitions: HbsElementDefinition[]): void {
+  // There are rare cases where more than one field has an EnumCodeType using the same Enum class resulting in
+  // duplicate declarations. To prevent this, we can look for duplicate HbsElementDefinitionType.codeSystemName
+  // values and set all except the first isDupeCodeSystemName to true. Refer to constructor-required.hbs and
+  // private-field-declaration.hbs for how the HbsElementDefinitionType.codeSystemName is used.
+  hbsElementDefinitions.forEach((hbsElementDefinition: HbsElementDefinition) => {
+    const duplicateEnumCodeTypes = hbsElementDefinitions.filter(
+      (ed: HbsElementDefinition) =>
+        ed.type.codeSystemName !== undefined && ed.type.codeSystemName === hbsElementDefinition.type.codeSystemName,
+    );
+    if (duplicateEnumCodeTypes.length > 1) {
+      // Keep duplicateEnumCodeTypes[0].type.isDupeCodeSystemName as false and set the
+      // remaining duplicateEnumCodeTypes[i].type.isDupeCodeSystemNames to true
+      for (let i = 1; i < duplicateEnumCodeTypes.length; i++) {
+        if (duplicateEnumCodeTypes[i]?.type.codeSystemName) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          duplicateEnumCodeTypes[i]!.type.isDupeCodeSystemName = true;
+        }
+      }
+    }
+  });
 }
 
 /**

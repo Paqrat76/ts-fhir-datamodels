@@ -868,6 +868,36 @@ describe('src/generator-lib/templates/utils-hbs', () => {
         expect(sdHbsProperties).toBeDefined();
         expect(sdHbsProperties).toMatchSnapshot();
       });
+
+      it('should return the correct properties for StructureDefinition-SearchParameter', () => {
+        const options: FindResourceInfoOptions = { type: ['Resource'] };
+        const structureDefinition = packageLoader.findResourceJSON('SearchParameter', options) as StructureDefinition;
+        const result = tsDataModelGenerator.getRequiredCodeSystemsFromStructureDefinitions(packageStructureDefinitions);
+
+        const sdHbsProperties: HbsStructureDefinition = getSdHbsProperties(
+          structureDefinition,
+          result.codeSystemEnumMap,
+          testFhirPackage,
+        );
+        expect(sdHbsProperties).toBeDefined();
+
+        // There are rare cases where more than one field has an EnumCodeType using the same Enum class resulting in
+        // duplicate declarations. To prevent this, we can look for duplicate HbsElementDefinitionType.codeSystemName
+        // values and set all except the first isDupeCodeSystemName to true. Refer to constructor-required.hbs and
+        // private-field-declaration.hbs for how the HbsElementDefinitionType.codeSystemName is used.
+        const resourceTypeEds: HbsElementDefinition[] = sdHbsProperties.parentComponent.elementDefinitions.filter(
+          (ed: HbsElementDefinition) => ed.type.codeSystemName && ed.type.codeSystemName === 'ResourceTypes',
+        );
+        expect(resourceTypeEds).toHaveLength(2);
+        const isDupeCodeSystemName = resourceTypeEds.some((ed: HbsElementDefinition) => ed.type.isDupeCodeSystemName);
+        expect(isDupeCodeSystemName).toBe(true);
+        const isNotDupeCodeSystemName = resourceTypeEds.some(
+          (ed: HbsElementDefinition) => !ed.type.isDupeCodeSystemName,
+        );
+        expect(isNotDupeCodeSystemName).toBe(true);
+
+        expect(sdHbsProperties).toMatchSnapshot();
+      });
     });
   });
 });

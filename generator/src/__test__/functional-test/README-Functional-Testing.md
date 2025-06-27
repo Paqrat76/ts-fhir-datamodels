@@ -34,6 +34,14 @@ data models.
 These custom generated data models are only used to perform a comprehensive set of functional tests to verify the
 patterns used to create the data models result is correct code.
 
+These custom resource data models make use of standard FHIR data types and reference standard FHIR resources.
+The primitive FHIR data types are defined in `@paq-ts-fhir/fhir-core`.
+The complex FHIR data types are generated along with the FHIR resources.
+A separate FHIR cache (`.fhir`) was created in `functional-test/ftest-cache` to contain the two custom FHIR
+resources along with all dependent FHIR resources and complex data types.
+Additionally, ValueSets and CodeSystems required to generate the pseudo-enum classes for those used by
+the `code` primitive data type having a "required" ValueSet binding are included.
+
 ## Data Model Requirements
 
 The primary custom FHIR data model shall support the following requirements:
@@ -50,9 +58,9 @@ The primary custom FHIR data model shall support the following requirements:
   - Reference data type (uses TypeScript decorators)
   - Resource data type (optional single field only)
     > NOTE: While no specific rule exists in the FHIR specification, use of Resource as an element data type is
-            limited to Bundle and Parameters. In these use cases, the data element is always a single, optional
-            value (0..1).
-            The exception is the DomainResource.contained. It is always an optional list (0..*).
+    > limited to Bundle and Parameters. In these use cases, the data element is always a single, optional
+    > value (0..1).
+    > The exception is the DomainResource.contained. It is always an optional list (0..\*).
 - Private class fields define data elements containing the above data element types
   - Optional single fields (0..1) and optional list fields (0...m where m > 0) must support `undefined`
   - Required single fields (1..1) and required list fields (n...m where n > 0 and m >= n) must support `null`
@@ -141,7 +149,7 @@ BackboneElement nesting:
 - TestDataModelComplexComponent
   - TestDataModelReferenceComponent
     - TestDataModelEnumCodeComponent
-      - TestDataModelPrimitiveComponent (`StructureDefinition.contentReference`)
+- TestDataModelPrimitiveComponent (`StructureDefinition.contentReference`)
 
 ### TestDataModel Class Definitions
 
@@ -170,8 +178,8 @@ BackboneElement nesting:
 - TestDataModelReferenceComponent (`BackboneElement`)
   - reference01?: `Reference` | `undefined` // ANY
   - reference0x?: `Reference[]` | `undefined` // `Practitioner`, `PractitionerRole`, `Organization`
-  - reference11: `Reference` | `null` // `Patient`, `SimplePersonModel` (for testing `contained`)
-  - reference1x: `Reference[]` | `null` // `Condition`
+  - reference11: `Reference` | `null` // `SimplePersonModel` (for testing `contained`)
+  - reference1x: `Reference[]` | `null` // `HealthcareService`
   - backboneEnumCode1x: `TestDataModelEnumCodeComponent[]` | `null`
 
 - TestDataModelEnumCodeComponent (`BackboneElement`)
@@ -192,3 +200,212 @@ BackboneElement nesting:
   - name?: HumanName | undefined;
   - address?: Address[] | undefined
   - phone?: StringType | undefined
+
+## Minimum Requirements for the Test FHIR Cache (`.fhir`)
+
+The required base classes are defined separately in the `base` directory and do not need to be included in the FHIR cache.
+Also, primitive data types are defined in `@paq-ts-fhir/fhir-core` and do not need to be included.
+
+### Custom FHIR Resources
+
+- `TestDataModel`
+- `SimplePersonModel`
+
+### Dependent FHIR Resources for References
+
+Direct dependencies:
+
+- `HealthcareService`
+- `Practitioner`
+- `PractitionerRole`
+- `Organization`
+
+Indirect dependencies (references in direct dependencies):
+
+- For `HealthcareService`
+  - `Organization`
+  - `Location`
+  - `Endpoint`
+- For `Practitioner`
+  - `Organization`
+- For `PractitionerRole`
+  - `Practitioner`
+  - `Organization`
+  - `HealthcareService`
+  - `Endpoint`
+- For `Organization`
+  - `Organization`
+  - `Endpoint`
+
+Indirect dependencies (references in indirect dependencies):
+
+- For `Location`
+  - `Organization`
+  - `Location`
+  - `Endpoint`
+- For `Endpoint`
+  - `Organization`
+- For `Signature`
+  - `Device`
+  - `Organization`
+  - `Patient`
+  - `PractitionerRole`
+  - `Practitioner`
+  - `RelatedPerson`
+- For `Device`
+  - `DeviceDefinition`
+  - `Device`
+  - `Location`
+  - `Organization`
+  - `Patient`
+- For `DeviceDefinition`
+  - `DeviceDefinition`
+  - `Organization`
+- For `Patient`
+  - `Organization`
+  - `Patient`
+  - `PractitionerRole`
+  - `Practitioner`
+- For `RelatedPerson`
+  - `Patient`
+
+### FHIR Complex Data Types
+
+**Data Types:**
+
+- `Address`
+- `Age`
+- `Annotation`
+- `Attachment`
+- `CodeableConcept`
+- `Coding`
+- `ContactPoint`
+- `Count`
+- `Distance`
+- `Duration`
+- `HumanName`
+- `Identifier`
+- `Money`
+- `Period`
+- `Quantity`
+- `Range`
+- `Ratio`
+- `SampledData`
+- `Signature`
+- `Timing`
+
+**MetaData Types:**
+
+- `ContactDetail`
+- `Contributor`
+- `DataRequirement`
+- `Expression`
+- `ParameterDefinition`
+- `RelatedArtifact`
+- `TriggerDefinition`
+- `UsageContext`
+
+**Special Types:**
+
+- `Dosage`
+- `Meta`
+- `Narrative`
+- `Reference`
+
+**R4 Under Development Types:** (Required by resource `DeviceDefinition`)
+
+- `ProdCharacteristic`
+- `ProductShelfLife`
+
+### Dependent ValueSets/CodeSystems
+
+Resources:
+
+- For `TestDataModel`
+  - http://hl7.org/fhir/ValueSet/consent-state-codes / http://hl7.org/fhir/consent-state-codes
+  - http://hl7.org/fhir/ValueSet/contributor-type / http://hl7.org/fhir/contributor-type
+  - http://hl7.org/fhir/ValueSet/task-code / http://hl7.org/fhir/CodeSystem/task-code
+  - http://hl7.org/fhir/ValueSet/task-status / http://hl7.org/fhir/task-status
+- For `SimplePersonModelModel` - N/A
+- For `HealthcareService`
+  - http://hl7.org/fhir/ValueSet/days-of-week / http://hl7.org/fhir/days-of-week
+- For `Practitioner`
+  - http://hl7.org/fhir/ValueSet/administrative-gender / http://hl7.org/fhir/administrative-gender
+- For `PractitionerRole`
+  - http://hl7.org/fhir/ValueSet/days-of-week / http://hl7.org/fhir/days-of-week
+- For `Organization` - N/A
+- For `Location`
+  - http://hl7.org/fhir/ValueSet/location-status / http://hl7.org/fhir/location-status
+  - http://hl7.org/fhir/ValueSet/location-mode / http://hl7.org/fhir/location-mode
+  - http://hl7.org/fhir/ValueSet/days-of-week / http://hl7.org/fhir/days-of-week
+- For `Endpoint`
+  - http://hl7.org/fhir/ValueSet/endpoint-status / http://hl7.org/fhir/location-mode
+  - http://hl7.org/fhir/ValueSet/mimetypes / NON-FHIR CodeSystem
+- For `Device`
+  - http://hl7.org/fhir/ValueSet/udi-entry-type / http://hl7.org/fhir/udi-entry-type
+  - http://hl7.org/fhir/ValueSet/device-status / http://hl7.org/fhir/device-status
+  - http://hl7.org/fhir/ValueSet/device-nametype / http://hl7.org/fhir/device-nametype
+- For `DeviceDefinition`
+  - http://hl7.org/fhir/ValueSet/device-nametype / http://hl7.org/fhir/device-nametype
+- For `Patient`
+  - http://hl7.org/fhir/ValueSet/administrative-gender / http://hl7.org/fhir/administrative-gender
+  - http://hl7.org/fhir/ValueSet/link-type / http://hl7.org/fhir/link-type
+- For `RelatedPerson`
+  - http://hl7.org/fhir/ValueSet/administrative-gender / http://hl7.org/fhir/administrative-gender
+
+Complex Data Types:
+
+- For `Address`
+  - http://hl7.org/fhir/ValueSet/address-type / http://hl7.org/fhir/address-type
+  - http://hl7.org/fhir/ValueSet/address-use / http://hl7.org/fhir/address-use
+- For `Age` - N/A
+- For `Annotation` - N/A
+- For `Attachment`
+  - http://hl7.org/fhir/ValueSet/mimetypes / NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/languages / NON-FHIR CodeSystem
+- For `CodeableConcept` - N/A
+- For `Coding` - N/A
+- For `ContactDetail` - N/A
+- For `ContactPoint`
+  - http://hl7.org/fhir/ValueSet/contact-point-system / http://hl7.org/fhir/contact-point-system
+  - http://hl7.org/fhir/ValueSet/contact-point-use / http://hl7.org/fhir/contact-point-use
+- For `Contributor`
+  - http://hl7.org/fhir/ValueSet/contributor-type / http://hl7.org/fhir/contributor-type
+- For `Count` - N/A
+- For `DataRequirement`
+  - http://hl7.org/fhir/ValueSet/all-types / MULTIPLE CodeSystems
+  - http://hl7.org/fhir/ValueSet/sort-direction / http://hl7.org/fhir/sort-direction
+- For `Distance` - N/A
+- For `Dosage` - N/A
+- For `Duration` - N/A
+- For `Expression` - N/A
+- For `HumanName`
+  - http://hl7.org/fhir/ValueSet/name-use / http://hl7.org/fhir/name-use
+- For `Identifier`
+  - http://hl7.org/fhir/ValueSet/identifier-use / http://hl7.org/fhir/identifier-use
+- For `Meta` - N/A
+- For `Money`
+  - http://hl7.org/fhir/ValueSet/currencies / NON-FHIR CodeSystem
+- For `Narrative`
+  - http://hl7.org/fhir/ValueSet/narrative-status / http://hl7.org/fhir/narrative-status
+- For `ParameterDefinition`
+  - http://hl7.org/fhir/ValueSet/operation-parameter-use / http://hl7.org/fhir/operation-parameter-use
+  - http://hl7.org/fhir/ValueSet/all-types / MULTIPLE CodeSystems
+- For `Period` - N/A
+- For `Quantity`
+  - http://hl7.org/fhir/ValueSet/quantity-comparator / http://hl7.org/fhir/quantity-comparator
+- For `Range` - N/A
+- For `Ratio` - N/A
+- For `Reference` - N/A
+- For `RelatedArtifact`
+  - http://hl7.org/fhir/ValueSet/related-artifact-type / http://hl7.org/fhir/related-artifact-type
+- For `SampledData` - N/A
+- For `Signature`
+  - http://hl7.org/fhir/ValueSet/mimetypes / NON-FHIR CodeSystem
+- For `Timing`
+  - http://hl7.org/fhir/ValueSet/days-of-week / http://hl7.org/fhir/days-of-week
+  - http://hl7.org/fhir/ValueSet/units-of-time / NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/event-timing / MULTIPLE CodeSystems
+- For `TriggerDefinition`
+  - http://hl7.org/fhir/ValueSet/trigger-type / http://hl7.org/fhir/trigger-type
+- For `UsageContext` - N/A

@@ -14,7 +14,7 @@
     "dist/**"
   ],
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs src",
+    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs",
     "compile": "tsc",
     "typedoc": "typedoc ./src/index.ts"
   },

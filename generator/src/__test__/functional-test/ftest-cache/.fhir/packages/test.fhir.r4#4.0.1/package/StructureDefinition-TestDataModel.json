@@ -1274,7 +1274,6 @@
           {
             "code": "Reference",
             "targetProfile": [
-              "http://hl7.org/fhir/StructureDefinition/Patient",
               "https://test.ts-fhir-datamodels.com/StructureDefinition/SimplePersonModel"
             ]
           }
@@ -1307,7 +1306,7 @@
           {
             "code": "Reference",
             "targetProfile": [
-              "http://hl7.org/fhir/StructureDefinition/Condition"
+              "http://hl7.org/fhir/StructureDefinition/HealthcareService"
             ]
           }
         ],
@@ -2150,7 +2149,6 @@
           {
             "code": "Reference",
             "targetProfile": [
-              "http://hl7.org/fhir/StructureDefinition/Patient",
               "https://test.ts-fhir-datamodels.com/StructureDefinition/SimplePersonModel"
             ]
           }
@@ -2168,7 +2166,7 @@
           {
             "code": "Reference",
             "targetProfile": [
-              "http://hl7.org/fhir/StructureDefinition/Condition"
+              "http://hl7.org/fhir/StructureDefinition/HealthcareService"
             ]
           }
         ]
