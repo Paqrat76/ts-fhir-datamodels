@@ -17,9 +17,8 @@ module.exports = {
   },
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/__test__/**',
-    '!<rootDir>/src/**/fhir-contained-resource-parser.ts',
     '!<rootDir>/src/**/index.ts',
+    '!<rootDir>/__test__/**',
     '!<rootDir>/dist/**',
   ],
   coverageThreshold: {

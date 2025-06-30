@@ -1,0 +1,36 @@
+{
+  "name": "generator",
+  "private": true,
+  "version": "0.11.0",
+  "description": "Code generator for TypeScript classes representing FHIR data models for FHIR resources and complex data types",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage sushi/output src/__test__/unit-test/test-out src/__test__/functional-test/test-out",
+    "compile": "tsc",
+    "generate:ftest": "ts-node scripts/generate-ftest-src.ts",
+    "test": "jest",
+    "test:unit": "jest ./src/__test__/unit-test",
+    "test:functional": "jest ./src/__test__/functional-test",
+    "coverage": "jest --coverage",
+    "jest:clear": "jest --clearCache",
+    "jest:updateSnapshot": "jest --updateSnapshot",
+    "sushi": "sushi build ./sushi -s -o ./sushi/output"
+  },
+  "dependencies": {
+    "fhir-package-loader": "^2.2.0",
+    "fs-extra": "^11.3.0",
+    "fsh-sushi": "^3.16.1",
+    "handlebars": "^4.7.8",
+    "lodash": "^4.17.21"
+  },
+  "engines": {
+    "node": ">=22.11",
+    "npm": ">=10.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github:Paqrat76/ts-fhir-datamodels/ts-fhir-datamodels.git",
+    "directory": "generator"
+  }
+}

@@ -1,0 +1,6 @@
+# Temporarily ignore generated content
+src/index.ts
+src/base
+src/code-systems
+src/complex-types
+src/resources

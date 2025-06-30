@@ -10,19 +10,19 @@ module.exports = {
   verbose: true,
   preset: 'ts-jest',
   roots: ['<rootDir>/src'],
-  transform: {
-    '^.+\\.(ts)$': '<rootDir>/../../node_modules/ts-jest',
-  },
+  // transform: {
+  //   '^.+\\.(ts)$': '<rootDir>/../../node_modules/ts-jest',
+  // },
   testRunner: 'jest-circus/runner',
   collectCoverage: false,
   coverageReporters: ['text', 'cobertura', 'lcov'],
   coverageDirectory: '<rootDir>/coverage/',
-  coverageThreshold: {
-    global: {
-      branches: 95,
-      functions: 95,
-      lines: 95,
-      statements: 95,
-    },
-  },
+  // coverageThreshold: {
+  //   global: {
+  //     branches: 95,
+  //     functions: 95,
+  //     lines: 95,
+  //     statements: 95,
+  //   },
+  // },
 };

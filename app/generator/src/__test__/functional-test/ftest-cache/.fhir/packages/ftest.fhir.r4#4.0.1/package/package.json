@@ -1,0 +1,16 @@
+{
+  "name": "ftest.fhir.r4",
+  "version": "4.0.1",
+  "fhir-version-list": [
+    "4.0.1"
+  ],
+  "type": "fhir.ftest",
+  "license": "CC0-1.0",
+  "title": "FHIR R4 package : Core",
+  "description": "A subset of the FHIR R4 specification for functional testing purposes",
+  "author": "HL7 Inc",
+  "url": "http://hl7.org/fhir/R4",
+  "tools-version": 3,
+  "canonical": "http://hl7.org/fhir",
+  "homepage": "http://hl7.org/fhir"
+}
