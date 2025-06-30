@@ -25,7 +25,7 @@
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "prelint": "npm run build --workspace=packages/fhir-core",
-    "lint": "eslint --ext ts --ignore-pattern './app/generator-datamodel-ftest/' --ignore-pattern './packages/r*-datamodels/' .",
+    "lint": "eslint --ext ts --ignore-pattern './packages/r*-datamodels/' .",
     "lint:fix": "npm run lint -- --fix",
     "lint:docs": "markdownlint '**/*.md' -i '**/node_modules/**' -i '**/CHANGELOG.md'",
     "pretest": "npm run build --workspace=packages/fhir-core",

@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.11.0] - 2025-??-??
+## [0.11.0] - 2025-06-30
 
 ### Added
 
@@ -31,17 +31,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Updated the generator test FHIR caches
 - Refactored how to set debug mode for the generator
 - Changed referenced resources in TestDataModel StructureDefinition to reduce the number of dependencies
-
-### Deprecated
-
-### Removed
-
+-
 ### Fixed
 
 - Bug where CodeSystem hierarchical code levels were not handled
 - Bug where more than one field has an EnumCodeType using the same Enum class resulting in duplicate declarations
-
-### Security
 
 
 ## [0.10.0] - 2025-06-25

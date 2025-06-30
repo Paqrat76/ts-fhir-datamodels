@@ -5,9 +5,8 @@
   },
   "include": [
     "./*.mjs",
-    "./app/generator/*.js",
     "./app/generator/**/*.ts",
-    "./packages/fhir-core/*.js",
+    "./app/generator-datamodel-ftest/**/*.ts",
     "./packages/fhir-core/**/*.ts",
     "./packages/r4-datamodels/**/*.ts"
   ]

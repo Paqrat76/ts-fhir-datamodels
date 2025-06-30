@@ -19,21 +19,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.12.0] - 2025-??-??
+## [0.12.0] - 2025-06-30
 
 ### Added
+
+- Created initial `app/generator-datamodel-ftest` project for generated FHIR R4 test data models for functional testing
+- Restructured functional testing for generator project
 
 ### Changed
 
 - Updated dependencies
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 
 ## [0.11.0] - 2025-06-25
