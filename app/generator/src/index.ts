@@ -21,9 +21,6 @@
  *
  */
 
-export type {
-  FhirPackage,
-  GeneratedContent,
-  generatorLogger,
-} from '../src/generator-lib/ts-datamodel-generator-helpers';
+export type { FhirPackage, GeneratedContent } from '../src/generator-lib/ts-datamodel-generator-helpers';
+export { generatorLogger } from '../src/generator-lib/ts-datamodel-generator-helpers';
 export { GeneratorApp } from '../src/generator-app';

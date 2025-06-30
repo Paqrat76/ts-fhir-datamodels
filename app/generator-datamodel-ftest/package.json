@@ -17,9 +17,11 @@
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage src/generated/*",
     "compile": "tsc",
-    "xxxpretest": "npm run generate:ftest --prefix app/generator",
-    "xxxtest": "jest",
-    "xxxcoverage": "jest --coverage",
+    "generate:ftest": "ts-node scripts/generate-ftest-src.ts",
+    "pretest": "npm run generate:ftest",
+    "test": "jest",
+    "precoverage": "npm run generate:ftest",
+    "coverage": "jest --coverage",
     "jest:clear": "jest --clearCache"
   },
   "dependencies": {

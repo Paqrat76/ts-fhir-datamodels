@@ -4,7 +4,6 @@
   "version": "0.11.0",
   "description": "Code generator for TypeScript classes representing FHIR data models for FHIR resources and complex data types",
   "license": "MIT",
-  "main": "index.js",
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage sushi/output src/__test__/unit-test/test-out src/__test__/functional-test/test-out",
     "compile": "tsc",

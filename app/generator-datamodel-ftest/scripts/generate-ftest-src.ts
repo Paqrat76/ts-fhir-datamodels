@@ -24,11 +24,18 @@
 import { strict as assert } from 'node:assert';
 import { resolve } from 'node:path';
 import { rmSync } from 'node:fs';
-import { FhirPackage, GeneratedContent, generatorLogger } from '../src/generator-lib/ts-datamodel-generator-helpers';
-import { GeneratorApp } from '../src/generator-app';
+import { FhirPackage, GeneratorApp, GeneratedContent, generatorLogger } from 'generator';
 
-const outputPath = resolve(__dirname, '../../', 'generator-datamodel-ftest', 'src', 'generated');
-const testFhirCacheRoot = resolve(__dirname, '../', 'src', '__test__', 'functional-test', 'ftest-cache');
+const outputPath = resolve(__dirname, '../', 'src', 'generated');
+const testFhirCacheRoot = resolve(
+  __dirname,
+  '../../',
+  'generator',
+  'src',
+  '__test__',
+  'functional-test',
+  'ftest-cache',
+);
 
 const testFhirPackage: FhirPackage = {
   release: 'R4',
@@ -45,14 +52,11 @@ const testFhirPackage: FhirPackage = {
  * @returns {Promise<void>} Resolves when data models are generated and written to disk.
  * Throws an error if generated content is invalid or incomplete.
  */
-async function generateDataModels(): Promise<void> {
-  generatorLogger(
-    'info',
-    `Clearing '${outputPath}' before generating data models for FHIR ${testFhirPackage.release} release...`,
-  );
+async function generateFunctionalTestDataModels(): Promise<void> {
+  generatorLogger('info', `Clearing '${outputPath}' before generating functional test data models...`);
   rmSync(outputPath, { recursive: true, force: true });
 
-  generatorLogger('info', `Generating data models for FHIR ${testFhirPackage.release} release...`);
+  generatorLogger('info', `Generating functional test data models using '.fhir' from '${testFhirCacheRoot}'...`);
   const generator = new GeneratorApp(testFhirPackage);
   const generatedContent: GeneratedContent[] = await generator.generate();
   assert(generatedContent, `Generated content is null or undefined.`);
@@ -65,17 +69,17 @@ async function generateDataModels(): Promise<void> {
   );
   generatorLogger(
     'info',
-    `Generated a total of ${String(generatedContent.length)} data models and support files for FHIR ${testFhirPackage.release} release using ${testFhirPackage.pkgName}@${testFhirPackage.pkgVersion}`,
+    `Generated a total of ${String(generatedContent.length)} functional test data models and support files using ${testFhirPackage.pkgName}@${testFhirPackage.pkgVersion}`,
   );
   generator.writeDataModelsToDisk(generatedContent);
-  generatorLogger('info', `FHIR ${testFhirPackage.release} data models written to ${outputPath}`);
+  generatorLogger('info', `Functional test data models written to ${outputPath}`);
 }
 
 void (async () => {
-  await generateDataModels()
+  await generateFunctionalTestDataModels()
     .then(() => {
       console.log(
-        `** Completed generating data models for '${testFhirPackage.pkgName}@${testFhirPackage.pkgVersion}'!`,
+        `** Completed generating functional test data models for '${testFhirPackage.pkgName}@${testFhirPackage.pkgVersion}'!`,
       );
     })
     .catch((err: unknown) => {
