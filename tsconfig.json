@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "references": [{ "path": "./packages/fhir-core/tsconfig.json" }, { "path": "./generator/tsconfig.json" }]
+  "references": [{ "path": "./packages/fhir-core/tsconfig.json" }, { "path": "./app/generator/tsconfig.json" }]
 }

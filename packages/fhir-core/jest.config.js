@@ -12,6 +12,9 @@ const pkg = require('./package');
 module.exports = {
   ...base,
   displayName: pkg.name,
+  transform: {
+    '^.+\\.(ts)$': '<rootDir>/../../node_modules/ts-jest',
+  },
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/__test__/**',
