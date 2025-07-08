@@ -34,7 +34,7 @@ import { upperFirst } from '../utility/common-util';
  * NOTE: This set of data types is a subset of DATA_TYPES.
  *
  * @category Base Models
- * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
+ * @see [Open Type Element](https://hl7.org/fhir/datatypes.html#open)
  */
 export const OPEN_DATA_TYPES = [
   // Primitive Types
@@ -79,7 +79,6 @@ export const OPEN_DATA_TYPES = [
   'Ratio',
   'RatioRange', // added in FHIR R5
   'Reference',
-  'RelativeTime', // added in FHIR R6
   'SampledData',
   'Signature',
   'Timing',
@@ -100,16 +99,6 @@ export const OPEN_DATA_TYPES = [
 ] as const;
 
 /**
- * FhirOpenDataType
- *
- * @remarks
- * Type definition based on OPEN_DATA_TYPES array.
- *
- * @category Base Models
- */
-export type FhirOpenDataType = (typeof OPEN_DATA_TYPES)[number];
-
-/**
  * FHIR open data types key names (i.e., valueString, valuePeriod, etc.)
  *
  * @category Base Models
@@ -120,7 +109,34 @@ export const OPEN_DATA_TYPE_KEY_NAMES = OPEN_DATA_TYPES.map((odt) => `value${upp
 /**
  * Non-open data types that are valid data types
  */
-export const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail', 'Narrative', 'xhtml'] as const;
+const NON_OPEN_DATA_TYPES = [
+  'MonetaryComponent',
+  'Narrative',
+  'RelativeTime', // added in FHIR R6
+  'VirtualServiceDetail',
+  'xhtml',
+] as const;
+
+/**
+ * Non-open data types that are valid data types representing structural data types
+ */
+const SPECIAL_DATA_TYPES = ['Element', 'ElementDefinition', 'BackboneElement', 'BackboneType', 'Resource'] as const;
+
+/**
+ * Non-open data types that are still under development
+ *
+ * @remarks
+ * FHIR R4 - These types are still undergoing development and review by the appropriate Workgroups.
+ * At this time, these are considered only as a draft design not suitable for production implementation.
+ * They are included here because certain resources use these data types.
+ */
+const UNDER_DEVELOPMENT_DATA_TYPES = [
+  'MarketingStatus', // R4, R4B, R5, R6 / Resources: MedicinalProductPackaged
+  'Population', // R4, R4B: Resources / MedicinalProductContraindication, MedicinalProductIndication, MedicinalProductUndesirableEffect
+  'ProdCharacteristic', // R4, R4B / Resources: DeviceDefinition, MedicinalProductManufactured, MedicinalProductPackaged
+  'ProductShelfLife', // R4, R4B, R5, R6 / Resources: DeviceDefinition, MedicinalProductPackaged
+  'SubstanceAmount', // R4 / Resources: SubstancePolymer
+] as const;
 
 /**
  * FHIR data types
@@ -129,9 +145,22 @@ export const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail',
  * All defined FHIR data types for complex and primitive data types.
  *
  * @category Base Models
- * @see [DataTypes](https://hl7.org/fhir/R5/datatypes.html)
+ * @see [DataTypes](https://hl7.org/fhir/datatypes.html)
  */
-export const DATA_TYPES = [...OPEN_DATA_TYPES, ...NON_OPEN_DATA_TYPES] as const;
+export const DATA_TYPES = [
+  ...OPEN_DATA_TYPES,
+  ...NON_OPEN_DATA_TYPES,
+  ...SPECIAL_DATA_TYPES,
+  ...UNDER_DEVELOPMENT_DATA_TYPES,
+] as const;
+
+/**
+ * FHIR data types key names (i.e., valueString, valuePeriod, etc.)
+ *
+ * @category Base Models
+ * @see [Datatypes](https://hl7.org/fhir/datatypes.html)
+ */
+export const DATA_TYPE_KEY_NAMES = DATA_TYPES.map((dt) => `value${upperFirst(dt)}`);
 
 /**
  * FhirDataType
@@ -142,3 +171,29 @@ export const DATA_TYPES = [...OPEN_DATA_TYPES, ...NON_OPEN_DATA_TYPES] as const;
  * @category Base Models
  */
 export type FhirDataType = (typeof DATA_TYPES)[number];
+
+/**
+ * A constant that holds the mappings of FHIR data model types.
+ * This object maps specific FHIR data type names to their corresponding FHIR data model representations.
+ *
+ * @category Base Models
+ */
+export const DATA_TYPE_MAPPINGS: ReadonlyMap<FhirDataType, string> = getDataTypeMappings();
+
+/**
+ * Generates a mapping of data type names where the key is the original data type
+ * and the value is a formatted version of the data type string.
+ *
+ * @returns {Map<FhirDataType, string>} A map where each key is a data type and the value
+ * is its corresponding transformed representation.
+ */
+function getDataTypeMappings(): ReadonlyMap<FhirDataType, string> {
+  const map = new Map<FhirDataType, string>();
+  DATA_TYPES.forEach((dt: string): void => {
+    // Primitive data type names begin with lowercase letters.
+    // Primitive data models names begin with uppercase letters and end with 'Type'.
+    const value: string = /^[a-z].*$/.test(dt as FhirDataType) ? `${upperFirst(dt)}Type` : dt;
+    map.set(dt as FhirDataType, value);
+  });
+  return new Map<FhirDataType, string>(map);
+}

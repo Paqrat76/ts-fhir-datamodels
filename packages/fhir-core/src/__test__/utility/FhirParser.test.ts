@@ -22,8 +22,23 @@
  */
 
 import { AssertionError } from 'node:assert';
-import { BackboneElement, DataType, Element, Extension } from '../../base-models/core-fhir-models';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import {
+  FhirParser,
+  getPrimitiveTypeJson,
+  getPrimitiveTypeListJson,
+  PrimitiveTypeJson,
+} from '../../utility/FhirParser';
+import {
+  FHIR_MAX_INTEGER,
+  FHIR_MAX_INTEGER64,
+  FHIR_MIN_INTEGER,
+  FHIR_MIN_INTEGER64,
+} from '../../data-types/primitive/primitive-types';
 import { Base64BinaryType } from '../../data-types/primitive/Base64BinaryType';
+import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
+import { Extension } from '../../base-models/core-fhir-models';
+import { StringType } from '../../data-types/primitive/StringType';
 import { BooleanType } from '../../data-types/primitive/BooleanType';
 import { CanonicalType } from '../../data-types/primitive/CanonicalType';
 import { CodeType } from '../../data-types/primitive/CodeType';
@@ -37,7 +52,6 @@ import { IntegerType } from '../../data-types/primitive/IntegerType';
 import { MarkdownType } from '../../data-types/primitive/MarkdownType';
 import { OidType } from '../../data-types/primitive/OidType';
 import { PositiveIntType } from '../../data-types/primitive/PositiveIntType';
-import { StringType } from '../../data-types/primitive/StringType';
 import { TimeType } from '../../data-types/primitive/TimeType';
 import { UnsignedIntType } from '../../data-types/primitive/UnsignedIntType';
 import { UriType } from '../../data-types/primitive/UriType';
@@ -45,139 +59,153 @@ import { UrlType } from '../../data-types/primitive/UrlType';
 import { UuidType } from '../../data-types/primitive/UuidType';
 import { XhtmlType } from '../../data-types/primitive/XhtmlType';
 import { FhirError } from '../../errors/FhirError';
-import { InvalidTypeError } from '../../errors/InvalidTypeError';
-import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
 import {
-  assertFhirResourceTypeJson,
-  getPrimitiveTypeJson,
-  getPrimitiveTypeListJson,
-  parseBase64BinaryType,
-  parseBooleanType,
-  parseCanonicalType,
-  parseCodeType,
-  parseDateTimeType,
-  parseDateType,
-  parseDecimalType,
-  parseExtension,
-  parseIdType,
-  parseInstantType,
-  parseInteger64Type,
-  parseIntegerType,
-  parseMarkdownType,
-  parseOidType,
-  parseOpenDataType,
-  parsePolymorphicDataType,
-  parsePositiveIntType,
-  parseStringType,
-  parseTimeType,
-  parseUnsignedIntType,
-  parseUriType,
-  parseUrlType,
-  parseUuidType,
-  parseXhtmlType,
-  PrimitiveTypeJson,
-  processBackboneElementJson,
-  processDomainResourceJson,
-  processElementJson,
-  processResourceJson,
-} from '../../utility/fhir-parsers';
+  IBackboneElement,
+  IBackboneType,
+  IDataType,
+  IDomainResource,
+  IResource,
+} from '../../base-models/library-interfaces';
 import {
-  FHIR_MAX_INTEGER,
-  FHIR_MAX_INTEGER64,
-  FHIR_MIN_INTEGER,
-  FHIR_MIN_INTEGER64,
   MockBackboneElement,
+  MockBackboneType,
   MockElement,
   MockResource,
   MockTask,
   TOO_BIG_STRING,
+  PARSABLE_RESOURCE_MAP,
 } from '../test-utils';
+import { TestData } from '../test-data';
 
-describe('fhir-parsers', () => {
-  const EMPTY_STRING = '';
-  const SIBLING_JSON_SIMPLE = {
-    id: 'id1234',
-    extension: [
-      {
-        id: 'extId',
-        url: 'testUrl',
-        valueString: 'extension string value',
-      },
-    ],
-  };
-  const EXPECTED_EXTENSION_SIMPLE = new Extension('testUrl', new StringType('extension string value'));
-  EXPECTED_EXTENSION_SIMPLE.setId('extId');
-
-  const SIBLING_JSON_COMPLEX = {
-    extension: [
-      {
-        url: 'testUrl',
-        extension: [
-          {
-            id: 'childId1',
-            url: 'childUrl1',
-            valueString: 'child extension string value 1',
-          },
-          {
-            url: 'childUrl2',
-            valueString: 'child extension string value 2',
-          },
-        ],
-      },
-    ],
-  };
-  const EXPECTED_EXTENSION_COMPLEX = new Extension('testUrl');
-  const EXPECTED_EXTENSION_CHILD_1 = new Extension('childUrl1', new StringType('child extension string value 1'));
-  EXPECTED_EXTENSION_CHILD_1.setId('childId1');
-  const EXPECTED_EXTENSION_CHILD_2 = new Extension('childUrl2', new StringType('child extension string value 2'));
-  EXPECTED_EXTENSION_COMPLEX.setExtension([EXPECTED_EXTENSION_CHILD_1, EXPECTED_EXTENSION_CHILD_2]);
+describe('FhirParser', () => {
+  let fhirParser: FhirParser;
+  beforeAll(() => {
+    fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    expect(fhirParser).toBeDefined();
+  });
 
   describe('Core Parsers', () => {
     describe('parseExtension', () => {
       it('should return undefined for empty json', () => {
-        let testType = parseExtension({});
+        let testType = fhirParser.parseExtension({});
         expect(testType).toBeUndefined();
 
-        testType = parseExtension(undefined);
+        testType = fhirParser.parseExtension(undefined);
         expect(testType).toBeUndefined();
 
-        // @ts-expect-error: allow for testing
-        testType = parseExtension(null);
+        testType = fhirParser.parseExtension(null);
         expect(testType).toBeUndefined();
       });
 
-      it('should throw FhirError for invalid json type', () => {
-        const INVALID_EXTENSION_JSON = {
+      it('should return Extension for valid json with value[x]', () => {
+        const VALID_EXTENSION_JSON = {
+          url: 'testUrl',
+          valueString: 'extension string value',
+        };
+        const expectedValue = new StringType('extension string value');
+
+        const testType = fhirParser.parseExtension(VALID_EXTENSION_JSON);
+        expect(testType).toBeDefined();
+        expect(testType).toBeInstanceOf(Extension);
+        expect(testType?.constructor.name).toStrictEqual('Extension');
+        expect(testType?.fhirType()).toStrictEqual('Extension');
+        expect(testType?.isEmpty()).toBe(false);
+        expect(testType?.hasId()).toBe(false);
+        expect(testType?.hasExtension()).toBe(false);
+        expect(testType?.hasUrl()).toBe(true);
+        expect(testType?.getUrl()).toStrictEqual('testUrl');
+        expect(testType?.hasValue()).toBe(true);
+        expect(testType?.getValue()).toStrictEqual(expectedValue);
+      });
+
+      it('should return Extension for valid json with extensions', () => {
+        const VALID_EXTENSION_JSON = {
+          id: 'extId',
+          url: 'testUrl',
           extension: [
             {
-              id: 'extId',
-              valueString: 'extension string value',
+              url: 'childUrl1',
+              valueString: 'child extension string value 1',
+            },
+            {
+              url: 'childUrl2',
+              valueString: 'child extension string value 2',
+            },
+          ],
+        };
+        const expectedChild1 = new Extension('childUrl1', new StringType('child extension string value 1'));
+        const expectedChild2 = new Extension('childUrl2', new StringType('child extension string value 2'));
+
+        const testType = fhirParser.parseExtension(VALID_EXTENSION_JSON);
+        expect(testType).toBeDefined();
+        expect(testType).toBeInstanceOf(Extension);
+        expect(testType?.constructor.name).toStrictEqual('Extension');
+        expect(testType?.fhirType()).toStrictEqual('Extension');
+        expect(testType?.isEmpty()).toBe(false);
+        expect(testType?.hasId()).toBe(true);
+        expect(testType?.getId()).toStrictEqual('extId');
+        expect(testType?.hasExtension()).toBe(true);
+        expect(testType?.getExtension()).toHaveLength(2);
+        expect(testType?.getExtension()).toEqual([expectedChild1, expectedChild2]);
+        expect(testType?.hasUrl()).toBe(true);
+        expect(testType?.getUrl()).toStrictEqual('testUrl');
+        expect(testType?.hasValue()).toBe(false);
+        expect(testType?.hasUrl()).toBe(true);
+        expect(testType?.getUrl()).toStrictEqual('testUrl');
+        expect(testType?.hasValue()).toBe(false);
+      });
+
+      it('should throw FhirError for missing url', () => {
+        const INVALID_EXTENSION_JSON = {
+          id: 'extId',
+          valueString: 'extension string value',
+        };
+
+        const t = () => {
+          fhirParser.parseExtension(INVALID_EXTENSION_JSON);
+        };
+        expect(t).toThrow(FhirError);
+        expect(t).toThrow(`The following required properties must be included in the provided JSON: Extension.url`);
+      });
+
+      it('should throw FhirError for invalid json', () => {
+        const INVALID_EXTENSION_JSON = {
+          url: 'testUrl',
+          valueString: 'extension string value',
+          extension: [
+            {
+              url: 'childUrl1',
+              valueString: 'child extension string value 1',
+            },
+            {
+              url: 'childUrl2',
+              valueString: 'child extension string value 2',
             },
           ],
         };
 
         const t = () => {
-          parseExtension(INVALID_EXTENSION_JSON);
+          fhirParser.parseExtension(INVALID_EXTENSION_JSON);
         };
         expect(t).toThrow(FhirError);
-        expect(t).toThrow(`The following required properties must be included in the provided JSON: Extension.url`);
+        expect(t).toThrow(`The Extension must have either 'extension's or 'value[x]', not both`);
       });
     });
 
     describe('parseElement', () => {
-      let instance: Element;
+      let instance: IDataType;
       beforeEach(() => {
         instance = new MockElement();
       });
 
       it('should return undefined for empty json', () => {
-        processElementJson(instance, {});
+        fhirParser.processElementJson(instance, {});
         expect(instance.isEmpty()).toBe(true);
 
-        processElementJson(instance, undefined);
+        fhirParser.processElementJson(instance, undefined);
         expect(instance.isEmpty()).toBe(true);
 
-        processElementJson(instance, null);
+        fhirParser.processElementJson(instance, null);
         expect(instance.isEmpty()).toBe(true);
       });
 
@@ -192,7 +220,7 @@ describe('fhir-parsers', () => {
           ],
         };
 
-        processElementJson(instance, VALID_JSON);
+        fhirParser.processElementJson(instance, VALID_JSON);
         expect(instance).toBeDefined();
         expect(instance).toBeInstanceOf(MockElement);
         expect(instance.constructor.name).toStrictEqual('MockElement');
@@ -207,7 +235,7 @@ describe('fhir-parsers', () => {
         };
 
         const t = () => {
-          processElementJson(instance, INVALID_JSON);
+          fhirParser.processElementJson(instance, INVALID_JSON);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`MockElement.id is not a string.`);
@@ -215,19 +243,19 @@ describe('fhir-parsers', () => {
     });
 
     describe('parseBackboneElement', () => {
-      let instance: BackboneElement;
+      let instance: IBackboneElement;
       beforeEach(() => {
         instance = new MockBackboneElement();
       });
 
       it('should return undefined for empty json', () => {
-        processBackboneElementJson(instance, {});
+        fhirParser.processBackboneElementJson(instance, {});
         expect(instance.isEmpty()).toBe(true);
 
-        processBackboneElementJson(instance, undefined);
+        fhirParser.processBackboneElementJson(instance, undefined);
         expect(instance.isEmpty()).toBe(true);
 
-        processBackboneElementJson(instance, null);
+        fhirParser.processBackboneElementJson(instance, null);
         expect(instance.isEmpty()).toBe(true);
       });
 
@@ -248,7 +276,7 @@ describe('fhir-parsers', () => {
           ],
         };
 
-        processBackboneElementJson(instance, VALID_JSON);
+        fhirParser.processBackboneElementJson(instance, VALID_JSON);
         expect(instance).toBeDefined();
         expect(instance).toBeInstanceOf(MockBackboneElement);
         expect(instance.constructor.name).toStrictEqual('MockBackboneElement');
@@ -263,33 +291,89 @@ describe('fhir-parsers', () => {
         };
 
         const t = () => {
-          processBackboneElementJson(instance, INVALID_JSON);
+          fhirParser.processBackboneElementJson(instance, INVALID_JSON);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`MockBackboneElement.id is not a string.`);
       });
     });
 
-    describe('parseResource', () => {
-      let instance: MockResource;
+    describe('parseBackboneType', () => {
+      let instance: IBackboneType;
       beforeEach(() => {
-        instance = new MockResource();
+        instance = new MockBackboneType();
       });
 
       it('should return undefined for empty json', () => {
-        processResourceJson(instance, {});
+        fhirParser.processBackboneTypeJson(instance, {});
         expect(instance.isEmpty()).toBe(true);
 
-        processResourceJson(instance, undefined);
+        fhirParser.processBackboneTypeJson(instance, undefined);
         expect(instance.isEmpty()).toBe(true);
 
-        processResourceJson(instance, null);
+        fhirParser.processBackboneTypeJson(instance, null);
         expect(instance.isEmpty()).toBe(true);
       });
 
       it('should return correct instance for valid json', () => {
         const VALID_JSON = {
-          resourceType: 'Resource',
+          id: 'idBE123',
+          extension: [
+            {
+              url: 'validUrl1',
+              valueString: 'This is a valid string 1',
+            },
+          ],
+          modifierExtension: [
+            {
+              url: 'validUrl2',
+              valueString: 'This is a valid string 2',
+            },
+          ],
+        };
+
+        fhirParser.processBackboneTypeJson(instance, VALID_JSON);
+        expect(instance).toBeDefined();
+        expect(instance).toBeInstanceOf(MockBackboneType);
+        expect(instance.constructor.name).toStrictEqual('MockBackboneType');
+        expect(instance.fhirType()).toStrictEqual('BackboneType');
+        expect(instance.isEmpty()).toBe(false);
+        expect(instance.toJSON()).toEqual(VALID_JSON);
+      });
+
+      it('should throw TypeError for invalid json type', () => {
+        const INVALID_JSON = {
+          id: 123,
+        };
+
+        const t = () => {
+          fhirParser.processBackboneTypeJson(instance, INVALID_JSON);
+        };
+        expect(t).toThrow(TypeError);
+        expect(t).toThrow(`MockBackboneType.id is not a string.`);
+      });
+    });
+
+    describe('parseResource', () => {
+      let instance: IResource;
+      beforeEach(() => {
+        instance = new MockResource();
+      });
+
+      it('should return undefined for empty json', () => {
+        fhirParser.processResourceJson(instance, {});
+        expect(instance.isEmpty()).toBe(true);
+
+        fhirParser.processResourceJson(instance, undefined);
+        expect(instance.isEmpty()).toBe(true);
+
+        fhirParser.processResourceJson(instance, null);
+        expect(instance.isEmpty()).toBe(true);
+      });
+
+      it('should return correct instance for valid json', () => {
+        const VALID_JSON = {
+          resourceType: 'MockResource',
           id: 'idR123',
           meta: {
             versionId: 'v1',
@@ -313,11 +397,11 @@ describe('fhir-parsers', () => {
           language: 'en-US',
         };
 
-        processResourceJson(instance, VALID_JSON);
+        fhirParser.processResourceJson(instance, VALID_JSON);
         expect(instance).toBeDefined();
         expect(instance).toBeInstanceOf(MockResource);
         expect(instance.constructor.name).toStrictEqual('MockResource');
-        expect(instance.resourceType()).toStrictEqual('Resource');
+        expect(instance.resourceType()).toStrictEqual('MockResource');
         expect(instance.fhirType()).toStrictEqual('MockResource');
         expect(instance.isEmpty()).toBe(false);
         expect(instance.toJSON()).toEqual(VALID_JSON);
@@ -325,12 +409,12 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const INVALID_JSON = {
-          resourceType: 'Resource',
+          resourceType: 'MockResource',
           id: 12345,
         };
 
         const t = () => {
-          processResourceJson(instance, INVALID_JSON);
+          fhirParser.processResourceJson(instance, INVALID_JSON);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`MockResource.id is not a string.`);
@@ -338,25 +422,25 @@ describe('fhir-parsers', () => {
     });
 
     describe('parseDomainResource', () => {
-      let instance: MockTask;
+      let instance: IDomainResource;
       beforeEach(() => {
         instance = new MockTask();
       });
 
       it('should return undefined for empty json', () => {
-        processDomainResourceJson(instance, {});
+        fhirParser.processDomainResourceJson(instance, {});
         expect(instance.isEmpty()).toBe(true);
 
-        processDomainResourceJson(instance, undefined);
+        fhirParser.processDomainResourceJson(instance, undefined);
         expect(instance.isEmpty()).toBe(true);
 
-        processDomainResourceJson(instance, null);
+        fhirParser.processDomainResourceJson(instance, null);
         expect(instance.isEmpty()).toBe(true);
       });
 
       it('should return correct instance for valid json', () => {
         const VALID_JSON = {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           id: 'idR123',
           meta: {
             versionId: 'v1',
@@ -382,6 +466,13 @@ describe('fhir-parsers', () => {
             status: 'generated',
             div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
           },
+          contained: [
+            {
+              resourceType: 'MockTask',
+              id: '#containedId',
+              mockPrimitive: 'mockPrimitiveValue',
+            },
+          ],
           extension: [
             {
               url: 'extUrl',
@@ -396,11 +487,11 @@ describe('fhir-parsers', () => {
           ],
         };
 
-        processDomainResourceJson(instance, VALID_JSON);
+        fhirParser.processDomainResourceJson(instance, VALID_JSON);
         expect(instance).toBeDefined();
         expect(instance).toBeInstanceOf(MockTask);
         expect(instance.constructor.name).toStrictEqual('MockTask');
-        expect(instance.resourceType()).toStrictEqual('Task');
+        expect(instance.resourceType()).toStrictEqual('MockTask');
         expect(instance.fhirType()).toStrictEqual('MockTask');
         expect(instance.isEmpty()).toBe(false);
         expect(instance.toJSON()).toEqual(VALID_JSON);
@@ -408,66 +499,199 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const INVALID_JSON = {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           id: 12345,
         };
 
         const t = () => {
-          processDomainResourceJson(instance, INVALID_JSON);
+          fhirParser.processDomainResourceJson(instance, INVALID_JSON);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`MockTask.id is not a string.`);
       });
     });
-  });
 
-  describe('Helpers', () => {
-    describe('assertFhirResourceTypeJson', () => {
+    describe('parseContainedResources', () => {
       it('should throw AssertionError for missing arguments', () => {
-        let t = () => {
-          // @ts-expect-error: allow for testing
-          assertFhirResourceTypeJson(null, 'Task');
+        const instance = new MockTask();
+        const sourceField = 'sourceField';
+        const CONTAINED_JSON = {
+          resourceType: 'MockTask',
+          id: '#containedId',
+          mockPrimitive: 'containedPrimitiveValue',
         };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The dataJsonObj argument is undefined/null.`);
+
+        let t = () => {
+          fhirParser.parseContainedResources(instance, [CONTAINED_JSON], sourceField);
+        };
+        expect(t).not.toThrow(AssertionError);
 
         t = () => {
-          // @ts-expect-error: allow for testing
-          assertFhirResourceTypeJson({}, null);
+          fhirParser.parseContainedResources(undefined, [CONTAINED_JSON], sourceField);
         };
         expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The fhirResourceType argument is undefined/null.`);
-      });
+        expect(t).toThrow(`instance argument is required`);
 
-      it('should throw AssertionError for dataJsonObj argument provided as non-JSON object', () => {
-        const t = () => {
-          // @ts-expect-error: allow for testing
-          assertFhirResourceTypeJson([], 'Task');
+        t = () => {
+          fhirParser.parseContainedResources(instance, undefined, sourceField);
         };
         expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The provided JSON does not represent a JSON object.`);
+        expect(t).toThrow(`containedJsonArray argument is required`);
+
+        t = () => {
+          fhirParser.parseContainedResources(instance, [CONTAINED_JSON], undefined);
+        };
+        expect(t).toThrow(AssertionError);
+        expect(t).toThrow(`sourceField argument is require`);
       });
 
-      it('should throw InvalidTypeError for invalid FHIR resourceType', () => {
-        const t = () => {
-          assertFhirResourceTypeJson({ resourceType: 'Basic', id: '123' }, 'Task');
+      it('should return correct instance for valid json', () => {
+        const instance = new MockTask();
+        instance.setId('idR123');
+        instance.mockPrimitive = new StringType('mockPrimitiveValue');
+
+        const CONTAINED_JSON = {
+          resourceType: 'MockTask',
+          id: '#containedId',
+          mockPrimitive: 'containedPrimitiveValue',
         };
-        expect(t).toThrow(InvalidTypeError);
-        expect(t).toThrow(`Invalid JSON 'resourceType' ('Basic') value; Should be 'Task'.`);
+        const VALID_JSON = {
+          resourceType: 'MockTask',
+          id: 'idR123',
+          contained: [CONTAINED_JSON],
+          mockPrimitive: 'mockPrimitiveValue',
+        };
+
+        fhirParser.parseContainedResources(instance, [CONTAINED_JSON], 'contained');
+        expect(instance).toBeDefined();
+        expect(instance).toBeInstanceOf(MockTask);
+        expect(instance.constructor.name).toStrictEqual('MockTask');
+        expect(instance.resourceType()).toStrictEqual('MockTask');
+        expect(instance.fhirType()).toStrictEqual('MockTask');
+        expect(instance.isEmpty()).toBe(false);
+        expect(instance.toJSON()).toEqual(VALID_JSON);
+      });
+    });
+
+    describe('parsePolymorphicDataType', () => {
+      it('should return undefined for empty json', () => {
+        const sourceField = 'sourceField';
+        const fieldName = 'fieldName';
+
+        let testType: IDataType | undefined = fhirParser.parsePolymorphicDataType({}, sourceField, fieldName, null);
+        expect(testType).toBeUndefined();
+
+        testType = fhirParser.parsePolymorphicDataType(undefined, sourceField, fieldName, null);
+        expect(testType).toBeUndefined();
+
+        testType = fhirParser.parsePolymorphicDataType(null, sourceField, fieldName, null);
+        expect(testType).toBeUndefined();
       });
 
-      it('should throw InvalidTypeError for missing FHIR resourceType', () => {
-        const t = () => {
-          assertFhirResourceTypeJson({ id: '123' }, 'Task');
+      it('should throw AssertionError for missing arguments', () => {
+        const sourceField = 'sourceField';
+        const fieldName = 'fieldName';
+        const dummyMeta: DecoratorMetadataObject = { ChoiceDatatypes: { fieldName: ['id', 'string'] } };
+
+        let t = () => {
+          fhirParser.parsePolymorphicDataType({ bogusJson: true }, sourceField, fieldName, dummyMeta);
         };
-        expect(t).toThrow(InvalidTypeError);
-        expect(t).toThrow(`The provided JSON does not represent a FHIR Resource (missing 'resourceType' element).`);
+        expect(t).not.toThrow(AssertionError);
+
+        t = () => {
+          fhirParser.parsePolymorphicDataType({ bogusJson: true }, undefined, fieldName, null);
+        };
+        expect(t).toThrow(AssertionError);
+        expect(t).toThrow(`The sourceField argument is undefined/null.`);
+
+        t = () => {
+          fhirParser.parsePolymorphicDataType({ bogusJson: true }, sourceField, undefined, null);
+        };
+        expect(t).toThrow(AssertionError);
+        expect(t).toThrow(`The fieldName argument is undefined/null.`);
+
+        t = () => {
+          fhirParser.parsePolymorphicDataType({ bogusJson: true }, sourceField, fieldName, undefined);
+        };
+        expect(t).toThrow(AssertionError);
+        expect(t).toThrow(`The metadata argument is undefined/null.`);
+
+        t = () => {
+          fhirParser.parsePolymorphicDataType({ bogusJson: true }, sourceField, fieldName, null);
+        };
+        expect(t).toThrow(AssertionError);
+        expect(t).toThrow(`The metadata argument is undefined/null.`);
+      });
+
+      it('should return correct instance for valid json', () => {
+        const sourceField = 'Model.polyField[x]';
+        const fieldName = 'polyField[x]';
+        const polyFieldMeta: DecoratorMetadataObject = {
+          ChoiceDatatypes: [{ fieldName: 'polyField', fieldTypes: ['string', 'Period'] }],
+        };
+
+        const VALID_JSON_STRING = { polyFieldString: 'This is a string.' };
+        let validDataType: IDataType = new StringType('This is a string.');
+        let testType: IDataType | undefined = fhirParser.parsePolymorphicDataType(
+          VALID_JSON_STRING,
+          sourceField,
+          fieldName,
+          polyFieldMeta,
+        );
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(validDataType);
+
+        const VALID_JSON_PERIOD = {
+          polyFieldPeriod: { start: TestData.VALID_PERIOD.getStart(), end: TestData.VALID_PERIOD.getEnd() },
+        };
+        validDataType = TestData.VALID_PERIOD;
+        testType = fhirParser.parsePolymorphicDataType(VALID_JSON_PERIOD, sourceField, fieldName, polyFieldMeta);
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(validDataType);
       });
     });
   });
 
   describe('Primitive Datatype Parsers', () => {
-    describe('getPrimitiveTypeJson/getPrimitiveTypeListJson', () => {
+    const EMPTY_STRING = '';
+    const SIBLING_ELEMENT_SIMPLE = {
+      id: 'id1234',
+      extension: [
+        {
+          id: 'extId',
+          url: 'testUrl',
+          valueString: 'extension string value',
+        },
+      ],
+    };
+    const EXPECTED_EXTENSION_SIMPLE = new Extension('testUrl', new StringType('extension string value'));
+    EXPECTED_EXTENSION_SIMPLE.setId('extId');
+
+    const SIBLING_ELEMENT_COMPLEX = {
+      extension: [
+        {
+          url: 'testUrl',
+          extension: [
+            {
+              id: 'childId1',
+              url: 'childUrl1',
+              valueString: 'child extension string value 1',
+            },
+            {
+              url: 'childUrl2',
+              valueString: 'child extension string value 2',
+            },
+          ],
+        },
+      ],
+    };
+    const EXPECTED_EXTENSION_COMPLEX = new Extension('testUrl');
+    const EXPECTED_EXTENSION_CHILD_1 = new Extension('childUrl1', new StringType('child extension string value 1'));
+    EXPECTED_EXTENSION_CHILD_1.setId('childId1');
+    const EXPECTED_EXTENSION_CHILD_2 = new Extension('childUrl2', new StringType('child extension string value 2'));
+    EXPECTED_EXTENSION_COMPLEX.setExtension([EXPECTED_EXTENSION_CHILD_1, EXPECTED_EXTENSION_CHILD_2]);
+
+    describe('getPrimitiveTypeJson', () => {
       it('should return PrimitiveTypeJson with undefined properties for empty json', () => {
         const sourceField = 'sourceField';
         const primitiveFieldName = 'primitiveFieldName';
@@ -477,15 +701,49 @@ describe('fhir-parsers', () => {
         let testType: PrimitiveTypeJson = getPrimitiveTypeJson({}, sourceField, primitiveFieldName, jsonType);
         expect(testType).toEqual(expected);
 
-        // @ts-expect-error: allow for testing
         testType = getPrimitiveTypeJson(undefined, sourceField, primitiveFieldName, jsonType);
         expect(testType).toEqual(expected);
 
-        // @ts-expect-error: allow for testing
         testType = getPrimitiveTypeJson(null, sourceField, primitiveFieldName, jsonType);
         expect(testType).toEqual(expected);
       });
 
+      it('should return PrimitiveTypeJson with without sibling Element', () => {
+        const resourceObj = {
+          resourceType: 'MockResource',
+          id: 'idR123',
+        };
+        const expected = { dtJson: 'idR123', dtSiblingJson: undefined };
+
+        const testType: PrimitiveTypeJson = getPrimitiveTypeJson(resourceObj, 'MockResource.id', 'id', 'string');
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(expected);
+      });
+
+      it('should return PrimitiveTypeJson with with sibling Element', () => {
+        const resourceObjSimple = {
+          resourceType: 'MockResource',
+          id: 'idR123',
+          _id: SIBLING_ELEMENT_SIMPLE,
+        };
+        const expectedSimple = { dtJson: 'idR123', dtSiblingJson: SIBLING_ELEMENT_SIMPLE };
+        let testType: PrimitiveTypeJson = getPrimitiveTypeJson(resourceObjSimple, 'MockResource.id', 'id', 'string');
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(expectedSimple);
+
+        const resourceObjComplex = {
+          resourceType: 'MockResource',
+          id: 'idR123',
+          _id: SIBLING_ELEMENT_COMPLEX,
+        };
+        const expectedComplex = { dtJson: 'idR123', dtSiblingJson: SIBLING_ELEMENT_COMPLEX };
+        testType = getPrimitiveTypeJson(resourceObjComplex, 'MockResource.id', 'id', 'string');
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(expectedComplex);
+      });
+    });
+
+    describe('getPrimitiveTypeListJson', () => {
       it('should return empty array for empty json', () => {
         const sourceField = 'sourceField';
         const primitiveFieldName = 'primitiveFieldName';
@@ -494,13 +752,42 @@ describe('fhir-parsers', () => {
         let testType: PrimitiveTypeJson[] = getPrimitiveTypeListJson({}, sourceField, primitiveFieldName, jsonType);
         expect(testType).toHaveLength(0);
 
-        // @ts-expect-error: allow for testing
         testType = getPrimitiveTypeListJson(undefined, sourceField, primitiveFieldName, jsonType);
         expect(testType).toHaveLength(0);
 
-        // @ts-expect-error: allow for testing
         testType = getPrimitiveTypeListJson(null, sourceField, primitiveFieldName, jsonType);
         expect(testType).toHaveLength(0);
+      });
+
+      it('should return PrimitiveTypeJson with without sibling Element', () => {
+        const resourceObj = {
+          resourceType: 'MockResource',
+          id: ['idR123', 'idR456'],
+        };
+        const expected = [
+          { dtJson: 'idR123', dtSiblingJson: undefined },
+          { dtJson: 'idR456', dtSiblingJson: undefined },
+        ];
+
+        const testType: PrimitiveTypeJson[] = getPrimitiveTypeListJson(resourceObj, 'MockResource.id', 'id', 'string');
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(expected);
+      });
+
+      it('should return PrimitiveTypeJson with with sibling Element', () => {
+        const resourceObj = {
+          resourceType: 'MockResource',
+          id: ['idR123', 'idR456', 'idR789'],
+          _id: [SIBLING_ELEMENT_SIMPLE, undefined, SIBLING_ELEMENT_COMPLEX],
+        };
+        const expected = [
+          { dtJson: 'idR123', dtSiblingJson: SIBLING_ELEMENT_SIMPLE },
+          { dtJson: 'idR456', dtSiblingJson: undefined },
+          { dtJson: 'idR789', dtSiblingJson: SIBLING_ELEMENT_COMPLEX },
+        ];
+        const testType: PrimitiveTypeJson[] = getPrimitiveTypeListJson(resourceObj, 'MockResource.id', 'id', 'string');
+        expect(testType).toBeDefined();
+        expect(testType).toEqual(expected);
       });
     });
 
@@ -509,18 +796,18 @@ describe('fhir-parsers', () => {
       const INVALID_BASE64BINARY = 'invalidBase64Binary';
 
       it('should return undefined for empty json', () => {
-        let testType = parseBase64BinaryType(EMPTY_STRING);
+        let testType = fhirParser.parseBase64BinaryType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseBase64BinaryType(undefined);
+        testType = fhirParser.parseBase64BinaryType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseBase64BinaryType(null);
+        testType = fhirParser.parseBase64BinaryType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return Base64BinaryType for valid json', () => {
-        const testType = parseBase64BinaryType(VALID_BASE64BINARY);
+        const testType = fhirParser.parseBase64BinaryType(VALID_BASE64BINARY);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(Base64BinaryType);
         expect(testType?.constructor.name).toStrictEqual('Base64BinaryType');
@@ -534,7 +821,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return Base64BinaryType for valid json with simple siblingJson', () => {
-        const testType = parseBase64BinaryType(VALID_BASE64BINARY, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseBase64BinaryType(VALID_BASE64BINARY, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(Base64BinaryType);
         expect(testType?.constructor.name).toStrictEqual('Base64BinaryType');
@@ -548,7 +835,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return Base64BinaryType for valid json with complex siblingJson', () => {
-        const testType = parseBase64BinaryType(VALID_BASE64BINARY, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseBase64BinaryType(VALID_BASE64BINARY, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(Base64BinaryType);
         expect(testType?.constructor.name).toStrictEqual('Base64BinaryType');
@@ -563,7 +850,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseBase64BinaryType(123);
+          fhirParser.parseBase64BinaryType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for Base64BinaryType is not a string`);
@@ -571,7 +858,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseBase64BinaryType(INVALID_BASE64BINARY);
+          fhirParser.parseBase64BinaryType(INVALID_BASE64BINARY);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for Base64BinaryType`);
@@ -582,15 +869,15 @@ describe('fhir-parsers', () => {
       const INVALID_BOOLEAN = 'invalidBoolean';
 
       it('should return undefined for empty json', () => {
-        let testType = parseBooleanType(undefined);
+        let testType = fhirParser.parseBooleanType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseBooleanType(null);
+        testType = fhirParser.parseBooleanType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return BooleanType for valid json', () => {
-        const testType = parseBooleanType(true);
+        const testType = fhirParser.parseBooleanType(true);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(BooleanType);
         expect(testType?.constructor.name).toStrictEqual('BooleanType');
@@ -604,7 +891,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return BooleanType for valid json with simple siblingJson', () => {
-        const testType = parseBooleanType(false, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseBooleanType(false, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(BooleanType);
         expect(testType?.constructor.name).toStrictEqual('BooleanType');
@@ -618,7 +905,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return BooleanType for valid json with complex siblingJson', () => {
-        const testType = parseBooleanType(false, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseBooleanType(false, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(BooleanType);
         expect(testType?.constructor.name).toStrictEqual('BooleanType');
@@ -633,7 +920,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseBooleanType(INVALID_BOOLEAN);
+          fhirParser.parseBooleanType(INVALID_BOOLEAN);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for BooleanType is not a boolean`);
@@ -645,18 +932,18 @@ describe('fhir-parsers', () => {
       const INVALID_CANONICAL = ' invalid Url ';
 
       it('should return undefined for empty json', () => {
-        let testType = parseCanonicalType(EMPTY_STRING);
+        let testType = fhirParser.parseCanonicalType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseCanonicalType(undefined);
+        testType = fhirParser.parseCanonicalType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseCanonicalType(null);
+        testType = fhirParser.parseCanonicalType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return CanonicalType for valid json', () => {
-        const testType = parseCanonicalType(VALID_CANONICAL);
+        const testType = fhirParser.parseCanonicalType(VALID_CANONICAL);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(CanonicalType);
         expect(testType?.constructor.name).toStrictEqual('CanonicalType');
@@ -670,7 +957,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return CanonicalType for valid json with simple siblingJson', () => {
-        const testType = parseCanonicalType(VALID_CANONICAL, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseCanonicalType(VALID_CANONICAL, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(CanonicalType);
         expect(testType?.constructor.name).toStrictEqual('CanonicalType');
@@ -684,7 +971,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return CanonicalType for valid json with complex siblingJson', () => {
-        const testType = parseCanonicalType(VALID_CANONICAL, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseCanonicalType(VALID_CANONICAL, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(CanonicalType);
         expect(testType?.constructor.name).toStrictEqual('CanonicalType');
@@ -699,7 +986,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseCanonicalType(123);
+          fhirParser.parseCanonicalType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for CanonicalType is not a string`);
@@ -707,7 +994,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseCanonicalType(INVALID_CANONICAL);
+          fhirParser.parseCanonicalType(INVALID_CANONICAL);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for CanonicalType`);
@@ -719,18 +1006,18 @@ describe('fhir-parsers', () => {
       const INVALID_CODE = ' invalid CodeType ';
 
       it('should return undefined for empty json', () => {
-        let testType = parseCodeType(EMPTY_STRING);
+        let testType = fhirParser.parseCodeType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseCodeType(undefined);
+        testType = fhirParser.parseCodeType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseCodeType(null);
+        testType = fhirParser.parseCodeType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return CodeType for valid json', () => {
-        const testType = parseCodeType(VALID_CODE);
+        const testType = fhirParser.parseCodeType(VALID_CODE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(CodeType);
         expect(testType?.constructor.name).toStrictEqual('CodeType');
@@ -744,7 +1031,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return CodeType for valid json with simple siblingJson', () => {
-        const testType = parseCodeType(VALID_CODE, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseCodeType(VALID_CODE, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(CodeType);
         expect(testType?.constructor.name).toStrictEqual('CodeType');
@@ -758,7 +1045,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return CodeType for valid json with complex siblingJson', () => {
-        const testType = parseCodeType(VALID_CODE, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseCodeType(VALID_CODE, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(CodeType);
         expect(testType?.constructor.name).toStrictEqual('CodeType');
@@ -773,7 +1060,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseCodeType(123);
+          fhirParser.parseCodeType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for CodeType is not a string`);
@@ -781,7 +1068,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseCodeType(INVALID_CODE);
+          fhirParser.parseCodeType(INVALID_CODE);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for CodeType`);
@@ -793,18 +1080,18 @@ describe('fhir-parsers', () => {
       const INVALID_DATETIME = `invalid date time`;
 
       it('should return undefined for empty json', () => {
-        let testType = parseDateTimeType(EMPTY_STRING);
+        let testType = fhirParser.parseDateTimeType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseDateTimeType(undefined);
+        testType = fhirParser.parseDateTimeType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseDateTimeType(null);
+        testType = fhirParser.parseDateTimeType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return DateTimeType for valid json', () => {
-        const testType = parseDateTimeType(VALID_DATETIME);
+        const testType = fhirParser.parseDateTimeType(VALID_DATETIME);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DateTimeType);
         expect(testType?.constructor.name).toStrictEqual('DateTimeType');
@@ -818,7 +1105,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return DateTimeType for valid json with simple siblingJson', () => {
-        const testType = parseDateTimeType(VALID_DATETIME, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseDateTimeType(VALID_DATETIME, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DateTimeType);
         expect(testType?.constructor.name).toStrictEqual('DateTimeType');
@@ -832,7 +1119,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return DateTimeType for valid json with complex siblingJson', () => {
-        const testType = parseDateTimeType(VALID_DATETIME, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseDateTimeType(VALID_DATETIME, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DateTimeType);
         expect(testType?.constructor.name).toStrictEqual('DateTimeType');
@@ -847,7 +1134,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseDateTimeType(123);
+          fhirParser.parseDateTimeType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for DateTimeType is not a string`);
@@ -855,7 +1142,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseDateTimeType(INVALID_DATETIME);
+          fhirParser.parseDateTimeType(INVALID_DATETIME);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for DateTimeType`);
@@ -867,18 +1154,18 @@ describe('fhir-parsers', () => {
       const INVALID_DATE = `invalid date`;
 
       it('should return undefined for empty json', () => {
-        let testType = parseDateType(EMPTY_STRING);
+        let testType = fhirParser.parseDateType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseDateType(undefined);
+        testType = fhirParser.parseDateType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseDateType(null);
+        testType = fhirParser.parseDateType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return DateType for valid json', () => {
-        const testType = parseDateType(VALID_DATE);
+        const testType = fhirParser.parseDateType(VALID_DATE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DateType);
         expect(testType?.constructor.name).toStrictEqual('DateType');
@@ -892,7 +1179,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return DateType for valid json with simple siblingJson', () => {
-        const testType = parseDateType(VALID_DATE, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseDateType(VALID_DATE, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DateType);
         expect(testType?.constructor.name).toStrictEqual('DateType');
@@ -906,7 +1193,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return DateType for valid json with complex siblingJson', () => {
-        const testType = parseDateType(VALID_DATE, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseDateType(VALID_DATE, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DateType);
         expect(testType?.constructor.name).toStrictEqual('DateType');
@@ -921,7 +1208,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseDateType(123);
+          fhirParser.parseDateType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for DateType is not a string`);
@@ -929,7 +1216,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseDateType(INVALID_DATE);
+          fhirParser.parseDateType(INVALID_DATE);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for DateType`);
@@ -941,15 +1228,15 @@ describe('fhir-parsers', () => {
       const INVALID_DECIMAL = Number.MAX_VALUE;
 
       it('should return undefined for empty json', () => {
-        let testType = parseDecimalType(undefined);
+        let testType = fhirParser.parseDecimalType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseDecimalType(null);
+        testType = fhirParser.parseDecimalType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return DecimalType for valid json', () => {
-        const testType = parseDecimalType(VALID_DECIMAL);
+        const testType = fhirParser.parseDecimalType(VALID_DECIMAL);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DecimalType);
         expect(testType?.constructor.name).toStrictEqual('DecimalType');
@@ -963,7 +1250,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return DecimalType for valid json with simple siblingJson', () => {
-        const testType = parseDecimalType(VALID_DECIMAL, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseDecimalType(VALID_DECIMAL, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DecimalType);
         expect(testType?.constructor.name).toStrictEqual('DecimalType');
@@ -977,7 +1264,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return DecimalType for valid json with complex siblingJson', () => {
-        const testType = parseDecimalType(VALID_DECIMAL, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseDecimalType(VALID_DECIMAL, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(DecimalType);
         expect(testType?.constructor.name).toStrictEqual('DecimalType');
@@ -992,7 +1279,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseDecimalType('abc');
+          fhirParser.parseDecimalType('abc');
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for DecimalType is not a number`);
@@ -1000,7 +1287,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseDecimalType(INVALID_DECIMAL);
+          fhirParser.parseDecimalType(INVALID_DECIMAL);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for DecimalType`);
@@ -1012,18 +1299,18 @@ describe('fhir-parsers', () => {
       const INVALID_ID = ' invalid Uri ';
 
       it('should return undefined for empty json', () => {
-        let testType = parseIdType(EMPTY_STRING);
+        let testType = fhirParser.parseIdType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseIdType(undefined);
+        testType = fhirParser.parseIdType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseIdType(null);
+        testType = fhirParser.parseIdType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return IdType for valid json', () => {
-        const testType = parseIdType(VALID_ID);
+        const testType = fhirParser.parseIdType(VALID_ID);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(IdType);
         expect(testType?.constructor.name).toStrictEqual('IdType');
@@ -1037,7 +1324,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return IdType for valid json with simple siblingJson', () => {
-        const testType = parseIdType(VALID_ID, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseIdType(VALID_ID, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(IdType);
         expect(testType?.constructor.name).toStrictEqual('IdType');
@@ -1051,7 +1338,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return IdType for valid json with complex siblingJson', () => {
-        const testType = parseIdType(VALID_ID, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseIdType(VALID_ID, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(IdType);
         expect(testType?.constructor.name).toStrictEqual('IdType');
@@ -1066,7 +1353,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseIdType(123);
+          fhirParser.parseIdType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for IdType is not a string`);
@@ -1074,7 +1361,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseIdType(INVALID_ID);
+          fhirParser.parseIdType(INVALID_ID);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for IdType`);
@@ -1086,18 +1373,18 @@ describe('fhir-parsers', () => {
       const INVALID_INSTANT = `invalid instant`;
 
       it('should return undefined for empty json', () => {
-        let testType = parseInstantType(EMPTY_STRING);
+        let testType = fhirParser.parseInstantType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseInstantType(undefined);
+        testType = fhirParser.parseInstantType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseInstantType(null);
+        testType = fhirParser.parseInstantType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return InstantType for valid json', () => {
-        const testType = parseInstantType(VALID_INSTANT);
+        const testType = fhirParser.parseInstantType(VALID_INSTANT);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(InstantType);
         expect(testType?.constructor.name).toStrictEqual('InstantType');
@@ -1111,7 +1398,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return InstantType for valid json with simple siblingJson', () => {
-        const testType = parseInstantType(VALID_INSTANT, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseInstantType(VALID_INSTANT, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(InstantType);
         expect(testType?.constructor.name).toStrictEqual('InstantType');
@@ -1125,7 +1412,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return InstantType for valid json with complex siblingJson', () => {
-        const testType = parseInstantType(VALID_INSTANT, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseInstantType(VALID_INSTANT, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(InstantType);
         expect(testType?.constructor.name).toStrictEqual('InstantType');
@@ -1140,7 +1427,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseInstantType(123);
+          fhirParser.parseInstantType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for InstantType is not a string`);
@@ -1148,7 +1435,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseInstantType(INVALID_INSTANT);
+          fhirParser.parseInstantType(INVALID_INSTANT);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for InstantType`);
@@ -1157,20 +1444,20 @@ describe('fhir-parsers', () => {
 
     describe('parseInteger64Type', () => {
       const VALID_INTEGER64 = BigInt(FHIR_MIN_INTEGER64);
-      const INVALID_INTEGER64 = BigInt(FHIR_MAX_INTEGER64) + 1n;
+      const INVALID_INTEGER64 = BigInt(FHIR_MAX_INTEGER64) + BigInt(1);
       const VALID_INTEGER64_JSON = String(VALID_INTEGER64);
       const INVALID_INTEGER64_JSON = String(INVALID_INTEGER64);
 
       it('should return undefined for empty json', () => {
-        let testType = parseInteger64Type(undefined);
+        let testType = fhirParser.parseInteger64Type(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseInteger64Type(null);
+        testType = fhirParser.parseInteger64Type(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return Integer64Type for valid json', () => {
-        const testType = parseInteger64Type(VALID_INTEGER64_JSON);
+        const testType = fhirParser.parseInteger64Type(VALID_INTEGER64_JSON);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(Integer64Type);
         expect(testType?.constructor.name).toStrictEqual('Integer64Type');
@@ -1184,7 +1471,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return Integer64Type for valid json with simple siblingJson', () => {
-        const testType = parseInteger64Type(VALID_INTEGER64_JSON, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseInteger64Type(VALID_INTEGER64_JSON, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(Integer64Type);
         expect(testType?.constructor.name).toStrictEqual('Integer64Type');
@@ -1198,7 +1485,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return Integer64Type for valid json with complex siblingJson', () => {
-        const testType = parseInteger64Type(VALID_INTEGER64_JSON, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseInteger64Type(VALID_INTEGER64_JSON, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(Integer64Type);
         expect(testType?.constructor.name).toStrictEqual('Integer64Type');
@@ -1213,7 +1500,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseInteger64Type(123);
+          fhirParser.parseInteger64Type(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for Integer64Type is not a string`);
@@ -1221,7 +1508,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseInteger64Type(INVALID_INTEGER64_JSON);
+          fhirParser.parseInteger64Type(INVALID_INTEGER64_JSON);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for Integer64Type`);
@@ -1233,15 +1520,15 @@ describe('fhir-parsers', () => {
       const INVALID_INTEGER = FHIR_MAX_INTEGER + 1;
 
       it('should return undefined for empty json', () => {
-        let testType = parseIntegerType(undefined);
+        let testType = fhirParser.parseIntegerType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseIntegerType(null);
+        testType = fhirParser.parseIntegerType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return IntegerType for valid json', () => {
-        const testType = parseIntegerType(VALID_INTEGER);
+        const testType = fhirParser.parseIntegerType(VALID_INTEGER);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(IntegerType);
         expect(testType?.constructor.name).toStrictEqual('IntegerType');
@@ -1255,7 +1542,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return IntegerType for valid json with simple siblingJson', () => {
-        const testType = parseIntegerType(VALID_INTEGER, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseIntegerType(VALID_INTEGER, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(IntegerType);
         expect(testType?.constructor.name).toStrictEqual('IntegerType');
@@ -1269,7 +1556,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return IntegerType for valid json with complex siblingJson', () => {
-        const testType = parseIntegerType(VALID_INTEGER, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseIntegerType(VALID_INTEGER, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(IntegerType);
         expect(testType?.constructor.name).toStrictEqual('IntegerType');
@@ -1284,7 +1571,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseIntegerType('abc');
+          fhirParser.parseIntegerType('abc');
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for IntegerType is not a number`);
@@ -1292,7 +1579,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseIntegerType(INVALID_INTEGER);
+          fhirParser.parseIntegerType(INVALID_INTEGER);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for IntegerType`);
@@ -1304,18 +1591,18 @@ describe('fhir-parsers', () => {
       const INVALID_MARKDOWN = TOO_BIG_STRING;
 
       it('should return undefined for empty json', () => {
-        let testType = parseMarkdownType(EMPTY_STRING);
+        let testType = fhirParser.parseMarkdownType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseMarkdownType(undefined);
+        testType = fhirParser.parseMarkdownType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseMarkdownType(null);
+        testType = fhirParser.parseMarkdownType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return MarkdownType for valid json', () => {
-        const testType = parseMarkdownType(VALID_MARKDOWN);
+        const testType = fhirParser.parseMarkdownType(VALID_MARKDOWN);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(MarkdownType);
         expect(testType?.constructor.name).toStrictEqual('MarkdownType');
@@ -1329,7 +1616,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return MarkdownType for valid json with simple siblingJson', () => {
-        const testType = parseMarkdownType(VALID_MARKDOWN, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseMarkdownType(VALID_MARKDOWN, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(MarkdownType);
         expect(testType?.constructor.name).toStrictEqual('MarkdownType');
@@ -1343,7 +1630,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return MarkdownType for valid json with complex siblingJson', () => {
-        const testType = parseMarkdownType(VALID_MARKDOWN, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseMarkdownType(VALID_MARKDOWN, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(MarkdownType);
         expect(testType?.constructor.name).toStrictEqual('MarkdownType');
@@ -1358,7 +1645,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseMarkdownType(123);
+          fhirParser.parseMarkdownType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for MarkdownType is not a string`);
@@ -1366,7 +1653,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseMarkdownType(INVALID_MARKDOWN);
+          fhirParser.parseMarkdownType(INVALID_MARKDOWN);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for MarkdownType`);
@@ -1378,18 +1665,18 @@ describe('fhir-parsers', () => {
       const INVALID_OID = '1.3.5.7.9';
 
       it('should return undefined for empty json', () => {
-        let testType = parseOidType(EMPTY_STRING);
+        let testType = fhirParser.parseOidType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseOidType(undefined);
+        testType = fhirParser.parseOidType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseOidType(null);
+        testType = fhirParser.parseOidType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return OidType for valid json', () => {
-        const testType = parseOidType(VALID_OID);
+        const testType = fhirParser.parseOidType(VALID_OID);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(OidType);
         expect(testType?.constructor.name).toStrictEqual('OidType');
@@ -1403,7 +1690,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return OidType for valid json with simple siblingJson', () => {
-        const testType = parseOidType(VALID_OID, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseOidType(VALID_OID, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(OidType);
         expect(testType?.constructor.name).toStrictEqual('OidType');
@@ -1417,7 +1704,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return OidType for valid json with complex siblingJson', () => {
-        const testType = parseOidType(VALID_OID, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseOidType(VALID_OID, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(OidType);
         expect(testType?.constructor.name).toStrictEqual('OidType');
@@ -1432,7 +1719,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseOidType(123);
+          fhirParser.parseOidType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for OidType is not a string`);
@@ -1440,7 +1727,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseOidType(INVALID_OID);
+          fhirParser.parseOidType(INVALID_OID);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for OidType`);
@@ -1452,15 +1739,15 @@ describe('fhir-parsers', () => {
       const INVALID_INTEGER = 0;
 
       it('should return undefined for empty json', () => {
-        let testType = parsePositiveIntType(undefined);
+        let testType = fhirParser.parsePositiveIntType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parsePositiveIntType(null);
+        testType = fhirParser.parsePositiveIntType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return PositiveIntType for valid json', () => {
-        const testType = parsePositiveIntType(VALID_INTEGER);
+        const testType = fhirParser.parsePositiveIntType(VALID_INTEGER);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(PositiveIntType);
         expect(testType?.constructor.name).toStrictEqual('PositiveIntType');
@@ -1474,7 +1761,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return PositiveIntType for valid json with simple siblingJson', () => {
-        const testType = parsePositiveIntType(VALID_INTEGER, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parsePositiveIntType(VALID_INTEGER, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(PositiveIntType);
         expect(testType?.constructor.name).toStrictEqual('PositiveIntType');
@@ -1488,7 +1775,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return PositiveIntType for valid json with complex siblingJson', () => {
-        const testType = parsePositiveIntType(VALID_INTEGER, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parsePositiveIntType(VALID_INTEGER, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(PositiveIntType);
         expect(testType?.constructor.name).toStrictEqual('PositiveIntType');
@@ -1503,7 +1790,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parsePositiveIntType('abc');
+          fhirParser.parsePositiveIntType('abc');
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for PositiveIntType is not a number`);
@@ -1511,7 +1798,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parsePositiveIntType(INVALID_INTEGER);
+          fhirParser.parsePositiveIntType(INVALID_INTEGER);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for PositiveIntType`);
@@ -1523,18 +1810,18 @@ describe('fhir-parsers', () => {
       const INVALID_STRING = TOO_BIG_STRING;
 
       it('should return undefined for empty json', () => {
-        let testType = parseStringType(EMPTY_STRING);
+        let testType = fhirParser.parseStringType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseStringType(undefined);
+        testType = fhirParser.parseStringType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseStringType(null);
+        testType = fhirParser.parseStringType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return StringType for valid json', () => {
-        const testType = parseStringType(VALID_STRING);
+        const testType = fhirParser.parseStringType(VALID_STRING);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(StringType);
         expect(testType?.constructor.name).toStrictEqual('StringType');
@@ -1548,7 +1835,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return StringType for valid json with simple siblingJson', () => {
-        const testType = parseStringType(VALID_STRING, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseStringType(VALID_STRING, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(StringType);
         expect(testType?.constructor.name).toStrictEqual('StringType');
@@ -1562,7 +1849,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return StringType for valid json with complex siblingJson', () => {
-        const testType = parseStringType(VALID_STRING, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseStringType(VALID_STRING, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(StringType);
         expect(testType?.constructor.name).toStrictEqual('StringType');
@@ -1577,7 +1864,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseStringType(123);
+          fhirParser.parseStringType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for StringType is not a string`);
@@ -1585,7 +1872,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseStringType(INVALID_STRING);
+          fhirParser.parseStringType(INVALID_STRING);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for StringType`);
@@ -1597,18 +1884,18 @@ describe('fhir-parsers', () => {
       const INVALID_TIME = `invalid time`;
 
       it('should return undefined for empty json', () => {
-        let testType = parseTimeType(EMPTY_STRING);
+        let testType = fhirParser.parseTimeType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseTimeType(undefined);
+        testType = fhirParser.parseTimeType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseTimeType(null);
+        testType = fhirParser.parseTimeType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return TimeType for valid json', () => {
-        const testType = parseTimeType(VALID_TIME);
+        const testType = fhirParser.parseTimeType(VALID_TIME);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(TimeType);
         expect(testType?.constructor.name).toStrictEqual('TimeType');
@@ -1622,7 +1909,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return TimeType for valid json with simple siblingJson', () => {
-        const testType = parseTimeType(VALID_TIME, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseTimeType(VALID_TIME, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(TimeType);
         expect(testType?.constructor.name).toStrictEqual('TimeType');
@@ -1636,7 +1923,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return TimeType for valid json with complex siblingJson', () => {
-        const testType = parseTimeType(VALID_TIME, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseTimeType(VALID_TIME, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(TimeType);
         expect(testType?.constructor.name).toStrictEqual('TimeType');
@@ -1651,7 +1938,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseTimeType(123);
+          fhirParser.parseTimeType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for TimeType is not a string`);
@@ -1659,7 +1946,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseTimeType(INVALID_TIME);
+          fhirParser.parseTimeType(INVALID_TIME);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for TimeType`);
@@ -1671,15 +1958,15 @@ describe('fhir-parsers', () => {
       const INVALID_INTEGER = -1;
 
       it('should return undefined for empty json', () => {
-        let testType = parseUnsignedIntType(undefined);
+        let testType = fhirParser.parseUnsignedIntType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseUnsignedIntType(null);
+        testType = fhirParser.parseUnsignedIntType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return UnsignedIntType for valid json', () => {
-        const testType = parseUnsignedIntType(VALID_INTEGER);
+        const testType = fhirParser.parseUnsignedIntType(VALID_INTEGER);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UnsignedIntType);
         expect(testType?.constructor.name).toStrictEqual('UnsignedIntType');
@@ -1693,7 +1980,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UnsignedIntType for valid json with simple siblingJson', () => {
-        const testType = parseUnsignedIntType(VALID_INTEGER, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseUnsignedIntType(VALID_INTEGER, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UnsignedIntType);
         expect(testType?.constructor.name).toStrictEqual('UnsignedIntType');
@@ -1707,7 +1994,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UnsignedIntType for valid json with complex siblingJson', () => {
-        const testType = parseUnsignedIntType(VALID_INTEGER, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseUnsignedIntType(VALID_INTEGER, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UnsignedIntType);
         expect(testType?.constructor.name).toStrictEqual('UnsignedIntType');
@@ -1722,7 +2009,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseUnsignedIntType('abc');
+          fhirParser.parseUnsignedIntType('abc');
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for UnsignedIntType is not a number`);
@@ -1730,7 +2017,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseUnsignedIntType(INVALID_INTEGER);
+          fhirParser.parseUnsignedIntType(INVALID_INTEGER);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for UnsignedIntType`);
@@ -1742,18 +2029,18 @@ describe('fhir-parsers', () => {
       const INVALID_URI = ' invalid Uri ';
 
       it('should return undefined for empty json', () => {
-        let testType = parseUriType(EMPTY_STRING);
+        let testType = fhirParser.parseUriType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseUriType(undefined);
+        testType = fhirParser.parseUriType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseUriType(null);
+        testType = fhirParser.parseUriType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return UriType for valid json', () => {
-        const testType = parseUriType(VALID_URI);
+        const testType = fhirParser.parseUriType(VALID_URI);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UriType);
         expect(testType?.constructor.name).toStrictEqual('UriType');
@@ -1767,7 +2054,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UriType for valid json with simple siblingJson', () => {
-        const testType = parseUriType(VALID_URI, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseUriType(VALID_URI, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UriType);
         expect(testType?.constructor.name).toStrictEqual('UriType');
@@ -1781,7 +2068,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UriType for valid json with complex siblingJson', () => {
-        const testType = parseUriType(VALID_URI, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseUriType(VALID_URI, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UriType);
         expect(testType?.constructor.name).toStrictEqual('UriType');
@@ -1796,7 +2083,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseUriType(123);
+          fhirParser.parseUriType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for UriType is not a string`);
@@ -1804,7 +2091,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseUriType(INVALID_URI);
+          fhirParser.parseUriType(INVALID_URI);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for UriType`);
@@ -1816,18 +2103,18 @@ describe('fhir-parsers', () => {
       const INVALID_URL = ' invalid Url ';
 
       it('should return undefined for empty json', () => {
-        let testType = parseUrlType(EMPTY_STRING);
+        let testType = fhirParser.parseUrlType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseUrlType(undefined);
+        testType = fhirParser.parseUrlType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseUrlType(null);
+        testType = fhirParser.parseUrlType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return UrlType for valid json', () => {
-        const testType = parseUrlType(VALID_URL);
+        const testType = fhirParser.parseUrlType(VALID_URL);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UrlType);
         expect(testType?.constructor.name).toStrictEqual('UrlType');
@@ -1841,7 +2128,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UrlType for valid json with simple siblingJson', () => {
-        const testType = parseUrlType(VALID_URL, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseUrlType(VALID_URL, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UrlType);
         expect(testType?.constructor.name).toStrictEqual('UrlType');
@@ -1855,7 +2142,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UrlType for valid json with complex siblingJson', () => {
-        const testType = parseUrlType(VALID_URL, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseUrlType(VALID_URL, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UrlType);
         expect(testType?.constructor.name).toStrictEqual('UrlType');
@@ -1870,7 +2157,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseUrlType(123);
+          fhirParser.parseUrlType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for UrlType is not a string`);
@@ -1878,7 +2165,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseUrlType(INVALID_URL);
+          fhirParser.parseUrlType(INVALID_URL);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for UrlType`);
@@ -1890,18 +2177,18 @@ describe('fhir-parsers', () => {
       const INVALID_UUID = '6AD7EDAD-8F73-4A43-9CCB-8D72679FFD9C';
 
       it('should return undefined for empty json', () => {
-        let testType = parseUuidType(EMPTY_STRING);
+        let testType = fhirParser.parseUuidType(EMPTY_STRING);
         expect(testType).toBeUndefined();
 
-        testType = parseUuidType(undefined);
+        testType = fhirParser.parseUuidType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseUuidType(null);
+        testType = fhirParser.parseUuidType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return UuidType for valid json', () => {
-        const testType = parseUuidType(VALID_UUID);
+        const testType = fhirParser.parseUuidType(VALID_UUID);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UuidType);
         expect(testType?.constructor.name).toStrictEqual('UuidType');
@@ -1915,7 +2202,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UuidType for valid json with simple siblingJson', () => {
-        const testType = parseUuidType(VALID_UUID, SIBLING_JSON_SIMPLE);
+        const testType = fhirParser.parseUuidType(VALID_UUID, SIBLING_ELEMENT_SIMPLE);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UuidType);
         expect(testType?.constructor.name).toStrictEqual('UuidType');
@@ -1929,7 +2216,7 @@ describe('fhir-parsers', () => {
       });
 
       it('should return UuidType for valid json with complex siblingJson', () => {
-        const testType = parseUuidType(VALID_UUID, SIBLING_JSON_COMPLEX);
+        const testType = fhirParser.parseUuidType(VALID_UUID, SIBLING_ELEMENT_COMPLEX);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(UuidType);
         expect(testType?.constructor.name).toStrictEqual('UuidType');
@@ -1944,7 +2231,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseUuidType(123);
+          fhirParser.parseUuidType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for UuidType is not a string`);
@@ -1952,7 +2239,7 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseUuidType(INVALID_UUID);
+          fhirParser.parseUuidType(INVALID_UUID);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for UuidType`);
@@ -1964,15 +2251,15 @@ describe('fhir-parsers', () => {
       const INVALID_XHTML = ' cannot start with whitespace';
 
       it('should return undefined for empty json', () => {
-        let testType = parseXhtmlType(undefined);
+        let testType = fhirParser.parseXhtmlType(undefined);
         expect(testType).toBeUndefined();
 
-        testType = parseXhtmlType(null);
+        testType = fhirParser.parseXhtmlType(null);
         expect(testType).toBeUndefined();
       });
 
       it('should return XhtmlType for valid json', () => {
-        const testType = parseXhtmlType(VALID_XHTML);
+        const testType = fhirParser.parseXhtmlType(VALID_XHTML);
         expect(testType).toBeDefined();
         expect(testType).toBeInstanceOf(XhtmlType);
         expect(testType?.constructor.name).toStrictEqual('XhtmlType');
@@ -1987,7 +2274,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for invalid json type', () => {
         const t = () => {
-          parseXhtmlType(123);
+          fhirParser.parseXhtmlType(123);
         };
         expect(t).toThrow(TypeError);
         expect(t).toThrow(`json argument for XhtmlType is not a string`);
@@ -1995,7 +2282,7 @@ describe('fhir-parsers', () => {
 
       it('should throw TypeError for adding an extension', () => {
         const t = () => {
-          parseXhtmlType(VALID_XHTML, SIBLING_JSON_SIMPLE);
+          fhirParser.parseXhtmlType(VALID_XHTML, SIBLING_ELEMENT_SIMPLE);
         };
         expect(t).toThrow(FhirError);
         expect(t).toThrow(`According to the FHIR specification, Extensions are not permitted on the xhtml type`);
@@ -2003,119 +2290,10 @@ describe('fhir-parsers', () => {
 
       it('should throw PrimitiveTypeError for invalid json value', () => {
         const t = () => {
-          parseXhtmlType(INVALID_XHTML);
+          fhirParser.parseXhtmlType(INVALID_XHTML);
         };
         expect(t).toThrow(PrimitiveTypeError);
         expect(t).toThrow(`Invalid value for XhtmlType`);
-      });
-    });
-  });
-
-  describe('Complex Datatype Parsers', () => {
-    describe('parsePolymorphicDataType', () => {
-      it('should return undefined for empty json', () => {
-        const sourceField = 'sourceField';
-        const fieldName = 'fieldName';
-
-        let testType: DataType | undefined = parsePolymorphicDataType({}, sourceField, fieldName, null);
-        expect(testType).toBeUndefined();
-
-        // @ts-expect-error: allow for testing
-        testType = parsePolymorphicDataType(undefined, sourceField, fieldName, null);
-        expect(testType).toBeUndefined();
-
-        // @ts-expect-error: allow for testing
-        testType = parsePolymorphicDataType(null, sourceField, fieldName, null);
-        expect(testType).toBeUndefined();
-      });
-
-      it('should throw AssertionError for missing arguments', () => {
-        const sourceField = 'sourceField';
-        const fieldName = 'fieldName';
-        const dummyMeta: DecoratorMetadataObject = { ChoiceDatatypes: { fieldName: ['id', 'string'] } };
-
-        let t = () => {
-          parsePolymorphicDataType({ bogusJson: true }, sourceField, fieldName, dummyMeta);
-        };
-        expect(t).not.toThrow(AssertionError);
-
-        t = () => {
-          // @ts-expect-error: allow for testing
-          parsePolymorphicDataType({ bogusJson: true }, undefined, fieldName, null);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The sourceField argument is undefined/null.`);
-
-        t = () => {
-          // @ts-expect-error: allow for testing
-          parsePolymorphicDataType({ bogusJson: true }, sourceField, undefined, null);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The fieldName argument is undefined/null.`);
-
-        t = () => {
-          // @ts-expect-error: allow for testing
-          parsePolymorphicDataType({ bogusJson: true }, sourceField, fieldName, undefined);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The metadata argument is undefined/null.`);
-
-        t = () => {
-          parsePolymorphicDataType({ bogusJson: true }, sourceField, fieldName, null);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The metadata argument is undefined/null.`);
-      });
-    });
-
-    describe('parseOpenDataType', () => {
-      const dummyMeta: DecoratorMetadataObject = { OpenDatatypeFields: ['fieldName'] };
-
-      it('should return undefined for empty json', () => {
-        const sourceField = 'sourceField';
-        const fieldName = 'fieldName';
-
-        let testType: DataType | undefined = parseOpenDataType({}, sourceField, fieldName, dummyMeta);
-        expect(testType).toBeUndefined();
-
-        // @ts-expect-error: allow for testing
-        testType = parseOpenDataType(undefined, sourceField, fieldName, dummyMeta);
-        expect(testType).toBeUndefined();
-
-        // @ts-expect-error: allow for testing
-        testType = parseOpenDataType(null, sourceField, fieldName, dummyMeta);
-        expect(testType).toBeUndefined();
-      });
-
-      it('should throw AssertionError for missing arguments', () => {
-        const jsonObj = { bogusJson: true };
-        const sourceField = 'sourceField';
-        const fieldName = 'fieldName';
-
-        let t = () => {
-          parseOpenDataType(jsonObj, sourceField, fieldName, dummyMeta);
-        };
-        expect(t).not.toThrow(AssertionError);
-
-        t = () => {
-          // @ts-expect-error: allow for testing
-          parseOpenDataType(jsonObj, undefined, fieldName, dummyMeta);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The sourceField argument is undefined/null.`);
-
-        t = () => {
-          // @ts-expect-error: allow for testing
-          parseOpenDataType(jsonObj, sourceField, undefined, dummyMeta);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The fieldName argument is undefined/null.`);
-
-        t = () => {
-          parseOpenDataType(jsonObj, sourceField, fieldName, null);
-        };
-        expect(t).toThrow(AssertionError);
-        expect(t).toThrow(`The metadata argument is undefined/null.`);
       });
     });
   });

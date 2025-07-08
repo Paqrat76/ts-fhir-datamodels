@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirOid, fhirOidSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Oid Class
@@ -40,7 +41,7 @@ import { fhirOid, fhirOidSchema, parseFhirPrimitiveData } from './primitive-type
  * @category Datatypes: Primitive
  * @see [FHIR oid](http://hl7.org/fhir/StructureDefinition/oid)
  */
-export class OidType extends PrimitiveType<fhirOid> {
+export class OidType extends PrimitiveType<fhirOid> implements IPrimitiveType<fhirOid> {
   /**
    * @param value - the value of the primitive `fhirOid`
    * @throws PrimitiveTypeError for invalid value

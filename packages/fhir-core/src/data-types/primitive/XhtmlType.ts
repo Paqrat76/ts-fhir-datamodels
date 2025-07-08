@@ -21,10 +21,11 @@
  *
  */
 
-import { Extension, PrimitiveType } from '../../base-models/core-fhir-models';
+import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { FhirError } from '../../errors/FhirError';
 import { isDefined, isDefinedList } from '../../utility/type-guards';
 import { fhirXhtml, fhirXhtmlSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IExtension, IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Xhtml Class
@@ -43,7 +44,7 @@ import { fhirXhtml, fhirXhtmlSchema, parseFhirPrimitiveData } from './primitive-
  * @category Datatypes: Primitive
  * @see [FHIR xhtml](http://hl7.org/fhir/StructureDefinition/xhtml)
  */
-export class XhtmlType extends PrimitiveType<fhirXhtml> {
+export class XhtmlType extends PrimitiveType<fhirXhtml> implements IPrimitiveType<fhirXhtml> {
   private readonly EXTENSION_ERROR =
     'According to the FHIR specification, Extensions are not permitted on the xhtml type';
 
@@ -57,12 +58,12 @@ export class XhtmlType extends PrimitiveType<fhirXhtml> {
     this.assignExtension(undefined);
   }
 
-  public override setExtension(extension: Extension[] | undefined): this {
+  public override setExtension(extension: IExtension[] | undefined): this {
     this.assignExtension(extension);
     return this;
   }
 
-  public override addExtension(extension?: Extension): this {
+  public override addExtension(extension?: IExtension): this {
     if (extension !== undefined) {
       throw new FhirError(this.EXTENSION_ERROR);
     }
@@ -111,8 +112,8 @@ export class XhtmlType extends PrimitiveType<fhirXhtml> {
     }
   }
 
-  private assignExtension(extension: Extension[] | undefined): void {
-    if (isDefinedList<Extension>(extension)) {
+  private assignExtension(extension: IExtension[] | undefined): void {
+    if (isDefinedList<IExtension>(extension)) {
       throw new FhirError(this.EXTENSION_ERROR);
     }
     super.setExtension(undefined);

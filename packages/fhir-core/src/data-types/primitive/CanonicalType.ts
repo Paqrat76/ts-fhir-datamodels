@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirCanonical, fhirCanonicalSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Canonical Class
@@ -39,7 +40,7 @@ import { fhirCanonical, fhirCanonicalSchema, parseFhirPrimitiveData } from './pr
  * @category Datatypes: Primitive
  * @see [FHIR canonical](http://hl7.org/fhir/StructureDefinition/canonical)
  */
-export class CanonicalType extends PrimitiveType<fhirCanonical> {
+export class CanonicalType extends PrimitiveType<fhirCanonical> implements IPrimitiveType<fhirCanonical> {
   /**
    * @param value - the value of the primitive `fhirCanonical`
    * @throws PrimitiveTypeError for invalid value

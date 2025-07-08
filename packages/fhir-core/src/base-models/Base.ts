@@ -22,7 +22,7 @@
  */
 
 import * as JSON from '../utility/json-helpers';
-import { IBase } from './IBase';
+import { IBase } from './library-interfaces';
 
 /**
  * Abstract Base Class
@@ -80,17 +80,32 @@ export abstract class Base implements IBase {
   /**
    * Creates a copy of the current instance.
    *
+   * @privateRemarks
+   * Base specification returning `any` is reasonable since all implementing classes will be generated
+   * and this method will be overridden by the generated class.
+   *
    * @returns the a new instance copied from the current instance
    */
-  public abstract copy(): Base;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public abstract copy(): any;
 
   /**
    * Copies the current instance's elements into the provided object.
    *
+   * @privateRemarks
+   * Base specification returning `any` is reasonable since all implementing classes will be generated
+   * and this method will be overridden by the generated class.
+   *
    * @param dest - the copied instance
    * @protected
    */
-  protected abstract copyValues(dest: Base): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected abstract copyValues(dest: any): void;
+
+  /**
+   * @returns the JSON value
+   */
+  public abstract toJSON(): JSON.Value | undefined;
 
   /**
    * @returns `true` if the instance is a FHIR resource; `false` otherwise
@@ -147,9 +162,4 @@ export abstract class Base implements IBase {
   public isDateTimePrimitive(): boolean {
     return false;
   }
-
-  /**
-   * @returns the JSON value
-   */
-  public abstract toJSON(): JSON.Value | undefined;
 }

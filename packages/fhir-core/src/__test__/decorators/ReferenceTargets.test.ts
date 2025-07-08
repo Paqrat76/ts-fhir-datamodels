@@ -50,19 +50,6 @@ describe('ReferenceTargets', () => {
     );
   });
 
-  it('should throw AssertionError with invalid resource in ReferenceTargets', () => {
-    const testRelativeRef = 'Organization/1234';
-    const testReference = new Reference().setReference(testRelativeRef);
-    const testMockTaskR1 = new MockTaskR1();
-    const t = () => {
-      testMockTaskR1.setMyReferenceProperty4(testReference);
-    };
-    expect(t).toThrow(AssertionError);
-    expect(t).toThrow(
-      `ReferenceTargets decorator on setMyReferenceProperty4 (MockTaskR1.myReferenceProperty4) contains invalid referenceTargets`,
-    );
-  });
-
   it('should throw AssertionError with invalid method argument type', () => {
     const testRelativeRef = 'Identifier/1234';
     const testIdentifier = new Identifier().setValue(testRelativeRef);

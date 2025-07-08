@@ -31,6 +31,7 @@ import {
 import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
 import { fhirInstant, fhirInstantSchema, InstantTypeImpl, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Instant Class
@@ -47,7 +48,7 @@ import { fhirInstant, fhirInstantSchema, InstantTypeImpl, parseFhirPrimitiveData
  * @category Datatypes: Primitive
  * @see [FHIR instant](http://hl7.org/fhir/StructureDefinition/instant)
  */
-export class InstantType extends PrimitiveType<fhirInstant> implements InstantTypeImpl {
+export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiveType<fhirInstant>, InstantTypeImpl {
   /**
    * @param value - the value of the primitive `fhirInstant`
    * @throws PrimitiveTypeError for invalid value

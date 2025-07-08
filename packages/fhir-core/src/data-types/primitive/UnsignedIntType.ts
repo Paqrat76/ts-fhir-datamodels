@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirUnsignedInt, fhirUnsignedIntSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * UnsignedInt Class
@@ -39,7 +40,7 @@ import { fhirUnsignedInt, fhirUnsignedIntSchema, parseFhirPrimitiveData } from '
  * @category Datatypes: Primitive
  * @see [FHIR unsignedInt](http://hl7.org/fhir/StructureDefinition/unsignedInt)
  */
-export class UnsignedIntType extends PrimitiveType<fhirUnsignedInt> {
+export class UnsignedIntType extends PrimitiveType<fhirUnsignedInt> implements IPrimitiveType<fhirUnsignedInt> {
   /**
    * @param value - the value of the primitive `fhirUnsignedInt`
    * @throws PrimitiveTypeError for invalid value

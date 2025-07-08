@@ -23,7 +23,6 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, PrimitiveType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { IBase } from '../../base-models/IBase';
 import {
   INSTANCE_EMPTY_ERROR_MSG,
   REQUIRED_PROPERTIES_DO_NOT_EXIST,
@@ -41,10 +40,13 @@ import {
 import { XhtmlType } from '../primitive/XhtmlType';
 import { FhirError } from '../../errors/FhirError';
 import { isEmpty } from '../../utility/common-util';
-import { getPrimitiveTypeJson, parseCodeType, parseXhtmlType, processElementJson } from '../../utility/fhir-parsers';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, assertIsDefined, isDefined } from '../../utility/type-guards';
+import { INarrative } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -69,7 +71,7 @@ import { assertFhirType, assertIsDefined, isDefined } from '../../utility/type-g
  * @category Datatypes: Complex
  * @see [FHIR Narrative](http://hl7.org/fhir/StructureDefinition/Narrative)
  */
-export class Narrative extends DataType implements IBase {
+export class Narrative extends DataType implements INarrative {
   /**
    * @param status - The status of the narrative
    * @param div - The actual narrative content, a stripped down version of XHTML
@@ -110,7 +112,9 @@ export class Narrative extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Narrative';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Narrative(null, null);
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -128,7 +132,7 @@ export class Narrative extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: CodeType | undefined = parseCodeType(dtJson, dtSiblingJson);
+      const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
         missingReqdProperties.push(`${source}.status`);
       } else {
@@ -148,7 +152,7 @@ export class Narrative extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: XhtmlType | undefined = parseXhtmlType(dtJson, dtSiblingJson);
+      const datatype: XhtmlType | undefined = fhirParser.parseXhtmlType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
         missingReqdProperties.push(sourceField);
       } else {

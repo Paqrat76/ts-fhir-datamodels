@@ -23,7 +23,7 @@
 
 import { FhirCodeDefinition } from '../../../base-models/core-fhir-codes';
 import { InvalidCodeError } from '../../../errors/InvalidCodeError';
-import { IdentifierUseEnum } from '../../../data-types/code-systems/IdentiferUseEnum';
+import { IdentifierUseEnum } from '../../../data-types/code-systems/IdentifierUseEnum';
 
 describe('IdentifierUseEnum', () => {
   const INVALID_CODE = ' invalid CodeType ';

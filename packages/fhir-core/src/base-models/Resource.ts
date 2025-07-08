@@ -37,9 +37,8 @@
  */
 
 import { Base } from './Base';
+import { IMeta, IResource } from './library-interfaces';
 import { setFhirComplexJson, setFhirPrimitiveJson } from './core-fhir-models';
-import { FhirResourceType, RESOURCE_TYPES } from './FhirResourceType';
-import { IBase } from './IBase';
 import { Meta } from '../data-types/complex/Meta';
 import { CodeType } from '../data-types/primitive/CodeType';
 import { IdType } from '../data-types/primitive/IdType';
@@ -66,7 +65,9 @@ import { strict as assert } from 'node:assert';
  * @remarks
  * This is the base resource type for everything.
  *
- * This specification defines a series of different types of resource that can be used to exchange and/or store data in order to solve a wide range of healthcare related problems, both clinical and administrative. In addition, this specification defines several different ways of exchanging the resources.
+ * This specification defines a series of different types of resource that can be used to exchange and/or store data
+ * to solve a wide range of healthcare-related problems, both clinical and administrative. In addition, this
+ * specification defines several different ways of exchanging the resources.
  *
  * A resource is an entity that:
  * - has a known identity (a URL) by which it can be addressed
@@ -85,7 +86,7 @@ import { strict as assert } from 'node:assert';
  * @category Base Models
  * @see [FHIR Resource](http://hl7.org/fhir/StructureDefinition/Resource)
  */
-export abstract class Resource extends Base implements IBase {
+export abstract class Resource extends Base implements IResource {
   protected constructor() {
     super();
   }
@@ -102,7 +103,7 @@ export abstract class Resource extends Base implements IBase {
    * @abstract
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static parse(_sourceJson: JSON.Object, _optSourceField?: string): Resource | undefined {
+  public static parse(_sourceJson: JSON.Object, _optSourceField?: string): IResource | undefined {
     throw new Error(
       'parse() not implemented in abstract Resource - must be implemented in subclass of Resource/DomainResource',
     );
@@ -111,7 +112,9 @@ export abstract class Resource extends Base implements IBase {
   /**
    * @returns the FHIR resource type as defined by the FHIR specification
    */
-  public abstract resourceType(): FhirResourceType;
+  public resourceType(): string {
+    return this.fhirType();
+  }
 
   /**
    * Resource.id Element
@@ -140,7 +143,7 @@ export abstract class Resource extends Base implements IBase {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private meta?: Meta | undefined;
+  private meta?: IMeta | undefined;
 
   /**
    * Resource.implicitRules Element
@@ -232,8 +235,8 @@ export abstract class Resource extends Base implements IBase {
   /**
    * @returns the `meta` property value as a Meta
    */
-  public getMeta(): Meta {
-    return this.meta ?? new Meta();
+  public getMeta(): IMeta {
+    return this.meta ?? (new Meta() as IMeta);
   }
 
   /**
@@ -242,7 +245,7 @@ export abstract class Resource extends Base implements IBase {
    * @param value - the `meta` value
    * @returns this
    */
-  public setMeta(value: Meta | undefined): this {
+  public setMeta(value: IMeta | undefined): this {
     const optErrMsg = `Invalid Resource.meta; Provided value is not an instance of Meta.`;
     assertFhirType<Meta>(value, Meta, optErrMsg);
     this.meta = value;
@@ -253,7 +256,7 @@ export abstract class Resource extends Base implements IBase {
    * @returns `true` if the `meta` property exists and has a value; `false` otherwise
    */
   public hasMeta(): boolean {
-    return isDefined<Meta>(this.meta) && !this.meta.isEmpty();
+    return isDefined<IMeta>(this.meta) && !this.meta.isEmpty();
   }
 
   /**
@@ -395,7 +398,7 @@ export abstract class Resource extends Base implements IBase {
    */
   protected copyValues(dest: Resource): void {
     dest.id = this.id?.copy();
-    dest.meta = this.meta?.copy();
+    dest.meta = this.meta ? (this.meta.copy() as unknown as IMeta) : undefined;
     dest.implicitRules = this.implicitRules?.copy();
     dest.language = this.language?.copy();
   }
@@ -445,13 +448,9 @@ export abstract class Resource extends Base implements IBase {
 export function assertFhirResourceType(
   classInstance: unknown,
   errorMessage?: string,
-): asserts classInstance is Resource {
+): asserts classInstance is IResource {
   if (!(classInstance instanceof Resource)) {
     const errMsg = errorMessage ?? `Provided instance is not an instance of Resource.`;
-    throw new InvalidTypeError(errMsg);
-  }
-  if (!RESOURCE_TYPES.includes(classInstance.resourceType())) {
-    const errMsg = errorMessage ?? `Provided instance (${classInstance.resourceType()}) is not a valid resource type.`;
     throw new InvalidTypeError(errMsg);
   }
 }
@@ -467,8 +466,8 @@ export function assertFhirResourceType(
  *
  * @category Utilities: JSON
  */
-export function setFhirResourceJson(resource: Resource, propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<Resource>(resource, 'Provided resource is undefined/null');
+export function setFhirResourceJson(resource: IResource, propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IResource>(resource, 'Provided resource is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assert(!_isEmpty(propName), 'Provided propName is empty');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
@@ -493,8 +492,8 @@ export function setFhirResourceJson(resource: Resource, propName: string, jsonOb
  *
  * @category Utilities: JSON
  */
-export function setFhirResourceListJson(resources: Resource[], propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<Resource[]>(resources, 'Provided resources is undefined/null');
+export function setFhirResourceListJson(resources: IResource[], propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IResource[]>(resources, 'Provided resources is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assert(!_isEmpty(propName), 'Provided propName is empty');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');

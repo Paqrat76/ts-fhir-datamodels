@@ -27,12 +27,11 @@
  * @module
  */
 
-import { Base } from '../base-models/Base';
-import { IBase } from '../base-models/IBase';
 import { fhirUriSchema } from '../data-types/primitive/primitive-types';
 import { isEmpty, isNonBlank } from './common-util';
 import { assertIsDefined, assertIsString, isDefined, isDefinedList } from './type-guards';
 import { strict as assert } from 'node:assert';
+import { IBase } from '../base-models/library-interfaces';
 
 /**
  * Determine if all the provided elements are empty
@@ -115,11 +114,11 @@ export function extractFieldName(sourceField: string): string {
  *
  * @category Utilities
  */
-export function copyListValues<T extends Base>(source: T[] | undefined | null): T[] {
+export function copyListValues<T extends IBase>(source: T[] | undefined | null): T[] {
   const target = [] as T[];
   if (isDefinedList<T>(source)) {
     for (const srcItem of source) {
-      const copyValue = srcItem.copy() as T;
+      const copyValue = srcItem.copy() as unknown as T;
       target.push(copyValue);
     }
   }

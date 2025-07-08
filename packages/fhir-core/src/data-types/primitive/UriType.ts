@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirUri, fhirUriSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Uri Class
@@ -40,7 +41,7 @@ import { fhirUri, fhirUriSchema, parseFhirPrimitiveData } from './primitive-type
  * @category Datatypes: Primitive
  * @see [FHIR uri](http://hl7.org/fhir/StructureDefinition/uri)
  */
-export class UriType extends PrimitiveType<fhirUri> {
+export class UriType extends PrimitiveType<fhirUri> implements IPrimitiveType<fhirUri> {
   /**
    * @param value - the value of the primitive `fhirUri`
    * @throws PrimitiveTypeError for invalid value

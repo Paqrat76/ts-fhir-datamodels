@@ -21,30 +21,40 @@
  *
  */
 
-import { Base } from '../base-models/Base';
 import { FhirCodeDefinition, IFhirCodeDefinition, IFhirCodeEnum } from '../base-models/core-fhir-codes';
+import {
+  IBackboneElement,
+  IBackboneType,
+  IBase,
+  IDataType,
+  IDomainResource,
+  IPrimitiveType,
+  IResource,
+} from '../base-models/library-interfaces';
+import { Base } from '../base-models/Base';
 import {
   BackboneElement,
   BackboneType,
   DataType,
-  Element,
   Extension,
   setFhirComplexJson,
   setFhirPrimitiveJson,
 } from '../base-models/core-fhir-models';
-import { DomainResource } from '../base-models/DomainResource';
-import { FhirResourceType } from '../base-models/FhirResourceType';
 import { Resource } from '../base-models/Resource';
-// import { Meta } from '../data-types/complex/Meta';
-// import { Narrative } from '../data-types/complex/Narrative';
-// import { Period } from '../data-types/complex/Period';
+import { DomainResource } from '../base-models/DomainResource';
 import { IntegerType } from '../data-types/primitive/IntegerType';
 import { FHIR_MAX_STRING_LENGTH, fhirCode, fhirString } from '../data-types/primitive/primitive-types';
 import { StringType } from '../data-types/primitive/StringType';
 import { InvalidCodeError } from '../errors/InvalidCodeError';
-import { isEmpty as _isEmpty } from '../utility/common-util';
+import { isEmpty, isEmpty as _isEmpty } from '../utility/common-util';
 import * as JSON from '../utility/json-helpers';
 import { isElementEmpty } from '../utility/fhir-util';
+import { assertIsDefined, isDefined } from '../utility/type-guards';
+import { strict as assert } from 'node:assert';
+import { InvalidTypeError } from '../errors/InvalidTypeError';
+import { FhirParser, getPrimitiveTypeJson, ParsableResource } from '../utility/FhirParser';
+import { PARSABLE_DATATYPE_MAP } from '../base-models/parsable-datatype-map';
+import { INSTANCE_EMPTY_ERROR_MSG } from '../constants';
 
 export {
   FHIR_MIN_INTEGER,
@@ -67,8 +77,8 @@ export {
 // export const VALID_CODE_GENERATED = `generated`;
 // export const VALID_XHTML = '<div xmlns="http://www.w3.org/1999/xhtml">text</div>';
 // export const VALID_NARRATIVE = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
-export const VALID_EXTENSION = new Extension('extUrl', new StringType('Extension string value'));
-export const VALID_MODIFIER_EXTENSION = new Extension('modExtUrl', new StringType('ModifierExtension string value'));
+// export const VALID_EXTENSION = new Extension('extUrl', new StringType('Extension string value'));
+// export const VALID_MODIFIER_EXTENSION = new Extension('modExtUrl', new StringType('ModifierExtension string value'));
 
 // export const VALID_ID_2 = 'id67890';
 // export const VALID_ID_TYPE_2 = new IdType(VALID_ID_2);
@@ -80,18 +90,18 @@ export const VALID_MODIFIER_EXTENSION = new Extension('modExtUrl', new StringTyp
 // export const VALID_CODE_GENERATED_2 = `generated`;
 // export const VALID_XHTML_2 = '<div xmlns="http://www.w3.org/1999/xhtml">text two</div>';
 // export const VALID_NARRATIVE_2 = new Narrative(VALID_CODE_GENERATED_2, VALID_XHTML_2);
-export const VALID_EXTENSION_2 = new Extension('extUrl2', new StringType('Extension string value 2'));
-export const VALID_MODIFIER_EXTENSION_2 = new Extension(
-  'modExtUrl2',
-  new StringType('ModifierExtension string value 2'),
-);
+// export const VALID_EXTENSION_2 = new Extension('extUrl2', new StringType('Extension string value 2'));
+// export const VALID_MODIFIER_EXTENSION_2 = new Extension(
+//   'modExtUrl2',
+//   new StringType('ModifierExtension string value 2'),
+// );
 
 /**
  * Property values used for datatype testing for Element.id and Element.extension
  */
 
-export const DATATYPE_ID = 'DT-1357';
-export const DATATYPE_EXTENSION = new Extension('datatypeUrl', new StringType('datatype extension string value'));
+// export const DATATYPE_ID = 'DT-1357';
+// export const DATATYPE_EXTENSION = new Extension('datatypeUrl', new StringType('datatype extension string value'));
 
 export const UNDEFINED_VALUE = undefined;
 
@@ -100,8 +110,7 @@ export const UNDEFINED_VALUE = undefined;
  */
 
 export const INVALID_CODE_VALUE = ' Invalid code ';
-export const INVALID_CODE_TYPE = new StringType(INVALID_CODE_VALUE);
-export const INVALID_BASE64BINARY = 'invalidBase64Binary';
+// export const INVALID_CODE_TYPE = new StringType(INVALID_CODE_VALUE);
 export const INVALID_NON_STRING_TYPE_VALUE = 'Invalid datatype';
 export const INVALID_NON_STRING_TYPE = new StringType(INVALID_NON_STRING_TYPE_VALUE);
 export const INVALID_STRING_TYPE_VALUE = 12345;
@@ -128,7 +137,7 @@ export function getString(maxLength: number): string {
  * Mock objects used in testing
  */
 
-export class MockBase extends Base {
+export class MockBase extends Base implements IBase {
   public mockValue: string | undefined = undefined;
 
   constructor(value?: string) {
@@ -162,7 +171,7 @@ export class MockBase extends Base {
   }
 }
 
-export class MockElement extends Element {
+export class MockElement extends DataType implements IDataType {
   constructor(id?: fhirString, extension?: Extension[]) {
     super();
     if (id !== undefined) {
@@ -171,6 +180,10 @@ export class MockElement extends Element {
     if (extension !== undefined) {
       super.setExtension(extension);
     }
+  }
+
+  public override isDataType(): boolean {
+    return true;
   }
 
   public override isEmpty(): boolean {
@@ -184,7 +197,7 @@ export class MockElement extends Element {
   }
 }
 
-export class MockBackboneElement extends BackboneElement {
+export class MockBackboneElement extends BackboneElement implements IBackboneElement {
   constructor(modifierExtension?: Extension[]) {
     super();
     if (modifierExtension !== undefined) {
@@ -203,7 +216,7 @@ export class MockBackboneElement extends BackboneElement {
   }
 }
 
-export class MockBackboneType extends BackboneType {
+export class MockBackboneType extends BackboneType implements IBackboneType {
   constructor(modifierExtension?: Extension[]) {
     super();
     if (modifierExtension !== undefined) {
@@ -222,7 +235,7 @@ export class MockBackboneType extends BackboneType {
   }
 }
 
-export class MockFhirModel extends Base {
+export class MockFhirModel extends Base implements IBase {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -245,7 +258,7 @@ export class MockFhirModel extends Base {
 
   // NOT USED
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected copyValues(dest: MockFhirModel): void {
+  protected copyValues(_dest: MockFhirModel): void {
     return;
   }
 
@@ -255,15 +268,14 @@ export class MockFhirModel extends Base {
   }
 }
 
-export class MockResource extends Resource {
+export class MockResource extends Resource implements IResource {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
   }
 
-  public resourceType(): FhirResourceType {
-    // @ts-expect-error: allow for testing purposes
-    return 'Resource';
+  public override resourceType(): string {
+    return 'MockResource';
   }
 
   public fhirType(): string {
@@ -283,7 +295,7 @@ export class MockResource extends Resource {
 
   // NOT USED
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected copyValues(dest: MockResource): void {
+  protected override copyValues(_dest: MockResource): void {
     return;
   }
 
@@ -294,7 +306,7 @@ export class MockResource extends Resource {
   }
 }
 
-export class MockTask extends DomainResource {
+export class MockTask extends DomainResource implements IDomainResource {
   public mockPrimitive: StringType | undefined = undefined;
   public mockComplex: MockComplexDataType | undefined = undefined;
 
@@ -308,8 +320,37 @@ export class MockTask extends DomainResource {
     }
   }
 
-  public resourceType(): FhirResourceType {
-    return 'Task';
+  public override resourceType(): string {
+    return 'MockTask';
+  }
+
+  // For this mock, only parse the mockPrimitive
+  public static override parse(sourceJson: JSON.Value, optSourceField?: string): MockTask | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+    const source = isDefined<string>(optSourceField) ? optSourceField : 'MockTask';
+    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+    const instance = new MockTask();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processDomainResourceJson(instance, datatypeJsonObj);
+
+    const fieldName = 'mockPrimitive';
+    const sourceField = `${source}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in datatypeJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
+        datatypeJsonObj,
+        sourceField,
+        fieldName,
+        primitiveJsonType,
+      );
+      instance.mockPrimitive = fhirParser.parseStringType(dtJson, dtSiblingJson);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
   }
 
   public fhirType(): string {
@@ -351,7 +392,7 @@ export class MockTask extends DomainResource {
   }
 }
 
-export class MockComplexDataType extends DataType {
+export class MockComplexDataType extends DataType implements IDataType {
   public mockSystem: StringType | undefined = undefined;
   public mockCode: StringType | undefined = undefined;
 
@@ -383,7 +424,7 @@ export class MockComplexDataType extends DataType {
     return dest;
   }
 
-  protected copyValues(dest: MockComplexDataType): void {
+  protected override copyValues(dest: MockComplexDataType): void {
     super.copyValues(dest);
     dest.mockSystem = this.mockSystem?.copy();
     dest.mockCode = this.mockCode?.copy();
@@ -397,8 +438,8 @@ export class MockComplexDataType extends DataType {
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    setFhirPrimitiveJson<fhirString>(this.mockSystem, 'mockSystem', jsonObj);
-    setFhirPrimitiveJson<fhirString>(this.mockCode, 'mockCode', jsonObj);
+    setFhirPrimitiveJson<fhirString>(this.mockSystem as IPrimitiveType<string>, 'mockSystem', jsonObj);
+    setFhirPrimitiveJson<fhirString>(this.mockCode as IPrimitiveType<string>, 'mockCode', jsonObj);
 
     return jsonObj;
   }
@@ -453,5 +494,39 @@ export class MockCodeEnum implements IFhirCodeEnum {
     } else {
       throw new InvalidCodeError(`Unknown MockCodeEnum 'code' value '${code}'`);
     }
+  }
+}
+
+export const PARSABLE_RESOURCE_MAP = new Map<string, ParsableResource<IResource>>();
+PARSABLE_RESOURCE_MAP.set('MockResource', MockResource);
+PARSABLE_RESOURCE_MAP.set('MockTask', MockTask);
+
+/**
+ * Asserts the provided JSON object represents a valid FHIR Resource.
+ *
+ * @param dataJsonObj - source JSON object
+ * @param fhirResourceType - expected FhirResourceType
+ * @throws AssertionError for invalid arguments
+ * @throws InvalidTypeError for invalid fhirResourceType
+ *
+ * @category Type Guards/Assertions
+ */
+export function assertFhirResourceTypeJson(dataJsonObj: JSON.Object, fhirResourceType: string): void {
+  assertIsDefined<JSON.Object>(dataJsonObj, `The dataJsonObj argument is undefined/null.`);
+  assertIsDefined<string>(fhirResourceType, `The fhirResourceType argument is undefined/null.`);
+  assert(!isEmpty(fhirResourceType), `The fhirResourceType argument is empty.`);
+  assert(JSON.isJsonObject(dataJsonObj), `The provided JSON does not represent a JSON object.`);
+
+  if ('resourceType' in dataJsonObj) {
+    const resourceTypeValue = JSON.asString(dataJsonObj['resourceType'], `${fhirResourceType}.resourceType`);
+    if (resourceTypeValue !== fhirResourceType) {
+      throw new InvalidTypeError(
+        `Invalid JSON 'resourceType' ('${resourceTypeValue}') value; Should be '${fhirResourceType}'.`,
+      );
+    }
+  } else {
+    throw new InvalidTypeError(
+      `The provided JSON does not represent a FHIR Resource (missing 'resourceType' element).`,
+    );
   }
 }

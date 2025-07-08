@@ -34,12 +34,13 @@
  * @module
  */
 
+import { strict as assert } from 'node:assert';
 import { DataType } from '../base-models/core-fhir-models';
-import { DATA_TYPES, FhirDataType } from '../data-types/FhirDataType';
+import { IDataType } from '../base-models/library-interfaces';
+import { DATA_TYPES, FhirDataType } from '../base-models/fhir-data-types';
 import { InvalidTypeError } from '../errors/InvalidTypeError';
 import { lowerFirst } from './common-util';
 import { assertIsDefined, assertIsString } from './type-guards';
-import { strict as assert } from 'node:assert';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Symbol.metadata polyfill secret sauce for decorator metadata
 (Symbol.metadata as any) ??= Symbol('Symbol.metadata');
@@ -217,7 +218,7 @@ export function ChoiceDataTypes(sourceField: string) {
         `ChoiceDataTypes decorator on ${methodName} (${sourceField}) expects a single argument to be type of 'DataType | undefined | null'`,
       );
       // undefined supports optional argument while null supports required argument
-      const value = args[0] as DataType | undefined | null;
+      const value = args[0] as IDataType | undefined | null;
 
       // Return the original function if there is nothing for this decorator to do:
       // - Decorator should only be used on a method defined as:

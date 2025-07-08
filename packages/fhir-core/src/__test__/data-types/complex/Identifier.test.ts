@@ -23,7 +23,7 @@
 
 import { AssertionError } from 'node:assert';
 import { DataType, Extension } from '../../../base-models/core-fhir-models';
-import { IdentifierUseEnum } from '../../../data-types/code-systems/IdentiferUseEnum';
+import { IdentifierUseEnum } from '../../../data-types/code-systems/IdentifierUseEnum';
 import { CodeableConcept } from '../../../data-types/complex/CodeableConcept';
 import { Period } from '../../../data-types/complex/Period';
 import { Identifier, Reference } from '../../../data-types/complex/Reference-Identifier';

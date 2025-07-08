@@ -35,10 +35,9 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { FhirResourceType, RESOURCE_TYPES } from '../../base-models/FhirResourceType';
-import { IBase } from '../../base-models/IBase';
+import { IDataType } from '../../base-models/library-interfaces';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
-import { IdentifierUseEnum } from '../code-systems/IdentiferUseEnum';
+import { IdentifierUseEnum } from '../code-systems/IdentifierUseEnum';
 import { CodeableConcept } from './CodeableConcept';
 import { Period } from './Period';
 import { assertEnumCodeType, CodeType, EnumCodeType } from '../primitive/CodeType';
@@ -55,16 +54,12 @@ import { StringType } from '../primitive/StringType';
 import { UriType } from '../primitive/UriType';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
 import { isEmpty } from '../../utility/common-util';
-import {
-  getPrimitiveTypeJson,
-  parseCodeType,
-  parseStringType,
-  parseUriType,
-  processElementJson,
-} from '../../utility/fhir-parsers';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, FhirTypeGuard, isDefined } from '../../utility/type-guards';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -86,7 +81,7 @@ import { assertFhirType, FhirTypeGuard, isDefined } from '../../utility/type-gua
  * @category Datatypes: Complex
  * @see [FHIR Reference](http://hl7.org/fhir/StructureDefinition/Reference)
  */
-export class Reference extends DataType implements IBase {
+export class Reference extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -106,7 +101,9 @@ export class Reference extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Reference';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Reference();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -122,7 +119,7 @@ export class Reference extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setReferenceElement(datatype);
     }
 
@@ -136,7 +133,7 @@ export class Reference extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: UriType | undefined = parseUriType(dtJson, dtSiblingJson);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setTypeElement(datatype);
     }
 
@@ -158,7 +155,7 @@ export class Reference extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setDisplayElement(datatype);
     }
 
@@ -532,7 +529,7 @@ export class Reference extends DataType implements IBase {
  * @category Datatypes: Complex
  * @see [FHIR Identifier](http://hl7.org/fhir/StructureDefinition/Identifier)
  */
-export class Identifier extends DataType implements IBase {
+export class Identifier extends DataType implements IDataType {
   constructor() {
     super();
 
@@ -553,7 +550,9 @@ export class Identifier extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Identifier';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Identifier();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -569,7 +568,7 @@ export class Identifier extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: CodeType | undefined = parseCodeType(dtJson, dtSiblingJson);
+      const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       instance.setUseElement(datatype);
     }
 
@@ -591,7 +590,7 @@ export class Identifier extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: UriType | undefined = parseUriType(dtJson, dtSiblingJson);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSystemElement(datatype);
     }
 
@@ -605,7 +604,7 @@ export class Identifier extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setValueElement(datatype);
     }
 
@@ -1141,15 +1140,15 @@ export class Identifier extends DataType implements IBase {
  * references are only for the defined ElementDefinition's 'targetProfile' value(s).
  *
  * @param sourceField - source field name
- * @param referenceTargets - FhirResourceType array of target references.
+ * @param referenceTargets - string array of target references.
  *                           An empty array is allowed and represents "Any" resource.
  * @returns ReferenceTargets decorator
  * @throws AssertionError for invalid uses
- * @throws InvalidTypeError for actual reference type do not agree with the specified ReferenceTargets
+ * @throws InvalidTypeError for an actual reference type do not agree with the specified ReferenceTargets
  *
  * @category Decorators
  */
-export function ReferenceTargets(sourceField: string, referenceTargets: FhirResourceType[]) {
+export function ReferenceTargets(sourceField: string, referenceTargets: string[]) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function <This, Args extends any[], Return>(
     originalMethod: (this: This, ...args: Args) => Return,
@@ -1171,10 +1170,6 @@ export function ReferenceTargets(sourceField: string, referenceTargets: FhirReso
         assert(
           referenceTargets.length === referenceTargetSet.size,
           `ReferenceTargets decorator on ${methodName} (${sourceField}) contains duplicate referenceTargets`,
-        );
-        assert(
-          referenceTargets.every((refTarget) => RESOURCE_TYPES.includes(refTarget)),
-          `ReferenceTargets decorator on ${methodName} (${sourceField}) contains invalid referenceTargets`,
         );
       }
 
@@ -1204,7 +1199,7 @@ export function ReferenceTargets(sourceField: string, referenceTargets: FhirReso
  * Validate the Reference value throwing an InvalidTypeError if it is not valid. Only used by the
  * ReferenceTargets decorator function.
  *
- * @param referenceTargets - FhirResourceType array of target references.
+ * @param referenceTargets - string array of target references.
  * @param argValue - Argument value from original decorated function
  * @param isAnyResource - true if referenceTargets array is empty
  * @param sourceField - source field name
@@ -1213,7 +1208,7 @@ export function ReferenceTargets(sourceField: string, referenceTargets: FhirReso
  * @throws InvalidTypeError if Reference.reference exists with an invalid value
  */
 function validateReferenceArg(
-  referenceTargets: FhirResourceType[],
+  referenceTargets: string[],
   argValue: Reference,
   isAnyResource: boolean,
   sourceField: string,
@@ -1227,7 +1222,7 @@ function validateReferenceArg(
   //   `public set[PropertyName](value: Reference[] | undefined): this`
   //   `public add[PropertyName](value: Reference | undefined): this`
   // - The value of type Reference should have the Reference.reference property set
-  // - The referenceTargets array should have at least one valid FhirResourceType value
+  // - The referenceTargets array should have at least one valid FHIR reference type value
   // - Reference is to a "contained" resource - reference value begins with "#"
 
   const argValueReference = argValue.getReference();

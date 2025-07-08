@@ -21,17 +21,7 @@
  *
  */
 
-import { RESOURCE_TYPES } from '../resources';
-
-/**
- * FhirResourceType
- *
- * @remarks
- * Type definition based on the generated RESOURCE_TYPES array.
- *
- * @category Type Guards/Assertions
- */
-export type FhirResourceType = (typeof RESOURCE_TYPES)[number];
+import { RESOURCE_TYPES } from '../resources/resource-types';
 
 /**
  * Determines if a given string is a valid FHIR resource type.
@@ -41,6 +31,6 @@ export type FhirResourceType = (typeof RESOURCE_TYPES)[number];
  *
  * @category Type Guards/Assertions
  */
-export function isFhirResourceType(value: string): value is FhirResourceType {
-  return RESOURCE_TYPES.includes(value as FhirResourceType);
+export function isFhirResourceType(value: string): boolean {
+  return RESOURCE_TYPES.includes(value);
 }
