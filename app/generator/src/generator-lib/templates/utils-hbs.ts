@@ -122,6 +122,7 @@ export interface HbsStructureDefinition {
   name: string;
   type: string;
   kind: string;
+  isExtension: boolean;
   baseDefinitionType: string;
   description: string;
   purpose?: string;
@@ -167,6 +168,7 @@ export function getSdHbsProperties(
     name: structureDef.name,
     type: structureDef.type,
     kind: structureDef.kind,
+    isExtension: structureDef.type === 'Extension',
     baseDefinitionType: baseDefinitionType,
     description: fixDescriptiveString(structureDef.description) ?? 'description not provided',
     purpose: fixDescriptiveString(structureDef.purpose),
@@ -213,6 +215,16 @@ export function getSdHbsProperties(
         generatedImportsSet = childGeneratedImportsSet;
       }
     }
+  }
+
+  if (structureDef.kind === 'complex-type') {
+    const generatedImports = Array.from(generatedImportsSet);
+    generatedImports.forEach((generatedImport: string) => {
+      if (generatedImport.includes('../complex-types/')) {
+        generatedImportsSet.delete(generatedImport);
+        generatedImportsSet.add(generatedImport.replace('../complex-types/', './'));
+      }
+    });
   }
 
   sdHbsProperties.fhirCoreImports = Array.from(fhirCoreImportsSet).sort();
@@ -488,7 +500,7 @@ function getChildElementComponents(
       parentKind: structureDef.kind,
       parentFieldName: hbsElementComponentRoot.path,
       componentName: hbsElementComponentRoot.componentName,
-      baseDefinitionType: componentDefinitionType,
+      baseDefinitionType: componentDefinitionType === 'Element' ? 'DataType' : componentDefinitionType,
       isComponentResource: false,
       isComponentDomainResource: false,
       isComponentBackboneElement: componentDefinitionType === 'BackboneElement',
@@ -682,22 +694,44 @@ function fixDuplicateCodeSystemEnums(hbsElementDefinitions: HbsElementDefinition
  * @returns {string[]} An array of sorted, unique strings representing the necessary FHIR core imports.
  */
 function getFhirCoreImports(componentProperties: HbsElementComponent): string[] {
-  const BASE_DEFINITION_TYPES = new Set(['DataType', 'BackboneElement', 'BackboneType', 'Element']);
+  const BASE_DEFINITION_TYPES = new Set<string>([
+    'BackboneElement',
+    'BackboneType',
+    'DataType',
+    'DomainResource',
+    'Element',
+    'Resource',
+  ]);
+  const INTERFACE_BASED_COMPLEX_TYPES = new Set<string>(['Coding', 'Meta', 'Narrative']);
 
   const importsSet = new Set<string>();
 
   // Core imports for all data models
-  importsSet.add('IBase');
-  importsSet.add('INSTANCE_EMPTY_ERROR_MSG');
   importsSet.add('JSON');
+  importsSet.add('assertFhirType');
   importsSet.add('isDefined');
   importsSet.add('isElementEmpty');
-  importsSet.add('isEmpty');
-  importsSet.add('assertFhirType');
-  importsSet.add('FhirDataTypeParser');
+
+  if (componentProperties.parentType !== 'Extension') {
+    // Extension does not implement static parse()
+    importsSet.add('INSTANCE_EMPTY_ERROR_MSG');
+    importsSet.add('isEmpty');
+    importsSet.add('FhirParser');
+  }
+
+  if (componentProperties.isComponentDataType) {
+    const dataTypeInterface = getComplexTypeImplements(
+      componentProperties.parentType,
+      componentProperties.baseDefinitionType,
+    );
+    importsSet.add(dataTypeInterface);
+  }
 
   if (BASE_DEFINITION_TYPES.has(componentProperties.baseDefinitionType)) {
     importsSet.add(componentProperties.baseDefinitionType);
+    if (componentProperties.baseDefinitionType !== 'DataType') {
+      importsSet.add(`I${componentProperties.baseDefinitionType}`);
+    }
   }
 
   componentProperties.elementDefinitions.forEach((ed: HbsElementDefinition) => {
@@ -712,7 +746,9 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
     if (ed.isRequired) {
       importsSet.add('FhirError');
       importsSet.add('REQUIRED_PROPERTIES_DO_NOT_EXIST');
-      importsSet.add('REQUIRED_PROPERTIES_REQD_IN_JSON');
+      if (componentProperties.parentType !== 'Extension') {
+        importsSet.add('REQUIRED_PROPERTIES_REQD_IN_JSON');
+      }
       if (ed.isArray) {
         importsSet.add('isDefinedList');
         importsSet.add('assertIsDefinedList');
@@ -723,13 +759,14 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
     }
 
     if (ed.type.choiceDataTypes && ed.type.choiceDataTypes.length > 0) {
-      importsSet.add('DataType');
+      importsSet.add('IDataType');
       importsSet.add('ChoiceDataTypesMeta');
       importsSet.add('ChoiceDataTypes');
       importsSet.add('InvalidTypeError');
       importsSet.add('setPolymorphicValueJson');
       importsSet.add('assertIsDefined');
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
+        // Add choice primitive data types
         if (choiceType.endsWith('Type')) {
           importsSet.add(choiceType);
         }
@@ -742,8 +779,9 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       importsSet.add('CodeType');
       importsSet.add('EnumCodeType');
       importsSet.add('assertEnumCodeType');
-      importsSet.add('parseCodeType');
-      importsSet.add('getPrimitiveTypeJson');
+      if (componentProperties.parentType !== 'Extension') {
+        importsSet.add('getPrimitiveTypeJson');
+      }
       importsSet.add('setFhirPrimitiveJson');
       importsSet.add('parseFhirPrimitiveData');
       if (ed.isRequired) {
@@ -757,10 +795,11 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
 
     if (ed.isPrimitiveType) {
       importsSet.add(ed.type.code);
-      importsSet.add('getPrimitiveTypeJson');
+      if (componentProperties.parentType !== 'Extension') {
+        importsSet.add('getPrimitiveTypeJson');
+      }
       importsSet.add('setFhirPrimitiveJson');
       importsSet.add('parseFhirPrimitiveData');
-      importsSet.add(`parse${ed.type.code}`);
       const capPrimitiveType = upperFirst(ed.type.fhirDataType);
       importsSet.add(`fhir${capPrimitiveType}`);
       importsSet.add(`fhir${capPrimitiveType}Schema`);
@@ -769,8 +808,24 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       }
     }
 
+    if (ed.isReferenceType) {
+      importsSet.add('ReferenceTargets');
+    }
+
+    if (ed.isComplexType) {
+      if (INTERFACE_BASED_COMPLEX_TYPES.has(ed.type.code)) {
+        importsSet.add(`I${ed.type.code}`);
+      }
+    }
+
     if ((ed.isComplexType || ed.isReferenceType) && !ed.isArray) {
       importsSet.add('setFhirComplexJson');
+    }
+
+    if (ed.isResourceType) {
+      importsSet.add('IResource');
+      importsSet.add('assertFhirResourceType');
+      importsSet.add('setFhirResourceJson');
     }
 
     if (ed.isArray) {
@@ -805,56 +860,39 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
  * @returns {string[]} An array of unique and sorted import statements necessary for the component.
  */
 function getGeneratedImports(componentProperties: HbsElementComponent): string[] {
-  const EXCLUDED_TYPES = new Set(['Element', 'BackboneElement', 'BackboneType']);
-  const BASE_RESOURCE_TYPES = new Set(['Resource', 'DomainResource']);
-
   const importsSet = new Set<string>();
 
-  importsSet.add('PARSABLE_DATATYPE_MAP');
-
-  if (BASE_RESOURCE_TYPES.has(componentProperties.baseDefinitionType)) {
-    importsSet.add(componentProperties.baseDefinitionType);
-  }
-
-  if (componentProperties.isComponentResource || componentProperties.isComponentDomainResource) {
-    importsSet.add('FhirResourceParser');
-    importsSet.add('FhirResourceType');
+  if (componentProperties.parentType !== 'Extension') {
+    importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map'`);
+    importsSet.add(`import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map'`);
   }
 
   componentProperties.elementDefinitions.forEach((ed: HbsElementDefinition) => {
     if (ed.type.choiceDataTypes && ed.type.choiceDataTypes.length > 0) {
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
         if (!choiceType.endsWith('Type')) {
-          importsSet.add(choiceType);
+          // Ignore primitive types; they are handled in getFhirCoreImports()
+          importsSet.add(`import { ${choiceType} } from '../complex-types/${choiceType}'`);
         }
       });
     }
 
-    if (ed.isComplexType || ed.isReferenceType) {
-      if (DATA_TYPE_MAPPINGS.has(ed.type.code as FhirDataType)) {
-        importsSet.add(ed.type.code);
-      }
-    }
-
-    if (ed.isReferenceType) {
-      importsSet.add('ReferenceTargets');
+    if ((ed.isComplexType || ed.isReferenceType) && !ed.type.code.endsWith('Component')) {
+      importsSet.add(`import { ${ed.type.code} } from '../complex-types/${ed.type.code}'`);
     }
 
     if (ed.isResourceType) {
-      importsSet.add('Resource');
-      importsSet.add('assertFhirResourceType');
-      importsSet.add('setFhirResourceJson');
+      if (ed.type.code !== 'Resource') {
+        importsSet.add(`import { ${ed.type.code} } from '../resources/${ed.type.code}'`);
+      }
     }
 
     if (ed.type.codeSystemEnumName) {
-      importsSet.add(ed.type.codeSystemEnumName);
+      importsSet.add(`import { ${ed.type.codeSystemEnumName} } from '../code-systems/${ed.type.codeSystemEnumName}'`);
     }
   });
 
-  // Remove excluded types
-  EXCLUDED_TYPES.forEach((type) => importsSet.delete(type));
-
-  return Array.from(importsSet).sort();
+  return importsSet.size > 0 ? Array.from(importsSet).sort() : ([] as string[]);
 }
 
 //region Handlebars Helper Functions
@@ -878,20 +916,113 @@ export function getRequiredConstructorParams(elementDefinitions: HbsElementDefin
   const requiredConstructorParams = [] as string[];
   requiredElementDefinitions.forEach((ed) => {
     const fieldIdentifierName = ed.fieldIdentifierName;
-    const fieldDataType = ed.isArray
-      ? ed.type.code === 'EnumCodeType'
-        ? `${ed.type.code}[] | CodeType[]`
-        : `${ed.type.code}[]`
-      : ed.type.code === 'EnumCodeType'
-        ? `${ed.type.code} | CodeType`
-        : ed.type.code;
+    let fieldDataType: string;
+    if (ed.type.code === 'EnumCodeType') {
+      fieldDataType = ed.isArray
+        ? `${ed.type.code}[] | CodeType[] | fhir${upperFirst(ed.type.fhirDataType)}[]`
+        : `${ed.type.code} | CodeType | fhir${upperFirst(ed.type.fhirDataType)}`;
+    } else if (ed.type.code === 'DataType') {
+      fieldDataType = ed.isArray ? `IDataType[]` : `IDataType`;
+    } else {
+      fieldDataType = ed.isArray ? `${ed.type.code}[]` : ed.type.code;
+    }
+
     const primitiveDataType = ` | fhir${upperFirst(ed.type.fhirDataType)}`;
     const primitiveType = ed.isPrimitiveType ? (ed.isArray ? `${primitiveDataType}[]` : primitiveDataType) : undefined;
+
     const paramStr = `${fieldIdentifierName}: ${fieldDataType}${primitiveType ?? ''} | null = null`;
     requiredConstructorParams.push(paramStr);
   });
 
   return requiredConstructorParams.join(', ');
+}
+
+/**
+ * Determines and returns the implemented interface for a given complex type based on the structure definition provided.
+ *
+ * @param {string} sdType - The structure definition `type` that describes the type of the complex structure.
+ * @param {string} baseDefinitionType - The structure definition `baseDefinition` type that describes
+ *                                      the baseDefinition of the complex structure.
+ * @returns {string} The name of the interface that the complex type implements.
+ */
+export function getComplexTypeImplements(sdType: string, baseDefinitionType: string): string {
+  if (baseDefinitionType === 'BackboneElement' || baseDefinitionType === 'BackboneType') {
+    return `I${baseDefinitionType}`;
+  }
+
+  switch (sdType) {
+    case 'Extension':
+      return 'IExtension';
+    case 'Coding':
+      return 'ICoding';
+    case 'Meta':
+      return 'IMeta';
+    case 'Narrative':
+      return 'INarrative';
+    default:
+      // Note: This includes 'Element' as well as 'DataType'
+      return 'IDataType';
+  }
+}
+
+/**
+ * Retrieves the data type of a field based on the provided type code.
+ * Converts specific type codes (e.g., 'Resource') to their corresponding data type strings.
+ *
+ * @param {string} typeCode - The type code representing a specific field.
+ * @returns {string} The corresponding data type of the field. Returns 'IResource' if the type code is 'Resource',
+ *                   otherwise returns the provided type code.
+ */
+export function getFieldDataType(typeCode: string): string {
+  if (typeCode === 'Resource') {
+    return 'IResource';
+  } else if (typeCode === 'Coding') {
+    return 'ICoding';
+  } else if (typeCode === 'Meta') {
+    return 'IMeta';
+  } else if (typeCode === 'Narrative') {
+    return 'INarrative';
+  } else {
+    return typeCode;
+  }
+}
+
+/**
+ * Retrieves a string representing static parse keywords based on the provided flags
+ * indicating whether the resource is a resource or a domain resource.
+ *
+ * @param {boolean} isComponentResource - Determines if the resource is a component resource.
+ * @param {boolean} isComponentDomainResource - Determines if the resource is a component domain resource.
+ * @returns {string} Returns 'static override' if either `isComponentResource` or `isComponentDomainResource` is true, otherwise returns 'static'.
+ */
+export function getStaticParseKeywords(isComponentResource: boolean, isComponentDomainResource: boolean): string {
+  if (isComponentResource || isComponentDomainResource) {
+    return 'static override';
+  } else {
+    return 'static';
+  }
+}
+
+/**
+ * Determines the appropriate cast interface string based on the element definition's type.
+ *
+ * @param {HbsElementDefinition} elementDefinition - The definition of the element used to determine its cast type.
+ * @returns {string} The cast interface as a string, such as ' as IDataType', ' as IResource', or an empty string if no cast is needed.
+ */
+export function getCastInterface(elementDefinition: HbsElementDefinition): string {
+  if (elementDefinition.isChoiceType) {
+    return ' as IDataType';
+  } else if (elementDefinition.isResourceType) {
+    return ' as IResource';
+  } else if (elementDefinition.type.code === 'Coding') {
+    return ' as ICoding';
+  } else if (elementDefinition.type.code === 'Meta') {
+    return ' as IMeta';
+  } else if (elementDefinition.type.code === 'Narrative') {
+    return ' as INarrative';
+  } else {
+    return '';
+  }
 }
 
 //endregion

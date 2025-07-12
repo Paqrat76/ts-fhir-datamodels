@@ -22,21 +22,22 @@
  */
 
 import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
-// @ts-expect-error: z is default export
-import z, { ZodError, ZodIssue, ZodIssueCode } from 'zod';
+import z, { ZodError } from 'zod';
 
 describe('PrimitiveTypeError', () => {
   it(`should be properly instantiated`, () => {
-    const testZodIssues: ZodIssue[] = [
+    const testZodIssues: z.core.$ZodIssueCustom[] = [
       {
-        code: ZodIssueCode.custom,
+        code: 'custom',
         path: ['testpath', 0],
         message: 'This is test issue #1 message',
+        input: undefined,
       },
       {
-        code: ZodIssueCode.custom,
+        code: 'custom',
         path: ['testpath', 1],
         message: 'This is test issue #2 message',
+        input: undefined,
       },
     ];
     const testZodError = new ZodError(testZodIssues);
@@ -97,29 +98,26 @@ describe('PrimitiveTypeError', () => {
 });
 
 function getPersonSchemaParseResultIssues() {
-  // Minor differences between actual results and Zod demonstrative
   // example: https://zod.dev/ERROR_HANDLING?id=a-demonstrative-example
   return [
     {
       code: 'invalid_type',
       expected: 'string',
-      message: 'Expected string, received number', // different than Zod example
+      message: 'Invalid input: expected string, received number',
       path: ['names', 1],
-      received: 'number',
     },
     {
       code: 'too_small',
-      exact: false, // not in than Zod example
       inclusive: true,
-      message: 'Number must be greater than or equal to 10000', // different than Zod example
+      message: 'Too small: expected number to be >=10000',
       minimum: 10000,
       path: ['address', 'zipCode'],
-      type: 'number',
+      origin: 'number',
     },
     {
       code: 'unrecognized_keys',
       keys: ['extra'],
-      message: "Unrecognized key(s) in object: 'extra'",
+      message: 'Unrecognized key: "extra"',
       path: ['address'],
     },
   ];

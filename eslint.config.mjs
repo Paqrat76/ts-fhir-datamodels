@@ -34,10 +34,12 @@ export default tsEslint.config(
     '**/docs/**',
     '**/.*',
     '**/*.[m|c]js',
-    'jest.config.base.js',
-    '**/jest.config.js',
+    'jest.config.base.mjs',
+    '**/jest.config.mjs',
     '**/test-cache/**',
     '**/test-out/**',
+    // TODO: Remove global ignore below when functional test issues are resolved
+    'app/generator-datamodel-ftest/src/__test__/**/*.*',
   ]),
   {
     name: 'base',

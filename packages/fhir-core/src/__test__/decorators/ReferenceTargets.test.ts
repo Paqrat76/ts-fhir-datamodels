@@ -22,9 +22,10 @@
  */
 
 import { AssertionError } from 'node:assert';
-import { Identifier, Reference, ReferenceTargets } from '../../data-types/complex/Reference-Identifier';
+import { Identifier, Reference } from '../../data-types/complex/Reference-Identifier';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
 import { MockTask } from '../test-utils';
+import { ReferenceTargets } from '../../utility/decorators';
 
 describe('ReferenceTargets', () => {
   it('should throw AssertionError with duplicate ReferenceTargets', () => {

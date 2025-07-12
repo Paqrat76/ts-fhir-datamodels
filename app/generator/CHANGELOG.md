@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.12.0] - 2025-07-12
+
+### Changed
+
+- Updated dependencies
+- Updated Generator app, utilities, and templates to resolve issues in generated content
+- Updated/added unit tests
+
+### Removed
+
+- All "base" content - no longer needed after refactorings in @paq-ts-fhir/fhir-core
+- All function tests and associated test materials
+
+
 ## [0.11.0] - 2025-06-30
 
 ### Added

@@ -298,39 +298,7 @@ export interface IElement extends IBase, IBaseExtension {
  *
  * @category Base Models
  */
-export interface IBackboneElement extends IElement, IBaseModifierExtension {
-  // /**
-  //  * Returns the array of `modifierExtension` values
-  //  */
-  // getModifierExtension: () => IExtension[] | undefined;
-  //
-  // /**
-  //  * Assigns the provided array of Extension values to the `modifierExtension` property.
-  //  *
-  //  * @param extension - array of Extensions
-  //  */
-  // setModifierExtension: (extension: IExtension[] | undefined) => this;
-  //
-  // /**
-  //  * Adds the provided Extension to the `modifierExtension` property array.
-  //  *
-  //  * @param extension - the Extension value to add to the `modifierExtension` property array
-  //  * @returns this
-  //  */
-  // addModifierExtension: (extension: IExtension | undefined) => this;
-  //
-  // /**
-  //  * Determines if the `modifierExtension` property exists.
-  //  *
-  //  * @remarks If the url is provided, determines if an Extension having
-  //  * the provided url exists. If the url is not provided, determines
-  //  * if the `modifierExtension` property exists and has any values.
-  //  *
-  //  * @param url - the url that identifies a specific Extension
-  //  * @throws AssertionError for invalid url
-  //  */
-  // hasModifierExtension: (url?: fhirUri) => boolean;
-}
+export interface IBackboneElement extends IElement, IBaseModifierExtension {}
 
 /**
  * Interface representing a data type that extends the functionality of the IElement interface.
@@ -355,39 +323,7 @@ export interface IDataType extends IElement {
  *
  * @category Base Models
  */
-export interface IBackboneType extends IDataType, IBaseModifierExtension {
-  // /**
-  //  * Returns the array of `modifierExtension` values
-  //  */
-  // getModifierExtension: () => IExtension[] | undefined;
-  //
-  // /**
-  //  * Assigns the provided array of Extension values to the `modifierExtension` property.
-  //  *
-  //  * @param extension - array of Extensions
-  //  */
-  // setModifierExtension: (extension: IExtension[] | undefined) => this;
-  //
-  // /**
-  //  * Adds the provided Extension to the `modifierExtension` property array.
-  //  *
-  //  * @param extension - the Extension value to add to the `modifierExtension` property array
-  //  * @returns this
-  //  */
-  // addModifierExtension: (extension: IExtension | undefined) => this;
-  //
-  // /**
-  //  * Determines if the `modifierExtension` property exists.
-  //  *
-  //  * @remarks If the url is provided, determines if an Extension having
-  //  * the provided url exists. If the url is not provided, determines
-  //  * if the `modifierExtension` property exists and has any values.
-  //  *
-  //  * @param url - the url that identifies a specific Extension
-  //  * @throws AssertionError for invalid url
-  //  */
-  // hasModifierExtension: (url?: fhirUri) => boolean;
-}
+export interface IBackboneType extends IDataType, IBaseModifierExtension {}
 
 /**
  * Represents a generic primitive type interface, extending the `IDataType` interface.

@@ -23,7 +23,7 @@
 
 import { resolve } from 'node:path';
 import { rmSync } from 'node:fs';
-import { GeneratorApp } from '../src/generator-app';
+import { GeneratorApp } from '../src';
 import {
   FhirPackage,
   FhirRelease,

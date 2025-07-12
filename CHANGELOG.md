@@ -19,6 +19,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.13.0] - 2025-07-12
+
+### Added
+
+- dev-docs/fhir-open-datatypes.xls to document FHIR open data types across all relevant FHIR releases
+
+### Changed
+
+- Updated dependencies
+- Updated @paq-ts-fhir/fhir-core: refactored parsing utilities and added interfaces for each of the core model classes
+- Updated app/generator and app/generator-datamodel-ftest projects - refer to their CHANGELOG.md files
+- Converted all Jest config files from 'js' to 'mjs'
+
 ## [0.12.0] - 2025-06-30
 
 ### Added

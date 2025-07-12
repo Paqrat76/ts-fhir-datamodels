@@ -25,9 +25,8 @@
 
 import { strict as assert } from 'node:assert';
 import * as os from 'node:os';
-import { readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { copySync, emptyDirSync, ensureDirSync, outputFileSync } from 'fs-extra';
+import { emptyDirSync, ensureDirSync, outputFileSync } from 'fs-extra';
 import { TypescriptDataModelGenerator } from './typescript-datamodel-generator';
 import {
   FhirPackage,
@@ -107,22 +106,8 @@ export class GeneratorApp {
       emptyDirSync(generatedPath);
     });
 
-    // Copy handcrafted base models and support files
-    const srcModelPath = resolve(__dirname, 'generator-lib', 'base');
-    const baseFilenames = readdirSync(srcModelPath);
-    baseFilenames.forEach((filename) => {
-      let destFilename: string;
-      if (filename.endsWith('.template')) {
-        destFilename = filename.replace('.template', '.ts');
-      } else {
-        destFilename = filename;
-      }
-      copySync(join(srcModelPath, filename), join(baseOutputPath, 'base', destFilename));
-    });
-
     const barrelLines: Set<string> = new Set<string>();
-    const baseBarrelLine = `export * from './base';`;
-    barrelLines.add(baseBarrelLine);
+    barrelLines.add(`export { Resource, DomainResource } from '@paq-ts-fhir/fhir-core';`);
 
     generatedContent.forEach((content) => {
       /* istanbul ignore next */
@@ -139,7 +124,7 @@ export class GeneratorApp {
         // 'w' - Open file for writing. The file is created (if it does not exist) or truncated (if it exists).
         outputFileSync(fullFileName, content.fileContents);
 
-        const barrelLine = `export * from './${destDir}';`;
+        const barrelLine = `export * from './${destDir}/${content.filename}';`;
         barrelLines.add(barrelLine);
       } catch (err) {
         /* istanbul ignore next */

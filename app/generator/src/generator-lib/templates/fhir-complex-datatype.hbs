@@ -37,18 +37,18 @@
  * @packageDocumentation
  */
 
+{{#unless sdHbs.isExtension}}
 import { strict as assert } from 'node:assert';
+{{/unless}}
 import {
 {{#each sdHbs.fhirCoreImports}}
   {{this}},
 {{/each}}
 } from '@paq-ts-fhir/fhir-core';
 {{#if sdHbs.generatedImports}}
-import {
 {{#each sdHbs.generatedImports}}
-  {{this}},
+{{{this}}};
 {{/each}}
-} from '../index';
 {{/if}}
 {{#if sdHbs.hasSymbolMetadata}}
 
@@ -84,7 +84,7 @@ import {
  * @category DataModel: {{upperCamelCase sdHbs.kind}}
  * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
  */
-export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements IBase {
+export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements {{complexTypeImplements sdHbs.type sdHbs.baseDefinitionType}} {
 {{#if sdHbs.parentComponent.requiredConstructor}}
 {{!-- Constructor Required Partial --}}
 {{> constructorRequiredPartial sdHbs.parentComponent}}
@@ -95,9 +95,11 @@ export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements IBas
   }
 {{/if}}
 
+{{#unless sdHbs.isExtension}}
 {{!-- Public Static Parse Method Partial --}}
 {{> publicStaticParseMethodPartial sdHbs.parentComponent}}
 
+{{/unless}}
 {{!-- Private Field Declarations Partial --}}
 {{#each sdHbs.parentComponent.elementDefinitions}}
 {{> privateFieldDeclarationPartial edHbs=this }}

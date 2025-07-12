@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.2.0] - 2025-07-12
+
+### Added
+
+- Functional test infrastructure
+- Initial set of test data to support functional tests
+
+### Changed
+
+- Update dependency
+
+
 ## [0.1.0] - 2025-06-30
 
 ### Added

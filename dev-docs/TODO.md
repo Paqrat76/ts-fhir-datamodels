@@ -2,9 +2,6 @@
 
 ## Feature Set
 
-- Investigate strategies to resolve circular references caused by:
-  - fhir-contained-resource-parser/getFhirModelParseResults(...)
-  - fhir-parsers/getValueXData(...)
 - Consider re-adding profiled complex-types (e.g., SimpleQuantity, MoneyQuantity)
 
 ## Possible Considerations (future roadmap)

@@ -710,7 +710,7 @@ export class FhirParser {
    * @returns {IResource | undefined} The parsed Resource object if the JSON conforms to a valid resource structure, otherwise undefined.
    * @throws {FhirError} If the JSON is missing the 'resourceType' property.
    */
-  private parseInlineResource(json: JSON.Value | undefined, sourceField: string): IResource | undefined {
+  public parseInlineResource(json: JSON.Value | undefined, sourceField: string): IResource | undefined {
     if (!isDefined<JSON.Value>(json) || (JSON.isJsonObject(json) && isEmpty(json))) {
       return undefined;
     }

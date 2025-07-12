@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.5.0] - 2025-07-12
+
+### Changed
+
+- Updated dependencies
+- Minor code cleanup
+
+### Fixed
+
+- Breaking changes caused by upgrading Zod to new v4.0
+
+
 ## [0.4.0] - 2025-07-08
 
 ### Added
@@ -36,15 +48,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Moved all parser utilities into new FhirParser class
 - Updated all FHIR data type lists and renamed FhirDataType.ts to fhir-data-types.ts
 
-### Deprecated
-
 ### Removed
 
 - FhirResourceType thereby eliminating the typing of FHIR resources types
-
-### Fixed
-
-### Security
 
 
 ## [0.3.4] - 2025-06-18

@@ -295,7 +295,7 @@ export function constructorCodeValueAsEnumCodeType<T>(
       if (err instanceof PrimitiveTypeError) {
         // Error from parseFhirPrimitiveData(...) in CodeType.assignValue()
         const errorCause = err.getDetails()[0];
-        if (errorCause?.includes('received object')) {
+        if (errorCause?.includes('Invalid input')) {
           errMsg = `Invalid ${property}; Provided code value is not an instance of CodeType`;
         } else {
           errMsg = `Invalid ${property}; ${err.message}`;

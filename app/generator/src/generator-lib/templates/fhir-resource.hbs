@@ -44,11 +44,9 @@ import {
 {{/each}}
 } from '@paq-ts-fhir/fhir-core';
 {{#if sdHbs.generatedImports }}
-import {
 {{#each sdHbs.generatedImports}}
-  {{this}},
+{{{this}}};
 {{/each}}
-} from '../index';
 {{/if}}
 {{#if sdHbs.hasSymbolMetadata}}
 
@@ -84,7 +82,7 @@ import {
  * @category DataModel: {{upperCamelCase sdHbs.kind}}
  * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
  */
-export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements IBase {
+export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements I{{sdHbs.baseDefinitionType}} {
 {{#if sdHbs.parentComponent.requiredConstructor}}
 {{!-- Constructor Required Partial --}}
 {{> constructorRequiredPartial sdHbs.parentComponent}}
@@ -103,13 +101,6 @@ export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements IBas
 {{> privateFieldDeclarationPartial edHbs=this }}
 
 {{/each}}
-
-  /**
-   * @returns the FHIR resource type as defined by the FHIR specification
-   */
-  public override resourceType(): FhirResourceType {
-    return this.fhirType() as FhirResourceType;
-  }
 
 {{!-- Public Field Methods Partial --}}
 {{#each sdHbs.parentComponent.elementDefinitions}}

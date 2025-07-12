@@ -57,8 +57,9 @@ export type FhirRelease = 'R4' | 'R4B' | 'R5';
  * - 'CodeSystem': Represents a system of codes that define concepts, such as terminologies.
  * - 'ComplexType': Refers to a data structure that encapsulates multiple values or concepts.
  * - 'Resource': Represents a FHIR resource, which is a modular unit of healthcare data.
+ * - 'Base': Refers to an artifact considered to be a "base-level" artifact.
  */
-export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource';
+export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource' | 'Base';
 
 /**
  * Represents a FHIR package with details about its release, package information,
@@ -108,7 +109,7 @@ export interface GeneratedContent {
    */
   fileExtension?: string;
   /**
-   * FHIR artifact type: Resource, ComplexType, CodeSystem
+   * FHIR artifact type: Resource, ComplexType, CodeSystem, "Base"
    */
   fhirType: FhirType;
   /**

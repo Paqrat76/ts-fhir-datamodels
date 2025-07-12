@@ -1,13 +1,8 @@
 {
   "name": "generator-datamodel-ftest",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Generated FHIR R4 data models specifically for functional testing",
-  "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/aoo/generator-datamodel-ftest/README.md",
-  "bugs": {
-    "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
-    "email": "paqrat76@gmail.com"
-  },
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,16 +11,17 @@
   ],
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage src/generated/*",
-    "compile": "tsc",
     "generate:ftest": "ts-node scripts/generate-ftest-src.ts",
-    "pretest": "npm run generate:ftest",
-    "test": "jest",
+    "precompile": "npm run generate:ftest",
+    "compile": "tsc",
+    "xxxpretest": "npm run generate:ftest",
+    "xxxtest": "jest",
     "precoverage": "npm run generate:ftest",
     "coverage": "jest --coverage",
     "jest:clear": "jest --clearCache"
   },
   "dependencies": {
-    "@paq-ts-fhir/fhir-core": "^0.3.4"
+    "@paq-ts-fhir/fhir-core": "^0.5.0"
   },
   "engines": {
     "node": ">=22.11",

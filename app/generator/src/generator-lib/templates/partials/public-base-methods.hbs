@@ -39,17 +39,17 @@
     super.copyValues(dest);
 {{#each elementDefinitions}}
   {{#if this.isOptionalItem}}
-    dest.{{this.fieldIdentifierName}} = this.{{this.fieldIdentifierName}}?.copy();
+    dest.{{this.fieldIdentifierName}} = this.{{this.fieldIdentifierName}}?.copy(){{castInterface this}};
   {{/if}}
   {{#if this.isRequiredItem}}
-    dest.{{this.fieldIdentifierName}} = this.{{this.fieldIdentifierName}} ? this.{{this.fieldIdentifierName}}.copy() : null;
+    dest.{{this.fieldIdentifierName}} = this.{{this.fieldIdentifierName}} ? this.{{this.fieldIdentifierName}}.copy(){{castInterface this}} : null;
   {{/if}}
   {{#if this.isOptionalList}}
-    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldIdentifierName}});
+    const {{this.fieldName}}List = copyListValues<{{fieldDataType this.type.code}}>(this.{{this.fieldIdentifierName}});
     dest.{{this.fieldIdentifierName}} = {{this.fieldName}}List.length === 0 ? undefined : {{this.fieldName}}List;
   {{/if}}
   {{#if this.isRequiredList}}
-    const {{this.fieldName}}List = copyListValues<{{this.type.code}}>(this.{{this.fieldIdentifierName}});
+    const {{this.fieldName}}List = copyListValues<{{fieldDataType this.type.code}}>(this.{{this.fieldIdentifierName}});
     dest.{{this.fieldIdentifierName}} = {{this.fieldName}}List.length === 0 ? null : {{this.fieldName}}List;
   {{/if}}
 {{/each}}

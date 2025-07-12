@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.1] - 2025-07-12
+
+### Changed
+
+- Updated dependency
+
+
 ## [0.3.0] - 2025-06-18
 
 ### Added
