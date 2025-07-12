@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirBoolean, fhirBooleanSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Boolean Class
@@ -39,7 +40,7 @@ import { fhirBoolean, fhirBooleanSchema, parseFhirPrimitiveData } from './primit
  * @category Datatypes: Primitive
  * @see [FHIR boolean](http://hl7.org/fhir/StructureDefinition/boolean)
  */
-export class BooleanType extends PrimitiveType<fhirBoolean> {
+export class BooleanType extends PrimitiveType<fhirBoolean> implements IPrimitiveType<fhirBoolean> {
   private boolValue: fhirBoolean | undefined;
 
   /**

@@ -63,7 +63,7 @@ describe('Resource', () => {
     expect(testResource).toBeInstanceOf(Resource);
     expect(testResource).toBeInstanceOf(Base);
     expect(testResource.constructor.name).toStrictEqual('MockTask');
-    expect(testResource.resourceType()).toStrictEqual('Task');
+    expect(testResource.resourceType()).toStrictEqual('MockTask');
     expect(testResource.fhirType()).toStrictEqual('MockTask');
     expect(testResource.isResource()).toBe(true);
     expect(testResource.isEmpty()).toBe(true);
@@ -97,12 +97,12 @@ describe('Resource', () => {
     expect(testResource).toBeInstanceOf(Resource);
     expect(testResource).toBeInstanceOf(Base);
     expect(testResource.constructor.name).toStrictEqual('MockTask');
-    expect(testResource.resourceType()).toStrictEqual('Task');
+    expect(testResource.resourceType()).toStrictEqual('MockTask');
     expect(testResource.fhirType()).toStrictEqual('MockTask');
     expect(testResource.isResource()).toBe(true);
     expect(testResource.isEmpty()).toBe(false);
     const expectedJson = {
-      resourceType: 'Task',
+      resourceType: 'MockTask',
       id: 'a-432.E-12345',
       meta: {
         versionId: 'v1',
@@ -222,12 +222,12 @@ describe('Resource', () => {
     expect(testResource).toBeInstanceOf(Resource);
     expect(testResource).toBeInstanceOf(Base);
     expect(testResource.constructor.name).toStrictEqual('MockTask');
-    expect(testResource.resourceType()).toStrictEqual('Task');
+    expect(testResource.resourceType()).toStrictEqual('MockTask');
     expect(testResource.fhirType()).toStrictEqual('MockTask');
     expect(testResource.isResource()).toBe(true);
     expect(testResource.isEmpty()).toBe(false);
     const expectedJson = {
-      resourceType: 'Task',
+      resourceType: 'MockTask',
       id: 'a-432.E-12345',
       meta: {
         versionId: 'v1',
@@ -298,12 +298,12 @@ describe('Resource', () => {
     expect(testResource).toBeInstanceOf(Resource);
     expect(testResource).toBeInstanceOf(Base);
     expect(testResource.constructor.name).toStrictEqual('MockTask');
-    expect(testResource.resourceType()).toStrictEqual('Task');
+    expect(testResource.resourceType()).toStrictEqual('MockTask');
     expect(testResource.fhirType()).toStrictEqual('MockTask');
     expect(testResource.isResource()).toBe(true);
     expect(testResource.isEmpty()).toBe(false);
     const expectedJson = {
-      resourceType: 'Task',
+      resourceType: 'MockTask',
       id: 'a-432.E-12345',
       meta: {
         versionId: 'v1',

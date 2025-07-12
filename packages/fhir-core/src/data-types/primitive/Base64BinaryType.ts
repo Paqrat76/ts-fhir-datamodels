@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirBase64Binary, fhirBase64BinarySchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Base64Binary Class
@@ -40,7 +41,7 @@ import { fhirBase64Binary, fhirBase64BinarySchema, parseFhirPrimitiveData } from
  * @category Datatypes: Primitive
  * @see [FHIR base64Binary](http://hl7.org/fhir/StructureDefinition/base64Binary)
  */
-export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> {
+export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> implements IPrimitiveType<fhirBase64Binary> {
   /**
    * @param value - the value of the primitive `fhirBase64Binary`
    * @throws PrimitiveTypeError for invalid value

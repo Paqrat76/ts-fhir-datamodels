@@ -13,6 +13,7 @@
     "strict": true,
 
     "module": "node16",
+    "isolatedModules": true,
     "target": "es2022",
     "lib": ["esnext", "esnext.decorators", "es2022"],
     "moduleDetection": "force",
@@ -34,8 +35,6 @@
 
     "composite": true,
 
-    "noErrorTruncation": true,
-
-    "isolatedModules": true
+    "noErrorTruncation": true
   }
 }

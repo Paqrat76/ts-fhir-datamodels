@@ -28,7 +28,6 @@ import {
   setFhirPrimitiveJson,
   setFhirPrimitiveListJson,
 } from '../../base-models/core-fhir-models';
-import { IBase } from '../../base-models/IBase';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { Coding } from './Coding';
 import { CanonicalType } from '../primitive/CanonicalType';
@@ -47,19 +46,18 @@ import {
 } from '../primitive/primitive-types';
 import { UriType } from '../primitive/UriType';
 import { isEmpty } from '../../utility/common-util';
-import {
-  getPrimitiveTypeJson,
-  getPrimitiveTypeListJson,
-  parseCanonicalType,
-  parseIdType,
-  parseInstantType,
-  parseUriType,
-  PrimitiveTypeJson,
-  processElementJson,
-} from '../../utility/fhir-parsers';
 import { copyListValues, isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '../../utility/type-guards';
+import { ICoding, IMeta } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import {
+  FhirParser,
+  getPrimitiveTypeJson,
+  getPrimitiveTypeListJson,
+  PrimitiveTypeJson,
+} from '../../utility/FhirParser';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -80,7 +78,7 @@ import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '..
  * @category Datatypes: Complex
  * @see [FHIR Meta](http://hl7.org/fhir/StructureDefinition/Meta)
  */
-export class Meta extends DataType implements IBase {
+export class Meta extends DataType implements IMeta {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -100,7 +98,9 @@ export class Meta extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Meta';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Meta();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -116,7 +116,7 @@ export class Meta extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: IdType | undefined = parseIdType(dtJson, dtSiblingJson);
+      const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       instance.setVersionIdElement(datatype);
     }
 
@@ -130,7 +130,7 @@ export class Meta extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: InstantType | undefined = parseInstantType(dtJson, dtSiblingJson);
+      const datatype: InstantType | undefined = fhirParser.parseInstantType(dtJson, dtSiblingJson);
       instance.setLastUpdatedElement(datatype);
     }
 
@@ -144,7 +144,7 @@ export class Meta extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: UriType | undefined = parseUriType(dtJson, dtSiblingJson);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSourceElement(datatype);
     }
 
@@ -159,7 +159,10 @@ export class Meta extends DataType implements IBase {
         primitiveJsonType,
       );
       dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CanonicalType | undefined = parseCanonicalType(dataJson.dtJson, dataJson.dtSiblingJson);
+        const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(
+          dataJson.dtJson,
+          dataJson.dtSiblingJson,
+        );
         if (datatype !== undefined) {
           instance.addProfileElement(datatype);
         }
@@ -172,7 +175,7 @@ export class Meta extends DataType implements IBase {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
       dataElementJsonArray.forEach((dataElementJson: JSON.Value) => {
-        const datatype: Coding | undefined = Coding.parse(dataElementJson, sourceField);
+        const datatype: ICoding | undefined = Coding.parse(dataElementJson, sourceField);
         if (datatype !== undefined) {
           instance.addSecurity(datatype);
         }
@@ -185,7 +188,7 @@ export class Meta extends DataType implements IBase {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
       dataElementJsonArray.forEach((dataElementJson: JSON.Value) => {
-        const datatype: Coding | undefined = Coding.parse(dataElementJson, sourceField);
+        const datatype: ICoding | undefined = Coding.parse(dataElementJson, sourceField);
         if (datatype !== undefined) {
           instance.addTag(datatype);
         }
@@ -269,7 +272,7 @@ export class Meta extends DataType implements IBase {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private security?: Coding[] | undefined;
+  private security?: ICoding[] | undefined;
 
   /**
    * Meta.tag Element
@@ -284,7 +287,7 @@ export class Meta extends DataType implements IBase {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private tag?: Coding[] | undefined;
+  private tag?: ICoding[] | undefined;
 
   /**
    * @returns the `versionId` property value as a PrimitiveType
@@ -589,8 +592,8 @@ export class Meta extends DataType implements IBase {
   /**
    * @returns the `security` property value as a Coding array
    */
-  public getSecurity(): Coding[] {
-    return this.security ?? ([] as Coding[]);
+  public getSecurity(): ICoding[] {
+    return this.security ?? ([] as ICoding[]);
   }
 
   /**
@@ -599,8 +602,8 @@ export class Meta extends DataType implements IBase {
    * @param value - the `security` array value
    * @returns this
    */
-  public setSecurity(value: Coding[] | undefined): this {
-    if (isDefinedList<Coding>(value)) {
+  public setSecurity(value: ICoding[] | undefined): this {
+    if (isDefinedList<ICoding>(value)) {
       const optErrMsg = `Invalid Meta.security; Provided value array has an element that is not an instance of Coding.`;
       assertFhirTypeList<Coding>(value, Coding, optErrMsg);
       this.security = value;
@@ -616,8 +619,8 @@ export class Meta extends DataType implements IBase {
    * @param value - the `security` value
    * @returns this
    */
-  public addSecurity(value: Coding | undefined): this {
-    if (isDefined<Coding>(value)) {
+  public addSecurity(value: ICoding | undefined): this {
+    if (isDefined<ICoding>(value)) {
       const optErrMsg = `Invalid Meta.security; Provided value is not an instance of CodeType.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initSecurity();
@@ -630,7 +633,7 @@ export class Meta extends DataType implements IBase {
    * @returns `true` if the `security` property exists and has a value; `false` otherwise
    */
   public hasSecurity(): boolean {
-    return isDefinedList<Coding>(this.security) && this.security.some((item: Coding) => !item.isEmpty());
+    return isDefinedList<ICoding>(this.security) && this.security.some((item: ICoding) => !item.isEmpty());
   }
 
   /**
@@ -643,8 +646,8 @@ export class Meta extends DataType implements IBase {
   /**
    * @returns the `tag` property value as a Coding array
    */
-  public getTag(): Coding[] {
-    return this.tag ?? ([] as Coding[]);
+  public getTag(): ICoding[] {
+    return this.tag ?? ([] as ICoding[]);
   }
 
   /**
@@ -653,8 +656,8 @@ export class Meta extends DataType implements IBase {
    * @param value - the `tag` array value
    * @returns this
    */
-  public setTag(value: Coding[] | undefined): this {
-    if (isDefinedList<Coding>(value)) {
+  public setTag(value: ICoding[] | undefined): this {
+    if (isDefinedList<ICoding>(value)) {
       const optErrMsg = `Invalid Meta.tag; Provided value array has an element that is not an instance of Coding.`;
       assertFhirTypeList<Coding>(value, Coding, optErrMsg);
       this.tag = value;
@@ -670,8 +673,8 @@ export class Meta extends DataType implements IBase {
    * @param value - the `tag` value
    * @returns this
    */
-  public addTag(value: Coding | undefined): this {
-    if (isDefined<Coding>(value)) {
+  public addTag(value: ICoding | undefined): this {
+    if (isDefined<ICoding>(value)) {
       const optErrMsg = `Invalid Meta.tag; Provided value is not an instance of CodeType.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initTag();
@@ -684,7 +687,7 @@ export class Meta extends DataType implements IBase {
    * @returns `true` if the `tag` property exists and has a value; `false` otherwise
    */
   public hasTag(): boolean {
-    return isDefinedList<Coding>(this.tag) && this.tag.some((item: Coding) => !item.isEmpty());
+    return isDefinedList<ICoding>(this.tag) && this.tag.some((item: ICoding) => !item.isEmpty());
   }
 
   /**
@@ -730,9 +733,9 @@ export class Meta extends DataType implements IBase {
     dest.source = this.source?.copy();
     const profileList = copyListValues<CanonicalType>(this.profile);
     dest.profile = profileList.length === 0 ? undefined : profileList;
-    const securityList = copyListValues<Coding>(this.security);
+    const securityList = copyListValues<ICoding>(this.security);
     dest.security = securityList.length === 0 ? undefined : securityList;
-    const tagList = copyListValues<Coding>(this.tag);
+    const tagList = copyListValues<ICoding>(this.tag);
     dest.tag = tagList.length === 0 ? undefined : tagList;
   }
 

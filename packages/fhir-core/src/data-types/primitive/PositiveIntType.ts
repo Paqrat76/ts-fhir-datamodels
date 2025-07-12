@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirPositiveInt, fhirPositiveIntSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * PositiveInt Class
@@ -39,7 +40,7 @@ import { fhirPositiveInt, fhirPositiveIntSchema, parseFhirPrimitiveData } from '
  * @category Datatypes: Primitive
  * @see [FHIR positiveInt](http://hl7.org/fhir/StructureDefinition/positiveInt)
  */
-export class PositiveIntType extends PrimitiveType<fhirPositiveInt> {
+export class PositiveIntType extends PrimitiveType<fhirPositiveInt> implements IPrimitiveType<fhirPositiveInt> {
   /**
    * @param value - the value of the primitive `fhirPositiveInt`
    * @throws PrimitiveTypeError for invalid value

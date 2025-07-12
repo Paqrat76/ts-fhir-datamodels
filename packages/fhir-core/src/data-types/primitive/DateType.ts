@@ -33,6 +33,7 @@ import {
 import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
 import { DateTypeImpl, fhirDate, fhirDateSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Date Class
@@ -48,7 +49,7 @@ import { DateTypeImpl, fhirDate, fhirDateSchema, parseFhirPrimitiveData } from '
  * @category Datatypes: Primitive
  * @see [FHIR date](http://hl7.org/fhir/StructureDefinition/date)
  */
-export class DateType extends PrimitiveType<fhirDate> implements DateTypeImpl {
+export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<fhirDate>, DateTypeImpl {
   /**
    * @param value - the value of the primitive `fhirDate`
    * @throws PrimitiveTypeError for invalid value

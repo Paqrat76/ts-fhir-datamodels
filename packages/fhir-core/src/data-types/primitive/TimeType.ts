@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirTime, fhirTimeSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Time Class
@@ -39,7 +40,7 @@ import { fhirTime, fhirTimeSchema, parseFhirPrimitiveData } from './primitive-ty
  * @category Datatypes: Primitive
  * @see [FHIR time](http://hl7.org/fhir/StructureDefinition/time)
  */
-export class TimeType extends PrimitiveType<fhirTime> {
+export class TimeType extends PrimitiveType<fhirTime> implements IPrimitiveType<fhirTime> {
   /**
    * @param value - the value of the primitive `fhirTime`
    * @throws PrimitiveTypeError for invalid value

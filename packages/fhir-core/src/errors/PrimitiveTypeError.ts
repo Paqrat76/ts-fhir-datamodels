@@ -21,7 +21,7 @@
  *
  */
 
-import { ZodError, ZodIssue } from 'zod';
+import z, { ZodError } from 'zod';
 
 /**
  * Error thrown when instances of primitive types fail validation.
@@ -35,14 +35,14 @@ import { ZodError, ZodIssue } from 'zod';
  * @see [ZodIssue](https://zod.dev/ERROR_HANDLING?id=zodissue)
  */
 export class PrimitiveTypeError extends Error {
-  private zodIssues: ZodIssue[];
+  private zodIssues: z.core.$ZodIssue[];
   private errorDetails: string[];
 
   constructor(message: string, cause: ZodError) {
     super(message);
     this.name = 'PrimitiveTypeError';
     this.zodIssues = cause.issues;
-    this.errorDetails = cause.issues.map((issue: ZodIssue) => issue.message);
+    this.errorDetails = cause.issues.map((issue: z.core.$ZodIssue) => issue.message);
   }
 
   /**
@@ -50,7 +50,7 @@ export class PrimitiveTypeError extends Error {
    *
    * @returns the validation issues
    */
-  public getIssues(): ZodIssue[] {
+  public getIssues(): z.core.$ZodIssue[] {
     return this.zodIssues;
   }
 

@@ -61,7 +61,15 @@
   ])
 {{/if}}
 {{#if edHbs.isRequired}}
-  private {{edHbs.fieldIdentifierName}}: {{edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | null;
+{{#if edHbs.isChoiceType}}
+  private {{edHbs.fieldIdentifierName}}: IDataType{{#if edHbs.isArray}}[]{{/if}} | null;
 {{else}}
-  private {{edHbs.fieldIdentifierName}}?: {{edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | undefined;
+  private {{edHbs.fieldIdentifierName}}: {{fieldDataType edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | null;
+{{/if}}
+{{else}}
+{{#if edHbs.isChoiceType}}
+  private {{edHbs.fieldIdentifierName}}?: IDataType{{#if edHbs.isArray}}[]{{/if}} | undefined;
+{{else}}
+  private {{edHbs.fieldIdentifierName}}?: {{fieldDataType edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | undefined;
+{{/if}}
 {{/if}}

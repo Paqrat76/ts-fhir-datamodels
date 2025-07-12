@@ -23,7 +23,6 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { IBase } from '../../base-models/IBase';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { BooleanType } from '../primitive/BooleanType';
 import { CodeType } from '../primitive/CodeType';
@@ -41,17 +40,13 @@ import {
 import { StringType } from '../primitive/StringType';
 import { UriType } from '../primitive/UriType';
 import { isEmpty } from '../../utility/common-util';
-import {
-  getPrimitiveTypeJson,
-  parseBooleanType,
-  parseCodeType,
-  parseStringType,
-  parseUriType,
-  processElementJson,
-} from '../../utility/fhir-parsers';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, isDefined } from '../../utility/type-guards';
+import { ICoding } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -73,7 +68,7 @@ import { assertFhirType, isDefined } from '../../utility/type-guards';
  * @category Datatypes: Complex
  * @see [FHIR Coding](http://hl7.org/fhir/StructureDefinition/Coding)
  */
-export class Coding extends DataType implements IBase {
+export class Coding extends DataType implements ICoding {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -93,7 +88,9 @@ export class Coding extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Coding';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Coding();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -109,7 +106,7 @@ export class Coding extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: UriType | undefined = parseUriType(dtJson, dtSiblingJson);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSystemElement(datatype);
     }
 
@@ -123,7 +120,7 @@ export class Coding extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setVersionElement(datatype);
     }
 
@@ -137,7 +134,7 @@ export class Coding extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: CodeType | undefined = parseCodeType(dtJson, dtSiblingJson);
+      const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       instance.setCodeElement(datatype);
     }
 
@@ -151,7 +148,7 @@ export class Coding extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setDisplayElement(datatype);
     }
 
@@ -165,7 +162,7 @@ export class Coding extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: BooleanType | undefined = parseBooleanType(dtJson, dtSiblingJson);
+      const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       instance.setUserSelectedElement(datatype);
     }
 

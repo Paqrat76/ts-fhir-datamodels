@@ -162,7 +162,6 @@ describe('fhir-util', () => {
 
     it('should throw AssertionError for undefined URL', () => {
       const t = () => {
-        // @ts-expect-error: allow for testing
         validateUrl(UNDEFINED_URL);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -362,7 +361,6 @@ describe('fhir-util', () => {
       expect(results).not.toBeNull();
       expect(results).toBeDefined();
       expect(results).toHaveLength(1);
-      // @ts-expect-error: confirmed not null
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const result0: EnumCodeType = results[0]!;
       expect(result0).not.toBeNull();
@@ -382,7 +380,6 @@ describe('fhir-util', () => {
       expect(results).not.toBeNull();
       expect(results).toBeDefined();
       expect(results).toHaveLength(1);
-      // @ts-expect-error: confirmed not null
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const result0: EnumCodeType = results[0]!;
       expect(result0.fhirType()).toStrictEqual('code');
@@ -400,7 +397,6 @@ describe('fhir-util', () => {
       expect(results).not.toBeNull();
       expect(results).toBeDefined();
       expect(results).toHaveLength(1);
-      // @ts-expect-error: confirmed not null
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const result0: EnumCodeType = results[0]!;
       expect(result0.fhirType()).toStrictEqual('code');

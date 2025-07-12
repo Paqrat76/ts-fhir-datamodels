@@ -42,9 +42,8 @@
 
 import { strict as assert } from 'node:assert';
 import { Base } from './Base';
-import { IBase } from './IBase';
 import { REQUIRED_PROPERTIES_DO_NOT_EXIST } from '../constants';
-import { OPEN_DATA_TYPES } from '../data-types/FhirDataType';
+import { OPEN_DATA_TYPES } from './fhir-data-types';
 import {
   fhirString,
   fhirStringSchema,
@@ -58,118 +57,9 @@ import { isEmpty, upperFirst } from '../utility/common-util';
 import { copyListValues, isElementEmpty, validateUrl } from '../utility/fhir-util';
 import * as JSON from '../utility/json-helpers';
 import { assertFhirType, assertFhirTypeList, assertIsDefined, isDefined, isDefinedList } from '../utility/type-guards';
+import { IBackboneElement, IBackboneType, IDataType, IElement, IExtension, IPrimitiveType } from './library-interfaces';
 
 //region Core Models
-
-/**
- * Base interface to specify `extension` specific methods used by
- * Element and Resource.
- *
- * @category Base Models
- */
-export interface IBaseExtension {
-  /**
-   * Returns the array of `extension` values
-   */
-  getExtension: () => Extension[] | undefined;
-
-  /**
-   * Assigns the provided array of Extension values to the `extension` property.
-   *
-   * @param extension - array of Extensions
-   */
-  setExtension: (extension: Extension[] | undefined) => this;
-
-  /**
-   * Determines if the `extension` property exists.
-   *
-   * @remarks If the url is provided, determines if an Extension having
-   * the provided url exists. If the url is not provided, determines
-   * if the `extension` property exists and has any values.
-   *
-   * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
-   */
-  hasExtension: (url?: fhirUri) => boolean;
-
-  /**
-   * Returns the Extension having the provided url.
-   *
-   * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
-   */
-  getExtensionByUrl: (url: fhirUri) => Extension | undefined;
-
-  /**
-   * Adds the provided Extension to the `extension` property array.
-   *
-   * @param extension - the Extension value to add to the `extension` property array
-   */
-  addExtension: (extension: Extension | undefined) => this;
-
-  /**
-   * Removes the Extension having the provided url from the `extension` property array.
-   *
-   * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
-   */
-  removeExtension: (url: fhirUri) => void;
-}
-
-/**
- * Base interface to specify `modifierExtension` specific methods used by
- * BackboneElement and BackboneType.
- *
- * @category Base Models
- */
-export interface IBaseModifierExtension {
-  /**
-   * Returns the array of `modifierExtension` values
-   */
-  getModifierExtension: () => Extension[] | undefined;
-
-  /**
-   * Assigns the provided array of Extension values to the `modifierExtension` property.
-   *
-   * @param extension - array of Extensions
-   */
-  setModifierExtension: (extension: Extension[] | undefined) => this;
-
-  /**
-   * Determines if the `modifierExtension` property exists.
-   *
-   * @remarks If the url is provided, determines if an Extension having
-   * the provided url exists. If the url is not provided, determines
-   * if the `modifierExtension` property exists and has any values.
-   *
-   * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
-   */
-  hasModifierExtension: (url?: fhirUri) => boolean;
-
-  /**
-   * Returns the Extension having the provided url.
-   *
-   * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
-   */
-  getModifierExtensionByUrl: (url: fhirUri) => Extension | undefined;
-
-  /**
-   * Adds the provided Extension to the `modifierExtension` property array.
-   *
-   * @param extension - the Extension value to add to the `modifierExtension` property array
-   */
-  addModifierExtension: (extension: Extension | undefined) => this;
-
-  /**
-   * Removes the Extension having the provided url from the `modifierExtension` property array.
-   *
-   * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
-   */
-  removeModifierExtension: (url: fhirUri) => void;
-}
 
 /**
  * Abstract Element Class
@@ -193,7 +83,7 @@ export interface IBaseModifierExtension {
  * @category Base Models
  * @see [FHIR Element](http://hl7.org/fhir/StructureDefinition/Element)
  */
-export abstract class Element extends Base implements IBase, IBaseExtension {
+export abstract class Element extends Base implements IElement {
   protected constructor() {
     super();
   }
@@ -225,7 +115,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    *  - **isModifier:** false
    *  - **isSummary:** false
    */
-  private extension?: Extension[] | undefined;
+  private extension?: IExtension[] | undefined;
 
   /**
    * @returns the `id` property value
@@ -259,8 +149,8 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
   /**
    * @returns the array of `extension` values
    */
-  public getExtension(): Extension[] {
-    return this.extension ?? ([] as Extension[]);
+  public getExtension(): IExtension[] {
+    return this.extension ?? ([] as IExtension[]);
   }
 
   /**
@@ -269,7 +159,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    * @param extension - array of Extensions
    * @returns this
    */
-  public setExtension(extension: Extension[] | undefined): this {
+  public setExtension(extension: IExtension[] | undefined): this {
     const optErrMsg = `Invalid Element.extension; Provided extension array has an element that is not an instance of Extension.`;
     assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
     this.extension = extension;
@@ -306,7 +196,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    * @returns an Extension having the provided url
    * @throws AssertionError for invalid url
    */
-  public getExtensionByUrl(url: fhirUri): Extension | undefined {
+  public getExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
     if (this.hasExtension()) {
       const results = this.getExtension().filter((ext) => ext.getUrl() && ext.getUrl() === url);
@@ -325,8 +215,8 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    * @param extension - the Extension value to add to the `extension` property array
    * @returns this
    */
-  public addExtension(extension: Extension | undefined): this {
-    if (isDefined<Extension>(extension)) {
+  public addExtension(extension: IExtension | undefined): this {
+    if (isDefined<IExtension>(extension)) {
       const optErrMsg = `Invalid Element.extension; Provided extension is not an instance of Extension.`;
       assertFhirType<Extension>(extension, Extension, optErrMsg);
       this.initExtension();
@@ -355,7 +245,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    */
   private initExtension(): void {
     if (!this.hasExtension()) {
-      this.extension = [] as Extension[];
+      this.extension = [] as IExtension[];
     }
   }
 
@@ -365,7 +255,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    * @returns `true` if the `extension` property array exists and has at least one element; false otherwise
    */
   private existsExtension(): boolean {
-    return isDefinedList<Extension>(this.extension) && this.extension.some((item: Extension) => !item.isEmpty());
+    return isDefinedList<IExtension>(this.extension) && this.extension.some((item: IExtension) => !item.isEmpty());
   }
 
   /**
@@ -395,9 +285,9 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
    * @param dest - the copied instance
    * @protected
    */
-  protected override copyValues(dest: Element): void {
+  protected copyValues(dest: Element): void {
     dest.id = this.id ? String(this.id) : undefined;
-    const extensionList = copyListValues<Extension>(this.extension);
+    const extensionList = copyListValues<IExtension>(this.extension);
     dest.extension = extensionList.length === 0 ? undefined : extensionList;
   }
 
@@ -441,7 +331,7 @@ export abstract class Element extends Base implements IBase, IBaseExtension {
  * @category Base Models
  * @see [FHIR BackboneElement](http://hl7.org/fhir/StructureDefinition/BackboneElement)
  */
-export abstract class BackboneElement extends Element implements IBase, IBaseModifierExtension {
+export abstract class BackboneElement extends Element implements IBackboneElement {
   protected constructor() {
     super();
   }
@@ -461,13 +351,13 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    *  - **isModifierReason:** Modifier extensions are expected to modify the meaning or interpretation of the element that contains them
    *  - **isSummary:** true
    */
-  private modifierExtension?: Extension[] | undefined;
+  private modifierExtension?: IExtension[] | undefined;
 
   /**
    * @returns the array of `modifierExtension` values
    */
-  public getModifierExtension(): Extension[] {
-    return this.modifierExtension ?? ([] as Extension[]);
+  public getModifierExtension(): IExtension[] {
+    return this.modifierExtension ?? ([] as IExtension[]);
   }
 
   /**
@@ -476,7 +366,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    * @param extension - array of Extensions
    * @returns this
    */
-  public setModifierExtension(extension: Extension[] | undefined): this {
+  public setModifierExtension(extension: IExtension[] | undefined): this {
     const optErrMsg = `Invalid BackboneElement.modifierExtension; Provided extension array has an element that is not an instance of Extension.`;
     assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
     this.modifierExtension = extension;
@@ -509,7 +399,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    * @returns the Extension having the provided url
    * @throws AssertionError for invalid url
    */
-  public getModifierExtensionByUrl(url: fhirUri): Extension | undefined {
+  public getModifierExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
     if (this.hasModifierExtension()) {
       const results = this.getModifierExtension().filter((ext) => ext.getUrl() && ext.getUrl() === url);
@@ -528,8 +418,8 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    * @param extension - the Extension value to add to the `modifierExtension` property array
    * @returns this
    */
-  public addModifierExtension(extension: Extension | undefined): this {
-    if (isDefined<Extension>(extension)) {
+  public addModifierExtension(extension: IExtension | undefined): this {
+    if (isDefined<IExtension>(extension)) {
       const optErrMsg = `Invalid BackboneElement.modifierExtension; Provided extension is not an instance of Extension.`;
       assertFhirType<Extension>(extension, Extension, optErrMsg);
       this.initModifierExtension();
@@ -558,7 +448,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    */
   private initModifierExtension(): void {
     if (!this.hasModifierExtension()) {
-      this.modifierExtension = [] as Extension[];
+      this.modifierExtension = [] as IExtension[];
     }
   }
 
@@ -572,7 +462,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
     return (
       this.modifierExtension !== undefined &&
       this.modifierExtension.length > 0 &&
-      this.modifierExtension.some((item: Extension) => !item.isEmpty())
+      this.modifierExtension.some((item: IExtension) => !item.isEmpty())
     );
   }
 
@@ -605,7 +495,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
    */
   protected override copyValues(dest: BackboneElement): void {
     super.copyValues(dest);
-    const modifierExtensionList = copyListValues<Extension>(this.modifierExtension);
+    const modifierExtensionList = copyListValues<IExtension>(this.modifierExtension);
     dest.modifierExtension = modifierExtensionList.length === 0 ? undefined : modifierExtensionList;
   }
 
@@ -645,7 +535,7 @@ export abstract class BackboneElement extends Element implements IBase, IBaseMod
  * @category Base Models
  * @see [FHIR DataType](http://hl7.org/fhir/StructureDefinition/DataType)
  */
-export abstract class DataType extends Element implements IBase {
+export abstract class DataType extends Element implements IDataType {
   protected constructor() {
     super();
   }
@@ -656,6 +546,13 @@ export abstract class DataType extends Element implements IBase {
    * @returns the a new instance copied from the current instance
    */
   abstract override copy(): DataType;
+
+  /**
+   * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
+   */
+  public isDataType(): boolean {
+    return true;
+  }
 }
 
 /**
@@ -675,7 +572,7 @@ export abstract class DataType extends Element implements IBase {
  * @category Base Models
  * @see [FHIR BackboneType](http://hl7.org/fhir/StructureDefinition/BackboneType)
  */
-export abstract class BackboneType extends DataType implements IBase, IBaseModifierExtension {
+export abstract class BackboneType extends DataType implements IBackboneType {
   protected constructor() {
     super();
   }
@@ -695,13 +592,13 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
    * - **isModifierReason:** Modifier extensions are expected to modify the meaning or interpretation of the element that contains them
    * - **isSummary:** true
    */
-  private modifierExtension?: Extension[] | undefined;
+  private modifierExtension?: IExtension[] | undefined;
 
   /**
    * @returns the array of `modifierExtension` values
    */
-  public getModifierExtension(): Extension[] {
-    return this.modifierExtension ?? ([] as Extension[]);
+  public getModifierExtension(): IExtension[] {
+    return this.modifierExtension ?? ([] as IExtension[]);
   }
 
   /**
@@ -710,7 +607,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
    * @param extension - array of Extensions
    * @returns this
    */
-  public setModifierExtension(extension: Extension[] | undefined): this {
+  public setModifierExtension(extension: IExtension[] | undefined): this {
     const optErrMsg = `Invalid BackboneType.modifierExtension; Provided extension array has an element that is not an instance of Extension.`;
     assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
     this.modifierExtension = extension;
@@ -738,7 +635,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
    * @returns the Extension having the provided url
    * @throws AssertionError for invalid url
    */
-  public getModifierExtensionByUrl(url: fhirUri): Extension | undefined {
+  public getModifierExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
     if (this.hasModifierExtension()) {
       const results = this.getModifierExtension().filter((ext) => ext.getUrl() && ext.getUrl() === url);
@@ -757,8 +654,8 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
    * @param extension - the Extension value to add to the `modifierExtension` property array
    * @returns this
    */
-  public addModifierExtension(extension: Extension | undefined): this {
-    if (isDefined<Extension>(extension)) {
+  public addModifierExtension(extension: IExtension | undefined): this {
+    if (isDefined<IExtension>(extension)) {
       const optErrMsg = `Invalid BackboneType.modifierExtension; Provided extension is not an instance of Extension.`;
       assertFhirType<Extension>(extension, Extension, optErrMsg);
       this.initModifierExtension();
@@ -787,7 +684,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
    */
   private initModifierExtension(): void {
     if (!this.hasModifierExtension()) {
-      this.modifierExtension = [] as Extension[];
+      this.modifierExtension = [] as IExtension[];
     }
   }
 
@@ -801,7 +698,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
     return (
       this.modifierExtension !== undefined &&
       this.modifierExtension.length > 0 &&
-      this.modifierExtension.some((item: Extension) => !item.isEmpty())
+      this.modifierExtension.some((item: IExtension) => !item.isEmpty())
     );
   }
 
@@ -834,7 +731,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
    */
   protected override copyValues(dest: BackboneType): void {
     super.copyValues(dest);
-    const modifierExtensionList = copyListValues<Extension>(this.modifierExtension);
+    const modifierExtensionList = copyListValues<IExtension>(this.modifierExtension);
     dest.modifierExtension = modifierExtensionList.length === 0 ? undefined : modifierExtensionList;
   }
 
@@ -875,7 +772,7 @@ export abstract class BackboneType extends DataType implements IBase, IBaseModif
  * @typeParam T - the primitive type
  * @see [FHIR PrimitiveType](http://hl7.org/fhir/StructureDefinition/PrimitiveType)
  */
-export abstract class PrimitiveType<T> extends DataType implements IBase {
+export abstract class PrimitiveType<T> extends DataType implements IPrimitiveType<T> {
   protected constructor() {
     super();
     this.coercedValue = undefined;
@@ -1043,13 +940,13 @@ export abstract class PrimitiveType<T> extends DataType implements IBase {
  * @see [FHIR Extension](http://hl7.org/fhir/StructureDefinition/Extension)
  * @see [FHIR Extensibility](https://hl7.org/fhir/R4/extensibility.html)
  */
-export class Extension extends Element implements IBase {
+export class Extension extends Element implements IExtension {
   /**
    * @param url - Source of the definition for the Extension - a logical name or a URL.
    * @param value - Value of Extension
    * @throws PrimitiveTypeError for invalid url
    */
-  constructor(url: fhirUri | null, value?: DataType) {
+  constructor(url: fhirUri | null, value?: IDataType) {
     super();
 
     if (url === null) {
@@ -1089,7 +986,7 @@ export class Extension extends Element implements IBase {
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private value?: DataType | undefined;
+  private value?: IDataType | undefined;
 
   /**
    * @returns the `url` property value
@@ -1122,7 +1019,7 @@ export class Extension extends Element implements IBase {
   /**
    * @returns the `value` property value
    */
-  public getValue(): DataType | undefined {
+  public getValue(): IDataType | undefined {
     return this.value;
   }
 
@@ -1135,8 +1032,8 @@ export class Extension extends Element implements IBase {
    * @returns this
    */
   @OpenDataTypes('Extension.value[x]')
-  public setValue(value: DataType | undefined): this {
-    if (isDefined<DataType>(value)) {
+  public setValue(value: IDataType | undefined): this {
+    if (isDefined<IDataType>(value)) {
       // assertFhirType<DataType>(value, DataType) unnecessary because @OpenDataTypes decorator ensures proper type/value
       this.value = value;
     } else {
@@ -1149,7 +1046,7 @@ export class Extension extends Element implements IBase {
    * @returns `true` if the `value` property exists and has a value; `false` otherwise
    */
   public hasValue(): boolean {
-    return isDefined<DataType>(this.value) && !this.value.isEmpty();
+    return isDefined<IDataType>(this.value) && !this.value.isEmpty();
   }
 
   /**
@@ -1186,7 +1083,7 @@ export class Extension extends Element implements IBase {
   protected override copyValues(dest: Extension): void {
     super.copyValues(dest);
     dest.url = this.url;
-    dest.value = this.value ? this.value.copy() : undefined;
+    dest.value = this.value ? (this.value.copy() as unknown as IDataType) : undefined;
   }
 
   /**
@@ -1207,14 +1104,14 @@ export class Extension extends Element implements IBase {
       jsonObj['id'] = this.getId()!;
     }
 
-    // The url is a mandatory attribute / property so it should always exist.
+    // The url is a mandatory attribute / property, so it should always exist.
     if (this.hasUrl()) {
       jsonObj['url'] = this.getUrl();
     } else {
       throw new FhirError(`${REQUIRED_PROPERTIES_DO_NOT_EXIST} Extension.url`);
     }
 
-    // An extension SHALL have either a value (i.e. a value[x] element) or sub-extensions, but not both.
+    // An extension SHALL have either a value (i.e., a value[x] element) or sub-extensions, but not both.
     // If present, the value[x] element SHALL have content (value attribute or other elements)
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -1250,8 +1147,8 @@ export class Extension extends Element implements IBase {
  *
  * @category Utilities: JSON
  */
-export function setPolymorphicValueJson(value: DataType, propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<DataType>(value, 'Provided value is undefined/null');
+export function setPolymorphicValueJson(value: IDataType, propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IDataType>(value, 'Provided value is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assertFhirDataType(value, 'Provided value is not an instance of DataType');
 
@@ -1292,8 +1189,12 @@ export function setPolymorphicValueJson(value: DataType, propName: string, jsonO
  *
  * @category Utilities: JSON
  */
-export function setFhirExtensionJson(extensions: Extension[], jsonObj: JSON.Object, isModifierExtension = false): void {
-  assertIsDefined<Extension[]>(extensions, 'Provided extensions is undefined/null');
+export function setFhirExtensionJson(
+  extensions: IExtension[],
+  jsonObj: JSON.Object,
+  isModifierExtension = false,
+): void {
+  assertIsDefined<IExtension[]>(extensions, 'Provided extensions is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
 
   const jsonExtension = [] as JSON.Array;
@@ -1325,8 +1226,8 @@ export function setFhirExtensionJson(extensions: Extension[], jsonObj: JSON.Obje
  * @see [JSON representation of primitive elements](https://hl7.org/fhir/R4/json.html#primitive)
  * @category Utilities: JSON
  */
-export function setFhirPrimitiveJson<T>(ptElement: PrimitiveType<T>, propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<PrimitiveType<T>>(ptElement, 'Provided ptElement is undefined/null');
+export function setFhirPrimitiveJson<T>(ptElement: IPrimitiveType<T>, propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IPrimitiveType<T>>(ptElement, 'Provided ptElement is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1360,11 +1261,11 @@ export function setFhirPrimitiveJson<T>(ptElement: PrimitiveType<T>, propName: s
  * @category Utilities: JSON
  */
 export function setFhirPrimitiveListJson<T>(
-  ptElements: PrimitiveType<T>[],
+  ptElements: IPrimitiveType<T>[],
   propName: string,
   jsonObj: JSON.Object,
 ): void {
-  assertIsDefined<PrimitiveType<T>[]>(ptElements, 'Provided ptElements is undefined/null');
+  assertIsDefined<IPrimitiveType<T>[]>(ptElements, 'Provided ptElements is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1417,8 +1318,8 @@ export function setFhirPrimitiveListJson<T>(
  *
  * @category Utilities: JSON
  */
-export function setFhirComplexJson(cElement: DataType, propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<DataType>(cElement, 'Provided cElement is undefined/null');
+export function setFhirComplexJson(cElement: IDataType, propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IDataType>(cElement, 'Provided cElement is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1443,8 +1344,8 @@ export function setFhirComplexJson(cElement: DataType, propName: string, jsonObj
  *
  * @category Utilities: JSON
  */
-export function setFhirComplexListJson(cElements: DataType[], propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<DataType[]>(cElements, 'Provided cElements is undefined/null');
+export function setFhirComplexListJson(cElements: IDataType[], propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IDataType[]>(cElements, 'Provided cElements is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1474,8 +1375,8 @@ export function setFhirComplexListJson(cElements: DataType[], propName: string, 
  *
  * @category Utilities: JSON
  */
-export function setFhirBackboneElementJson(bElement: BackboneElement, propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<BackboneElement>(bElement, 'Provided bElement is undefined/null');
+export function setFhirBackboneElementJson(bElement: IBackboneElement, propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IBackboneElement>(bElement, 'Provided bElement is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1501,11 +1402,11 @@ export function setFhirBackboneElementJson(bElement: BackboneElement, propName: 
  * @category Utilities: JSON
  */
 export function setFhirBackboneElementListJson(
-  bElements: BackboneElement[],
+  bElements: IBackboneElement[],
   propName: string,
   jsonObj: JSON.Object,
 ): void {
-  assertIsDefined<BackboneElement[]>(bElements, 'Provided bElements is undefined/null');
+  assertIsDefined<IBackboneElement[]>(bElements, 'Provided bElements is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1535,8 +1436,8 @@ export function setFhirBackboneElementListJson(
  *
  * @category Utilities: JSON
  */
-export function setFhirBackboneTypeJson(bType: BackboneType, propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<BackboneType>(bType, 'Provided bType is undefined/null');
+export function setFhirBackboneTypeJson(bType: IBackboneType, propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IBackboneType>(bType, 'Provided bType is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1561,8 +1462,8 @@ export function setFhirBackboneTypeJson(bType: BackboneType, propName: string, j
  *
  * @category Utilities: JSON
  */
-export function setFhirBackboneTypeListJson(bTypes: BackboneType[], propName: string, jsonObj: JSON.Object): void {
-  assertIsDefined<BackboneType[]>(bTypes, 'Provided bTypes is undefined/null');
+export function setFhirBackboneTypeListJson(bTypes: IBackboneType[], propName: string, jsonObj: JSON.Object): void {
+  assertIsDefined<IBackboneType[]>(bTypes, 'Provided bTypes is undefined/null');
   assertIsDefined<string>(propName, 'Provided propName is undefined/null');
   assertIsDefined<JSON.Object>(jsonObj, 'Provided jsonObj is undefined/null');
   assert(!isEmpty(propName), 'Provided propName is empty');
@@ -1626,7 +1527,7 @@ export function OpenDataTypes(sourceField: string) {
         `OpenDataTypes decorator on ${methodName} (${sourceField}) expects a single argument to be type of 'DataType | undefined | null'`,
       );
       // undefined supports optional argument
-      const value = args[0] as DataType | undefined | null;
+      const value = args[0] as IDataType | undefined | null;
 
       // Return the original function if there is nothing for this decorator to do:
       // - Decorator should only be used on a method defined as:
@@ -1708,7 +1609,7 @@ export function assertFhirBackboneType(
  *
  * @category Type Guards/Assertions
  */
-export function assertFhirDataType(classInstance: unknown, errorMessage?: string): asserts classInstance is DataType {
+export function assertFhirDataType(classInstance: unknown, errorMessage?: string): asserts classInstance is IDataType {
   if (!(classInstance instanceof DataType)) {
     const errMsg = errorMessage ?? `Provided instance is not an instance of DataType.`;
     throw new InvalidTypeError(errMsg);

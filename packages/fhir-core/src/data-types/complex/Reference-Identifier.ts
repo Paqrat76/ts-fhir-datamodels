@@ -35,10 +35,9 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { FhirResourceType, RESOURCE_TYPES } from '../../base-models/FhirResourceType';
-import { IBase } from '../../base-models/IBase';
+import { IDataType } from '../../base-models/library-interfaces';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
-import { IdentifierUseEnum } from '../code-systems/IdentiferUseEnum';
+import { IdentifierUseEnum } from '../code-systems/IdentifierUseEnum';
 import { CodeableConcept } from './CodeableConcept';
 import { Period } from './Period';
 import { assertEnumCodeType, CodeType, EnumCodeType } from '../primitive/CodeType';
@@ -53,18 +52,14 @@ import {
 } from '../primitive/primitive-types';
 import { StringType } from '../primitive/StringType';
 import { UriType } from '../primitive/UriType';
-import { InvalidTypeError } from '../../errors/InvalidTypeError';
 import { isEmpty } from '../../utility/common-util';
-import {
-  getPrimitiveTypeJson,
-  parseCodeType,
-  parseStringType,
-  parseUriType,
-  processElementJson,
-} from '../../utility/fhir-parsers';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
-import { assertFhirType, FhirTypeGuard, isDefined } from '../../utility/type-guards';
+import { assertFhirType, isDefined } from '../../utility/type-guards';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
+import { ReferenceTargets } from '../../utility/decorators';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -86,7 +81,7 @@ import { assertFhirType, FhirTypeGuard, isDefined } from '../../utility/type-gua
  * @category Datatypes: Complex
  * @see [FHIR Reference](http://hl7.org/fhir/StructureDefinition/Reference)
  */
-export class Reference extends DataType implements IBase {
+export class Reference extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -106,7 +101,9 @@ export class Reference extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Reference';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Reference();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -122,7 +119,7 @@ export class Reference extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setReferenceElement(datatype);
     }
 
@@ -136,7 +133,7 @@ export class Reference extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: UriType | undefined = parseUriType(dtJson, dtSiblingJson);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setTypeElement(datatype);
     }
 
@@ -158,7 +155,7 @@ export class Reference extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setDisplayElement(datatype);
     }
 
@@ -532,7 +529,7 @@ export class Reference extends DataType implements IBase {
  * @category Datatypes: Complex
  * @see [FHIR Identifier](http://hl7.org/fhir/StructureDefinition/Identifier)
  */
-export class Identifier extends DataType implements IBase {
+export class Identifier extends DataType implements IDataType {
   constructor() {
     super();
 
@@ -553,7 +550,9 @@ export class Identifier extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Identifier';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Identifier();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -569,7 +568,7 @@ export class Identifier extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: CodeType | undefined = parseCodeType(dtJson, dtSiblingJson);
+      const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       instance.setUseElement(datatype);
     }
 
@@ -591,7 +590,7 @@ export class Identifier extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: UriType | undefined = parseUriType(dtJson, dtSiblingJson);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSystemElement(datatype);
     }
 
@@ -605,7 +604,7 @@ export class Identifier extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setValueElement(datatype);
     }
 
@@ -1132,124 +1131,3 @@ export class Identifier extends DataType implements IBase {
 }
 
 /* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
-
-/**
- * Factory function for ReferenceTargets decorator.
- *
- * @remarks
- * This decorator validates the provided Reference.reference value for relative or absolute
- * references are only for the defined ElementDefinition's 'targetProfile' value(s).
- *
- * @param sourceField - source field name
- * @param referenceTargets - FhirResourceType array of target references.
- *                           An empty array is allowed and represents "Any" resource.
- * @returns ReferenceTargets decorator
- * @throws AssertionError for invalid uses
- * @throws InvalidTypeError for actual reference type do not agree with the specified ReferenceTargets
- *
- * @category Decorators
- */
-export function ReferenceTargets(sourceField: string, referenceTargets: FhirResourceType[]) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function <This, Args extends any[], Return>(
-    originalMethod: (this: This, ...args: Args) => Return,
-    context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>,
-  ) {
-    return function (this: This, ...args: Args): Return {
-      const methodName = String(context.name);
-      assert(args.length === 1, `ReferenceTargets decorator on ${methodName} (${sourceField}) expects one argument`);
-
-      // If nothing is provided to the originalMethod, there is nothing to check
-      if (args[0] === undefined || args[0] === null) {
-        return originalMethod.call(this, ...args);
-      }
-
-      const isAnyResource = referenceTargets.length === 0;
-      if (!isAnyResource) {
-        // Verify referenceTargets contain valid, non-duplicate values
-        const referenceTargetSet = new Set(referenceTargets);
-        assert(
-          referenceTargets.length === referenceTargetSet.size,
-          `ReferenceTargets decorator on ${methodName} (${sourceField}) contains duplicate referenceTargets`,
-        );
-        assert(
-          referenceTargets.every((refTarget) => RESOURCE_TYPES.includes(refTarget)),
-          `ReferenceTargets decorator on ${methodName} (${sourceField}) contains invalid referenceTargets`,
-        );
-      }
-
-      if (Array.isArray(args[0])) {
-        args[0].forEach((argItem, idx) => {
-          assert(
-            FhirTypeGuard(argItem, Reference),
-            `ReferenceTargets decorator on ${methodName} (${sourceField}) expects argument[${String(idx)}] to be type of 'Reference'`,
-          );
-          validateReferenceArg(referenceTargets, argItem, isAnyResource, sourceField, methodName, idx);
-        });
-      } else {
-        assert(
-          FhirTypeGuard(args[0], Reference),
-          `ReferenceTargets decorator on ${methodName} (${sourceField}) expects a single argument to be type of 'Reference | undefined | null'`,
-        );
-        validateReferenceArg(referenceTargets, args[0], isAnyResource, sourceField, methodName);
-      }
-
-      // Since the calls to validateArg(...) above did not throw an error, allow the originalMethod to be executed.
-      return originalMethod.call(this, ...args);
-    };
-  };
-}
-
-/**
- * Validate the Reference value throwing an InvalidTypeError if it is not valid. Only used by the
- * ReferenceTargets decorator function.
- *
- * @param referenceTargets - FhirResourceType array of target references.
- * @param argValue - Argument value from original decorated function
- * @param isAnyResource - true if referenceTargets array is empty
- * @param sourceField - source field name
- * @param methodName - Decorated method's name
- * @param arrayIndex - Argument for Reference[] index value; undefined for non-array
- * @throws InvalidTypeError if Reference.reference exists with an invalid value
- */
-function validateReferenceArg(
-  referenceTargets: FhirResourceType[],
-  argValue: Reference,
-  isAnyResource: boolean,
-  sourceField: string,
-  methodName: string,
-  arrayIndex?: number,
-) {
-  // Return the original function if there is nothing for this decorator to do:
-  // - referenceTargets array is empty (isAnyResource) - implies "Any" resource
-  // - Decorator should only be used on a methods defined as:
-  //   `public set[PropertyName](value: Reference | undefined): this`
-  //   `public set[PropertyName](value: Reference[] | undefined): this`
-  //   `public add[PropertyName](value: Reference | undefined): this`
-  // - The value of type Reference should have the Reference.reference property set
-  // - The referenceTargets array should have at least one valid FhirResourceType value
-  // - Reference is to a "contained" resource - reference value begins with "#"
-
-  const argValueReference = argValue.getReference();
-  const isReferenceNotApplicable = argValueReference === undefined ? true : argValueReference.startsWith('#');
-  if (isAnyResource || !(methodName.startsWith('set') || methodName.startsWith('add')) || isReferenceNotApplicable) {
-    return;
-  }
-
-  // NOTE: If isAnyResource is true, this function already returned above; therefore, referenceTargets used below
-  //       has values to validate against.
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const referenceValue = argValue.getReference()!;
-  // referenceValue (Reference.reference) valid examples:
-  // - Organization/1234
-  // - https://somedomain.com/path/Organization/1234
-  const isValidReference = referenceTargets.some((refTarget) => referenceValue.includes(`${refTarget}/`));
-
-  if (!isValidReference) {
-    const arrayIndexStr = arrayIndex === undefined ? '' : `[${String(arrayIndex)}]`;
-    throw new InvalidTypeError(
-      `ReferenceTargets decorator on ${methodName} (${sourceField}) expects argument${arrayIndexStr} (${referenceValue}) to be a valid 'Reference' type`,
-    );
-  }
-}

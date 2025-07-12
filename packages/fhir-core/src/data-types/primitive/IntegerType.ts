@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirInteger, fhirIntegerSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Integer Class
@@ -40,7 +41,7 @@ import { fhirInteger, fhirIntegerSchema, parseFhirPrimitiveData } from './primit
  * @category Datatypes: Primitive
  * @see [FHIR integer](http://hl7.org/fhir/StructureDefinition/integer)
  */
-export class IntegerType extends PrimitiveType<fhirInteger> {
+export class IntegerType extends PrimitiveType<fhirInteger> implements IPrimitiveType<fhirInteger> {
   /**
    * @param value - the value of the primitive `fhirInteger`
    * @throws PrimitiveTypeError for invalid value

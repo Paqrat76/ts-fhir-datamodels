@@ -23,8 +23,12 @@
  *
  */
 
+/**
+ * This code was copied from @paq-ts-fhir/fhir-core/src/base-models/fhir-data-types.ts so this Generator
+ * does not take a dependency on @paq-ts-fhir/fhir-core.
+ */
+
 import { upperFirst } from 'lodash';
-import { isPrimitiveDataType } from './templates/utils-hbs';
 
 /**
  * FHIR open data types
@@ -37,9 +41,9 @@ import { isPrimitiveDataType } from './templates/utils-hbs';
  * NOTE: This set of data types is a subset of DATA_TYPES.
  *
  * @category Base Models
- * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
+ * @see [Open Type Element](https://hl7.org/fhir/datatypes.html#open)
  */
-const OPEN_DATA_TYPES = [
+export const OPEN_DATA_TYPES = [
   // Primitive Types
   'base64Binary',
   'boolean',
@@ -82,7 +86,6 @@ const OPEN_DATA_TYPES = [
   'Ratio',
   'RatioRange', // added in FHIR R5
   'Reference',
-  'RelativeTime', // added in FHIR R6
   'SampledData',
   'Signature',
   'Timing',
@@ -103,9 +106,23 @@ const OPEN_DATA_TYPES = [
 ] as const;
 
 /**
+ * FHIR open data types key names (i.e., valueString, valuePeriod, etc.)
+ *
+ * @category Base Models
+ * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
+ */
+export const OPEN_DATA_TYPE_KEY_NAMES = OPEN_DATA_TYPES.map((odt) => `value${upperFirst(odt)}`);
+
+/**
  * Non-open data types that are valid data types
  */
-const NON_OPEN_DATA_TYPES = ['MonetaryComponent', 'VirtualServiceDetail', 'Narrative', 'xhtml'] as const;
+const NON_OPEN_DATA_TYPES = [
+  'MonetaryComponent',
+  'Narrative',
+  'RelativeTime', // added in FHIR R6
+  'VirtualServiceDetail',
+  'xhtml',
+] as const;
 
 /**
  * Non-open data types that are valid data types representing structural data types
@@ -155,8 +172,8 @@ export const DATA_TYPES = [
 export type FhirDataType = (typeof DATA_TYPES)[number];
 
 /**
- * A constant that holds the mappings of FHIR data types.
- * This object maps specific FHIR data type names to their corresponding FHIR data type representations.
+ * A constant that holds the mappings of FHIR data model types.
+ * This object maps specific FHIR data type names to their corresponding FHIR data model representations.
  *
  * @category Base Models
  */
@@ -172,9 +189,10 @@ export const DATA_TYPE_MAPPINGS: ReadonlyMap<FhirDataType, string> = getDataType
 function getDataTypeMappings(): ReadonlyMap<FhirDataType, string> {
   const map = new Map<FhirDataType, string>();
   DATA_TYPES.forEach((dt: string): void => {
-    const value: string = isPrimitiveDataType(dt as FhirDataType) ? `${upperFirst(dt)}Type` : dt;
+    // Primitive data type names begin with lowercase letters.
+    // Primitive data models names begin with uppercase letters and end with 'Type'.
+    const value: string = /^[a-z].*$/.test(dt as FhirDataType) ? `${upperFirst(dt)}Type` : dt;
     map.set(dt as FhirDataType, value);
   });
-  const dtRoMap: ReadonlyMap<FhirDataType, string> = new Map<FhirDataType, string>(map);
-  return dtRoMap;
+  return new Map<FhirDataType, string>(map);
 }

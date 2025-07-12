@@ -246,11 +246,11 @@ describe('Primitive Type Schemas', () => {
       parseResult = fhirInteger64Schema.safeParse(validInt64);
       expect(parseResult.success).toBe(true);
 
-      let invalidInt64 = BigInt(FHIR_MIN_INTEGER64) - 1n;
+      let invalidInt64 = BigInt(FHIR_MIN_INTEGER64) - BigInt(1);
       parseResult = fhirInteger64Schema.safeParse(invalidInt64);
       expect(parseResult.success).toBe(false);
 
-      invalidInt64 = BigInt(FHIR_MAX_INTEGER64) + 1n;
+      invalidInt64 = BigInt(FHIR_MAX_INTEGER64) + BigInt(1);
       parseResult = fhirInteger64Schema.safeParse(invalidInt64);
       expect(parseResult.success).toBe(false);
     });
@@ -678,6 +678,14 @@ describe('Primitive Type Schemas', () => {
       const parseBigIntResult = parseFhirPrimitiveData(validInt64, fhirInteger64Schema);
       expect(parseBigIntResult).toStrictEqual(validInt64);
 
+      const validPositiveInt = 1;
+      const parsePositiveIntResult = parseFhirPrimitiveData(validPositiveInt, fhirPositiveIntSchema);
+      expect(parsePositiveIntResult).toStrictEqual(parsePositiveIntResult);
+
+      const validUnsignedInt = 0;
+      const parseUnsignedIntResult = parseFhirPrimitiveData(validUnsignedInt, fhirUnsignedIntSchema);
+      expect(parseUnsignedIntResult).toStrictEqual(parseUnsignedIntResult);
+
       const validDecimal = 1234.5678901234567;
       const parseDecResult = parseFhirPrimitiveData(validDecimal, fhirDecimalSchema);
       expect(parseDecResult).toStrictEqual(validDecimal);
@@ -705,9 +713,23 @@ describe('Primitive Type Schemas', () => {
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid FHIR primitive data value`);
 
-      const invalidInt64 = BigInt(FHIR_MAX_INTEGER64) + 1n;
+      const invalidInt64 = BigInt(FHIR_MAX_INTEGER64) + BigInt(1);
       t = () => {
         parseFhirPrimitiveData(invalidInt64, fhirInteger64Schema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value`);
+
+      const invalidPositiveInt = 0;
+      t = () => {
+        parseFhirPrimitiveData(invalidPositiveInt, fhirPositiveIntSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value`);
+
+      const invalidUnsignedInt = -1;
+      t = () => {
+        parseFhirPrimitiveData(invalidUnsignedInt, fhirUnsignedIntSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid FHIR primitive data value`);

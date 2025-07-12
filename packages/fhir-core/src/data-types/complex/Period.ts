@@ -24,16 +24,18 @@
 import { strict as assert } from 'node:assert';
 import { DateTime } from 'luxon';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { IBase } from '../../base-models/IBase';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { DateTimeType } from '../primitive/DateTimeType';
 import { fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from '../primitive/primitive-types';
 import { FhirError } from '../../errors/FhirError';
 import { isEmpty } from '../../utility/common-util';
-import { getPrimitiveTypeJson, parseDateTimeType, processElementJson } from '../../utility/fhir-parsers';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, isDefined } from '../../utility/type-guards';
+import { IDataType } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -55,7 +57,7 @@ import { assertFhirType, isDefined } from '../../utility/type-guards';
  * @category Datatypes: Complex
  * @see [FHIR Period](http://hl7.org/fhir/StructureDefinition/Period)
  */
-export class Period extends DataType implements IBase {
+export class Period extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -75,7 +77,9 @@ export class Period extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'Period';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new Period();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -91,7 +95,7 @@ export class Period extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: DateTimeType | undefined = parseDateTimeType(dtJson, dtSiblingJson);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       instance.setStartElement(datatype);
     }
 
@@ -105,7 +109,7 @@ export class Period extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: DateTimeType | undefined = parseDateTimeType(dtJson, dtSiblingJson);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       instance.setEndElement(datatype);
     }
 

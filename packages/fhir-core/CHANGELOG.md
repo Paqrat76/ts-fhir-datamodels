@@ -19,6 +19,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.5.0] - 2025-07-12
+
+### Changed
+
+- Updated dependencies
+- Minor code cleanup
+
+### Fixed
+
+- Breaking changes caused by upgrading Zod to new v4.0
+
+
+## [0.4.0] - 2025-07-08
+
+### Added
+
+- Interfaces for each of the core model classes in library-interfaces.ts
+- FhirParser class
+- Unit tests to increase code coverage
+
+### Changed
+
+- Updated dependencies
+- Moved IBase into library-interfaces.ts, deleting IBase.ts
+- Updated utilities to reference the core interfaces rather than the core model classes
+- Updated data type classes to reference the core interfaces rather than the core model classes
+- Moved all parser utilities into new FhirParser class
+- Updated all FHIR data type lists and renamed FhirDataType.ts to fhir-data-types.ts
+
+### Removed
+
+- FhirResourceType thereby eliminating the typing of FHIR resources types
+
+
 ## [0.3.4] - 2025-06-18
 
 ### Changed

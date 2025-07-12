@@ -28,13 +28,11 @@ import {
   assertFhirDataType,
   assertFhirPrimitiveType,
 } from '../../base-models/core-fhir-models';
-import { isFhirResourceType } from '../../base-models/FhirResourceType';
 import { assertFhirResourceType } from '../../base-models/Resource';
 import { assertEnumCodeType, assertEnumCodeTypeList, EnumCodeType } from '../../data-types/primitive/CodeType';
 import { StringType } from '../../data-types/primitive/StringType';
 import { InvalidCodeError } from '../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
-import { assertFhirResourceTypeJson } from '../../utility/fhir-parsers';
 import {
   assertFhirType,
   assertFhirTypeList,
@@ -51,24 +49,17 @@ import {
   isString,
 } from '../../utility/type-guards';
 import {
+  assertFhirResourceTypeJson,
   MockBackboneElement,
   MockBackboneType,
   MockCodeEnum,
   MockComplexDataType,
   MockFhirModel,
-  MockResource,
   MockTask,
 } from '../test-utils';
 import { TestTypeEnum } from '../TestTypeEnum';
 
 describe('type-guards', () => {
-  describe('FhirResourceType', () => {
-    it('should return true/false as appropriate', () => {
-      expect(isFhirResourceType('Account')).toBe(true);
-      expect(isFhirResourceType('Invalid')).toBe(false);
-    });
-  });
-
   describe('isDefined/assertIsDefined', () => {
     const UNDEFINED_VALUE = undefined;
     const NULL_VALUE = null;
@@ -565,25 +556,6 @@ describe('type-guards', () => {
       const errMessage = `Provided testFhirModel is not an instance of Resource.`;
       const t = () => {
         assertFhirResourceType(testFhirModel, errMessage);
-      };
-      expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(errMessage);
-    });
-
-    it('should throw InvalidTypeError for invalid FhirResourceType', () => {
-      const testFhirResource = new MockResource();
-      const t = () => {
-        assertFhirResourceType(testFhirResource);
-      };
-      expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Provided instance (Resource) is not a valid resource type.`);
-    });
-
-    it('should throw InvalidTypeError for invalid FhirResourceType with error message override', () => {
-      const testFhirResource = new MockResource();
-      const errMessage = `Provided testFhirResource is not a valid resource type.`;
-      const t = () => {
-        assertFhirResourceType(testFhirResource, errMessage);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(errMessage);

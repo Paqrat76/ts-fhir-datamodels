@@ -23,16 +23,18 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexListJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { IBase } from '../../base-models/IBase';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { Coding } from './Coding';
 import { fhirString, fhirStringSchema, parseFhirPrimitiveData } from '../primitive/primitive-types';
 import { StringType } from '../primitive/StringType';
 import { isEmpty } from '../../utility/common-util';
-import { getPrimitiveTypeJson, parseStringType, processElementJson } from '../../utility/fhir-parsers';
 import { copyListValues, isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '../../utility/type-guards';
+import { ICoding, IDataType } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
+import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
 
 /* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
@@ -54,7 +56,7 @@ import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '..
  * @category Datatypes: Complex
  * @see [FHIR CodeableConcept](http://hl7.org/fhir/StructureDefinition/CodeableConcept)
  */
-export class CodeableConcept extends DataType implements IBase {
+export class CodeableConcept extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -74,7 +76,9 @@ export class CodeableConcept extends DataType implements IBase {
     const source = isDefined<string>(optSourceField) ? optSourceField : 'CodeableConcept';
     const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
     const instance = new CodeableConcept();
-    processElementJson(instance, datatypeJsonObj);
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processElementJson(instance, datatypeJsonObj);
 
     let fieldName: string;
     let sourceField: string;
@@ -86,7 +90,7 @@ export class CodeableConcept extends DataType implements IBase {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Coding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        const datatype: ICoding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype !== undefined) {
           instance.addCoding(datatype);
         }
@@ -104,7 +108,7 @@ export class CodeableConcept extends DataType implements IBase {
         fieldName,
         primitiveJsonType,
       );
-      const datatype: StringType | undefined = parseStringType(dtJson, dtSiblingJson);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setTextElement(datatype);
     }
 
@@ -126,7 +130,7 @@ export class CodeableConcept extends DataType implements IBase {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private coding?: Coding[] | undefined;
+  private coding?: ICoding[] | undefined;
 
   /**
    * CodeableConcept.text Element
@@ -147,7 +151,7 @@ export class CodeableConcept extends DataType implements IBase {
   /**
    * @returns the `coding` property value as a Coding array
    */
-  public getCoding(): Coding[] {
+  public getCoding(): ICoding[] {
     return this.coding ?? ([] as Coding[]);
   }
 
@@ -157,10 +161,10 @@ export class CodeableConcept extends DataType implements IBase {
    * @param value - the `coding` array value
    * @returns this
    */
-  public setCoding(value: Coding[] | undefined): this {
-    if (isDefinedList<Coding>(value)) {
+  public setCoding(value: ICoding[] | undefined): this {
+    if (isDefinedList<ICoding>(value)) {
       const optErrMsg = `Invalid CodeableConcept.coding; Provided value array has an element that is not an instance of Coding.`;
-      assertFhirTypeList<Coding>(value, Coding, optErrMsg);
+      assertFhirTypeList<ICoding>(value, Coding, optErrMsg);
       this.coding = value;
     } else {
       this.coding = undefined;
@@ -174,10 +178,10 @@ export class CodeableConcept extends DataType implements IBase {
    * @param value - the `coding` value
    * @returns this
    */
-  public addCoding(value: Coding | undefined): this {
-    if (isDefined<Coding>(value)) {
+  public addCoding(value: ICoding | undefined): this {
+    if (isDefined<ICoding>(value)) {
       const optErrMsg = `Invalid CodeableConcept.coding; Provided value is not an instance of Coding.`;
-      assertFhirType<Coding>(value, Coding, optErrMsg);
+      assertFhirType<ICoding>(value, Coding, optErrMsg);
       this.initCoding();
       this.coding?.push(value);
     }
@@ -188,14 +192,14 @@ export class CodeableConcept extends DataType implements IBase {
    * @returns `true` if the `coding` property exists and has a value; `false` otherwise
    */
   public hasCoding(): boolean {
-    return isDefinedList<Coding>(this.coding) && this.coding.some((item: Coding) => !item.isEmpty());
+    return isDefinedList<ICoding>(this.coding) && this.coding.some((item: ICoding) => !item.isEmpty());
   }
 
   /**
    * Initialize the `coding` property
    */
   private initCoding(): void {
-    this.coding ??= [] as Coding[];
+    this.coding ??= [] as ICoding[];
   }
 
   /**
@@ -288,7 +292,7 @@ export class CodeableConcept extends DataType implements IBase {
    */
   protected override copyValues(dest: CodeableConcept): void {
     super.copyValues(dest);
-    const codingList = copyListValues<Coding>(this.coding);
+    const codingList = copyListValues<ICoding>(this.coding);
     dest.coding = codingList.length === 0 ? undefined : codingList;
     dest.text = this.text?.copy();
   }

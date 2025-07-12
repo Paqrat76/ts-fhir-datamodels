@@ -25,7 +25,13 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Handlebars from 'handlebars';
 import { camelCase, upperFirst } from 'lodash';
-import { getRequiredConstructorParams } from './utils-hbs';
+import {
+  getCastInterface,
+  getComplexTypeImplements,
+  getFieldDataType,
+  getRequiredConstructorParams,
+  getStaticParseKeywords,
+} from './utils-hbs';
 
 /**
  * Registers custom Handlebars helpers and partials for templating purposes. This method integrates various
@@ -77,6 +83,10 @@ export function registerStructureDefinitionHandlebarsHelpers() {
   const fhirChildComponentPartial = readFileSync(resolve(__dirname, 'partials', 'fhir-child-component.hbs'), 'utf8');
 
   Handlebars.registerHelper('requiredConstructorParams', getRequiredConstructorParams);
+  Handlebars.registerHelper('complexTypeImplements', getComplexTypeImplements);
+  Handlebars.registerHelper('fieldDataType', getFieldDataType);
+  Handlebars.registerHelper('staticParseKeywords', getStaticParseKeywords);
+  Handlebars.registerHelper('castInterface', getCastInterface);
   Handlebars.registerHelper('camelCase', function (source: string): string {
     return camelCase(source);
   });

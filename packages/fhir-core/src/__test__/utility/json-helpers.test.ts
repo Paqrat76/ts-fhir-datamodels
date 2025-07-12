@@ -64,6 +64,7 @@ import {
 } from '../../utility/json-helpers';
 import { MockBackboneElement, MockBackboneType, MockComplexDataType, MockFhirModel, MockTask } from '../test-utils';
 import { TestData } from '../test-data';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 describe('json-helpers', () => {
   const PRIMITIVE_DATA_TYPE_BOOLEAN_TRUE: BooleanType = new BooleanType(true);
@@ -1466,7 +1467,7 @@ describe('json-helpers', () => {
       jsonObj = {} as Object;
       expectedJson = {
         testProp: {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           mockPrimitive: 'testString',
         },
       } as Object;
@@ -1476,7 +1477,7 @@ describe('json-helpers', () => {
       jsonObj = {} as Object;
       expectedJson = {
         testProp: {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           mockPrimitive: 'testString',
           mockComplex: {
             mockSystem: 'test/system',
@@ -1494,7 +1495,7 @@ describe('json-helpers', () => {
       jsonObj = {} as Object;
       expectedJson = {
         testProp: {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           mockPrimitive: 'testStringExt',
           _mockPrimitive: {
             id: 'id1357',
@@ -1610,7 +1611,7 @@ describe('json-helpers', () => {
       expectedJson = {
         testProp: [
           {
-            resourceType: 'Task',
+            resourceType: 'MockTask',
             mockPrimitive: 'testString',
           },
         ],
@@ -1622,7 +1623,7 @@ describe('json-helpers', () => {
       expectedJson = {
         testProp: [
           {
-            resourceType: 'Task',
+            resourceType: 'MockTask',
             mockPrimitive: 'testString',
             mockComplex: {
               mockSystem: 'test/system',
@@ -1642,7 +1643,7 @@ describe('json-helpers', () => {
       expectedJson = {
         testProp: [
           {
-            resourceType: 'Task',
+            resourceType: 'MockTask',
             mockPrimitive: 'testStringExt',
             _mockPrimitive: {
               id: 'id1357',
@@ -1742,7 +1743,7 @@ describe('json-helpers', () => {
   });
 });
 
-class MockPrimitiveDataType<fhirString> extends PrimitiveType<fhirString> {
+class MockPrimitiveDataType<fhirString> extends PrimitiveType<fhirString> implements IPrimitiveType<fhirString> {
   public mockValue: string | undefined = undefined;
 
   constructor(value?: string) {

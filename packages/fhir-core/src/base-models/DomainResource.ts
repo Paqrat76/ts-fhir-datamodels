@@ -22,14 +22,8 @@
  */
 
 import { strict as assert } from 'node:assert';
-import {
-  Extension,
-  IBaseExtension,
-  IBaseModifierExtension,
-  setFhirComplexJson,
-  setFhirExtensionJson,
-} from './core-fhir-models';
-import { IBase } from './IBase';
+import { IDomainResource, IExtension, INarrative, IResource } from './library-interfaces';
+import { Extension, setFhirComplexJson, setFhirExtensionJson } from './core-fhir-models';
 import { assertFhirResourceType, Resource, setFhirResourceListJson } from './Resource';
 import { Narrative } from '../data-types/complex/Narrative';
 import { fhirUri } from '../data-types/primitive/primitive-types';
@@ -54,7 +48,7 @@ import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '..
  * @category Base Models
  * @see [FHIR DomainResource](http://hl7.org/fhir/StructureDefinition/DomainResource)
  */
-export abstract class DomainResource extends Resource implements IBase, IBaseExtension, IBaseModifierExtension {
+export abstract class DomainResource extends Resource implements IDomainResource {
   protected constructor() {
     super();
   }
@@ -72,7 +66,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private text?: Narrative | undefined;
+  private text?: INarrative | undefined;
 
   /**
    * DomainResource.contained Element
@@ -87,7 +81,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private contained?: Resource[] | undefined;
+  private contained?: IResource[] | undefined;
 
   /**
    * DomainResource.extension Element
@@ -102,7 +96,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private extension?: Extension[] | undefined;
+  private extension?: IExtension[] | undefined;
 
   /**
    * DomainResource.modifierExtension Element
@@ -119,12 +113,12 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * - **isModifierReason:** Modifier extensions allow for extensions that *cannot* be safely ignored to be clearly distinguished from the vast majority of extensions which can be safely ignored.  This promotes interoperability by eliminating the need for implementers to prohibit the presence of extensions. For further information, see the [definition of modifier extensions](https://hl7.org/fhir/R4/extensibility.html#modifierExtension).
    * - **isSummary:** false
    */
-  private modifierExtension?: Extension[] | undefined;
+  private modifierExtension?: IExtension[] | undefined;
 
   /**
    * @returns the `text` property value as a Narrative
    */
-  public getText(): Narrative {
+  public getText(): INarrative {
     return this.text ?? new Narrative(null, null);
   }
 
@@ -134,7 +128,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param value - the `text` value
    * @returns this
    */
-  public setText(value: Narrative | undefined): this {
+  public setText(value: INarrative | undefined): this {
     const optErrMsg = `Invalid DomainResource.text; Provided value is not an instance of Narrative.`;
     assertFhirType<Narrative>(value, Narrative, optErrMsg);
     this.text = value;
@@ -145,14 +139,14 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @returns `true` if the `text` property exists and has a value; `false` otherwise
    */
   public hasText(): boolean {
-    return isDefined<Narrative>(this.text) && !this.text.isEmpty();
+    return isDefined<INarrative>(this.text) && !this.text.isEmpty();
   }
 
   /**
    * @returns the `contained` property value as a Resource array
    */
-  public getContained(): Resource[] {
-    return this.contained ?? ([] as Resource[]);
+  public getContained(): IResource[] {
+    return this.contained ?? ([] as IResource[]);
   }
 
   /**
@@ -161,7 +155,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param value - the `contained` array value
    * @returns this
    */
-  public setContained(value: Resource[] | undefined): this {
+  public setContained(value: IResource[] | undefined): this {
     const optErrMsg = `DomainResource.contained; Provided value array has an element that is not a valid instance of Resource.`;
     value?.forEach((containedResource) => {
       assertFhirResourceType(containedResource, optErrMsg);
@@ -176,8 +170,8 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param value - the `contained` value
    * @returns this
    */
-  public addContained(value: Resource | undefined): this {
-    if (isDefined<Resource>(value)) {
+  public addContained(value: IResource | undefined): this {
+    if (isDefined<IResource>(value)) {
       const optErrMsg = `Invalid DomainResource.contained; Provided value is not a valid instance of Resource.`;
       assertFhirResourceType(value, optErrMsg);
       this.initContained();
@@ -190,7 +184,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @returns `true` if the `contained` property exists and has a value; `false` otherwise
    */
   public hasContained(): boolean {
-    return isDefinedList<Resource>(this.contained) && this.contained.some((item: Resource) => !item.isEmpty());
+    return isDefinedList<IResource>(this.contained) && this.contained.some((item: IResource) => !item.isEmpty());
   }
 
   /**
@@ -198,15 +192,15 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    */
   private initContained(): void {
     if (!this.hasContained()) {
-      this.contained = [] as Resource[];
+      this.contained = [] as IResource[];
     }
   }
 
   /**
    * @returns the array of `extension` values
    */
-  public getExtension(): Extension[] {
-    return this.extension ?? ([] as Extension[]);
+  public getExtension(): IExtension[] {
+    return this.extension ?? ([] as IExtension[]);
   }
 
   /**
@@ -215,7 +209,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param extension - array of Extensions
    * @returns this
    */
-  public setExtension(extension: Extension[] | undefined): this {
+  public setExtension(extension: IExtension[] | undefined): this {
     const optErrMsg = `Invalid DomainResource.extension; Provided extension array has an element that is not an instance of Extension.`;
     assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
     this.extension = extension;
@@ -248,7 +242,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @returns the Extension having the provided url
    * @throws AssertionError for invalid url
    */
-  public getExtensionByUrl(url: fhirUri): Extension | undefined {
+  public getExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
     if (this.hasExtension()) {
       const results = this.getExtension().filter((ext) => ext.getUrl() && ext.getUrl() === url);
@@ -267,8 +261,8 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param extension - the Extension value to add to the `extension` property array
    * @returns this
    */
-  public addExtension(extension: Extension | undefined): this {
-    if (isDefined<Extension>(extension)) {
+  public addExtension(extension: IExtension | undefined): this {
+    if (isDefined<IExtension>(extension)) {
       const optErrMsg = `Invalid DomainResource.extension; Provided extension is not an instance of Extension.`;
       assertFhirType<Extension>(extension, Extension, optErrMsg);
       this.initExtension();
@@ -297,7 +291,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    */
   private initExtension(): void {
     if (!this.hasExtension()) {
-      this.extension = [] as Extension[];
+      this.extension = [] as IExtension[];
     }
   }
 
@@ -307,14 +301,14 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @returns `true` if the `extension` property array exists and has at least one element; false otherwise
    */
   private existsExtension(): boolean {
-    return isDefinedList<Extension>(this.extension) && this.extension.some((item: Extension) => !item.isEmpty());
+    return isDefinedList<IExtension>(this.extension) && this.extension.some((item: IExtension) => !item.isEmpty());
   }
 
   /**
    * @returns the array of `modifierExtension` values
    */
-  public getModifierExtension(): Extension[] {
-    return this.modifierExtension ?? ([] as Extension[]);
+  public getModifierExtension(): IExtension[] {
+    return this.modifierExtension ?? ([] as IExtension[]);
   }
 
   /**
@@ -323,7 +317,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param extension - array of Extensions
    * @returns this
    */
-  public setModifierExtension(extension: Extension[] | undefined): this {
+  public setModifierExtension(extension: IExtension[] | undefined): this {
     const optErrMsg = `Invalid DomainResource.modifierExtension; Provided extension array has an element that is not an instance of Extension.`;
     assertFhirTypeList<Extension>(extension, Extension, optErrMsg);
     this.modifierExtension = extension;
@@ -356,7 +350,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @returns the Extension having the provided url
    * @throws AssertionError for invalid url
    */
-  public getModifierExtensionByUrl(url: fhirUri): Extension | undefined {
+  public getModifierExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
     if (this.hasModifierExtension()) {
       const results = this.getModifierExtension().filter((ext) => ext.getUrl() && ext.getUrl() === url);
@@ -375,8 +369,8 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    * @param extension - the Extension value to add to the `modifierExtension` property array
    * @returns this
    */
-  public addModifierExtension(extension: Extension | undefined): this {
-    if (isDefined<Extension>(extension)) {
+  public addModifierExtension(extension: IExtension | undefined): this {
+    if (isDefined<IExtension>(extension)) {
       const optErrMsg = `Invalid DomainResource.modifierExtension; Provided extension is not an instance of Extension.`;
       assertFhirType<Extension>(extension, Extension, optErrMsg);
       this.initModifierExtension();
@@ -406,7 +400,7 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    */
   private initModifierExtension(): void {
     if (!this.hasModifierExtension()) {
-      this.modifierExtension = [] as Extension[];
+      this.modifierExtension = [] as IExtension[];
     }
   }
 
@@ -419,8 +413,8 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    */
   private existsModifierExtension(): boolean {
     return (
-      isDefinedList<Extension>(this.modifierExtension) &&
-      this.modifierExtension.some((item: Extension) => !item.isEmpty())
+      isDefinedList<IExtension>(this.modifierExtension) &&
+      this.modifierExtension.some((item: IExtension) => !item.isEmpty())
     );
   }
 
@@ -451,12 +445,12 @@ export abstract class DomainResource extends Resource implements IBase, IBaseExt
    */
   protected override copyValues(dest: DomainResource): void {
     super.copyValues(dest);
-    dest.text = this.text?.copy();
-    const containedList = copyListValues<Resource>(this.contained);
+    dest.text = this.text ? (this.text.copy() as unknown as INarrative) : undefined;
+    const containedList = copyListValues<IResource>(this.contained);
     dest.contained = containedList.length === 0 ? undefined : containedList;
-    const extensionList = copyListValues<Extension>(this.extension);
+    const extensionList = copyListValues<IExtension>(this.extension);
     dest.extension = extensionList.length === 0 ? undefined : extensionList;
-    const modifierExtensionList = copyListValues<Extension>(this.modifierExtension);
+    const modifierExtensionList = copyListValues<IExtension>(this.modifierExtension);
     dest.modifierExtension = modifierExtensionList.length === 0 ? undefined : modifierExtensionList;
   }
 

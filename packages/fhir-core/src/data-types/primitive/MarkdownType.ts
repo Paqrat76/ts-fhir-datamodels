@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirMarkdown, fhirMarkdownSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Markdown Class
@@ -40,7 +41,7 @@ import { fhirMarkdown, fhirMarkdownSchema, parseFhirPrimitiveData } from './prim
  * @category Datatypes: Primitive
  * @see [FHIR markdown](http://hl7.org/fhir/StructureDefinition/markdown)
  */
-export class MarkdownType extends PrimitiveType<fhirMarkdown> {
+export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimitiveType<fhirMarkdown> {
   /**
    * @param value - the value of the primitive `fhirMarkdown`
    * @throws PrimitiveTypeError for invalid value

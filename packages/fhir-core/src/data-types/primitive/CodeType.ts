@@ -28,6 +28,7 @@ import { InvalidTypeError } from '../../errors/InvalidTypeError';
 import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
 import { Class, isDefined, isDefinedList } from '../../utility/type-guards';
 import { fhirCode, fhirCodeSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * This module contains the CodeType and EnumCodeType classes along with the related assertEnumCodeType()
@@ -55,7 +56,7 @@ import { fhirCode, fhirCodeSchema, parseFhirPrimitiveData } from './primitive-ty
  * @category Datatypes: Primitive
  * @see [FHIR code](http://hl7.org/fhir/StructureDefinition/code)
  */
-export class CodeType extends PrimitiveType<fhirCode> {
+export class CodeType extends PrimitiveType<fhirCode> implements IPrimitiveType<fhirCode> {
   /**
    * @param value - the value of the primitive `fhirCode`
    * @throws PrimitiveTypeError for invalid value
@@ -294,7 +295,7 @@ export function constructorCodeValueAsEnumCodeType<T>(
       if (err instanceof PrimitiveTypeError) {
         // Error from parseFhirPrimitiveData(...) in CodeType.assignValue()
         const errorCause = err.getDetails()[0];
-        if (errorCause?.includes('received object')) {
+        if (errorCause?.includes('Invalid input')) {
           errMsg = `Invalid ${property}; Provided code value is not an instance of CodeType`;
         } else {
           errMsg = `Invalid ${property}; ${err.message}`;

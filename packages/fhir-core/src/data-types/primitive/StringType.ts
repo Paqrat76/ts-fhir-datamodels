@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirString, fhirStringSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * String Class
@@ -40,7 +41,7 @@ import { fhirString, fhirStringSchema, parseFhirPrimitiveData } from './primitiv
  * @category Datatypes: Primitive
  * @see [FHIR string](http://hl7.org/fhir/StructureDefinition/string)
  */
-export class StringType extends PrimitiveType<fhirString> {
+export class StringType extends PrimitiveType<fhirString> implements IPrimitiveType<fhirString> {
   /**
    * @param value - the value of the primitive `fhirString`
    * @throws PrimitiveTypeError for invalid value

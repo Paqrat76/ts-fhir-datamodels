@@ -61,7 +61,7 @@ describe('DomainResource', () => {
     expect(testDomainResource).toBeInstanceOf(Resource);
     expect(testDomainResource).toBeInstanceOf(Base);
     expect(testDomainResource.constructor.name).toStrictEqual('MockTask');
-    expect(testDomainResource.resourceType()).toStrictEqual('Task');
+    expect(testDomainResource.resourceType()).toStrictEqual('MockTask');
     expect(testDomainResource.fhirType()).toStrictEqual('MockTask');
     expect(testDomainResource.isResource()).toBe(true);
     expect(testDomainResource.isEmpty()).toBe(true);
@@ -108,19 +108,19 @@ describe('DomainResource', () => {
     expect(testDomainResource).toBeInstanceOf(Resource);
     expect(testDomainResource).toBeInstanceOf(Base);
     expect(testDomainResource.constructor.name).toStrictEqual('MockTask');
-    expect(testDomainResource.resourceType()).toStrictEqual('Task');
+    expect(testDomainResource.resourceType()).toStrictEqual('MockTask');
     expect(testDomainResource.fhirType()).toStrictEqual('MockTask');
     expect(testDomainResource.isResource()).toBe(true);
     expect(testDomainResource.isEmpty()).toBe(false);
     const expectedJson = {
-      resourceType: 'Task',
+      resourceType: 'MockTask',
       text: {
         status: 'generated',
         div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
       },
       contained: [
         {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           id: 'Resource-1',
         },
       ],
@@ -240,19 +240,19 @@ describe('DomainResource', () => {
     expect(testDomainResource).toBeInstanceOf(Resource);
     expect(testDomainResource).toBeInstanceOf(Base);
     expect(testDomainResource.constructor.name).toStrictEqual('MockTask');
-    expect(testDomainResource.resourceType()).toStrictEqual('Task');
+    expect(testDomainResource.resourceType()).toStrictEqual('MockTask');
     expect(testDomainResource.fhirType()).toStrictEqual('MockTask');
     expect(testDomainResource.isResource()).toBe(true);
     expect(testDomainResource.isEmpty()).toBe(false);
     const expectedJson = {
-      resourceType: 'Task',
+      resourceType: 'MockTask',
       text: {
         status: 'generated',
         div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
       },
       contained: [
         {
-          resourceType: 'Task',
+          resourceType: 'MockTask',
           id: 'Resource-1',
         },
       ],
@@ -300,7 +300,7 @@ describe('DomainResource', () => {
     expect(testDomainResourceCopyEmpty).toBeInstanceOf(Resource);
     expect(testDomainResourceCopyEmpty).toBeInstanceOf(Base);
     expect(testDomainResourceCopyEmpty.constructor.name).toStrictEqual('MockTask');
-    expect(testDomainResourceCopyEmpty.resourceType()).toStrictEqual('Task');
+    expect(testDomainResourceCopyEmpty.resourceType()).toStrictEqual('MockTask');
     expect(testDomainResourceCopyEmpty.fhirType()).toStrictEqual('MockTask');
     expect(testDomainResource.isResource()).toBe(true);
     expect(testDomainResource.isEmpty()).toBe(true);

@@ -25,6 +25,7 @@ import { PrimitiveType } from '../../base-models/core-fhir-models';
 import * as JSON from '../../utility/json-helpers';
 import { isDefined } from '../../utility/type-guards';
 import { fhirInteger64, fhirInteger64Schema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Integer64 Class
@@ -41,7 +42,7 @@ import { fhirInteger64, fhirInteger64Schema, parseFhirPrimitiveData } from './pr
  * @category Datatypes: Primitive
  * @see [FHIR integer64](http://hl7.org/fhir/StructureDefinition/integer64)
  */
-export class Integer64Type extends PrimitiveType<fhirInteger64> {
+export class Integer64Type extends PrimitiveType<fhirInteger64> implements IPrimitiveType<fhirInteger64> {
   /**
    * @param value - the value of the primitive `fhirInteger64`
    * @throws PrimitiveTypeError for invalid value

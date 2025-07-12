@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirId, fhirIdSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Id Class
@@ -40,7 +41,7 @@ import { fhirId, fhirIdSchema, parseFhirPrimitiveData } from './primitive-types'
  * @category Datatypes: Primitive
  * @see [FHIR id](http://hl7.org/fhir/StructureDefinition/id)
  */
-export class IdType extends PrimitiveType<fhirId> {
+export class IdType extends PrimitiveType<fhirId> implements IPrimitiveType<fhirId> {
   /**
    * @param value - the value of the primitive `fhirId`
    * @throws PrimitiveTypeError for invalid value

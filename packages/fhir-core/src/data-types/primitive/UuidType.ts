@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirUuid, fhirUuidSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Uuid Class
@@ -40,7 +41,7 @@ import { fhirUuid, fhirUuidSchema, parseFhirPrimitiveData } from './primitive-ty
  * @category Datatypes: Primitive
  * @see [FHIR uuid](http://hl7.org/fhir/StructureDefinition/uuid)
  */
-export class UuidType extends PrimitiveType<fhirUuid> {
+export class UuidType extends PrimitiveType<fhirUuid> implements IPrimitiveType<fhirUuid> {
   /**
    * @param value - the value of the primitive `fhirUuid`
    * @throws PrimitiveTypeError for invalid value

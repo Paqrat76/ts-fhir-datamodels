@@ -24,6 +24,7 @@
 import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { isDefined } from '../../utility/type-guards';
 import { fhirDecimal, fhirDecimalSchema, parseFhirPrimitiveData } from './primitive-types';
+import { IPrimitiveType } from '../../base-models/library-interfaces';
 
 /**
  * Decimal Class
@@ -40,7 +41,7 @@ import { fhirDecimal, fhirDecimalSchema, parseFhirPrimitiveData } from './primit
  * @category Datatypes: Primitive
  * @see [FHIR decimal](http://hl7.org/fhir/StructureDefinition/decimal)
  */
-export class DecimalType extends PrimitiveType<fhirDecimal> {
+export class DecimalType extends PrimitiveType<fhirDecimal> implements IPrimitiveType<fhirDecimal> {
   /**
    * @param value - the value of the primitive `fhirDecimal`
    * @throws PrimitiveTypeError for invalid value

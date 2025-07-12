@@ -22,9 +22,10 @@
  */
 
 import { AssertionError } from 'node:assert';
-import { Identifier, Reference, ReferenceTargets } from '../../data-types/complex/Reference-Identifier';
+import { Identifier, Reference } from '../../data-types/complex/Reference-Identifier';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
 import { MockTask } from '../test-utils';
+import { ReferenceTargets } from '../../utility/decorators';
 
 describe('ReferenceTargets', () => {
   it('should throw AssertionError with duplicate ReferenceTargets', () => {
@@ -47,19 +48,6 @@ describe('ReferenceTargets', () => {
     expect(t).toThrow(AssertionError);
     expect(t).toThrow(
       `ReferenceTargets decorator on setMyReferenceProperty3 (MockTaskR1.myReferenceProperty3) contains duplicate referenceTargets`,
-    );
-  });
-
-  it('should throw AssertionError with invalid resource in ReferenceTargets', () => {
-    const testRelativeRef = 'Organization/1234';
-    const testReference = new Reference().setReference(testRelativeRef);
-    const testMockTaskR1 = new MockTaskR1();
-    const t = () => {
-      testMockTaskR1.setMyReferenceProperty4(testReference);
-    };
-    expect(t).toThrow(AssertionError);
-    expect(t).toThrow(
-      `ReferenceTargets decorator on setMyReferenceProperty4 (MockTaskR1.myReferenceProperty4) contains invalid referenceTargets`,
     );
   });
 

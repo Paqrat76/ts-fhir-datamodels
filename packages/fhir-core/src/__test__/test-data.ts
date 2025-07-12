@@ -29,6 +29,7 @@ import { IntegerType } from '../data-types/primitive/IntegerType';
 import { fhirUri } from '../data-types/primitive/primitive-types';
 import { StringType } from '../data-types/primitive/StringType';
 import { UriType } from '../data-types/primitive/UriType';
+import { Period } from '../data-types/complex/Period';
 import { MockComplexDataType, MockTask } from './test-utils';
 
 /**
@@ -109,11 +110,11 @@ export namespace TestData {
   // export const VALID_CONDITION_REFERENCE_2 = new Reference();
   // VALID_CONDITION_REFERENCE_2.setReference(VALID_CONDITION_REFERENCE_VALUE_2);
 
-  // const VALID_START_DATETIME = `2024-03-15T00:00:00.000Z`;
-  // const VALID_END_DATETIME = `2024-07-03T01:00:00.000Z`;
-  // export const VALID_PERIOD = new Period();
-  // VALID_PERIOD.setStart(VALID_START_DATETIME);
-  // VALID_PERIOD.setEnd(VALID_END_DATETIME);
+  const VALID_START_DATETIME = `2024-03-15T00:00:00.000Z`;
+  const VALID_END_DATETIME = `2024-07-03T01:00:00.000Z`;
+  export const VALID_PERIOD = new Period();
+  VALID_PERIOD.setStart(VALID_START_DATETIME);
+  VALID_PERIOD.setEnd(VALID_END_DATETIME);
   // const VALID_START_DATETIME_2 = `2024-10-31T15:00:00.000Z`;
   // export const VALID_PERIOD_2 = new Period();
   // VALID_PERIOD_2.setStart(VALID_START_DATETIME_2);

@@ -3,7 +3,7 @@
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a Resource object if defined; else undefined
    */
-  public get{{upperFirst edHbs.fieldName}}(): Resource | undefined {
+  public get{{upperFirst edHbs.fieldName}}(): IResource | undefined {
     return this.{{edHbs.fieldIdentifierName}};
   }
 
@@ -13,8 +13,8 @@
    * @param value - the `{{edHbs.fieldIdentifierName}}` object value
    * @returns this
    */
-  public set{{upperFirst edHbs.fieldName}}(value: Resource | undefined): this {
-    if (isDefined<Resource>(value)) {
+  public set{{upperFirst edHbs.fieldName}}(value: IResource | undefined): this {
+    if (isDefined<IResource>(value)) {
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of Resource.`;
       assertFhirResourceType(value, optErrMsg);
       this.{{edHbs.fieldIdentifierName}} = value;
@@ -28,6 +28,6 @@
    * @returns `true` if the `{{edHbs.fieldIdentifierName}}` property exists and has a value; `false` otherwise
    */
   public has{{upperFirst edHbs.fieldName}}(): boolean {
-    return isDefined<Resource>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty();
+    return isDefined<IResource>(this.{{edHbs.fieldIdentifierName}}) && !this.{{edHbs.fieldIdentifierName}}.isEmpty();
   }
 {{/if}}

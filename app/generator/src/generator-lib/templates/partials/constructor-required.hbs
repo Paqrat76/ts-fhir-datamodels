@@ -54,6 +54,18 @@
     }
 {{/if}}
 {{else}}
+{{#if this.isChoiceType}}
+{{#if this.isArray}}
+    if (isDefinedList<IDataType>({{this.fieldIdentifierName}})) {
+      this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
+    }
+{{else}}
+    if (isDefined<IDataType>({{this.fieldIdentifierName}})) {
+      this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
+    }
+{{/if}}
+
+{{else}}
 {{#if this.isArray}}
     if (isDefinedList<{{this.type.code}}>({{this.fieldIdentifierName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
@@ -62,6 +74,7 @@
     if (isDefined<{{this.type.code}}>({{this.fieldIdentifierName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
+{{/if}}
 {{/if}}
 {{/if}}
 {{/if}}
