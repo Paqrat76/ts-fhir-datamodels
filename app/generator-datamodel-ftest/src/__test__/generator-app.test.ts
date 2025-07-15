@@ -27,7 +27,6 @@ import { FhirPackage, GeneratedContent, GeneratorApp } from 'generator';
 
 describe('src/generator-app functional test suite', () => {
   const testOut = resolve(__dirname, '..', 'generated');
-  const testOutBase = join(testOut, 'base');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
@@ -58,15 +57,9 @@ describe('src/generator-app functional test suite', () => {
     it('should generate and write all FHIR R4 artifacts from ftest-cache FHIR cache', () => {
       const testOutput: string[] = readdirSync(testOut);
       expect(testOutput).toBeDefined();
-      expect(testOutput.length).toBe(5);
-      const expectedOutput: string[] = ['base', 'code-systems', 'complex-types', 'index.ts', 'resources'];
+      expect(testOutput.length).toBe(4);
+      const expectedOutput: string[] = ['code-systems', 'complex-types', 'index.ts', 'resources'];
       expect(testOutput).toEqual(expectedOutput);
-
-      const testBase: string[] = readdirSync(testOutBase);
-      expect(testBase).toBeDefined();
-      expect(testBase.length).toBe(2);
-      const expectedBase: string[] = ['parsable-datatype-map.ts', 'parsable-resource-map.ts'];
-      expect(testBase).toEqual(expectedBase);
 
       const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
       expect(testCodeSystems).toBeDefined();
@@ -110,7 +103,7 @@ describe('src/generator-app functional test suite', () => {
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(35);
+      expect(testComplexTypes.length).toBe(36);
       const expectedComplexTypes: string[] = [
         'Address.ts',
         'Age.ts',
@@ -147,12 +140,13 @@ describe('src/generator-app functional test suite', () => {
         'Timing.ts',
         'TriggerDefinition.ts',
         'UsageContext.ts',
+        'parsable-datatype-map.ts',
       ];
       expect(testComplexTypes).toEqual(expectedComplexTypes);
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(12);
+      expect(testResources.length).toBe(13);
       const expectedResources: string[] = [
         'Device.ts',
         'DeviceDefinition.ts',
@@ -166,6 +160,7 @@ describe('src/generator-app functional test suite', () => {
         'RelatedPerson.ts',
         'SimplePersonModel.ts',
         'TestDataModel.ts',
+        'parsable-resource-map.ts',
       ];
       expect(testResources).toEqual(expectedResources);
     });

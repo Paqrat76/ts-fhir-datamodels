@@ -162,7 +162,6 @@ export class GeneratorApp {
  * @type {Map<string, string>}
  */
 const DESTINATION_SUB_DIRECTORY_MAP: Map<string, string> = new Map<string, string>([
-  ['Base', 'base'],
   ['CodeSystem', 'code-systems'],
   ['ComplexType', 'complex-types'],
   ['Resource', 'resources'],

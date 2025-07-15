@@ -3705,8 +3705,8 @@ import {
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
 import { Coding } from './Coding';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * CodeableConcept Class
@@ -4085,8 +4085,8 @@ import {
   parseFhirPrimitiveData,
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * Coding Class
@@ -4744,8 +4744,8 @@ import {
 } from '@paq-ts-fhir/fhir-core';
 import { ContactPointSystemEnum } from '../code-systems/ContactPointSystemEnum';
 import { ContactPointUseEnum } from '../code-systems/ContactPointUseEnum';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 import { Period } from './Period';
 
 /**
@@ -5458,8 +5458,8 @@ import {
   parseFhirPrimitiveData,
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * Duration Class
@@ -7688,8 +7688,8 @@ import {
 } from '@paq-ts-fhir/fhir-core';
 import { CodeableConcept } from './CodeableConcept';
 import { IdentifierUseEnum } from '../code-systems/IdentifierUseEnum';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 import { Period } from './Period';
 import { Reference } from './Reference';
 
@@ -8404,8 +8404,8 @@ import {
   setFhirPrimitiveListJson,
 } from '@paq-ts-fhir/fhir-core';
 import { Coding } from './Coding';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * Meta Class
@@ -9217,8 +9217,8 @@ import {
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
 import { NarrativeStatusEnum } from '../code-systems/NarrativeStatusEnum';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * Narrative Class
@@ -9663,8 +9663,8 @@ import {
   parseFhirPrimitiveData,
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * Period Class
@@ -10036,8 +10036,8 @@ import {
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
 import { Identifier } from './Identifier';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 
 /**
  * Reference Class
@@ -10576,8 +10576,8 @@ import {
   setFhirPrimitiveJson,
 } from '@paq-ts-fhir/fhir-core';
 import { Coding } from './Coding';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 import { Reference } from './Reference';
 
 /**
@@ -11468,8 +11468,8 @@ import {
 import { CodeableConcept } from './CodeableConcept';
 import { DaysOfWeekEnum } from '../code-systems/DaysOfWeekEnum';
 import { Duration } from './Duration';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from './parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map';
 import { Period } from './Period';
 import { Range } from './Range';
 
@@ -13660,7 +13660,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
     "pkgVersion": "4.0.1",
     "release": "R4",
   },
-  "fhirType": "Base",
+  "fhirType": "ComplexType",
   "fileContents": "/*
  * Copyright (c) 2025. Joe Paquette
  *
@@ -13837,8 +13837,8 @@ import {
 import { BundleTypeEnum } from '../code-systems/BundleTypeEnum';
 import { HttpVerbEnum } from '../code-systems/HttpVerbEnum';
 import { Identifier } from '../complex-types/Identifier';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from '../complex-types/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from './parsable-resource-map';
 import { SearchEntryModeEnum } from '../code-systems/SearchEntryModeEnum';
 import { Signature } from '../complex-types/Signature';
 
@@ -17130,8 +17130,8 @@ import { CodeableConcept } from '../complex-types/CodeableConcept';
 import { ContactPoint } from '../complex-types/ContactPoint';
 import { DaysOfWeekEnum } from '../code-systems/DaysOfWeekEnum';
 import { Identifier } from '../complex-types/Identifier';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from '../complex-types/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from './parsable-resource-map';
 import { Period } from '../complex-types/Period';
 import { Reference } from '../complex-types/Reference';
 
@@ -19438,8 +19438,8 @@ import {
 } from '@paq-ts-fhir/fhir-core';
 import { CodeableConcept } from '../complex-types/CodeableConcept';
 import { ContactDetail } from '../complex-types/ContactDetail';
-import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map';
+import { PARSABLE_DATATYPE_MAP } from '../complex-types/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from './parsable-resource-map';
 import { PublicationStatusEnum } from '../code-systems/PublicationStatusEnum';
 import { ResourceTypesEnum } from '../code-systems/ResourceTypesEnum';
 import { SearchComparatorEnum } from '../code-systems/SearchComparatorEnum';
@@ -23012,7 +23012,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
     "pkgVersion": "4.0.1",
     "release": "R4",
   },
-  "fhirType": "Base",
+  "fhirType": "Resource",
   "fileContents": "/*
  * Copyright (c) 2025. Joe Paquette
  *

@@ -420,7 +420,7 @@ export class TypescriptDataModelGenerator {
       fhirPackage: this._fhirPackage,
       filename: fileName,
       fileExtension: 'ts',
-      fhirType: 'Base',
+      fhirType: fhirType,
       fileContents: fileLines.join(os.EOL).concat(os.EOL),
     } as GeneratedContent;
   }

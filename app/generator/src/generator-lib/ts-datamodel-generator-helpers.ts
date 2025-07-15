@@ -59,7 +59,7 @@ export type FhirRelease = 'R4' | 'R4B' | 'R5';
  * - 'Resource': Represents a FHIR resource, which is a modular unit of healthcare data.
  * - 'Base': Refers to an artifact considered to be a "base-level" artifact.
  */
-export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource' | 'Base';
+export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource';
 
 /**
  * Represents a FHIR package with details about its release, package information,

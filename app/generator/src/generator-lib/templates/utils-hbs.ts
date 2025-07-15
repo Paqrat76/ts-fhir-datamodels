@@ -227,6 +227,16 @@ export function getSdHbsProperties(
     });
   }
 
+  if (structureDef.kind === 'resource') {
+    const generatedImports = Array.from(generatedImportsSet);
+    generatedImports.forEach((generatedImport: string) => {
+      if (generatedImport.includes('../resources/')) {
+        generatedImportsSet.delete(generatedImport);
+        generatedImportsSet.add(generatedImport.replace('../resources/', './'));
+      }
+    });
+  }
+
   sdHbsProperties.fhirCoreImports = Array.from(fhirCoreImportsSet).sort();
   sdHbsProperties.generatedImports = Array.from(generatedImportsSet).sort();
 
@@ -863,8 +873,8 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
   const importsSet = new Set<string>();
 
   if (componentProperties.parentType !== 'Extension') {
-    importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map'`);
-    importsSet.add(`import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map'`);
+    importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../complex-types/parsable-datatype-map'`);
+    importsSet.add(`import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map'`);
   }
 
   componentProperties.elementDefinitions.forEach((ed: HbsElementDefinition) => {
