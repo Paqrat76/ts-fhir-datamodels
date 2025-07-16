@@ -22,7 +22,7 @@
  */
 
 import { InvalidCodeError } from '@paq-ts-fhir/fhir-core';
-import { AddressTypeEnum } from '../../../generated';
+import { AddressTypeEnum } from 'gensrc/code-systems/AddressTypeEnum';
 
 describe('AddressTypeEnum', () => {
   describe('values()', () => {

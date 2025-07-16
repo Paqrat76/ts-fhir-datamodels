@@ -53,13 +53,12 @@ async function generateFunctionalTestDataModels(): Promise<void> {
   const generator = new GeneratorApp(testFhirPackage);
   const generatedContent: GeneratedContent[] = await generator.generate();
   assert(generatedContent, `Generated content is null or undefined.`);
-  // 2 parsable-xxx-map base files
   // 25 CodeSystemEnums
-  // 35 ComplexTypes
-  // 12 Resources
+  // 1 ComplexTypes
+  // 12 Resources plus parsable-resource-map base
   // index.ts
   assert(
-    generatedContent.length === 74,
+    generatedContent.length === 39,
     `Generated content should have 74 data models, but has ${String(generatedContent.length)}.`,
   );
   generatorLogger(

@@ -19,6 +19,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.0] - 2025-07-??
+
+### Added
+
+### Changed
+
+- Update dependency
+- Refactored tests for elimination of "generated/base" directory
+- Refactored tests for combining all complex datatypes into a single file to resolve circular dependencies
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.2.0] - 2025-07-12
 
 ### Added

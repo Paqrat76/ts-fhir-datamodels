@@ -119,6 +119,24 @@ export interface GeneratedContent {
 }
 
 /**
+ * Interface representing the content of a generated complex type, extending the functionality
+ * of `GeneratedContent` to include specific import handling for FHIR-related and dynamically
+ * created content.
+ */
+export interface GeneratedComplexTypeContent extends GeneratedContent {
+  /**
+   * Represents a list of strings that specifies imports from the core FHIR library
+   */
+  fhirCoreImports: Set<string>;
+  /**
+   * An list of strings that represents dynamically generated import statements.
+   * This variable is typically used to store and manage imported module references or paths
+   * that are programmatically created during runtime or build processes.
+   */
+  generatedImports: Set<string>;
+}
+
+/**
  * Interface representing the options for loading a generator package.
  *
  * Extends the `BasePackageLoaderOptions` with additional configuration specific to generator packages.

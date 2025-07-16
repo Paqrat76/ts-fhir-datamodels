@@ -49,9 +49,9 @@ describe('src/generator-app unit test suite', () => {
       const generatedContent: GeneratedContent[] = await generator.generate();
       expect(generatedContent).toBeDefined();
       // 13 CodeSystemEnums
-      // 13 ComplexTypes + parsable-datatype-map
-      // 4 Resources + parsable-resource-map
-      expect(generatedContent.length).toBe(30);
+      // 1 ComplexTypes including its parsable-datatype-map
+      // 4 Resources and parsable-resource-map
+      expect(generatedContent.length).toBe(18);
       generator.writeDataModelsToDisk(generatedContent);
     });
 
@@ -85,22 +85,8 @@ describe('src/generator-app unit test suite', () => {
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(13);
-      const expectedComplexTypes: string[] = [
-        'CodeableConcept.ts',
-        'Coding.ts',
-        'ContactPoint.ts',
-        'Duration.ts',
-        'Extension.ts',
-        'Identifier.ts',
-        'Meta.ts',
-        'Narrative.ts',
-        'Period.ts',
-        'Reference.ts',
-        'Signature.ts',
-        'Timing.ts',
-        'parsable-datatype-map.ts',
-      ];
+      expect(testComplexTypes.length).toBe(1);
+      const expectedComplexTypes: string[] = ['complex-datatypes.ts'];
       expect(testComplexTypes).toEqual(expectedComplexTypes);
 
       const testResources: string[] = readdirSync(testOutResources);
@@ -127,9 +113,9 @@ describe('src/generator-app unit test suite', () => {
 
     it('should consistently create GeneratedContent[]', () => {
       // 13 CodeSystemEnums
-      // 13 ComplexTypes
+      // 1 ComplexTypes
       // 4 Resources
-      expect(generatedContent.length).toBe(30);
+      expect(generatedContent.length).toBe(18);
 
       generatedContent.forEach((generatedContentItem: GeneratedContent) => {
         expect(generatedContentItem).toBeDefined();

@@ -25,7 +25,7 @@ import { join, resolve } from 'node:path';
 import { readdirSync, rmSync } from 'node:fs';
 import { FhirPackage, GeneratedContent, GeneratorApp } from 'generator';
 
-describe('src/generator-app functional test suite', () => {
+describe('generator-datamodel-ftest Functional Test Suite', () => {
   const testOut = resolve(__dirname, '..', 'generated');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
@@ -38,10 +38,10 @@ describe('src/generator-app functional test suite', () => {
     baseOutputPath: testOut,
     pkgLoaderCacheRootPath: testFhirCacheRoot,
   };
-  // 25 CodeSystemEnums + index.ts
-  // 34 ComplexTypes + index.ts + parsable-datatype-map.ts
-  // 12 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-  const EXPECTED_NUM_GENERATED_MODELS = 74;
+  // 25 CodeSystemEnums
+  // 1 ComplexTypes (single file with all complex types to resolve circular references)
+  // 12 Resources + parsable-resource-map.ts
+  const EXPECTED_NUM_GENERATED_MODELS = 39;
 
   describe('generator-app generate and write', () => {
     beforeAll(async () => {
@@ -103,45 +103,8 @@ describe('src/generator-app functional test suite', () => {
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(36);
-      const expectedComplexTypes: string[] = [
-        'Address.ts',
-        'Age.ts',
-        'Annotation.ts',
-        'Attachment.ts',
-        'CodeableConcept.ts',
-        'Coding.ts',
-        'ContactDetail.ts',
-        'ContactPoint.ts',
-        'Contributor.ts',
-        'Count.ts',
-        'DataRequirement.ts',
-        'Distance.ts',
-        'Dosage.ts',
-        'Duration.ts',
-        'Expression.ts',
-        'Extension.ts',
-        'HumanName.ts',
-        'Identifier.ts',
-        'Meta.ts',
-        'Money.ts',
-        'Narrative.ts',
-        'ParameterDefinition.ts',
-        'Period.ts',
-        'ProdCharacteristic.ts',
-        'ProductShelfLife.ts',
-        'Quantity.ts',
-        'Range.ts',
-        'Ratio.ts',
-        'Reference.ts',
-        'RelatedArtifact.ts',
-        'SampledData.ts',
-        'Signature.ts',
-        'Timing.ts',
-        'TriggerDefinition.ts',
-        'UsageContext.ts',
-        'parsable-datatype-map.ts',
-      ];
+      expect(testComplexTypes.length).toBe(1);
+      const expectedComplexTypes: string[] = ['complex-datatypes.ts'];
       expect(testComplexTypes).toEqual(expectedComplexTypes);
 
       const testResources: string[] = readdirSync(testOutResources);

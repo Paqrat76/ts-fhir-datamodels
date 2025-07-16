@@ -28,6 +28,7 @@ export default tsEslint.config(
   // Ignore the project 'coverage', 'dist', and docs directories. Also ignore all files beginning with '.'.
   // Finally, ignore all project and root level JavaScript files used for configurations.
   globalIgnores([
+    '**/temp/**',
     '**/coverage/**',
     '**/dist/**',
     '**/merged-docs/**',

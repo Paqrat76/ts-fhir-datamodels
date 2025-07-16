@@ -181,7 +181,7 @@ export function getSdHbsProperties(
     generatedImports: [] as string[],
   } as HbsStructureDefinition;
 
-  let fhirCoreImportsSet = new Set(parentComponent.fhirCoreImports);
+  let fhirCoreImportsSet = new Set<string>(parentComponent.fhirCoreImports);
   let generatedImportsSet = new Set<string>(parentComponent.generatedImports);
 
   if (childComponents && childComponents.length > 0) {
@@ -217,15 +217,19 @@ export function getSdHbsProperties(
     }
   }
 
-  if (structureDef.kind === 'complex-type') {
-    const generatedImports = Array.from(generatedImportsSet);
-    generatedImports.forEach((generatedImport: string) => {
-      if (generatedImport.includes('../complex-types/')) {
-        generatedImportsSet.delete(generatedImport);
-        generatedImportsSet.add(generatedImport.replace('../complex-types/', './'));
-      }
-    });
-  }
+  const complexTypeImports = Array.from(generatedImportsSet).filter(
+    (generatedImport: string) => !generatedImport.startsWith('import'),
+  );
+  // Remove the individual complex type values from generatedImportsSet
+  const generatedImports = Array.from(generatedImportsSet);
+  generatedImports.forEach((generatedImport: string) => {
+    if (complexTypeImports.includes(generatedImport)) {
+      generatedImportsSet.delete(generatedImport);
+    }
+  });
+  // Add the single import statement for complex data types into generatedImportsSet
+  const complexTypeImportStatement = `import { ${complexTypeImports.sort().join(', ')} } from '../complex-types/complex-datatypes'`;
+  generatedImportsSet.add(complexTypeImportStatement);
 
   if (structureDef.kind === 'resource') {
     const generatedImports = Array.from(generatedImportsSet);
@@ -873,7 +877,8 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
   const importsSet = new Set<string>();
 
   if (componentProperties.parentType !== 'Extension') {
-    importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../complex-types/parsable-datatype-map'`);
+    // importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../complex-types/complex-datatypes'`);
+    importsSet.add(`PARSABLE_DATATYPE_MAP`);
     importsSet.add(`import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map'`);
   }
 
@@ -882,13 +887,15 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
         if (!choiceType.endsWith('Type')) {
           // Ignore primitive types; they are handled in getFhirCoreImports()
-          importsSet.add(`import { ${choiceType} } from '../complex-types/${choiceType}'`);
+          // importsSet.add(`import { ${choiceType} } from '../complex-types/${choiceType}'`);
+          importsSet.add(choiceType);
         }
       });
     }
 
     if ((ed.isComplexType || ed.isReferenceType) && !ed.type.code.endsWith('Component')) {
-      importsSet.add(`import { ${ed.type.code} } from '../complex-types/${ed.type.code}'`);
+      //importsSet.add(`import { ${ed.type.code} } from '../complex-types/${ed.type.code}'`);
+      importsSet.add(ed.type.code);
     }
 
     if (ed.isResourceType) {

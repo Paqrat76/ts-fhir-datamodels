@@ -1,7 +1,7 @@
 {
   "name": "generator",
   "private": true,
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Code generator for TypeScript classes representing FHIR data models for FHIR resources and complex data types",
   "license": "MIT",
   "scripts": {

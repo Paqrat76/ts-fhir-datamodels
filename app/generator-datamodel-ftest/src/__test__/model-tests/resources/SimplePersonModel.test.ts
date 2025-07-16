@@ -21,22 +21,31 @@
  *
  */
 
-import { Base, CodeType, IdType, StringType, UriType } from '@paq-ts-fhir/fhir-core';
 import {
-  Address,
+  Base,
+  CodeType,
   DomainResource,
-  Extension,
-  HumanName,
-  Identifier,
-  Meta,
-  Narrative,
+  IdType,
+  IMeta,
+  INarrative,
   Resource,
-  SimplePersonModel,
-} from '../../../generated';
+  StringType,
+  UriType,
+} from '@paq-ts-fhir/fhir-core';
+import { Address, Extension, HumanName, Identifier, Meta, Narrative } from 'gensrc/complex-types/complex-datatypes';
+import { SimplePersonModel } from 'gensrc/resources/SimplePersonModel';
 import { TestData } from '../../ftest-data';
 
 describe('SimplePersonModel', () => {
   describe('Base Tests', () => {
+    const VALID_META: IMeta = new Meta();
+    VALID_META.setLastUpdated(TestData.VALID_DATETIME);
+    const VALID_NARRATIVE: INarrative = new Narrative(TestData.VALID_CODE_GENERATED, TestData.VALID_XHTML);
+    const VALID_EXTENSION = new Extension('extUrl');
+    VALID_EXTENSION.setValue(new StringType('Extension string value'));
+    const VALID_MODIFIER_EXTENSION = new Extension('modExtUrl');
+    VALID_MODIFIER_EXTENSION.setValue(new StringType('Modifier Extension string value'));
+
     const VALID_IDENTIFIER = new Identifier();
     VALID_IDENTIFIER.setSystem(TestData.VALID_SYSTEM);
     VALID_IDENTIFIER.setValue(TestData.VALID_STRING);
@@ -111,13 +120,13 @@ describe('SimplePersonModel', () => {
       const simplePersonModel = new SimplePersonModel();
 
       simplePersonModel.setId(TestData.VALID_ID);
-      //simplePersonModel.setMeta(TestData.VALID_META);
+      simplePersonModel.setMeta(VALID_META);
       simplePersonModel.setImplicitRules(TestData.IMPLICIT_RULES_VALUE);
       simplePersonModel.setLanguage(TestData.LANGUAGE_VALUE);
-      //simplePersonModel.setText(TestData.VALID_NARRATIVE);
+      simplePersonModel.setText(VALID_NARRATIVE);
       simplePersonModel.setContained(TestData.UNDEFINED_VALUE);
-      // simplePersonModel.setExtension([TestData.VALID_EXTENSION]);
-      // simplePersonModel.setModifierExtension([TestData.VALID_MODIFIER_EXTENSION]);
+      simplePersonModel.setExtension([VALID_EXTENSION]);
+      simplePersonModel.setModifierExtension([VALID_MODIFIER_EXTENSION]);
 
       simplePersonModel.setIdentifier(VALID_IDENTIFIER);
       simplePersonModel.setName(VALID_HUMAN_NAME);
@@ -142,8 +151,8 @@ describe('SimplePersonModel', () => {
       expect(testSimplePersonModel.getIdElement()).toEqual(TestData.VALID_ID_TYPE);
       expect(testSimplePersonModel.hasId()).toBe(true);
       expect(testSimplePersonModel.getId()).toStrictEqual(TestData.VALID_ID);
-      // expect(testSimplePersonModel.hasMeta()).toBe(true);
-      // expect(testSimplePersonModel.getMeta()).toEqual(TestData.VALID_META);
+      expect(testSimplePersonModel.hasMeta()).toBe(true);
+      expect(testSimplePersonModel.getMeta()).toEqual(VALID_META);
       expect(testSimplePersonModel.hasImplicitRulesElement()).toBe(true);
       expect(testSimplePersonModel.getImplicitRulesElement()).toEqual(new UriType(TestData.IMPLICIT_RULES_VALUE));
       expect(testSimplePersonModel.hasImplicitRules()).toBe(true);
@@ -152,14 +161,14 @@ describe('SimplePersonModel', () => {
       expect(testSimplePersonModel.getLanguageElement()).toEqual(new CodeType(TestData.LANGUAGE_VALUE));
       expect(testSimplePersonModel.hasLanguage()).toBe(true);
       expect(testSimplePersonModel.getLanguage()).toStrictEqual(TestData.LANGUAGE_VALUE);
-      // expect(testSimplePersonModel.hasText()).toBe(true);
-      // expect(testSimplePersonModel.getText()).toEqual(TestData.VALID_NARRATIVE);
+      expect(testSimplePersonModel.hasText()).toBe(true);
+      expect(testSimplePersonModel.getText()).toEqual(VALID_NARRATIVE);
       expect(testSimplePersonModel.hasContained()).toBe(false);
       expect(testSimplePersonModel.getContained()).toEqual([] as Resource[]);
-      // expect(testSimplePersonModel.hasExtension()).toBe(true);
-      // expect(testSimplePersonModel.getExtension()).toEqual([TestData.VALID_EXTENSION]);
-      // expect(testSimplePersonModel.hasModifierExtension()).toBe(true);
-      // expect(testSimplePersonModel.getModifierExtension()).toEqual([TestData.VALID_MODIFIER_EXTENSION]);
+      expect(testSimplePersonModel.hasExtension()).toBe(true);
+      expect(testSimplePersonModel.getExtension()).toEqual([VALID_EXTENSION]);
+      expect(testSimplePersonModel.hasModifierExtension()).toBe(true);
+      expect(testSimplePersonModel.getModifierExtension()).toEqual([VALID_MODIFIER_EXTENSION]);
 
       // SimplePersonModel properties
       expect(testSimplePersonModel.hasIdentifier()).toBe(true);

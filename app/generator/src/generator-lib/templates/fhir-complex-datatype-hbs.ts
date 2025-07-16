@@ -27,7 +27,7 @@ import Handlebars from 'handlebars';
 import { registerStructureDefinitionHandlebarsHelpers } from './handlebars-helpers';
 import { getSdHbsProperties, HbsStructureDefinition } from './utils-hbs';
 import { StructureDefinition } from '../fhir-artifact-interfaces';
-import { FhirPackage, GeneratedContent } from '../ts-datamodel-generator-helpers';
+import { FhirPackage, GeneratedComplexTypeContent } from '../ts-datamodel-generator-helpers';
 
 registerStructureDefinitionHandlebarsHelpers();
 const classTemplate = readFileSync(resolve(__dirname, 'fhir-complex-datatype.hbs'), 'utf8');
@@ -41,13 +41,13 @@ const classGenerator = Handlebars.compile(classTemplate);
  * @param {ReadonlyMap<string, string>} codeSystemEnumMap - A map where the key represents the path from the source
  *    StructureDefinition and the value is the generated enum name associated with the code system.
  * @param {FhirPackage} fhirPackage - The FHIR package containing the resources and dependencies needed for generation.
- * @returns {GeneratedContent} The generated content including the filename, file extension, type, and file contents.
+ * @returns {GeneratedComplexTypeContent} The generated content including the filename, file extension, type, file contents, and imports.
  */
 export function generateComplexType(
   structureDef: StructureDefinition,
   codeSystemEnumMap: ReadonlyMap<string, string>,
   fhirPackage: FhirPackage,
-): GeneratedContent {
+): GeneratedComplexTypeContent {
   const sdHbs: HbsStructureDefinition = getSdHbsProperties(structureDef, codeSystemEnumMap, fhirPackage);
 
   const classCode: string = classGenerator({ sdHbs });
@@ -58,5 +58,7 @@ export function generateComplexType(
     fileExtension: 'ts',
     fhirType: 'ComplexType',
     fileContents: classCode,
-  } as GeneratedContent;
+    fhirCoreImports: new Set<string>(sdHbs.fhirCoreImports),
+    generatedImports: new Set<string>(sdHbs.generatedImports),
+  } as GeneratedComplexTypeContent;
 }
