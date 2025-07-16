@@ -19,6 +19,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.6.0] 2025-07-??
+
+### Added
+
+### Changed
+
+- Updated all complex data models to be consistent with generated complex data models
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.5.0] - 2025-07-12
 
 ### Changed

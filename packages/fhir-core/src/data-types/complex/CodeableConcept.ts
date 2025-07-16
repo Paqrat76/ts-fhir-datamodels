@@ -23,6 +23,9 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexListJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
+import { ICoding, IDataType } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { Coding } from './Coding';
 import { fhirString, fhirStringSchema, parseFhirPrimitiveData } from '../primitive/primitive-types';
@@ -31,12 +34,7 @@ import { isEmpty } from '../../utility/common-util';
 import { copyListValues, isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '../../utility/type-guards';
-import { ICoding, IDataType } from '../../base-models/library-interfaces';
-import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
-
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * CodeableConcept Class
@@ -44,16 +42,15 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * @remarks
  * Base StructureDefinition for CodeableConcept Type: A concept that may be defined by a formal reference to a terminology or ontology or may be provided by text.
  *
+ * This is a common pattern in healthcare - a concept that may be defined by one or more codes from formal definitions including LOINC and SNOMED CT, and/or defined by the provision of text that captures a human sense of the concept.
+ *
  * **FHIR Specification**
- * - **Short:** Concept - reference to a terminology or just text
+ * - **Short:** Concept - reference to a terminology or just  text
  * - **Definition:** A concept that may be defined by a formal reference to a terminology or ontology or may be provided by text.
  * - **Comment:** Not all terminology uses fit this general pattern. In some cases, models should not use CodeableConcept and use Coding directly and provide their own structure for managing text, codings, translations and the relationship between elements and pre- and post-coordination.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.CodeableConcept
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR CodeableConcept](http://hl7.org/fhir/StructureDefinition/CodeableConcept)
  */
 export class CodeableConcept extends DataType implements IDataType {
@@ -63,7 +60,7 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * Parse the provided `CodeableConcept` json to instantiate the CodeableConcept data model.
+   * Parse the provided `CodeableConcept` JSON to instantiate the CodeableConcept data model.
    *
    * @param sourceJson - JSON representing FHIR `CodeableConcept`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeableConcept
@@ -73,24 +70,24 @@ export class CodeableConcept extends DataType implements IDataType {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'CodeableConcept';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CodeableConcept';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
     const instance = new CodeableConcept();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
 
     fieldName = 'coding';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ICoding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        const datatype: Coding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype !== undefined) {
           instance.addCoding(datatype);
         }
@@ -98,16 +95,10 @@ export class CodeableConcept extends DataType implements IDataType {
     }
 
     fieldName = 'text';
-    sourceField = `${source}.${fieldName}`;
-    // eslint-disable-next-line prefer-const
-    primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setTextElement(datatype);
     }
@@ -152,11 +143,11 @@ export class CodeableConcept extends DataType implements IDataType {
    * @returns the `coding` property value as a Coding array
    */
   public getCoding(): ICoding[] {
-    return this.coding ?? ([] as Coding[]);
+    return this.coding ?? ([] as ICoding[]);
   }
 
   /**
-   * Assigns the provided Coding array value to the `coding` property.
+   * Assigns the provided ICoding array value to the `coding` property.
    *
    * @param value - the `coding` array value
    * @returns this
@@ -164,7 +155,7 @@ export class CodeableConcept extends DataType implements IDataType {
   public setCoding(value: ICoding[] | undefined): this {
     if (isDefinedList<ICoding>(value)) {
       const optErrMsg = `Invalid CodeableConcept.coding; Provided value array has an element that is not an instance of Coding.`;
-      assertFhirTypeList<ICoding>(value, Coding, optErrMsg);
+      assertFhirTypeList<Coding>(value, Coding, optErrMsg);
       this.coding = value;
     } else {
       this.coding = undefined;
@@ -173,15 +164,15 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * Add the provided Coding value to the `coding` array property.
+   * Add the provided ICoding value to the `coding` array property.
    *
    * @param value - the `coding` value
    * @returns this
    */
   public addCoding(value: ICoding | undefined): this {
     if (isDefined<ICoding>(value)) {
-      const optErrMsg = `Invalid CodeableConcept.coding; Provided value is not an instance of Coding.`;
-      assertFhirType<ICoding>(value, Coding, optErrMsg);
+      const optErrMsg = `Invalid CodeableConcept.coding; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initCoding();
       this.coding?.push(value);
     }
@@ -199,11 +190,13 @@ export class CodeableConcept extends DataType implements IDataType {
    * Initialize the `coding` property
    */
   private initCoding(): void {
-    this.coding ??= [] as ICoding[];
+    if (!this.hasCoding()) {
+      this.coding = [] as ICoding[];
+    }
   }
 
   /**
-   * @returns the `text` property value as a PrimitiveType
+   * @returns the `text` property value as a StringType object if defined; else an empty StringType object
    */
   public getTextElement(): StringType {
     return this.text ?? new StringType();
@@ -234,7 +227,7 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `text` property value as a primitive value
+   * @returns the `text` property value as a fhirString if defined; else undefined
    */
   public getText(): fhirString | undefined {
     return this.text?.getValue();
@@ -249,7 +242,7 @@ export class CodeableConcept extends DataType implements IDataType {
    */
   public setText(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid CodeableConcept.text (invalid value provided)`;
+      const optErrMsg = `Invalid CodeableConcept.text (${String(value)})`;
       this.text = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.text = undefined;
@@ -265,21 +258,23 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'CodeableConcept';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.coding, this.text);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): CodeableConcept {
     const dest = new CodeableConcept();
@@ -288,7 +283,10 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: CodeableConcept): void {
     super.copyValues(dest);
@@ -298,14 +296,14 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -326,5 +324,3 @@ export class CodeableConcept extends DataType implements IDataType {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

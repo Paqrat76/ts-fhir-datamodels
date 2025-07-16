@@ -22,22 +22,18 @@
  */
 
 import { strict as assert } from 'node:assert';
-import { DateTime } from 'luxon';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
+import { IDataType } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { DateTimeType } from '../primitive/DateTimeType';
 import { fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from '../primitive/primitive-types';
-import { FhirError } from '../../errors/FhirError';
 import { isEmpty } from '../../utility/common-util';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, isDefined } from '../../utility/type-guards';
-import { IDataType } from '../../base-models/library-interfaces';
-import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
-
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * Period Class
@@ -48,13 +44,10 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * **FHIR Specification**
  * - **Short:** Time range defined by start and end date/time
  * - **Definition:** A time period defined by a start and end date and optionally time.
- * - **Comment:** A Period specifies a range of time; the context of use will specify whether the entire range applies (e.g. "the patient was an inpatient of the hospital for this time range") or one value from the range applies (e.g. "give to the patient between these two times"). Period is not used for a duration (a measure of elapsed time).
+ * - **Comment:** A Period specifies a range of time; the context of use will specify whether the entire range applies (e.g. "the patient was an inpatient of the hospital for this time range") or one value from the range applies (e.g. "give to the patient between these two times"). Period is not used for a duration (a measure of elapsed time). See [Duration](https://hl7.org/fhir/datatypes.html#Duration).
  * - **FHIR Version:** 4.0.1
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Period
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR Period](http://hl7.org/fhir/StructureDefinition/Period)
  */
 export class Period extends DataType implements IDataType {
@@ -64,7 +57,7 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * Parse the provided `Period` json to instantiate the Period data model.
+   * Parse the provided `Period` JSON to instantiate the Period data model.
    *
    * @param sourceJson - JSON representing FHIR `Period`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Period
@@ -74,41 +67,32 @@ export class Period extends DataType implements IDataType {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'Period';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Period';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
     const instance = new Period();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
     fieldName = 'start';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       instance.setStartElement(datatype);
     }
 
     fieldName = 'end';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       instance.setEndElement(datatype);
     }
@@ -130,7 +114,7 @@ export class Period extends DataType implements IDataType {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private start: DateTimeType | undefined;
+  private start?: DateTimeType | undefined;
 
   /**
    * Period.end Element
@@ -138,17 +122,17 @@ export class Period extends DataType implements IDataType {
    * @remarks
    * **FHIR Specification**
    * - **Short:** End time with inclusive boundary, if not ongoing
-   * - **Definition:**
+   * - **Definition:** The end of the period. If the end of the period is missing, it means no end was known or planned at the time the instance was created. The start may be in the past, and the end date in the future, which means that period is expected/planned to end at that time.
    * - **Comment:** The high value includes any matching date/time. i.e. 2012-02-03T10:00:00 is in a period that has an end value of 2012-02-03.
    * - **FHIR Type:** `dateTime`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private end: DateTimeType | undefined;
+  private end?: DateTimeType | undefined;
 
   /**
-   * @returns the `start` property value as a PrimitiveType
+   * @returns the `start` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
   public getStartElement(): DateTimeType {
     return this.start ?? new DateTimeType();
@@ -159,16 +143,12 @@ export class Period extends DataType implements IDataType {
    *
    * @param element - the `start` value
    * @returns this
-   * @throws FhirError when Period.start > Period.end
    */
   public setStartElement(element: DateTimeType | undefined): this {
     if (isDefined<DateTimeType>(element)) {
       const optErrMsg = `Invalid Period.start; Provided element is not an instance of DateTimeType.`;
       assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
       this.start = element;
-      if (!this.validateStartBeforeEnd()) {
-        throw new FhirError('Invalid Period; Period.start is not before or the same as Period.end');
-      }
     } else {
       this.start = undefined;
     }
@@ -183,7 +163,7 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `start` property value as a primitive value
+   * @returns the `start` property value as a fhirDateTime if defined; else undefined
    */
   public getStart(): fhirDateTime | undefined {
     return this.start?.getValue();
@@ -195,15 +175,11 @@ export class Period extends DataType implements IDataType {
    * @param value - the `start` value
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
-   * @throws FhirError when Period.start > Period.end
    */
   public setStart(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
       const optErrMsg = `Invalid Period.start (${String(value)})`;
       this.start = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
-      if (!this.validateStartBeforeEnd()) {
-        throw new FhirError('Invalid Period; Period.start is not before or the same as Period.end');
-      }
     } else {
       this.start = undefined;
     }
@@ -218,7 +194,7 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `end` property value as a PrimitiveType
+   * @returns the `end` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
   public getEndElement(): DateTimeType {
     return this.end ?? new DateTimeType();
@@ -229,16 +205,12 @@ export class Period extends DataType implements IDataType {
    *
    * @param element - the `end` value
    * @returns this
-   * @throws FhirError when Period.start > Period.end
    */
   public setEndElement(element: DateTimeType | undefined): this {
     if (isDefined<DateTimeType>(element)) {
       const optErrMsg = `Invalid Period.end; Provided element is not an instance of DateTimeType.`;
       assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
       this.end = element;
-      if (!this.validateStartBeforeEnd()) {
-        throw new FhirError('Invalid Period; Period.start is not before or the same as Period.end');
-      }
     } else {
       this.end = undefined;
     }
@@ -253,7 +225,7 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `end` property value as a primitive value
+   * @returns the `end` property value as a fhirDateTime if defined; else undefined
    */
   public getEnd(): fhirDateTime | undefined {
     return this.end?.getValue();
@@ -265,15 +237,11 @@ export class Period extends DataType implements IDataType {
    * @param value - the `end` value
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
-   * @throws FhirError when Period.start > Period.end
    */
   public setEnd(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
       const optErrMsg = `Invalid Period.end (${String(value)})`;
       this.end = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
-      if (!this.validateStartBeforeEnd()) {
-        throw new FhirError('Invalid Period; Period.start is not before or the same as Period.end');
-      }
     } else {
       this.end = undefined;
     }
@@ -288,21 +256,23 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Period';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.start, this.end);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Period {
     const dest = new Period();
@@ -311,7 +281,10 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Period): void {
     super.copyValues(dest);
@@ -320,14 +293,14 @@ export class Period extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -347,27 +320,4 @@ export class Period extends DataType implements IDataType {
 
     return jsonObj;
   }
-
-  /**
-   * Validates that the `start` property value is less than or equal to `end` property value.
-   *
-   * @remarks
-   * If either the `start` property or the `end` property is `undefined`, the validate return `true`.
-   *
-   * @returns `true` if `start` is less than or equal to `end`; `false` otherwise
-   */
-  private validateStartBeforeEnd(): boolean {
-    if (this.start === undefined || this.start.isEmpty() || this.end === undefined || this.end.isEmpty()) {
-      // Return true if start and/or end do not exist.
-      // Return a real validation result only if both start AND end exist!
-      return true;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const startDateTime = DateTime.fromISO(this.getStart()!);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const endDateTime = DateTime.fromISO(this.getEnd()!);
-    return startDateTime <= endDateTime;
-  }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns */

@@ -199,42 +199,36 @@ describe('Narrative', () => {
       expect(t).toThrow(`Unknown NarrativeStatusEnum 'code' value '${UNSUPPORTED_ENUM_CODE}'`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setStatus(null);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.status is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setStatusElement(null);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.status is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setStatusEnumType(null);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.status is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setStatus(undefined);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.status is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setStatusElement(undefined);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.status is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setStatusEnumType(undefined);
       };
       expect(t).toThrow(AssertionError);
@@ -314,7 +308,7 @@ describe('Narrative', () => {
         new Narrative(VALID_CODE_GENERATED, INVALID_XHTML);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid Narrative.div (invalid value provided)`);
+      expect(t).toThrow(`Invalid Narrative.div ( cannot start with whitespace)`);
 
       const testNarrative = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
 
@@ -322,17 +316,15 @@ describe('Narrative', () => {
         testNarrative.setDiv(INVALID_XHTML);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid Narrative.div (invalid value provided)`);
+      expect(t).toThrow(`Invalid Narrative.div ( cannot start with whitespace)`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setDiv(null);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.div is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setDiv(undefined);
       };
       expect(t).toThrow(AssertionError);
@@ -480,7 +472,7 @@ describe('Narrative', () => {
         new Narrative(VALID_CODE_GENERATED_TYPE, INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Invalid Narrative.div; Provided element is not an instance of XhtmlType`);
+      expect(t).toThrow(`Invalid Narrative.div; Provided value is not an instance of XhtmlType`);
 
       const testNarrative = new Narrative(VALID_CODE_GENERATED_TYPE, VALID_XHTML_TYPE);
 
@@ -489,17 +481,15 @@ describe('Narrative', () => {
         testNarrative.setDivElement(INVALID_ENUM_CODE_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Invalid Narrative.div; Provided element is not an instance of XhtmlType`);
+      expect(t).toThrow(`Invalid Narrative.div; Provided value is not an instance of XhtmlType`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setDivElement(null);
       };
       expect(t).toThrow(AssertionError);
       expect(t).toThrow(`Narrative.div is required`);
 
       t = () => {
-        // @ts-expect-error: allow for testing
         testNarrative.setDivElement(undefined);
       };
       expect(t).toThrow(AssertionError);
@@ -537,7 +527,6 @@ describe('Narrative', () => {
       let testType = Narrative.parse({});
       expect(testType).toBeUndefined();
 
-      // @ts-expect-error: allow for testing
       testType = Narrative.parse(undefined);
       expect(testType).toBeUndefined();
 

@@ -25,7 +25,6 @@ import { DataType, Extension } from '../../../base-models/core-fhir-models';
 import { Period } from '../../../data-types/complex/Period';
 import { DateTimeType } from '../../../data-types/primitive/DateTimeType';
 import { StringType } from '../../../data-types/primitive/StringType';
-import { FhirError } from '../../../errors/FhirError';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
@@ -340,22 +339,6 @@ describe('Period', () => {
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Period.end (${INVALID_DATETIME})`);
-
-      testPeriod.setStart(VALID_START_DATETIME);
-      testPeriod.setEnd(VALID_END_DATETIME);
-      t = () => {
-        testPeriod.setStart(VALID_END_DATETIME_2);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('Invalid Period; Period.start is not before or the same as Period.end');
-
-      testPeriod.setStart(VALID_START_DATETIME_2);
-      testPeriod.setEnd(VALID_END_DATETIME_2);
-      t = () => {
-        testPeriod.setEnd(VALID_START_DATETIME);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('Invalid Period; Period.start is not before or the same as Period.end');
     });
 
     // Tests using DataType elements
@@ -572,22 +555,6 @@ describe('Period', () => {
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Period.end; Provided element is not an instance of DateTimeType.`);
-
-      testPeriod.setStart(VALID_START_DATETIME);
-      testPeriod.setEnd(VALID_END_DATETIME);
-      t = () => {
-        testPeriod.setStartElement(new DateTimeType(VALID_END_DATETIME_2));
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('Invalid Period; Period.start is not before or the same as Period.end');
-
-      testPeriod.setStart(VALID_START_DATETIME_2);
-      testPeriod.setEnd(VALID_END_DATETIME_2);
-      t = () => {
-        testPeriod.setEndElement(new DateTimeType(VALID_START_DATETIME));
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('Invalid Period; Period.start is not before or the same as Period.end');
     });
   });
 

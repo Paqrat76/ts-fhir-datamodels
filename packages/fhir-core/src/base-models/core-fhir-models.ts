@@ -928,31 +928,24 @@ export abstract class PrimitiveType<T> extends DataType implements IPrimitiveTyp
  * @remarks
  * Base StructureDefinition for Extension Type: Optional Extension Element - found in all resources.
  *
+ * The ability to add extensions in a structured way is what keeps FHIR resources simple.
+ *
  * **FHIR Specification**
  * - **Short:** Optional Extensions Element
  * - **Definition:** Optional Extension Element - found in all resources.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
- *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Extension
  *
  * @category Base Models
  * @see [FHIR Extension](http://hl7.org/fhir/StructureDefinition/Extension)
  * @see [FHIR Extensibility](https://hl7.org/fhir/R4/extensibility.html)
  */
 export class Extension extends Element implements IExtension {
-  /**
-   * @param url - Source of the definition for the Extension - a logical name or a URL.
-   * @param value - Value of Extension
-   * @throws PrimitiveTypeError for invalid url
-   */
   constructor(url: fhirUri | null, value?: IDataType) {
     super();
 
-    if (url === null) {
-      this.url = null;
-    } else {
-      this.url = parseFhirPrimitiveData(url, fhirUriSchema, `Invalid Extension.url (${url})`);
+    this.url = null;
+    if (isDefined<fhirUri>(url)) {
+      this.setUrl(url);
     }
 
     this.setValue(value);
@@ -979,7 +972,7 @@ export class Extension extends Element implements IExtension {
    * @remarks
    * **FHIR Specification**
    * - **Short:** Value of extension
-   * - **Definition:** Value of extension - must be one of a constrained set of the data types.
+   * - **Definition:** Value of extension - must be one of a constrained set of the data types (see [Extensibility](https://hl7.org/fhir/extensibility.html) for a list).
    * - **FHIR Types:**
    *   - Refer to [Open Type Element](https://hl7.org/fhir/R4/datatypes.html#open)
    * - **Cardinality:** 0..1
@@ -989,23 +982,27 @@ export class Extension extends Element implements IExtension {
   private value?: IDataType | undefined;
 
   /**
-   * @returns the `url` property value
+   * @returns the `url` property value as a fhirUri if defined; else null
    */
   public getUrl(): fhirUri | null {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (this.url === undefined) {
+      return null;
+    }
     return this.url;
   }
 
   /**
-   * Assigns the provided value to the `url` property.
+   * Assigns the provided primitive value to the `url` property.
    *
-   * @param value - the url value
+   * @param value - the `url` value
    * @returns this
-   * @throws AssertionError for invalid value
+   * @throws PrimitiveTypeError for invalid primitive types
    */
   public setUrl(value: fhirUri): this {
-    if (isDefined<fhirUri>(value)) {
-      this.url = parseFhirPrimitiveData(value, fhirUriSchema, `Invalid Extension.url (${value})`);
-    }
+    assertIsDefined<fhirUri>(value, `Extension.url is required`);
+    const optErrMsg = `Invalid Extension.url (${String(value)})`;
+    this.url = parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg);
     return this;
   }
 
@@ -1017,18 +1014,18 @@ export class Extension extends Element implements IExtension {
   }
 
   /**
-   * @returns the `value` property value
+   * @returns the `value` property value as a DataType object if defined; else undefined
    */
   public getValue(): IDataType | undefined {
     return this.value;
   }
 
   /**
-   * Assigns the provided value to the `value` property.
+   * Assigns the provided DataType object value to the `value` property.
    *
    * @decorator `@OpenDataTypes()`
    *
-   * @param value - the `value` value
+   * @param value - the `value` object value
    * @returns this
    */
   @OpenDataTypes('Extension.value[x]')
@@ -1083,11 +1080,19 @@ export class Extension extends Element implements IExtension {
   protected override copyValues(dest: Extension): void {
     super.copyValues(dest);
     dest.url = this.url;
-    dest.value = this.value ? (this.value.copy() as unknown as IDataType) : undefined;
+    dest.value = this.value?.copy() as IDataType;
   }
 
   /**
-   * @returns the JSON value
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
+   */
+  public override isComplexDataType(): boolean {
+    return true;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {

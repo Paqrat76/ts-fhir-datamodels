@@ -28,6 +28,9 @@ import {
   setFhirPrimitiveJson,
   setFhirPrimitiveListJson,
 } from '../../base-models/core-fhir-models';
+import { ICoding, IMeta } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { Coding } from './Coding';
 import { CanonicalType } from '../primitive/CanonicalType';
@@ -49,17 +52,12 @@ import { isEmpty } from '../../utility/common-util';
 import { copyListValues, isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, assertFhirTypeList, isDefined, isDefinedList } from '../../utility/type-guards';
-import { ICoding, IMeta } from '../../base-models/library-interfaces';
-import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import {
   FhirParser,
   getPrimitiveTypeJson,
   getPrimitiveTypeListJson,
   PrimitiveTypeJson,
 } from '../../utility/FhirParser';
-
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * Meta Class
@@ -72,10 +70,7 @@ import {
  * - **Definition:** The metadata about a resource. This is content in the resource that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
  * - **FHIR Version:** 4.0.1
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Meta
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR Meta](http://hl7.org/fhir/StructureDefinition/Meta)
  */
 export class Meta extends DataType implements IMeta {
@@ -85,7 +80,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Parse the provided `Meta` json to instantiate the Meta data model.
+   * Parse the provided `Meta` JSON to instantiate the Meta data model.
    *
    * @param sourceJson - JSON representing FHIR `Meta`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Meta
@@ -95,65 +90,51 @@ export class Meta extends DataType implements IMeta {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'Meta';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Meta';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
     const instance = new Meta();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
     fieldName = 'versionId';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       instance.setVersionIdElement(datatype);
     }
 
     fieldName = 'lastUpdated';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: InstantType | undefined = fhirParser.parseInstantType(dtJson, dtSiblingJson);
       instance.setLastUpdatedElement(datatype);
     }
 
     fieldName = 'source';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSourceElement(datatype);
     }
 
     fieldName = 'profile';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
+    if (fieldName in classJsonObj) {
       const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        datatypeJsonObj,
+        classJsonObj,
         sourceField,
         fieldName,
         primitiveJsonType,
@@ -170,12 +151,12 @@ export class Meta extends DataType implements IMeta {
     }
 
     fieldName = 'security';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value) => {
-        const datatype: ICoding | undefined = Coding.parse(dataElementJson, sourceField);
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ICoding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype !== undefined) {
           instance.addSecurity(datatype);
         }
@@ -183,12 +164,12 @@ export class Meta extends DataType implements IMeta {
     }
 
     fieldName = 'tag';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(datatypeJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value) => {
-        const datatype: ICoding | undefined = Coding.parse(dataElementJson, sourceField);
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ICoding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype !== undefined) {
           instance.addTag(datatype);
         }
@@ -221,7 +202,7 @@ export class Meta extends DataType implements IMeta {
    * **FHIR Specification**
    * - **Short:** When the resource version last changed
    * - **Definition:** When the resource last changed - e.g. when the version changed.
-   * - **Comment:** This value is always populated except when the resource is first being created. The server / resource manager sets this value; what a client provides is irrelevant. This is equivalent to the HTTP Last-Modified and SHOULD have the same value on a [read](https://hl7.org/fhir/R4/http.html#read) interaction.
+   * - **Comment:** This value is always populated except when the resource is first being created. The server / resource manager sets this value; what a client provides is irrelevant. This is equivalent to the HTTP Last-Modified and SHOULD have the same value on a [read](https://hl7.org/fhir/http.html#read) interaction.
    * - **FHIR Type:** `instant`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
@@ -235,8 +216,8 @@ export class Meta extends DataType implements IMeta {
    * @remarks
    * **FHIR Specification**
    * - **Short:** Identifies where the resource comes from
-   * - **Definition:** A uri that identifies the source system of the resource. This provides a minimal amount of [Provenance](https://hl7.org/fhir/R4/provenance.html) information that can be used to track or differentiate the source of information in the resource. The source may identify another FHIR server, document, message, database, etc.
-   * - **Comment:** In the provenance resource, this corresponds to Provenance.entity.what[x]. The exact use of the source (and the implied Provenance.entity.role) is left to implementer discretion. Only one nominated source is allowed; for additional provenance details, a full Provenance resource should be used. This element can be used to indicate where the current master source of a resource that has a canonical URL if the resource is no longer hosted at the canonical URL.
+   * - **Definition:** A uri that identifies the source system of the resource. This provides a minimal amount of [Provenance](https://hl7.org/fhir/provenance.html#) information that can be used to track or differentiate the source of information in the resource. The source may identify another FHIR server, document, message, database, etc.
+   * - **Comment:** In the provenance resource, this corresponds to Provenance.entity.what[x]. The exact use of the source (and the implied Provenance.entity.role) is left to implementer discretion. Only one nominated source is allowed; for additional provenance details, a full Provenance resource should be used.  This element can be used to indicate where the current master source of a resource that has a canonical URL if the resource is no longer hosted at the canonical URL.
    * - **FHIR Type:** `uri`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
@@ -250,9 +231,12 @@ export class Meta extends DataType implements IMeta {
    * @remarks
    * **FHIR Specification**
    * - **Short:** Profiles this resource claims to conform to
-   * - **Definition:** A list of profiles (references to [StructureDefinition](https://hl7.org/fhir/R4/structuredefinition.html) resources) that this resource claims to conform to. The URL is a reference to [StructureDefinition.url](https://hl7.org/fhir/R4/structuredefinition-definitions.html#StructureDefinition.url).
+   * - **Definition:** A list of profiles (references to [StructureDefinition](https://hl7.org/fhir/structuredefinition.html#) resources) that this resource claims to conform to. The URL is a reference to [StructureDefinition.url](https://hl7.org/fhir/structuredefinition-definitions.html#StructureDefinition.url).
    * - **Comment:** It is up to the server and/or other infrastructure of policy to determine whether/how these claims are verified and/or updated over time.  The list of profile URLs is a set.
    * - **FHIR Type:** `canonical`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/StructureDefinition',
+   *     ]
    * - **Cardinality:** 0..*
    * - **isModifier:** false
    * - **isSummary:** true
@@ -290,7 +274,7 @@ export class Meta extends DataType implements IMeta {
   private tag?: ICoding[] | undefined;
 
   /**
-   * @returns the `versionId` property value as a PrimitiveType
+   * @returns the `versionId` property value as a IdType object if defined; else an empty IdType object
    */
   public getVersionIdElement(): IdType {
     return this.versionId ?? new IdType();
@@ -321,7 +305,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `versionId` property value as a primitive value
+   * @returns the `versionId` property value as a fhirId if defined; else undefined
    */
   public getVersionId(): fhirId | undefined {
     return this.versionId?.getValue();
@@ -352,7 +336,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `lastUpdated` property value as a PrimitiveType
+   * @returns the `lastUpdated` property value as a InstantType object if defined; else an empty InstantType object
    */
   public getLastUpdatedElement(): InstantType {
     return this.lastUpdated ?? new InstantType();
@@ -383,7 +367,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `lastUpdated` property value as a primitive value
+   * @returns the `lastUpdated` property value as a fhirInstant if defined; else undefined
    */
   public getLastUpdated(): fhirInstant | undefined {
     return this.lastUpdated?.getValue();
@@ -414,7 +398,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `source` property value as a PrimitiveType
+   * @returns the `source` property value as a UriType object if defined; else an empty UriType object
    */
   public getSourceElement(): UriType {
     return this.source ?? new UriType();
@@ -445,7 +429,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `source` property value as a primitive value
+   * @returns the `source` property value as a fhirUri if defined; else undefined
    */
   public getSource(): fhirUri | undefined {
     return this.source?.getValue();
@@ -476,21 +460,21 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `profile` property value as a PrimitiveType array
+   * @returns the `profile` property value as a CanonicalType array
    */
   public getProfileElement(): CanonicalType[] {
     return this.profile ?? ([] as CanonicalType[]);
   }
 
   /**
-   * Assigns the provided PrimitiveType array value to the `profile` property.
+   * Assigns the provided CanonicalType array value to the `profile` property.
    *
    * @param element - the `profile` array value
    * @returns this
    */
   public setProfileElement(element: CanonicalType[] | undefined): this {
     if (isDefinedList<CanonicalType>(element)) {
-      const optErrMsg = `Invalid Meta.profile; Provided element array has an element that is not an instance of CanonicalType.`;
+      const optErrMsg = `Invalid Meta.profile; Provided value array has an element that is not an instance of CanonicalType.`;
       assertFhirTypeList<CanonicalType>(element, CanonicalType, optErrMsg);
       this.profile = element;
     } else {
@@ -500,7 +484,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Add the provided PrimitiveType value to the `profile` array property.
+   * Add the provided CanonicalType value to the `profile` array property.
    *
    * @param element - the `profile` value
    * @returns this
@@ -523,14 +507,14 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * @returns the `profile` property value as a primitive value array
+   * @returns the `profile` property value as a fhirCanonical array
    */
   public getProfile(): fhirCanonical[] {
     this.initProfile();
     const profileValues = [] as fhirCanonical[];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    for (const profile of this.profile!) {
-      const value = profile.getValue();
+    for (const arrayItem of this.profile!) {
+      const value = arrayItem.getValue();
       if (value !== undefined) {
         profileValues.push(value);
       }
@@ -570,6 +554,7 @@ export class Meta extends DataType implements IMeta {
     if (isDefined<fhirCanonical>(value)) {
       const optErrMsg = `Invalid Meta.profile array item (${String(value)})`;
       const element = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+      this.initProfile();
       this.addProfileElement(element);
     }
     return this;
@@ -583,10 +568,12 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Initialize the profile property
+   * Initialize the `profile` property
    */
   private initProfile(): void {
-    this.profile ??= [] as CanonicalType[];
+    if (!this.hasProfile()) {
+      this.profile = [] as CanonicalType[];
+    }
   }
 
   /**
@@ -597,7 +584,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Assigns the provided Coding array value to the `security` property.
+   * Assigns the provided ICoding array value to the `security` property.
    *
    * @param value - the `security` array value
    * @returns this
@@ -614,14 +601,14 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Add the provided Coding value to the `security` array property.
+   * Add the provided ICoding value to the `security` array property.
    *
    * @param value - the `security` value
    * @returns this
    */
   public addSecurity(value: ICoding | undefined): this {
     if (isDefined<ICoding>(value)) {
-      const optErrMsg = `Invalid Meta.security; Provided value is not an instance of CodeType.`;
+      const optErrMsg = `Invalid Meta.security; Provided element is not an instance of Coding.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initSecurity();
       this.security?.push(value);
@@ -640,7 +627,9 @@ export class Meta extends DataType implements IMeta {
    * Initialize the `security` property
    */
   private initSecurity(): void {
-    this.security ??= [] as Coding[];
+    if (!this.hasSecurity()) {
+      this.security = [] as ICoding[];
+    }
   }
 
   /**
@@ -651,7 +640,7 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Assigns the provided Coding array value to the `tag` property.
+   * Assigns the provided ICoding array value to the `tag` property.
    *
    * @param value - the `tag` array value
    * @returns this
@@ -668,14 +657,14 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Add the provided Coding value to the `tag` array property.
+   * Add the provided ICoding value to the `tag` array property.
    *
    * @param value - the `tag` value
    * @returns this
    */
   public addTag(value: ICoding | undefined): this {
     if (isDefined<ICoding>(value)) {
-      const optErrMsg = `Invalid Meta.tag; Provided value is not an instance of CodeType.`;
+      const optErrMsg = `Invalid Meta.tag; Provided element is not an instance of Coding.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initTag();
       this.tag?.push(value);
@@ -694,18 +683,20 @@ export class Meta extends DataType implements IMeta {
    * Initialize the `tag` property
    */
   private initTag(): void {
-    this.tag ??= [] as Coding[];
+    if (!this.hasTag()) {
+      this.tag = [] as ICoding[];
+    }
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Meta';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return (
@@ -715,7 +706,9 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Meta {
     const dest = new Meta();
@@ -724,7 +717,10 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Meta): void {
     super.copyValues(dest);
@@ -740,14 +736,14 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -769,8 +765,8 @@ export class Meta extends DataType implements IMeta {
       setFhirPrimitiveJson<fhirUri>(this.getSourceElement(), 'source', jsonObj);
     }
 
-    if (this.hasProfileElement()) {
-      setFhirPrimitiveListJson<fhirCanonical>(this.getProfileElement(), 'profile', jsonObj);
+    if (this.hasProfile()) {
+      setFhirPrimitiveListJson(this.getProfileElement(), 'profile', jsonObj);
     }
 
     if (this.hasSecurity()) {
@@ -784,5 +780,3 @@ export class Meta extends DataType implements IMeta {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

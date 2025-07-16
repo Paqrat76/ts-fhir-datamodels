@@ -321,32 +321,32 @@ describe('Reference', () => {
       expect(t).toThrow(`Invalid Reference.display (${INVALID_STRING})`);
     });
 
-    // it('should throw PrimitiveTypeError when reset with invalid primitive Reference.reference value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     testReference.setReference(INVALID_STRING);
-    //   };
-    //   expect(t).toThrow(PrimitiveTypeError);
-    //   expect(t).toThrow(`Invalid Reference.reference (${INVALID_STRING})`);
-    // });
+    it('should throw PrimitiveTypeError when reset with invalid primitive Reference.reference value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        testReference.setReference(INVALID_STRING);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid Reference.reference (${INVALID_STRING})`);
+    });
 
-    // it('should throw PrimitiveTypeError when reset with invalid primitive Reference.type value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     testReference.setType(INVALID_URI);
-    //   };
-    //   expect(t).toThrow(PrimitiveTypeError);
-    //   expect(t).toThrow(`Invalid Reference.type (${INVALID_URI})`);
-    // });
+    it('should throw PrimitiveTypeError when reset with invalid primitive Reference.type value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        testReference.setType(INVALID_URI);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid Reference.type (${INVALID_URI})`);
+    });
 
-    // it('should throw PrimitiveTypeError when reset with invalid primitive Reference.display value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     testReference.setDisplay(INVALID_STRING);
-    //   };
-    //   expect(t).toThrow(PrimitiveTypeError);
-    //   expect(t).toThrow(`Invalid Reference.display (${INVALID_STRING})`);
-    // });
+    it('should throw PrimitiveTypeError when reset with invalid primitive Reference.display value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        testReference.setDisplay(INVALID_STRING);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid Reference.display (${INVALID_STRING})`);
+    });
 
     // Tests using DataType elements
 
@@ -493,7 +493,7 @@ describe('Reference', () => {
         testReference.setIdentifier(INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Invalid Reference.identifier; Provided value is not an instance of Identifier.`);
+      expect(t).toThrow(`Invalid Reference.identifier; Provided element is not an instance of Identifier.`);
 
       t = () => {
         // @ts-expect-error: allow invalid type for testing
@@ -503,45 +503,45 @@ describe('Reference', () => {
       expect(t).toThrow(`Invalid Reference.display; Provided element is not an instance of StringType.`);
     });
 
-    // it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.reference value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     // @ts-expect-error: allow invalid type for testing
-    //     testReference.setReferenceElement(INVALID_STRING_TYPE);
-    //   };
-    //   expect(t).toThrow(InvalidTypeError);
-    //   expect(t).toThrow(`Invalid Reference.reference; Provided element is not an instance of StringType.`);
-    // });
+    it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.reference value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        // @ts-expect-error: allow invalid type for testing
+        testReference.setReferenceElement(INVALID_STRING_TYPE);
+      };
+      expect(t).toThrow(InvalidTypeError);
+      expect(t).toThrow(`Invalid Reference.reference; Provided element is not an instance of StringType.`);
+    });
 
-    // it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.type value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     // @ts-expect-error: allow invalid type for testing
-    //     testReference.setTypeElement(INVALID_NON_STRING_TYPE);
-    //   };
-    //   expect(t).toThrow(InvalidTypeError);
-    //   expect(t).toThrow(`Invalid Reference.type; Provided element is not an instance of UriType.`);
-    // });
+    it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.type value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        // @ts-expect-error: allow invalid type for testing
+        testReference.setTypeElement(INVALID_NON_STRING_TYPE);
+      };
+      expect(t).toThrow(InvalidTypeError);
+      expect(t).toThrow(`Invalid Reference.type; Provided element is not an instance of UriType.`);
+    });
 
-    // it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.identifier value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     // @ts-expect-error: allow invalid type for testing
-    //     testReference.setIdentifier(INVALID_NON_STRING_TYPE);
-    //   };
-    //   expect(t).toThrow(InvalidTypeError);
-    //   expect(t).toThrow(`Invalid Reference.identifier; Provided value is not an instance of Identifier.`);
-    // });
+    it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.identifier value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        // @ts-expect-error: allow invalid type for testing
+        testReference.setIdentifier(INVALID_NON_STRING_TYPE);
+      };
+      expect(t).toThrow(InvalidTypeError);
+      expect(t).toThrow(`Invalid Reference.identifier; Provided element is not an instance of Identifier.`);
+    });
 
-    // it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.display value', () => {
-    //   const testReference = new Reference();
-    //   const t = () => {
-    //     // @ts-expect-error: allow invalid type for testing
-    //     testReference.setDisplayElement(INVALID_STRING_TYPE);
-    //   };
-    //   expect(t).toThrow(InvalidTypeError);
-    //   expect(t).toThrow(`Invalid Reference.display; Provided element is not an instance of StringType.`);
-    // });
+    it('should throw InvalidTypeError when reset with invalid PrimitiveType Reference.display value', () => {
+      const testReference = new Reference();
+      const t = () => {
+        // @ts-expect-error: allow invalid type for testing
+        testReference.setDisplayElement(INVALID_STRING_TYPE);
+      };
+      expect(t).toThrow(InvalidTypeError);
+      expect(t).toThrow(`Invalid Reference.display; Provided element is not an instance of StringType.`);
+    });
   });
 
   describe('Serialization/Deserialization', () => {

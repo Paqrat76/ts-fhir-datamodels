@@ -655,7 +655,7 @@ describe('Meta', () => {
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
-        `Invalid Meta.profile; Provided element array has an element that is not an instance of CanonicalType.`,
+        `Invalid Meta.profile; Provided value array has an element that is not an instance of CanonicalType.`,
       );
 
       t = () => {
@@ -677,7 +677,7 @@ describe('Meta', () => {
         testMeta.addSecurity(INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Invalid Meta.security; Provided value is not an instance of CodeType.`);
+      expect(t).toThrow(`Invalid Meta.security; Provided element is not an instance of Coding.`);
 
       t = () => {
         // @ts-expect-error: ignore invalid type for test
@@ -691,7 +691,7 @@ describe('Meta', () => {
         testMeta.addTag(INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Invalid Meta.tag; Provided value is not an instance of CodeType.`);
+      expect(t).toThrow(`Invalid Meta.tag; Provided element is not an instance of Coding.`);
     });
   });
 
@@ -752,7 +752,6 @@ describe('Meta', () => {
       let testType = Meta.parse({});
       expect(testType).toBeUndefined();
 
-      // @ts-expect-error: allow for testing
       testType = Meta.parse(undefined);
       expect(testType).toBeUndefined();
 

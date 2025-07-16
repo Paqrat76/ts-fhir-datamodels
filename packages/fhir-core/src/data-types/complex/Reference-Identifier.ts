@@ -35,6 +35,8 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { IDataType } from '../../base-models/library-interfaces';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { IdentifierUseEnum } from '../code-systems/IdentifierUseEnum';
@@ -56,12 +58,8 @@ import { isEmpty } from '../../utility/common-util';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, isDefined } from '../../utility/type-guards';
-import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
 import { ReferenceTargets } from '../../utility/decorators';
-
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * Reference Class
@@ -75,10 +73,7 @@ import { ReferenceTargets } from '../../utility/decorators';
  * - **Comment:** References SHALL be a reference to an actual FHIR resource, and SHALL be resolveable (allowing for access control, temporary unavailability, etc.). Resolution can be either by retrieval from the URL, or, where applicable by resource type, by treating an absolute reference as a canonical URL and looking it up in a local registry/repository.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Reference
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR Reference](http://hl7.org/fhir/StructureDefinition/Reference)
  */
 export class Reference extends DataType implements IDataType {
@@ -88,7 +83,7 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * Parse the provided `Reference` json to instantiate the Reference data model.
+   * Parse the provided `Reference` JSON to instantiate the Reference data model.
    *
    * @param sourceJson - JSON representing FHIR `Reference`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Reference
@@ -98,63 +93,49 @@ export class Reference extends DataType implements IDataType {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'Reference';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Reference';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
     const instance = new Reference();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
     fieldName = 'reference';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setReferenceElement(datatype);
     }
 
     fieldName = 'type';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setTypeElement(datatype);
     }
 
     fieldName = 'identifier';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const datatype: Identifier | undefined = Identifier.parse(datatypeJsonObj[fieldName]!, sourceField);
+      const datatype: Identifier | undefined = Identifier.parse(classJsonObj[fieldName]!, sourceField);
       instance.setIdentifier(datatype);
     }
 
     fieldName = 'display';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setDisplayElement(datatype);
     }
@@ -169,7 +150,7 @@ export class Reference extends DataType implements IDataType {
    * @remarks
    * **FHIR Specification**
    * - **Short:** Literal reference, Relative, internal or absolute URL
-   * - **Definition:** A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.
+   * - **Definition:** A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with \'#\') refer to contained resources.
    * - **Comment:** Using absolute URLs provides a stable scalable approach suitable for a cloud/web context, while using relative/logical references provides a flexible approach suitable for use when trading across closed eco-system boundaries.   Absolute URLs do not need to point to a FHIR RESTful server, though this is the preferred approach. If the URL conforms to the structure "/[type]/[id]" then it should be assumed that the reference is to a FHIR RESTful server.
    * - **FHIR Type:** `string`
    * - **Cardinality:** 0..1
@@ -191,7 +172,7 @@ export class Reference extends DataType implements IDataType {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private type?: UriType | undefined;
+  private type_?: UriType | undefined;
 
   /**
    * Reference.identifier Element
@@ -200,7 +181,7 @@ export class Reference extends DataType implements IDataType {
    * **FHIR Specification**
    * - **Short:** Logical reference, when literal reference is not known
    * - **Definition:** An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.
-   * - **Comment:** When an identifier is provided in place of a reference, any system processing the reference will only be able to resolve the identifier to a reference if it understands the business context in which the identifier is used. Sometimes this is global (e.g. a national identifier) but often it is not. For this reason, none of the useful mechanisms described for working with references (e.g. chaining, includes) are possible, nor should servers be expected to be able resolve the reference. Servers may accept an identifier based reference untouched, resolve it, and/or reject it - see CapabilityStatement.rest.resource.referencePolicy. When both an identifier and a literal reference are provided, the literal reference is preferred. Applications processing the resource are allowed - but not required - to check that the identifier matches the literal reference. Applications converting a logical reference to a literal reference may choose to leave the logical reference present, or remove it. Reference is intended to point to a structure that can potentially be expressed as a FHIR resource, though there is no need for it to exist as an actual FHIR resource instance - except in as much as an application wishes to actual find the target of the reference. The content referred to be the identifier must meet the logical constraints implied by any limitations on what resource types are permitted for the reference.  For example, it would not be legitimate to send the identifier for a drug prescription if the type were Reference(Observation|DiagnosticReport).  One of the use-cases for Reference.identifier is the situation where no FHIR representation exists (where the type is Reference (Any).
+   * - **Comment:** When an identifier is provided in place of a reference, any system processing the reference will only be able to resolve the identifier to a reference if it understands the business context in which the identifier is used. Sometimes this is global (e.g. a national identifier) but often it is not. For this reason, none of the useful mechanisms described for working with references (e.g. chaining, includes) are possible, nor should servers be expected to be able resolve the reference. Servers may accept an identifier based reference untouched, resolve it, and/or reject it - see CapabilityStatement.rest.resource.referencePolicy.  When both an identifier and a literal reference are provided, the literal reference is preferred. Applications processing the resource are allowed - but not required - to check that the identifier matches the literal reference Applications converting a logical reference to a literal reference may choose to leave the logical reference present, or remove it. Reference is intended to point to a structure that can potentially be expressed as a FHIR resource, though there is no need for it to exist as an actual FHIR resource instance - except in as much as an application wishes to actual find the target of the reference. The content referred to be the identifier must meet the logical constraints implied by any limitations on what resource types are permitted for the reference.  For example, it would not be legitimate to send the identifier for a drug prescription if the type were Reference(Observation|DiagnosticReport).  One of the use-cases for Reference.identifier is the situation where no FHIR representation exists (where the type is Reference (Any).
    * - **FHIR Type:** `Identifier`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
@@ -215,7 +196,7 @@ export class Reference extends DataType implements IDataType {
    * **FHIR Specification**
    * - **Short:** Text alternative for the resource
    * - **Definition:** Plain text narrative that identifies the resource in addition to the resource reference.
-   * - **Comment:** This is generally not the same as the Resource.text of the referenced resource.  The purpose is to identify what's being referenced, not to fully describe it.
+   * - **Comment:** This is generally not the same as the Resource.text of the referenced resource.  The purpose is to identify what\'s being referenced, not to fully describe it.
    * - **FHIR Type:** `string`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
@@ -224,7 +205,7 @@ export class Reference extends DataType implements IDataType {
   private display?: StringType | undefined;
 
   /**
-   * @returns the `reference` property value as a PrimitiveType
+   * @returns the `reference` property value as a StringType object if defined; else an empty StringType object
    */
   public getReferenceElement(): StringType {
     return this.reference ?? new StringType();
@@ -255,7 +236,7 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `reference` property value as a primitive value
+   * @returns the `reference` property value as a fhirString if defined; else undefined
    */
   public getReference(): fhirString | undefined {
     return this.reference?.getValue();
@@ -286,69 +267,69 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `type` property value as a PrimitiveType
+   * @returns the `type_` property value as a UriType object if defined; else an empty UriType object
    */
   public getTypeElement(): UriType {
-    return this.type ?? new UriType();
+    return this.type_ ?? new UriType();
   }
 
   /**
-   * Assigns the provided PrimitiveType value to the `type` property.
+   * Assigns the provided PrimitiveType value to the `type_` property.
    *
-   * @param element - the `type` value
+   * @param element - the `type_` value
    * @returns this
    */
   public setTypeElement(element: UriType | undefined): this {
     if (isDefined<UriType>(element)) {
       const optErrMsg = `Invalid Reference.type; Provided element is not an instance of UriType.`;
       assertFhirType<UriType>(element, UriType, optErrMsg);
-      this.type = element;
+      this.type_ = element;
     } else {
-      this.type = undefined;
+      this.type_ = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `type` property exists and has a value; `false` otherwise
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
    */
   public hasTypeElement(): boolean {
-    return isDefined<UriType>(this.type) && !this.type.isEmpty();
+    return isDefined<UriType>(this.type_) && !this.type_.isEmpty();
   }
 
   /**
-   * @returns the `type` property value as a primitive value
+   * @returns the `type_` property value as a fhirUri if defined; else undefined
    */
   public getType(): fhirUri | undefined {
-    return this.type?.getValue();
+    return this.type_?.getValue();
   }
 
   /**
-   * Assigns the provided primitive value to the `type` property.
+   * Assigns the provided primitive value to the `type_` property.
    *
-   * @param value - the `type` value
+   * @param value - the `type_` value
    * @returns this
    * @throws PrimitiveTypeError for invalid primitive types
    */
   public setType(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
       const optErrMsg = `Invalid Reference.type (${String(value)})`;
-      this.type = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+      this.type_ = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
     } else {
-      this.type = undefined;
+      this.type_ = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `type` property exists and has a value; `false` otherwise
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
    */
   public hasType(): boolean {
     return this.hasTypeElement();
   }
 
   /**
-   * @returns the `identifier` property value as a Identifier object
+   * @returns the `identifier` property value as a Identifier object if defined; else an empty Identifier object
    */
   public getIdentifier(): Identifier {
     return this.identifier ?? new Identifier();
@@ -362,7 +343,7 @@ export class Reference extends DataType implements IDataType {
    */
   public setIdentifier(value: Identifier | undefined): this {
     if (isDefined<Identifier>(value)) {
-      const optErrMsg = `Invalid Reference.identifier; Provided value is not an instance of Identifier.`;
+      const optErrMsg = `Invalid Reference.identifier; Provided element is not an instance of Identifier.`;
       assertFhirType<Identifier>(value, Identifier, optErrMsg);
       this.identifier = value;
     } else {
@@ -379,7 +360,7 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `display` property value as a PrimitiveType
+   * @returns the `display` property value as a StringType object if defined; else an empty StringType object
    */
   public getDisplayElement(): StringType {
     return this.display ?? new StringType();
@@ -410,7 +391,7 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `display` property value as a primitive value
+   * @returns the `display` property value as a fhirString if defined; else undefined
    */
   public getDisplay(): fhirString | undefined {
     return this.display?.getValue();
@@ -441,21 +422,23 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Reference';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
-    return super.isEmpty() && isElementEmpty(this.reference, this.type, this.identifier, this.display);
+    return super.isEmpty() && isElementEmpty(this.reference, this.type_, this.identifier, this.display);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Reference {
     const dest = new Reference();
@@ -464,25 +447,28 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Reference): void {
     super.copyValues(dest);
     dest.reference = this.reference?.copy();
-    dest.type = this.type?.copy();
+    dest.type_ = this.type_?.copy();
     dest.identifier = this.identifier?.copy();
     dest.display = this.display?.copy();
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -518,15 +504,14 @@ export class Reference extends DataType implements IDataType {
  * @remarks
  * Base StructureDefinition for Identifier Type: An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
  *
+ * Need to be able to identify things with confidence and be sure that the identification is not subject to misinterpretation.
+ *
  * **FHIR Specification**
  * - **Short:** An identifier intended for computation
  * - **Definition:** An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Identifier
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR Identifier](http://hl7.org/fhir/StructureDefinition/Identifier)
  */
 export class Identifier extends DataType implements IDataType {
@@ -537,7 +522,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * Parse the provided `Identifier` json to instantiate the Identifier data model.
+   * Parse the provided `Identifier` JSON to instantiate the Identifier data model.
    *
    * @param sourceJson - JSON representing FHIR `Identifier`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Identifier
@@ -547,80 +532,66 @@ export class Identifier extends DataType implements IDataType {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'Identifier';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Identifier';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
     const instance = new Identifier();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
     fieldName = 'use';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       instance.setUseElement(datatype);
     }
 
     fieldName = 'type';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const datatype: CodeableConcept | undefined = CodeableConcept.parse(datatypeJsonObj[fieldName]!, sourceField);
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       instance.setType(datatype);
     }
 
     fieldName = 'system';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSystemElement(datatype);
     }
 
     fieldName = 'value';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setValueElement(datatype);
     }
 
     fieldName = 'period';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const datatype: Period | undefined = Period.parse(datatypeJsonObj[fieldName]!, sourceField);
+      const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       instance.setPeriod(datatype);
     }
 
     fieldName = 'assigner';
-    sourceField = `${source}.${fieldName}`;
-    if (fieldName in datatypeJsonObj) {
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const datatype: Reference | undefined = Reference.parse(datatypeJsonObj[fieldName]!, sourceField);
+      const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       instance.setAssigner(datatype);
     }
 
@@ -629,9 +600,9 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * FHIR CodeSystem: QuantityComparator
+   * FHIR CodeSystem: IdentifierUse
    *
-   * @see {@link IdentifierUseEnum}
+   * @see {@link IdentifierUseEnum }
    */
   private readonly identifierUseEnum: IdentifierUseEnum;
 
@@ -647,7 +618,7 @@ export class Identifier extends DataType implements IDataType {
    * - **FHIR Type:** `code`
    * - **Cardinality:** 0..1
    * - **isModifier:** true
-   * - **isModifierReason:** This is labeled as "Is Modifier" because applications should not mistake a temporary id for a permanent one.
+   * - **isModifierReason:** This is labeled as &quot;Is Modifier&quot; because applications should not mistake a temporary id for a permanent one.
    * - **isSummary:** true
    */
   private use?: EnumCodeType | undefined;
@@ -666,7 +637,7 @@ export class Identifier extends DataType implements IDataType {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private type?: CodeableConcept | undefined;
+  private type_?: CodeableConcept | undefined;
 
   /**
    * Identifier.system Element
@@ -676,7 +647,7 @@ export class Identifier extends DataType implements IDataType {
    * - **Short:** The namespace for the identifier value
    * - **Definition:** Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
    * - **Comment:** Identifier.system is always case sensitive.
-   * - **Requirements:** There are many sets  of identifiers.  To perform matching of two identifiers, we need to know what set we're dealing with. The system identifies a particular set of unique identifiers.
+   * - **Requirements:** There are many sets  of identifiers.  To perform matching of two identifiers, we need to know what set we\'re dealing with. The system identifies a particular set of unique identifiers.
    * - **FHIR Type:** `uri`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
@@ -691,7 +662,7 @@ export class Identifier extends DataType implements IDataType {
    * **FHIR Specification**
    * - **Short:** The value that is unique
    * - **Definition:** The portion of the identifier typically relevant to the user and which is unique within the context of the system.
-   * - **Comment:** If the value is a full URI, then the system SHALL be urn:ietf:rfc:3986.  The value's primary purpose is computational mapping.  As a result, it may be normalized for comparison purposes (e.g. removing non-significant whitespace, dashes, etc.)  A value formatted for human display can be conveyed using the [Rendered Value extension](https://hl7.org/fhir/R4/extension-rendered-value.html). Identifier.value is to be treated as case sensitive unless knowledge of the Identifier.system allows the processer to be confident that non-case-sensitive processing is safe.
+   * - **Comment:** If the value is a full URI, then the system SHALL be urn:ietf:rfc:3986.  The value\'s primary purpose is computational mapping.  As a result, it may be normalized for comparison purposes (e.g. removing non-significant whitespace, dashes, etc.)  A value formatted for human display can be conveyed using the [Rendered Value extension](https://hl7.org/fhir/extension-rendered-value.html). Identifier.value is to be treated as case sensitive unless knowledge of the Identifier.system allows the processer to be confident that non-case-sensitive processing is safe.
    * - **FHIR Type:** `string`
    * - **Cardinality:** 0..1
    * - **isModifier:** false
@@ -722,7 +693,9 @@ export class Identifier extends DataType implements IDataType {
    * - **Definition:** Organization that issued/manages the identifier.
    * - **Comment:** The Identifier.assigner may omit the .reference element and only contain a .display element reflecting the name or other textual information about the assigning organization.
    * - **FHIR Type:** `Reference`
-   *   - _TargetProfiles_: ['http://hl7.org/fhir/StructureDefinition/Organization']
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/Organization',
+   *     ]
    * - **Cardinality:** 0..1
    * - **isModifier:** false
    * - **isSummary:** true
@@ -761,7 +734,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `use` property value as a PrimitiveType
+   * @returns the `use` property value as a CodeType if defined; else undefined
    */
   public getUseElement(): CodeType | undefined {
     if (this.use === undefined) {
@@ -795,7 +768,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `use` property value as a primitive value
+   * @returns the `use` property value as a fhirCode if defined; else undefined
    */
   public getUse(): fhirCode | undefined {
     if (this.use === undefined) {
@@ -809,7 +782,6 @@ export class Identifier extends DataType implements IDataType {
    *
    * @param value - the `use` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
    */
   public setUse(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -829,38 +801,38 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `type` property value as a CodeableConcept object
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
   public getType(): CodeableConcept {
-    return this.type ?? new CodeableConcept();
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
-   * Assigns the provided CodeableConcept object value to the `type` property.
+   * Assigns the provided Type object value to the `type_` property.
    *
-   * @param value - the `type` array value
+   * @param value - the `type_` object value
    * @returns this
    */
   public setType(value: CodeableConcept | undefined): this {
     if (isDefined<CodeableConcept>(value)) {
       const optErrMsg = `Invalid Identifier.type; Provided element is not an instance of CodeableConcept.`;
       assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-      this.type = value;
+      this.type_ = value;
     } else {
-      this.type = undefined;
+      this.type_ = undefined;
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `type` property exists and has a value; `false` otherwise
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
    */
   public hasType(): boolean {
-    return isDefined<CodeableConcept>(this.type) && !this.type.isEmpty();
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
   }
 
   /**
-   * @returns the `system` property value as a PrimitiveType
+   * @returns the `system` property value as a UriType object if defined; else an empty UriType object
    */
   public getSystemElement(): UriType {
     return this.system ?? new UriType();
@@ -891,7 +863,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `system` property value as a primitive value
+   * @returns the `system` property value as a fhirUri if defined; else undefined
    */
   public getSystem(): fhirUri | undefined {
     return this.system?.getValue();
@@ -922,7 +894,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `value` property value as a PrimitiveType
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
   public getValueElement(): StringType {
     return this.value ?? new StringType();
@@ -953,7 +925,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `value` property value as a primitive value
+   * @returns the `value` property value as a fhirString if defined; else undefined
    */
   public getValue(): fhirString | undefined {
     return this.value?.getValue();
@@ -984,7 +956,7 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `period` property value as a Period object
+   * @returns the `period` property value as a Period object if defined; else an empty Period object
    */
   public getPeriod(): Period {
     return this.period ?? new Period();
@@ -1015,16 +987,16 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `assigner` property value as a Reference object
+   * @returns the `assigner` property value as a Reference object; else an empty Reference object
    */
   public getAssigner(): Reference {
     return this.assigner ?? new Reference();
   }
 
   /**
-   * Assigns the provided Reference object value to the `assigner` property.
+   * Assigns the provided Assigner object value to the `assigner` property.
    *
-   * @decorator `@ReferenceTargets(['Organization'])`
+   * @decorator `@ReferenceTargets('Identifier.assigner', ['Organization',])`
    *
    * @param value - the `assigner` object value
    * @returns this
@@ -1048,21 +1020,23 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Identifier';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
-    return super.isEmpty() && isElementEmpty(this.use, this.type, this.system, this.value, this.period, this.assigner);
+    return super.isEmpty() && isElementEmpty(this.use, this.type_, this.system, this.value, this.period, this.assigner);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Identifier {
     const dest = new Identifier();
@@ -1071,12 +1045,15 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Identifier): void {
     super.copyValues(dest);
     dest.use = this.use?.copy();
-    dest.type = this.type?.copy();
+    dest.type_ = this.type_?.copy();
     dest.system = this.system?.copy();
     dest.value = this.value?.copy();
     dest.period = this.period?.copy();
@@ -1084,14 +1061,14 @@ export class Identifier extends DataType implements IDataType {
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -1129,5 +1106,3 @@ export class Identifier extends DataType implements IDataType {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

@@ -11,7 +11,7 @@ export const baseConfig = {
   testEnvironment: 'node',
   verbose: true,
   preset: 'ts-jest',
-  roots: ['<rootDir>', '<rootDir>/src'],
+  roots: ['<rootDir>/src'],
   testRunner: 'jest-circus/runner',
   collectCoverage: false,
   coverageReporters: ['text', 'cobertura', 'lcov'],
