@@ -23,7 +23,7 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { ICoding } from '../../base-models/library-interfaces';
+import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
@@ -65,7 +65,7 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * @category DataModel: ComplexType
  * @see [FHIR Coding](http://hl7.org/fhir/StructureDefinition/Coding)
  */
-export class Coding extends DataType implements ICoding {
+export class Coding extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();

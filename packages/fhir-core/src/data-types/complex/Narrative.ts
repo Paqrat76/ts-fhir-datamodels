@@ -23,7 +23,7 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, PrimitiveType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { INarrative } from '../../base-models/library-interfaces';
+import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import {
@@ -66,7 +66,7 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * @category DataModel: ComplexType
  * @see [FHIR Narrative](http://hl7.org/fhir/StructureDefinition/Narrative)
  */
-export class Narrative extends DataType implements INarrative {
+export class Narrative extends DataType implements IDataType {
   constructor(status: EnumCodeType | CodeType | fhirCode | null = null, div: XhtmlType | fhirXhtml | null = null) {
     super();
 

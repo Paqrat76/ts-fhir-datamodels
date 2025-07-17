@@ -28,7 +28,7 @@ import {
   setFhirPrimitiveJson,
   setFhirPrimitiveListJson,
 } from '../../base-models/core-fhir-models';
-import { ICoding, IMeta } from '../../base-models/library-interfaces';
+import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
@@ -73,7 +73,7 @@ import {
  * @category DataModel: ComplexType
  * @see [FHIR Meta](http://hl7.org/fhir/StructureDefinition/Meta)
  */
-export class Meta extends DataType implements IMeta {
+export class Meta extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -156,7 +156,7 @@ export class Meta extends DataType implements IMeta {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ICoding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        const datatype: Coding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype !== undefined) {
           instance.addSecurity(datatype);
         }
@@ -169,7 +169,7 @@ export class Meta extends DataType implements IMeta {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ICoding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        const datatype: Coding | undefined = Coding.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype !== undefined) {
           instance.addTag(datatype);
         }
@@ -256,7 +256,7 @@ export class Meta extends DataType implements IMeta {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private security?: ICoding[] | undefined;
+  private security?: Coding[] | undefined;
 
   /**
    * Meta.tag Element
@@ -271,7 +271,7 @@ export class Meta extends DataType implements IMeta {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private tag?: ICoding[] | undefined;
+  private tag?: Coding[] | undefined;
 
   /**
    * @returns the `versionId` property value as a IdType object if defined; else an empty IdType object
@@ -579,18 +579,18 @@ export class Meta extends DataType implements IMeta {
   /**
    * @returns the `security` property value as a Coding array
    */
-  public getSecurity(): ICoding[] {
-    return this.security ?? ([] as ICoding[]);
+  public getSecurity(): Coding[] {
+    return this.security ?? ([] as Coding[]);
   }
 
   /**
-   * Assigns the provided ICoding array value to the `security` property.
+   * Assigns the provided Coding array value to the `security` property.
    *
    * @param value - the `security` array value
    * @returns this
    */
-  public setSecurity(value: ICoding[] | undefined): this {
-    if (isDefinedList<ICoding>(value)) {
+  public setSecurity(value: Coding[] | undefined): this {
+    if (isDefinedList<Coding>(value)) {
       const optErrMsg = `Invalid Meta.security; Provided value array has an element that is not an instance of Coding.`;
       assertFhirTypeList<Coding>(value, Coding, optErrMsg);
       this.security = value;
@@ -601,13 +601,13 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Add the provided ICoding value to the `security` array property.
+   * Add the provided Coding value to the `security` array property.
    *
    * @param value - the `security` value
    * @returns this
    */
-  public addSecurity(value: ICoding | undefined): this {
-    if (isDefined<ICoding>(value)) {
+  public addSecurity(value: Coding | undefined): this {
+    if (isDefined<Coding>(value)) {
       const optErrMsg = `Invalid Meta.security; Provided element is not an instance of Coding.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initSecurity();
@@ -620,7 +620,7 @@ export class Meta extends DataType implements IMeta {
    * @returns `true` if the `security` property exists and has a value; `false` otherwise
    */
   public hasSecurity(): boolean {
-    return isDefinedList<ICoding>(this.security) && this.security.some((item: ICoding) => !item.isEmpty());
+    return isDefinedList<Coding>(this.security) && this.security.some((item: Coding) => !item.isEmpty());
   }
 
   /**
@@ -628,25 +628,25 @@ export class Meta extends DataType implements IMeta {
    */
   private initSecurity(): void {
     if (!this.hasSecurity()) {
-      this.security = [] as ICoding[];
+      this.security = [] as Coding[];
     }
   }
 
   /**
    * @returns the `tag` property value as a Coding array
    */
-  public getTag(): ICoding[] {
-    return this.tag ?? ([] as ICoding[]);
+  public getTag(): Coding[] {
+    return this.tag ?? ([] as Coding[]);
   }
 
   /**
-   * Assigns the provided ICoding array value to the `tag` property.
+   * Assigns the provided Coding array value to the `tag` property.
    *
    * @param value - the `tag` array value
    * @returns this
    */
-  public setTag(value: ICoding[] | undefined): this {
-    if (isDefinedList<ICoding>(value)) {
+  public setTag(value: Coding[] | undefined): this {
+    if (isDefinedList<Coding>(value)) {
       const optErrMsg = `Invalid Meta.tag; Provided value array has an element that is not an instance of Coding.`;
       assertFhirTypeList<Coding>(value, Coding, optErrMsg);
       this.tag = value;
@@ -657,13 +657,13 @@ export class Meta extends DataType implements IMeta {
   }
 
   /**
-   * Add the provided ICoding value to the `tag` array property.
+   * Add the provided Coding value to the `tag` array property.
    *
    * @param value - the `tag` value
    * @returns this
    */
-  public addTag(value: ICoding | undefined): this {
-    if (isDefined<ICoding>(value)) {
+  public addTag(value: Coding | undefined): this {
+    if (isDefined<Coding>(value)) {
       const optErrMsg = `Invalid Meta.tag; Provided element is not an instance of Coding.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initTag();
@@ -676,7 +676,7 @@ export class Meta extends DataType implements IMeta {
    * @returns `true` if the `tag` property exists and has a value; `false` otherwise
    */
   public hasTag(): boolean {
-    return isDefinedList<ICoding>(this.tag) && this.tag.some((item: ICoding) => !item.isEmpty());
+    return isDefinedList<Coding>(this.tag) && this.tag.some((item: Coding) => !item.isEmpty());
   }
 
   /**
@@ -684,7 +684,7 @@ export class Meta extends DataType implements IMeta {
    */
   private initTag(): void {
     if (!this.hasTag()) {
-      this.tag = [] as ICoding[];
+      this.tag = [] as Coding[];
     }
   }
 
@@ -729,9 +729,9 @@ export class Meta extends DataType implements IMeta {
     dest.source = this.source?.copy();
     const profileList = copyListValues<CanonicalType>(this.profile);
     dest.profile = profileList.length === 0 ? undefined : profileList;
-    const securityList = copyListValues<ICoding>(this.security);
+    const securityList = copyListValues<Coding>(this.security);
     dest.security = securityList.length === 0 ? undefined : securityList;
-    const tagList = copyListValues<ICoding>(this.tag);
+    const tagList = copyListValues<Coding>(this.tag);
     dest.tag = tagList.length === 0 ? undefined : tagList;
   }
 

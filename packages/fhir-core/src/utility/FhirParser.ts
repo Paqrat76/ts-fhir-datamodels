@@ -30,8 +30,6 @@ import {
   IDataType,
   IDomainResource,
   IExtension,
-  IMeta,
-  INarrative,
   IResource,
 } from '../base-models/library-interfaces';
 import { isEmpty, upperFirst } from './common-util';
@@ -44,6 +42,8 @@ import {
   INVALID_VALUEX_PROPERTY,
   REQUIRED_PROPERTIES_REQD_IN_JSON,
 } from '../constants';
+import { Meta } from '../data-types/complex/Meta';
+import { Narrative } from 'src/data-types/complex/Narrative';
 import { Base64BinaryType } from '../data-types/primitive/Base64BinaryType';
 import { BooleanType } from '../data-types/primitive/BooleanType';
 import { CanonicalType } from '../data-types/primitive/CanonicalType';
@@ -587,9 +587,9 @@ export class FhirParser {
 
     if ('meta' in resourceObj) {
       if (this.parsableDataTypeMap.has('Meta')) {
-        const parsableClass = this.parsableDataTypeMap.get('Meta') as ParsableDataType<IMeta>;
+        const parsableClass = this.parsableDataTypeMap.get('Meta') as ParsableDataType<Meta>;
         assert(parsableClass, `parsableClass data model for ${sourceResource}.meta is not defined`);
-        const datatype = this.parseDataType<IMeta>(parsableClass, resourceObj['meta'], `${sourceResource}.meta`);
+        const datatype = this.parseDataType<Meta>(parsableClass, resourceObj['meta'], `${sourceResource}.meta`);
         if (datatype !== undefined) {
           instance.setMeta(datatype);
         }
@@ -642,10 +642,12 @@ export class FhirParser {
 
     if ('text' in resourceObj) {
       if (this.parsableDataTypeMap.has('Narrative')) {
-        const parsableClass = this.parsableDataTypeMap.get('Narrative') as ParsableDataType<INarrative>;
+        const parsableClass = this.parsableDataTypeMap.get('Narrative') as ParsableDataType<Narrative>;
         assert(parsableClass, `parsableClass data model for ${sourceResource}.text is not defined`);
-        const datatype = this.parseDataType<INarrative>(parsableClass, resourceObj['text'], `${sourceResource}.text`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const datatype = this.parseDataType<Narrative>(parsableClass, resourceObj['text'], `${sourceResource}.text`);
         if (datatype !== undefined) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           instance.setText(datatype);
         }
       } else {

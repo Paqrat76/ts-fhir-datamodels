@@ -1,0 +1,29 @@
+{{!-- Public extension Methods for Choice Types Partial Template --}}
+{{#if this.isOptionalItem}}
+  // *** NOTE ***
+  // Following "get"/"has" methods are added for each open data type - one pair of methods for each open data type
+{{#each edHbs.type.choiceDataTypes}}
+
+  /**
+   * @returns the `{{../edHbs.fieldIdentifierName}}` property value as a {{this}} object if defined; else undefined
+   */
+  public get{{upperFirst ../edHbs.fieldName}}{{this}}(): {{this}} | undefined {
+    if (!isDefined<IDataType | undefined>(this.{{../edHbs.fieldIdentifierName}})) {
+      return undefined;
+    }
+    if (!(this.{{../edHbs.fieldIdentifierName}} instanceof {{this}})) {
+      throw new InvalidTypeError(
+        `DataType mismatch for {{../edHbs.path}}: Expected {{this}} but encountered ${this.{{../edHbs.fieldIdentifierName}}.fhirType()}`,
+      );
+    }
+    return this.{{../edHbs.fieldIdentifierName}};
+  }
+
+  /**
+   * @returns `true` if the `{{../edHbs.fieldIdentifierName}}` property exists as a {{this}} and has a value; `false` otherwise
+   */
+  public has{{upperFirst ../edHbs.fieldName}}{{this}}(): boolean {
+    return this.has{{upperFirst ../edHbs.fieldName}}() && this.{{../edHbs.fieldIdentifierName}} instanceof {{this}};
+  }
+{{/each}}
+{{/if}}

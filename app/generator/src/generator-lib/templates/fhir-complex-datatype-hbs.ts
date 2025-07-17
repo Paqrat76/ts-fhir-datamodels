@@ -32,8 +32,9 @@ import { FhirPackage, GeneratedComplexTypeContent } from '../ts-datamodel-genera
 registerStructureDefinitionHandlebarsHelpers();
 const classTemplate = readFileSync(resolve(__dirname, 'fhir-complex-datatype.hbs'), 'utf8');
 const classGenerator = Handlebars.compile(classTemplate);
+const extensionTemplate = readFileSync(resolve(__dirname, 'fhir-extension-datatype.hbs'), 'utf8');
+const extensionGenerator = Handlebars.compile(extensionTemplate);
 
-// noinspection JSValidateJSDoc
 /**
  * Generates a complex type module based on the provided structure definition and associated FHIR package.
  *
@@ -50,7 +51,12 @@ export function generateComplexType(
 ): GeneratedComplexTypeContent {
   const sdHbs: HbsStructureDefinition = getSdHbsProperties(structureDef, codeSystemEnumMap, fhirPackage);
 
-  const classCode: string = classGenerator({ sdHbs });
+  let classCode: string;
+  if (sdHbs.isExtension) {
+    classCode = extensionGenerator({ sdHbs });
+  } else {
+    classCode = classGenerator({ sdHbs });
+  }
 
   return {
     fhirPackage: fhirPackage,

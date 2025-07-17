@@ -26,6 +26,7 @@ import {
   CodeType,
   DateTimeType,
   DecimalType,
+  FHIR_MAX_STRING_LENGTH,
   fhirUri,
   IdType,
   IntegerType,
@@ -38,13 +39,13 @@ export namespace TestData {
   export const VALID_ID = 'id12345';
   export const VALID_ID_TYPE = new IdType(VALID_ID);
   export const VERSION_ID = 'VID-1972';
-  // export const VALID_META: IMeta = new Meta();
+  // export const VALID_META: Meta = new Meta();
   // VALID_META.setVersionId(VERSION_ID);
   export const IMPLICIT_RULES_VALUE = 'implicitRules';
   export const LANGUAGE_VALUE = 'en-US';
   export const VALID_CODE_GENERATED = `generated`;
   export const VALID_XHTML = '<div xmlns="http://www.w3.org/1999/xhtml">text</div>';
-  // export const VALID_NARRATIVE: INarrative = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
+  // export const VALID_NARRATIVE: Narrative = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
   // export const VALID_EXTENSION = new Extension('extUrl');
   // VALID_EXTENSION.setValue(new StringType('Extension string value'));
   // export const VALID_MODIFIER_EXTENSION = new Extension('modExtUrl');
@@ -57,11 +58,35 @@ export namespace TestData {
   // VALID_META_2.setVersionId(VERSION_ID_2);
   export const IMPLICIT_RULES_VALUE_2 = 'implicitRules2';
   export const LANGUAGE_VALUE_2 = 'en-UK';
-  export const VALID_CODE_GENERATED_2 = `generated`;
+  export const VALID_CODE_ADDITIONAL = `additional`;
   export const VALID_XHTML_2 = '<div xmlns="http://www.w3.org/1999/xhtml">text two</div>';
   // export const VALID_NARRATIVE_2 = new Narrative(VALID_CODE_GENERATED_2, VALID_XHTML_2);
 
   export const DATATYPE_ID = 'DT-1357';
+
+  export const INVALID_CODE_VALUE = ' Invalid code ';
+  export const INVALID_CODE_TYPE = new StringType(INVALID_CODE_VALUE);
+  export const INVALID_NON_STRING_TYPE_VALUE = 'Invalid datatype';
+  export const INVALID_NON_STRING_TYPE = new StringType(INVALID_NON_STRING_TYPE_VALUE);
+  export const INVALID_STRING_TYPE_VALUE = 12345;
+  export const INVALID_STRING_TYPE = new IntegerType(INVALID_STRING_TYPE_VALUE);
+  export const INVALID_STRING = '';
+  export const TOO_BIG_STRING = getString(FHIR_MAX_STRING_LENGTH + 2);
+
+  export function getString(maxLength: number): string {
+    // https://www.geeksforgeeks.org/javascript-program-for-generating-a-string-of-specific-length/#using-for-loop
+    let str = '';
+    const characters = '!( abcdefghijklmnopqrstuvwxyz . ABCDEFGHIJKLMNOPQRSTUVWXYZ )?';
+    const charLen = characters.length;
+
+    for (let i = 0; i < maxLength; i++) {
+      // Generating a random index
+      const idx = Math.floor(Math.random() * charLen);
+      str += characters.charAt(idx);
+    }
+
+    return str;
+  }
 
   export const UNDEFINED_VALUE = undefined;
 
@@ -182,9 +207,11 @@ export namespace TestData {
   export const VALID_USE_HOME = `home`;
   export const VALID_USE_WORK = `work`;
   export const VALID_TYPE_POSTAL = `postal`;
+  export const VALID_TYPE_PHYSICAL = `physical`;
   export const VALID_LINE_A = '1234 Main ST';
   export const VALID_LINE_A_2 = '4321 Central ST';
   export const VALID_LINE_B = 'APT 15A';
+  export const VALID_LINE_B_2 = 'Suite 123';
   export const VALID_CITY = 'Nashua';
   export const VALID_CITY_2 = 'Renton';
   export const VALID_STATE = 'NH';

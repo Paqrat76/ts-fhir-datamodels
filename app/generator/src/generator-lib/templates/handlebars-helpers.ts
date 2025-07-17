@@ -45,6 +45,10 @@ export function registerStructureDefinitionHandlebarsHelpers() {
     'utf8',
   );
   const publicBaseMethodsPartial = readFileSync(resolve(__dirname, 'partials', 'public-base-methods.hbs'), 'utf8');
+  const publicExtensionMethodsChoicePartial = readFileSync(
+    resolve(__dirname, 'partials', 'public-extension-methods-choice.hbs'),
+    'utf8',
+  );
   const publicFieldMethodsPartial = readFileSync(resolve(__dirname, 'partials', 'public-field-methods.hbs'), 'utf8');
   const publicFieldMethodsBackbonePartial = readFileSync(
     resolve(__dirname, 'partials', 'public-field-methods-backbone.hbs'),
@@ -100,6 +104,7 @@ export function registerStructureDefinitionHandlebarsHelpers() {
   Handlebars.registerPartial('constructorRequiredPartial', constructorRequiredPartial);
   Handlebars.registerPartial('privateFieldDeclarationPartial', privateFieldDeclarationPartial);
   Handlebars.registerPartial('publicBaseMethodsPartial', publicBaseMethodsPartial);
+  Handlebars.registerPartial('publicExtensionMethodsChoicePartial', publicExtensionMethodsChoicePartial);
   Handlebars.registerPartial('publicFieldMethodsPartial', publicFieldMethodsPartial);
   Handlebars.registerPartial('publicFieldMethodsBackbonePartial', publicFieldMethodsBackbonePartial);
   Handlebars.registerPartial('publicFieldMethodsChoicePartial', publicFieldMethodsChoicePartial);

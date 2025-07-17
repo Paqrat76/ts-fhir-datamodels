@@ -23,7 +23,7 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexListJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
-import { ICoding, IDataType } from '../../base-models/library-interfaces';
+import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
@@ -121,7 +121,7 @@ export class CodeableConcept extends DataType implements IDataType {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private coding?: ICoding[] | undefined;
+  private coding?: Coding[] | undefined;
 
   /**
    * CodeableConcept.text Element
@@ -142,18 +142,18 @@ export class CodeableConcept extends DataType implements IDataType {
   /**
    * @returns the `coding` property value as a Coding array
    */
-  public getCoding(): ICoding[] {
-    return this.coding ?? ([] as ICoding[]);
+  public getCoding(): Coding[] {
+    return this.coding ?? ([] as Coding[]);
   }
 
   /**
-   * Assigns the provided ICoding array value to the `coding` property.
+   * Assigns the provided Coding array value to the `coding` property.
    *
    * @param value - the `coding` array value
    * @returns this
    */
-  public setCoding(value: ICoding[] | undefined): this {
-    if (isDefinedList<ICoding>(value)) {
+  public setCoding(value: Coding[] | undefined): this {
+    if (isDefinedList<Coding>(value)) {
       const optErrMsg = `Invalid CodeableConcept.coding; Provided value array has an element that is not an instance of Coding.`;
       assertFhirTypeList<Coding>(value, Coding, optErrMsg);
       this.coding = value;
@@ -164,13 +164,13 @@ export class CodeableConcept extends DataType implements IDataType {
   }
 
   /**
-   * Add the provided ICoding value to the `coding` array property.
+   * Add the provided Coding value to the `coding` array property.
    *
    * @param value - the `coding` value
    * @returns this
    */
-  public addCoding(value: ICoding | undefined): this {
-    if (isDefined<ICoding>(value)) {
+  public addCoding(value: Coding | undefined): this {
+    if (isDefined<Coding>(value)) {
       const optErrMsg = `Invalid CodeableConcept.coding; Provided element is not an instance of Coding.`;
       assertFhirType<Coding>(value, Coding, optErrMsg);
       this.initCoding();
@@ -183,7 +183,7 @@ export class CodeableConcept extends DataType implements IDataType {
    * @returns `true` if the `coding` property exists and has a value; `false` otherwise
    */
   public hasCoding(): boolean {
-    return isDefinedList<ICoding>(this.coding) && this.coding.some((item: ICoding) => !item.isEmpty());
+    return isDefinedList<Coding>(this.coding) && this.coding.some((item: Coding) => !item.isEmpty());
   }
 
   /**
@@ -191,7 +191,7 @@ export class CodeableConcept extends DataType implements IDataType {
    */
   private initCoding(): void {
     if (!this.hasCoding()) {
-      this.coding = [] as ICoding[];
+      this.coding = [] as Coding[];
     }
   }
 
@@ -290,7 +290,7 @@ export class CodeableConcept extends DataType implements IDataType {
    */
   protected override copyValues(dest: CodeableConcept): void {
     super.copyValues(dest);
-    const codingList = copyListValues<ICoding>(this.coding);
+    const codingList = copyListValues<Coding>(this.coding);
     dest.coding = codingList.length === 0 ? undefined : codingList;
     dest.text = this.text?.copy();
   }

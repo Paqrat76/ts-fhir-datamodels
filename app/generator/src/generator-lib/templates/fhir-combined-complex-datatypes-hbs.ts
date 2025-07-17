@@ -21,6 +21,7 @@
  *
  */
 
+import * as os from 'node:os';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Handlebars from 'handlebars';
@@ -28,6 +29,21 @@ import { GeneratedComplexTypeContent } from '../ts-datamodel-generator-helpers';
 
 const fileTemplate = readFileSync(resolve(__dirname, 'fhir-combined-complex-datatypes.hbs'), 'utf8');
 const fileGenerator = Handlebars.compile(fileTemplate);
+
+// **NOTE**
+// Because the @paq-ts-fhir/fhir-core 'Resource' and 'DomainResource' base resources make use of the following complex
+// types, the generated complex types are not actual instances of those specified in @paq-ts-fhir/fhir-core and
+// cannot be used directly in any generated content. Therefore, these generated complex types will be excluded from
+// the generated content and are replaced with the corresponding complex types exported from @paq-ts-fhir/fhir-core.
+const CORE_COMPLEX_DATATYPES_NAME = [
+  'CodeableConcept',
+  'Coding',
+  'Identifier',
+  'Meta',
+  'Narrative',
+  'Period',
+  'Reference',
+];
 
 export interface HbsComplexTypes {
   fhirCoreImports: string[];
@@ -47,8 +63,18 @@ export function getHbsComplexTypes(
   parsableMapContent: GeneratedComplexTypeContent,
   generatedContent: Set<GeneratedComplexTypeContent>,
 ): string {
-  const generatedFhirCoreImports = new Set<string>();
+  // Remove the generated content for the CORE_COMPLEX_DATATYPES_NAME.
+  // They will be replaced with exports from @paq-ts-fhir/fhir-core.
+  const filteredGeneratedContent = new Set<GeneratedComplexTypeContent>();
   generatedContent.forEach((genContent: GeneratedComplexTypeContent) => {
+    if (!CORE_COMPLEX_DATATYPES_NAME.includes(genContent.filename)) {
+      filteredGeneratedContent.add(genContent);
+    }
+  });
+
+  // Initialize the generatedFhirCoreImports Set with the CORE_COMPLEX_DATATYPES_NAME
+  const generatedFhirCoreImports = new Set<string>(CORE_COMPLEX_DATATYPES_NAME);
+  filteredGeneratedContent.forEach((genContent: GeneratedComplexTypeContent) => {
     genContent.fhirCoreImports.forEach((fhirCoreImport) => {
       generatedFhirCoreImports.add(fhirCoreImport);
     });
@@ -58,7 +84,7 @@ export function getHbsComplexTypes(
   });
 
   const generatedContentImports = new Set<string>();
-  generatedContent.forEach((genContent: GeneratedComplexTypeContent) => {
+  filteredGeneratedContent.forEach((genContent: GeneratedComplexTypeContent) => {
     genContent.generatedImports.forEach((genImport) => {
       if (genImport.includes('/code-systems/') || genImport.includes('PARSABLE_RESOURCE_MAP')) {
         // Only include "code systems" imports; All complex data types are included in the single file,
@@ -68,7 +94,15 @@ export function getHbsComplexTypes(
     });
   });
 
-  const complexTypesContent = Array.from(generatedContent).map((content) => content.fileContents.trim());
+  const coreComplexTypesContentComment = `// The fhir-core complex types must be exported from @paq-ts-fhir/fhir-core rather than using the generated complex types.`;
+  const coreComplexTypesContentExports = `export { ${CORE_COMPLEX_DATATYPES_NAME.join(', ')} } from '@paq-ts-fhir/fhir-core';`;
+  const complexTypesContent: string[] = [
+    `${coreComplexTypesContentComment}${os.EOL}${coreComplexTypesContentExports}${os.EOL}`,
+  ];
+  const filteredComplexTypesContent = Array.from(filteredGeneratedContent).map((content) =>
+    content.fileContents.trim(),
+  );
+  complexTypesContent.push(...filteredComplexTypesContent);
 
   const hbsComplexTypes = {
     fhirCoreImports: Array.from(generatedFhirCoreImports).sort(),

@@ -964,7 +964,7 @@ export class Extension extends Element implements IExtension {
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private url: fhirUri | null;
+  protected url: fhirUri | null;
 
   /**
    * Extension.value[x] Element
@@ -979,7 +979,7 @@ export class Extension extends Element implements IExtension {
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private value?: IDataType | undefined;
+  protected value?: IDataType | undefined;
 
   /**
    * @returns the `url` property value as a fhirUri if defined; else null

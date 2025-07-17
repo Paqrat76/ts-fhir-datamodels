@@ -22,7 +22,7 @@
  */
 
 import { strict as assert } from 'node:assert';
-import { IDomainResource, IExtension, INarrative, IResource } from './library-interfaces';
+import { IDomainResource, IExtension, IResource } from './library-interfaces';
 import { Extension, setFhirComplexJson, setFhirExtensionJson } from './core-fhir-models';
 import { assertFhirResourceType, Resource, setFhirResourceListJson } from './Resource';
 import { Narrative } from '../data-types/complex/Narrative';
@@ -66,7 +66,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private text?: INarrative | undefined;
+  private text?: Narrative | undefined;
 
   /**
    * DomainResource.contained Element
@@ -118,7 +118,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
   /**
    * @returns the `text` property value as a Narrative
    */
-  public getText(): INarrative {
+  public getText(): Narrative {
     return this.text ?? new Narrative(null, null);
   }
 
@@ -128,7 +128,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    * @param value - the `text` value
    * @returns this
    */
-  public setText(value: INarrative | undefined): this {
+  public setText(value: Narrative | undefined): this {
     const optErrMsg = `Invalid DomainResource.text; Provided value is not an instance of Narrative.`;
     assertFhirType<Narrative>(value, Narrative, optErrMsg);
     this.text = value;
@@ -139,7 +139,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    * @returns `true` if the `text` property exists and has a value; `false` otherwise
    */
   public hasText(): boolean {
-    return isDefined<INarrative>(this.text) && !this.text.isEmpty();
+    return isDefined<Narrative>(this.text) && !this.text.isEmpty();
   }
 
   /**
@@ -445,7 +445,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    */
   protected override copyValues(dest: DomainResource): void {
     super.copyValues(dest);
-    dest.text = this.text ? (this.text.copy() as unknown as INarrative) : undefined;
+    dest.text = this.text ? this.text.copy() : undefined;
     const containedList = copyListValues<IResource>(this.contained);
     dest.contained = containedList.length === 0 ? undefined : containedList;
     const extensionList = copyListValues<IExtension>(this.extension);

@@ -716,17 +716,17 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
     'Element',
     'Resource',
   ]);
-  const INTERFACE_BASED_COMPLEX_TYPES = new Set<string>(['Coding', 'Meta', 'Narrative']);
 
   const importsSet = new Set<string>();
-
   // Core imports for all data models
   importsSet.add('JSON');
   importsSet.add('assertFhirType');
   importsSet.add('isDefined');
   importsSet.add('isElementEmpty');
 
-  if (componentProperties.parentType !== 'Extension') {
+  if (componentProperties.parentType === 'Extension') {
+    importsSet.add('Extension as CoreExtension');
+  } else {
     // Extension does not implement static parse()
     importsSet.add('INSTANCE_EMPTY_ERROR_MSG');
     importsSet.add('isEmpty');
@@ -824,12 +824,6 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
 
     if (ed.isReferenceType) {
       importsSet.add('ReferenceTargets');
-    }
-
-    if (ed.isComplexType) {
-      if (INTERFACE_BASED_COMPLEX_TYPES.has(ed.type.code)) {
-        importsSet.add(`I${ed.type.code}`);
-      }
     }
 
     if ((ed.isComplexType || ed.isReferenceType) && !ed.isArray) {
@@ -968,16 +962,9 @@ export function getComplexTypeImplements(sdType: string, baseDefinitionType: str
   }
 
   switch (sdType) {
-    case 'Extension':
-      return 'IExtension';
-    case 'Coding':
-      return 'ICoding';
-    case 'Meta':
-      return 'IMeta';
-    case 'Narrative':
-      return 'INarrative';
+    case 'Element':
+      return 'IDataType';
     default:
-      // Note: This includes 'Element' as well as 'DataType'
       return 'IDataType';
   }
 }
@@ -993,12 +980,6 @@ export function getComplexTypeImplements(sdType: string, baseDefinitionType: str
 export function getFieldDataType(typeCode: string): string {
   if (typeCode === 'Resource') {
     return 'IResource';
-  } else if (typeCode === 'Coding') {
-    return 'ICoding';
-  } else if (typeCode === 'Meta') {
-    return 'IMeta';
-  } else if (typeCode === 'Narrative') {
-    return 'INarrative';
   } else {
     return typeCode;
   }
@@ -1031,12 +1012,6 @@ export function getCastInterface(elementDefinition: HbsElementDefinition): strin
     return ' as IDataType';
   } else if (elementDefinition.isResourceType) {
     return ' as IResource';
-  } else if (elementDefinition.type.code === 'Coding') {
-    return ' as ICoding';
-  } else if (elementDefinition.type.code === 'Meta') {
-    return ' as IMeta';
-  } else if (elementDefinition.type.code === 'Narrative') {
-    return ' as INarrative';
   } else {
     return '';
   }
