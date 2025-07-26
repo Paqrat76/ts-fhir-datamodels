@@ -621,7 +621,6 @@ describe('Coding', () => {
       let testType = Coding.parse({});
       expect(testType).toBeUndefined();
 
-      // @ts-expect-error: allow for testing
       testType = Coding.parse(undefined);
       expect(testType).toBeUndefined();
 

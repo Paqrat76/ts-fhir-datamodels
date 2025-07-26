@@ -37,7 +37,7 @@
  */
 
 import { Base } from './Base';
-import { IMeta, IResource } from './library-interfaces';
+import { IResource } from './library-interfaces';
 import { setFhirComplexJson, setFhirPrimitiveJson } from './core-fhir-models';
 import { Meta } from '../data-types/complex/Meta';
 import { CodeType } from '../data-types/primitive/CodeType';
@@ -143,7 +143,7 @@ export abstract class Resource extends Base implements IResource {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private meta?: IMeta | undefined;
+  private meta?: Meta | undefined;
 
   /**
    * Resource.implicitRules Element
@@ -235,8 +235,8 @@ export abstract class Resource extends Base implements IResource {
   /**
    * @returns the `meta` property value as a Meta
    */
-  public getMeta(): IMeta {
-    return this.meta ?? (new Meta() as IMeta);
+  public getMeta(): Meta {
+    return this.meta ?? new Meta();
   }
 
   /**
@@ -245,7 +245,7 @@ export abstract class Resource extends Base implements IResource {
    * @param value - the `meta` value
    * @returns this
    */
-  public setMeta(value: IMeta | undefined): this {
+  public setMeta(value: Meta | undefined): this {
     const optErrMsg = `Invalid Resource.meta; Provided value is not an instance of Meta.`;
     assertFhirType<Meta>(value, Meta, optErrMsg);
     this.meta = value;
@@ -256,7 +256,7 @@ export abstract class Resource extends Base implements IResource {
    * @returns `true` if the `meta` property exists and has a value; `false` otherwise
    */
   public hasMeta(): boolean {
-    return isDefined<IMeta>(this.meta) && !this.meta.isEmpty();
+    return isDefined<Meta>(this.meta) && !this.meta.isEmpty();
   }
 
   /**
@@ -398,7 +398,7 @@ export abstract class Resource extends Base implements IResource {
    */
   protected copyValues(dest: Resource): void {
     dest.id = this.id?.copy();
-    dest.meta = this.meta ? (this.meta.copy() as unknown as IMeta) : undefined;
+    dest.meta = this.meta ? this.meta.copy() : undefined;
     dest.implicitRules = this.implicitRules?.copy();
     dest.language = this.language?.copy();
   }

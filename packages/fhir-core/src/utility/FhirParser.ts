@@ -30,8 +30,6 @@ import {
   IDataType,
   IDomainResource,
   IExtension,
-  IMeta,
-  INarrative,
   IResource,
 } from '../base-models/library-interfaces';
 import { isEmpty, upperFirst } from './common-util';
@@ -44,6 +42,8 @@ import {
   INVALID_VALUEX_PROPERTY,
   REQUIRED_PROPERTIES_REQD_IN_JSON,
 } from '../constants';
+import { Meta } from '../data-types/complex/Meta';
+import { Narrative } from 'src/data-types/complex/Narrative';
 import { Base64BinaryType } from '../data-types/primitive/Base64BinaryType';
 import { BooleanType } from '../data-types/primitive/BooleanType';
 import { CanonicalType } from '../data-types/primitive/CanonicalType';
@@ -138,7 +138,7 @@ export interface PrimitiveTypeJson {
  */
 export class FhirParser {
   /**
-   * A map that associates a string key to a specific ParsableDataType instance.
+   * A map that associates a string key with a specific ParsableDataType instance.
    *
    * The `parsableDataTypeMap` serves as a lookup table where keys represent
    * identifiable strings corresponding to specific data types, and values
@@ -152,7 +152,7 @@ export class FhirParser {
    */
   private readonly parsableDataTypeMap: Map<string, ParsableDataType<IDataType>>;
   /**
-   * A map that associates a string key to a specific ParsableResource instance.
+   * A map that associates a string key with a specific ParsableResource instance.
    *
    * The `parsableResourceMap` serves as a lookup table where keys represent
    * identifiable strings corresponding to specific resources, and values
@@ -214,7 +214,7 @@ export class FhirParser {
    * Parses a given JSON object to create an Extension instance, handling nested extensions and value[x] types.
    *
    * @param {JSON.Object | undefined} json - The JSON object representing the FHIR Extension.
-   *                                         If undefined or does not contain valid FHIR data, will return undefined.
+   *                                         If undefined or does not contain valid FHIR data, returns undefined.
    * @returns {Extension | undefined} The initialized Extension instance derived from the JSON object, or undefined if input is invalid.
    *                                  Throws an error if required properties are missing.
    * @throws {FhirError} If the Extension.url property is not provided.
@@ -587,9 +587,9 @@ export class FhirParser {
 
     if ('meta' in resourceObj) {
       if (this.parsableDataTypeMap.has('Meta')) {
-        const parsableClass = this.parsableDataTypeMap.get('Meta') as ParsableDataType<IMeta>;
+        const parsableClass = this.parsableDataTypeMap.get('Meta') as ParsableDataType<Meta>;
         assert(parsableClass, `parsableClass data model for ${sourceResource}.meta is not defined`);
-        const datatype = this.parseDataType<IMeta>(parsableClass, resourceObj['meta'], `${sourceResource}.meta`);
+        const datatype = this.parseDataType<Meta>(parsableClass, resourceObj['meta'], `${sourceResource}.meta`);
         if (datatype !== undefined) {
           instance.setMeta(datatype);
         }
@@ -642,10 +642,12 @@ export class FhirParser {
 
     if ('text' in resourceObj) {
       if (this.parsableDataTypeMap.has('Narrative')) {
-        const parsableClass = this.parsableDataTypeMap.get('Narrative') as ParsableDataType<INarrative>;
+        const parsableClass = this.parsableDataTypeMap.get('Narrative') as ParsableDataType<Narrative>;
         assert(parsableClass, `parsableClass data model for ${sourceResource}.text is not defined`);
-        const datatype = this.parseDataType<INarrative>(parsableClass, resourceObj['text'], `${sourceResource}.text`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const datatype = this.parseDataType<Narrative>(parsableClass, resourceObj['text'], `${sourceResource}.text`);
         if (datatype !== undefined) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           instance.setText(datatype);
         }
       } else {
@@ -1277,7 +1279,7 @@ export function getPrimitiveTypeListJson(
       datatypeJsonObj[siblingFieldName]!,
       sourceField.replace(primitiveFieldName, siblingFieldName),
     );
-    // FHIR specification requires both arrays to be same size with null sibling values when there is no matching sibling element
+    // FHIR specification requires both arrays to be the same size with null sibling values when there is no matching sibling element
     // [JSON representation of primitive elements](https://hl7.org/fhir/R4/json.html#primitive)
     assert(
       dataJsonArray.length === dataElementJsonArray.length,

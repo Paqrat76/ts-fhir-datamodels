@@ -19,6 +19,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.2] - 2025-07-25
+
+### Added
+
+### Changed
+
+- Update dependency for @paq-ts-fhir/fhir-core
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.3.1] - 2025-07-12
 
 ### Changed

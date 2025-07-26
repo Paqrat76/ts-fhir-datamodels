@@ -29,7 +29,6 @@ import { FhirPackage, GeneratedContent } from '../generator-lib/ts-datamodel-gen
 
 describe('src/generator-app unit test suite', () => {
   const testOut = resolve(__dirname, 'test-out');
-  const testOutBase = join(testOut, 'base');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
@@ -49,33 +48,19 @@ describe('src/generator-app unit test suite', () => {
       const generator = new GeneratorApp(testFhirPackage);
       const generatedContent: GeneratedContent[] = await generator.generate();
       expect(generatedContent).toBeDefined();
-      // 2 parsable-xxx-map base files
       // 13 CodeSystemEnums
-      // 12 ComplexTypes
-      // 3 Resources
-      expect(generatedContent.length).toBe(30);
+      // 1 ComplexTypes including its parsable-datatype-map
+      // 4 Resources and parsable-resource-map
+      expect(generatedContent.length).toBe(18);
       generator.writeDataModelsToDisk(generatedContent);
     });
 
     it('should generate and write all FHIR R4 artifacts from utest-cache FHIR cache', () => {
       const testOutput: string[] = readdirSync(testOut);
       expect(testOutput).toBeDefined();
-      expect(testOutput.length).toBe(5);
-      const expectedOutput: string[] = ['base', 'code-systems', 'complex-types', 'index.ts', 'resources'];
+      expect(testOutput.length).toBe(4);
+      const expectedOutput: string[] = ['code-systems', 'complex-types', 'index.ts', 'resources'];
       expect(testOutput).toEqual(expectedOutput);
-
-      const testBase: string[] = readdirSync(testOutBase);
-      expect(testBase).toBeDefined();
-      expect(testBase.length).toBe(2);
-      const expectedBase: string[] = [
-        // 'DomainResource.template.hold',
-        // 'README-base.md',
-        // 'Resource.template.hold',
-        'parsable-datatype-map.ts',
-        'parsable-resource-map.ts',
-        // 'resource-helpers.template.hold',
-      ];
-      expect(testBase).toEqual(expectedBase);
 
       const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
       expect(testCodeSystems).toBeDefined();
@@ -100,27 +85,19 @@ describe('src/generator-app unit test suite', () => {
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(12);
-      const expectedComplexTypes: string[] = [
-        'CodeableConcept.ts',
-        'Coding.ts',
-        'ContactPoint.ts',
-        'Duration.ts',
-        'Extension.ts',
-        'Identifier.ts',
-        'Meta.ts',
-        'Narrative.ts',
-        'Period.ts',
-        'Reference.ts',
-        'Signature.ts',
-        'Timing.ts',
-      ];
+      expect(testComplexTypes.length).toBe(1);
+      const expectedComplexTypes: string[] = ['complex-datatypes.ts'];
       expect(testComplexTypes).toEqual(expectedComplexTypes);
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(3);
-      const expectedResources: string[] = ['Bundle.ts', 'PractitionerRole.ts', 'SearchParameter.ts'];
+      expect(testResources.length).toBe(4);
+      const expectedResources: string[] = [
+        'Bundle.ts',
+        'PractitionerRole.ts',
+        'SearchParameter.ts',
+        'parsable-resource-map.ts',
+      ];
       expect(testResources).toEqual(expectedResources);
     });
   });
@@ -135,11 +112,10 @@ describe('src/generator-app unit test suite', () => {
     });
 
     it('should consistently create GeneratedContent[]', () => {
-      // 2 parsable-xxx-map base files
       // 13 CodeSystemEnums
-      // 12 ComplexTypes
-      // 3 Resources
-      expect(generatedContent.length).toBe(30);
+      // 1 ComplexTypes
+      // 4 Resources
+      expect(generatedContent.length).toBe(18);
 
       generatedContent.forEach((generatedContentItem: GeneratedContent) => {
         expect(generatedContentItem).toBeDefined();

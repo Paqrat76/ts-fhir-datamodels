@@ -1,6 +1,5 @@
 {{!-- FHIR Child Component Partial Template --}}
 {{!-- context (compHbs) is a HbsElementComponent --}}
-
 /**
  * {{compHbs.componentName}} Class
  *
@@ -25,7 +24,7 @@
 export class {{compHbs.componentName}} extends {{compHbs.baseDefinitionType}} implements {{complexTypeImplements compHbs.parentType compHbs.baseDefinitionType}} {
 {{#if compHbs.requiredConstructor}}
 {{!-- Constructor Required Partial --}}
-{{> constructorRequiredPartial compHbs}}
+{{> constructorRequiredPartial compHbs=compHbs}}
 {{else}}
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {

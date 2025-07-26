@@ -29,18 +29,15 @@ import { ElementDefinition, ElementDefinitionType, StructureDefinition } from '.
 import { DATA_TYPE_MAPPINGS, DATA_TYPES, FhirDataType } from '../fhir-data-type';
 import { FhirPackage } from '../ts-datamodel-generator-helpers';
 
-interface StructureDefinitionRootElement {
-  short?: string;
-  definition?: string;
-  comment?: string;
-  requirements?: string;
-}
-
-export interface HbsElementComponentRoot extends StructureDefinitionRootElement {
+export interface HbsElementComponentRoot {
   path: string;
   componentName: string;
   componentLevel: number;
   typeCode: string;
+  short?: string;
+  definition?: string;
+  comment?: string;
+  requirements?: string;
 }
 
 export interface HbsElementDefinitionType {
@@ -102,8 +99,7 @@ export interface HbsElementComponent {
   isComponentElement: boolean;
   hasParsableDataType: boolean;
   hasParsableResource: boolean;
-  // StructureDefinitionRootElement for parent component; HbsElementComponentRoot for child components
-  rootElement: StructureDefinitionRootElement | HbsElementComponentRoot;
+  rootElement: HbsElementComponentRoot;
   numRequiredFields: number;
   hasRequiredFields: boolean;
   hasResourceFields: boolean;
@@ -181,7 +177,7 @@ export function getSdHbsProperties(
     generatedImports: [] as string[],
   } as HbsStructureDefinition;
 
-  let fhirCoreImportsSet = new Set(parentComponent.fhirCoreImports);
+  let fhirCoreImportsSet = new Set<string>(parentComponent.fhirCoreImports);
   let generatedImportsSet = new Set<string>(parentComponent.generatedImports);
 
   if (childComponents && childComponents.length > 0) {
@@ -217,12 +213,26 @@ export function getSdHbsProperties(
     }
   }
 
-  if (structureDef.kind === 'complex-type') {
+  const complexTypeImports = Array.from(generatedImportsSet).filter(
+    (generatedImport: string) => !generatedImport.startsWith('import'),
+  );
+  // Remove the individual complex type values from generatedImportsSet
+  const generatedImports = Array.from(generatedImportsSet);
+  generatedImports.forEach((generatedImport: string) => {
+    if (complexTypeImports.includes(generatedImport)) {
+      generatedImportsSet.delete(generatedImport);
+    }
+  });
+  // Add the single import statement for complex data types into generatedImportsSet
+  const complexTypeImportStatement = `import { ${complexTypeImports.sort().join(', ')} } from '../complex-types/complex-datatypes'`;
+  generatedImportsSet.add(complexTypeImportStatement);
+
+  if (structureDef.kind === 'resource') {
     const generatedImports = Array.from(generatedImportsSet);
     generatedImports.forEach((generatedImport: string) => {
-      if (generatedImport.includes('../complex-types/')) {
+      if (generatedImport.includes('../resources/')) {
         generatedImportsSet.delete(generatedImport);
-        generatedImportsSet.add(generatedImport.replace('../complex-types/', './'));
+        generatedImportsSet.add(generatedImport.replace('../resources/', './'));
       }
     });
   }
@@ -321,11 +331,15 @@ function getParentElementComponent(
   const baseDefinitionType = getBaseDefinitionType(structureDef);
 
   const rootElement = {
+    path: structureDef.type,
+    componentName: structureDef.type,
+    componentLevel: 1,
+    typeCode: structureDef.type,
     short: fixDescriptiveString(structureDef.snapshot?.element[0]?.short),
     definition: fixDescriptiveString(structureDef.snapshot?.element[0]?.definition),
     comment: fixDescriptiveString(structureDef.snapshot?.element[0]?.comment),
     requirements: fixDescriptiveString(structureDef.snapshot?.element[0]?.requirements),
-  } as StructureDefinitionRootElement;
+  } as HbsElementComponentRoot;
 
   const parentElementDefinitions: HbsElementDefinition[] = getParentElementDefinitions(structureDef, codeSystemEnumMap);
 
@@ -445,12 +459,12 @@ function getHbsElementComponentRoots(structureDef: StructureDefinition): HbsElem
       path: element.path,
       componentName: `${upperFirst(camelCase(element.path))}Component`,
       componentLevel: element.path.split('.').length,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      typeCode: element.type![0]!.code,
       short: fixDescriptiveString(element.short),
       definition: fixDescriptiveString(element.definition),
       comment: fixDescriptiveString(element.comment),
       requirements: fixDescriptiveString(element.requirements),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      typeCode: element.type![0]!.code,
     } as HbsElementComponentRoot;
     hbsElementComponentRoots.push(hbsElementComponentRoot);
   });
@@ -702,17 +716,17 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
     'Element',
     'Resource',
   ]);
-  const INTERFACE_BASED_COMPLEX_TYPES = new Set<string>(['Coding', 'Meta', 'Narrative']);
 
   const importsSet = new Set<string>();
-
   // Core imports for all data models
   importsSet.add('JSON');
   importsSet.add('assertFhirType');
   importsSet.add('isDefined');
   importsSet.add('isElementEmpty');
 
-  if (componentProperties.parentType !== 'Extension') {
+  if (componentProperties.parentType === 'Extension') {
+    importsSet.add('Extension as CoreExtension');
+  } else {
     // Extension does not implement static parse()
     importsSet.add('INSTANCE_EMPTY_ERROR_MSG');
     importsSet.add('isEmpty');
@@ -812,12 +826,6 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       importsSet.add('ReferenceTargets');
     }
 
-    if (ed.isComplexType) {
-      if (INTERFACE_BASED_COMPLEX_TYPES.has(ed.type.code)) {
-        importsSet.add(`I${ed.type.code}`);
-      }
-    }
-
     if ((ed.isComplexType || ed.isReferenceType) && !ed.isArray) {
       importsSet.add('setFhirComplexJson');
     }
@@ -863,8 +871,9 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
   const importsSet = new Set<string>();
 
   if (componentProperties.parentType !== 'Extension') {
-    importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../base/parsable-datatype-map'`);
-    importsSet.add(`import { PARSABLE_RESOURCE_MAP } from '../base/parsable-resource-map'`);
+    // importsSet.add(`import { PARSABLE_DATATYPE_MAP } from '../complex-types/complex-datatypes'`);
+    importsSet.add(`PARSABLE_DATATYPE_MAP`);
+    importsSet.add(`import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map'`);
   }
 
   componentProperties.elementDefinitions.forEach((ed: HbsElementDefinition) => {
@@ -872,13 +881,15 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
         if (!choiceType.endsWith('Type')) {
           // Ignore primitive types; they are handled in getFhirCoreImports()
-          importsSet.add(`import { ${choiceType} } from '../complex-types/${choiceType}'`);
+          // importsSet.add(`import { ${choiceType} } from '../complex-types/${choiceType}'`);
+          importsSet.add(choiceType);
         }
       });
     }
 
     if ((ed.isComplexType || ed.isReferenceType) && !ed.type.code.endsWith('Component')) {
-      importsSet.add(`import { ${ed.type.code} } from '../complex-types/${ed.type.code}'`);
+      //importsSet.add(`import { ${ed.type.code} } from '../complex-types/${ed.type.code}'`);
+      importsSet.add(ed.type.code);
     }
 
     if (ed.isResourceType) {
@@ -951,16 +962,9 @@ export function getComplexTypeImplements(sdType: string, baseDefinitionType: str
   }
 
   switch (sdType) {
-    case 'Extension':
-      return 'IExtension';
-    case 'Coding':
-      return 'ICoding';
-    case 'Meta':
-      return 'IMeta';
-    case 'Narrative':
-      return 'INarrative';
+    case 'Element':
+      return 'IDataType';
     default:
-      // Note: This includes 'Element' as well as 'DataType'
       return 'IDataType';
   }
 }
@@ -976,12 +980,6 @@ export function getComplexTypeImplements(sdType: string, baseDefinitionType: str
 export function getFieldDataType(typeCode: string): string {
   if (typeCode === 'Resource') {
     return 'IResource';
-  } else if (typeCode === 'Coding') {
-    return 'ICoding';
-  } else if (typeCode === 'Meta') {
-    return 'IMeta';
-  } else if (typeCode === 'Narrative') {
-    return 'INarrative';
   } else {
     return typeCode;
   }
@@ -1014,12 +1012,6 @@ export function getCastInterface(elementDefinition: HbsElementDefinition): strin
     return ' as IDataType';
   } else if (elementDefinition.isResourceType) {
     return ' as IResource';
-  } else if (elementDefinition.type.code === 'Coding') {
-    return ' as ICoding';
-  } else if (elementDefinition.type.code === 'Meta') {
-    return ' as IMeta';
-  } else if (elementDefinition.type.code === 'Narrative') {
-    return ' as INarrative';
   } else {
     return '';
   }

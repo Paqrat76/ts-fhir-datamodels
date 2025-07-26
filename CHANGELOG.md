@@ -19,6 +19,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.14.0] - 2025-07-25
+
+### Changed
+
+- Updated dependencies
+- Updated project configurations
+- Allow Prettier and ESLint to be executed from app/generator and packages/fhir-core workspaces
+
+
 ## [0.13.0] - 2025-07-12
 
 ### Added

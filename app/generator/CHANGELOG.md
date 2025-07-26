@@ -19,6 +19,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.13.0] - 2025-07-25
+
+### Changed
+
+- Refactored tests for elimination of "base" directory
+- Modified generator to combine all generated complex datatypes into a single file to resolve circular references
+- Simplified field naming in TestModel.fsh (renamed from TestDataModel.fsh)
+
+### Removed
+
+- Eliminated use of "base" directory for parsable-xxx-map files
+
+### Fixed
+
+- Various minor issues identified from functional tests
+
+
 ## [0.12.0] - 2025-07-12
 
 ### Changed

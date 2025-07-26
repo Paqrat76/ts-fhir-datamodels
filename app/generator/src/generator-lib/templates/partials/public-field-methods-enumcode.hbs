@@ -221,7 +221,7 @@
    */
   public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = `Invalid {{edHbs.path}})`;
+      const errMsgPrefix = `Invalid {{edHbs.path}}`;
       assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
       this.init{{upperFirst edHbs.fieldName}}();
       this.{{edHbs.fieldIdentifierName}}?.push(enumType);
@@ -384,9 +384,9 @@
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
-  public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
+  public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = `Invalid {{edHbs.path}})`;
+      const errMsgPrefix = `Invalid {{edHbs.path}}`;
       assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
       this.init{{upperFirst edHbs.fieldName}}();
       this.{{edHbs.fieldIdentifierName}}?.push(enumType);
@@ -435,7 +435,7 @@
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
-  public add{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined): this {
+  public add{{upperFirst edHbs.fieldName}}Element(element: CodeType): this {
     if (isDefined<CodeType>(element)) {
       const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of CodeType.`;
       assertFhirType<CodeType>(element, CodeType, optErrMsg);
@@ -490,7 +490,7 @@
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
    */
-  public add{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined): this {
+  public add{{upperFirst edHbs.fieldName}}(value: fhirCode): this {
     if (isDefined<fhirCode>(value)) {
       this.init{{upperFirst edHbs.fieldName}}();
       const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of fhirCode.`;

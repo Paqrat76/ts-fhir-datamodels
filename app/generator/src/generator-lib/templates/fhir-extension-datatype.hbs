@@ -1,0 +1,41 @@
+{{!-- context (sdHbs) is a HbsStructureDefinition --}}
+/**
+ * {{sdHbs.name}} Class
+ *
+ * @remarks
+ * {{{sdHbs.description}}}
+{{#if sdHbs.purpose}}
+ *
+ * {{{sdHbs.purpose}}}
+{{/if}}
+ *
+ * **FHIR Specification**
+{{#if sdHbs.parentComponent.rootElement.short}}
+ * - **Short:** {{{sdHbs.parentComponent.rootElement.short}}}
+{{/if}}
+{{#if sdHbs.parentComponent.rootElement.definition}}
+ * - **Definition:** {{{sdHbs.parentComponent.rootElement.definition}}}
+{{/if}}
+{{#if sdHbs.parentComponent.rootElement.comment}}
+ * - **Comment:** {{{sdHbs.parentComponent.rootElement.comment}}}
+{{/if}}
+{{#if sdHbs.parentComponent.rootElement.requirements}}
+ * - **Requirements:** {{{sdHbs.parentComponent.rootElement.requirements}}}
+{{/if}}
+ * - **FHIR Version:** {{sdHbs.fhirVersion}}
+ *
+ * @category DataModel: {{upperCamelCase sdHbs.kind}}
+ * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
+ */
+export class Extension extends CoreExtension {
+  constructor(url: fhirUri | null = null, value?: IDataType) {
+    super(url, value);
+  }
+
+{{#if sdHbs.isExtension}}
+{{!-- Public Field Methods Partial --}}
+{{#each sdHbs.parentComponent.elementDefinitions}}
+{{> publicExtensionMethodsChoicePartial edHbs=this }}
+{{/each}}
+{{/if}}
+}

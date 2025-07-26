@@ -23,6 +23,9 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, PrimitiveType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
+import { IDataType } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import {
   INSTANCE_EMPTY_ERROR_MSG,
   REQUIRED_PROPERTIES_DO_NOT_EXIST,
@@ -43,12 +46,7 @@ import { isEmpty } from '../../utility/common-util';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, assertIsDefined, isDefined } from '../../utility/type-guards';
-import { INarrative } from '../../base-models/library-interfaces';
-import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
-
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * Narrative Class
@@ -65,18 +63,11 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * - **Definition:** A human-readable summary of the resource conveying the essential clinical and business information for the resource.
  * - **FHIR Version:** 4.0.1
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Narrative
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR Narrative](http://hl7.org/fhir/StructureDefinition/Narrative)
  */
-export class Narrative extends DataType implements INarrative {
-  /**
-   * @param status - The status of the narrative
-   * @param div - The actual narrative content, a stripped down version of XHTML
-   */
-  constructor(status: EnumCodeType | CodeType | fhirCode | null, div: XhtmlType | fhirXhtml | null) {
+export class Narrative extends DataType implements IDataType {
+  constructor(status: EnumCodeType | CodeType | fhirCode | null = null, div: XhtmlType | fhirXhtml | null = null) {
     super();
 
     this.narrativeStatusEnum = new NarrativeStatusEnum();
@@ -99,7 +90,7 @@ export class Narrative extends DataType implements INarrative {
   }
 
   /**
-   * Parse the provided `Narrative` json to instantiate the Narrative data model.
+   * Parse the provided `Narrative` JSON to instantiate the Narrative data model.
    *
    * @param sourceJson - JSON representing FHIR `Narrative`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Narrative
@@ -109,32 +100,28 @@ export class Narrative extends DataType implements INarrative {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'Narrative';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
-    const instance = new Narrative(null, null);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Narrative';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new Narrative();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
     const missingReqdProperties: string[] = [];
 
     fieldName = 'status';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(`${source}.status`);
+        missingReqdProperties.push(sourceField);
       } else {
         instance.setStatusElement(datatype);
       }
@@ -143,15 +130,10 @@ export class Narrative extends DataType implements INarrative {
     }
 
     fieldName = 'div';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: XhtmlType | undefined = fhirParser.parseXhtmlType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
         missingReqdProperties.push(sourceField);
@@ -174,7 +156,7 @@ export class Narrative extends DataType implements INarrative {
   /**
    * FHIR CodeSystem: NarrativeStatus
    *
-   * @see {@link NarrativeStatusEnum}
+   * @see {@link NarrativeStatusEnum }
    */
   private readonly narrativeStatusEnum: NarrativeStatusEnum;
 
@@ -184,7 +166,7 @@ export class Narrative extends DataType implements INarrative {
    * @remarks
    * **FHIR Specification**
    * - **Short:** generated | extensions | additional | empty
-   * - **Definition:** The status of the narrative - whether it's entirely generated (from just the defined data or the extensions too), or whether a human authored it and it may contain additional data.
+   * - **Definition:** The status of the narrative - whether it\'s entirely generated (from just the defined data or the extensions too), or whether a human authored it and it may contain additional data.
    * - **FHIR Type:** `code`
    * - **Cardinality:** 1..1
    * - **isModifier:** false
@@ -208,7 +190,7 @@ export class Narrative extends DataType implements INarrative {
   private div: XhtmlType | null;
 
   /**
-   * @returns the `status` property value as a EnumCodeType
+   * @returns the `status` property value as a EnumCodeType if defined; else null
    */
   public getStatusEnumType(): EnumCodeType | null {
     return this.status;
@@ -222,7 +204,7 @@ export class Narrative extends DataType implements INarrative {
    */
   public setStatusEnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, `Narrative.status is required`);
-    const errMsgPrefix = 'Invalid Narrative.status';
+    const errMsgPrefix = `Invalid Narrative.status`;
     assertEnumCodeType<NarrativeStatusEnum>(enumType, NarrativeStatusEnum, errMsgPrefix);
     this.status = enumType;
     return this;
@@ -236,7 +218,7 @@ export class Narrative extends DataType implements INarrative {
   }
 
   /**
-   * @returns the `status` property value as a PrimitiveType
+   * @returns the `status` property value as a CodeType if defined; else null
    */
   public getStatusElement(): CodeType | null {
     if (this.status === null) {
@@ -253,7 +235,7 @@ export class Narrative extends DataType implements INarrative {
    */
   public setStatusElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, `Narrative.status is required`);
-    const optErrMsg = `Invalid Narrative.status; Provided element is not an instance of CodeType.`;
+    const optErrMsg = `Invalid Narrative.status; Provided value is not an instance of CodeType.`;
     assertFhirType<CodeType>(element, CodeType, optErrMsg);
     this.status = new EnumCodeType(element, this.narrativeStatusEnum);
     return this;
@@ -267,7 +249,7 @@ export class Narrative extends DataType implements INarrative {
   }
 
   /**
-   * @returns the `status` property value as a primitive value
+   * @returns the `status` property value as a fhirCode if defined; else null
    */
   public getStatus(): fhirCode | null {
     if (this.status === null) {
@@ -297,7 +279,7 @@ export class Narrative extends DataType implements INarrative {
   }
 
   /**
-   * @returns the `div` property value as a PrimitiveType
+   * @returns the `div` property value as a XhtmlType object if defined; else null
    */
   public getDivElement(): XhtmlType | null {
     return this.div;
@@ -311,7 +293,7 @@ export class Narrative extends DataType implements INarrative {
    */
   public setDivElement(element: XhtmlType): this {
     assertIsDefined<XhtmlType>(element, `Narrative.div is required`);
-    const optErrMsg = `Invalid Narrative.div; Provided element is not an instance of XhtmlType.`;
+    const optErrMsg = `Invalid Narrative.div; Provided value is not an instance of XhtmlType.`;
     assertFhirType<XhtmlType>(element, XhtmlType, optErrMsg);
     this.div = element;
     return this;
@@ -325,7 +307,7 @@ export class Narrative extends DataType implements INarrative {
   }
 
   /**
-   * @returns the `div` property value as a primitive value
+   * @returns the `div` property value as a fhirXhtml if defined; else null
    */
   public getDiv(): fhirXhtml | null {
     if (this.div?.getValue() === undefined) {
@@ -344,7 +326,7 @@ export class Narrative extends DataType implements INarrative {
    */
   public setDiv(value: fhirXhtml): this {
     assertIsDefined<fhirXhtml>(value, `Narrative.div is required`);
-    const optErrMsg = `Invalid Narrative.div (invalid value provided)`;
+    const optErrMsg = `Invalid Narrative.div (${String(value)})`;
     this.div = new XhtmlType(parseFhirPrimitiveData(value, fhirXhtmlSchema, optErrMsg));
     return this;
   }
@@ -357,53 +339,55 @@ export class Narrative extends DataType implements INarrative {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Narrative';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.status, this.div);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Narrative {
-    // Initialize dest Narrative - these values will be overridden in copyValues()
-    const dest = new Narrative(null, null);
+    const dest = new Narrative();
     this.copyValues(dest);
     return dest;
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Narrative): void {
     super.copyValues(dest);
-    dest.status = this.status === null ? null : this.status.copy();
-    dest.div = this.div === null ? null : this.div.copy();
+    dest.status = this.status ? this.status.copy() : null;
+    dest.div = this.div ? this.div.copy() : null;
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore do not check for this.isEmpty()!
-    // if (this.isEmpty()) {
-    //   return undefined;
-    // }
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
@@ -414,14 +398,14 @@ export class Narrative extends DataType implements INarrative {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push('Narrative.status');
+      missingReqdProperties.push(`Narrative.status`);
     }
 
     if (this.hasDivElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirXhtml>(this.getDivElement()!, 'div', jsonObj);
     } else {
-      missingReqdProperties.push('Narrative.div');
+      missingReqdProperties.push(`Narrative.div`);
     }
 
     if (missingReqdProperties.length > 0) {
@@ -432,5 +416,3 @@ export class Narrative extends DataType implements INarrative {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

@@ -246,7 +246,7 @@ describe('CodeableConcept', () => {
         testCodeableConcept.setText(INVALID_STRING);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid CodeableConcept.text (invalid value provided)`);
+      expect(t).toThrow(`Invalid CodeableConcept.text ()`);
     });
 
     // Tests using DataType elements
@@ -371,7 +371,7 @@ describe('CodeableConcept', () => {
         testCodeableConcept.addCoding(INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(`Invalid CodeableConcept.coding; Provided value is not an instance of Coding.`);
+      expect(t).toThrow(`Invalid CodeableConcept.coding; Provided element is not an instance of Coding.`);
     });
   });
 

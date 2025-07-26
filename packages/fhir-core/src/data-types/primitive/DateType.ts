@@ -22,14 +22,7 @@
  */
 
 import { PrimitiveType } from '../../base-models/core-fhir-models';
-import {
-  DateTimeOpts,
-  getDateTimeObject,
-  getDateTimeObjectAsUTC,
-  getValueAsDateOnly,
-  getValueAsYear,
-  getValueAsYearMonth,
-} from '../../utility/date-time-util';
+import { DateTimeUtil } from '../../utility/date-time-util';
 import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
 import { DateTypeImpl, fhirDate, fhirDateSchema, parseFhirPrimitiveData } from './primitive-types';
@@ -64,30 +57,30 @@ export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<
     return this;
   }
 
-  public getValueAsDateTime(opts?: DateTimeOpts): DateTime | undefined {
+  public getValueAsDateTime(opts?: DateTimeUtil.DateTimeOpts): DateTime | undefined {
     const currValue = this.getValue();
-    return getDateTimeObject(currValue, opts);
+    return DateTimeUtil.getDateTimeObject(currValue, opts);
   }
 
   public getValueAsDateTimeUTC(): DateTime | undefined {
     const currValue = this.getValue();
-    return getDateTimeObjectAsUTC(currValue);
+    return DateTimeUtil.getDateTimeObjectAsUTC(currValue);
   }
 
   public setValueAsYear(dt: DateTime | undefined): this {
-    const newValue = getValueAsYear(dt);
+    const newValue = DateTimeUtil.getValueAsYear(dt);
     this.assignValue(newValue);
     return this;
   }
 
   public setValueAsYearMonth(dt: DateTime | undefined): this {
-    const newValue = getValueAsYearMonth(dt);
+    const newValue = DateTimeUtil.getValueAsYearMonth(dt);
     this.assignValue(newValue);
     return this;
   }
 
   public setValueAsDateOnly(dt: DateTime | undefined): this {
-    const newValue = getValueAsDateOnly(dt);
+    const newValue = DateTimeUtil.getValueAsDateOnly(dt);
     this.assignValue(newValue);
     return this;
   }

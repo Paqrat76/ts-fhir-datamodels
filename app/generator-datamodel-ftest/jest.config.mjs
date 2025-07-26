@@ -15,6 +15,10 @@ export default {
   transform: {
     '^.+\\.(ts)$': '<rootDir>/../../node_modules/ts-jest',
   },
+  moduleNameMapper: {
+    'gensrc/(.*)': '<rootDir>/src/generated/$1',
+    //'@generated': '<rootDir>/src/generated'
+  },
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/**/index.ts',

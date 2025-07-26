@@ -45,7 +45,7 @@
  */
 
 import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
-import { DateTimeOpts } from '../../utility/date-time-util';
+import { DateTimeUtil } from '../../utility/date-time-util';
 import { DateTime } from 'luxon';
 import * as z from 'zod';
 
@@ -68,7 +68,7 @@ export interface DateTypeImpl {
    *
    * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
    */
-  getValueAsDateTime: (opts?: DateTimeOpts) => DateTime | undefined;
+  getValueAsDateTime: (opts?: DateTimeUtil.DateTimeOpts) => DateTime | undefined;
   /**
    * Returns a Luxon DateTime object having the UTC time zone for the PrimitiveType's `getValue()`.
    *
@@ -151,7 +151,7 @@ export interface InstantTypeImpl {
    *
    * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
    */
-  getValueAsDateTime: (opts?: DateTimeOpts) => DateTime | undefined;
+  getValueAsDateTime: (opts?: DateTimeUtil.DateTimeOpts) => DateTime | undefined;
   /**
    * Returns a Luxon DateTime object having the UTC time zone for the PrimitiveType's `getValue()`.
    *

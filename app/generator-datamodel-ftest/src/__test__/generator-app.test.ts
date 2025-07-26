@@ -25,9 +25,8 @@ import { join, resolve } from 'node:path';
 import { readdirSync, rmSync } from 'node:fs';
 import { FhirPackage, GeneratedContent, GeneratorApp } from 'generator';
 
-describe('src/generator-app functional test suite', () => {
+describe('generator-datamodel-ftest Functional Test Suite', () => {
   const testOut = resolve(__dirname, '..', 'generated');
-  const testOutBase = join(testOut, 'base');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
@@ -39,10 +38,10 @@ describe('src/generator-app functional test suite', () => {
     baseOutputPath: testOut,
     pkgLoaderCacheRootPath: testFhirCacheRoot,
   };
-  // 25 CodeSystemEnums + index.ts
-  // 34 ComplexTypes + index.ts + parsable-datatype-map.ts
-  // 12 Resources + index.ts + parsable-resource-map.ts + resource-types.ts
-  const EXPECTED_NUM_GENERATED_MODELS = 74;
+  // 25 CodeSystemEnums
+  // 1 ComplexTypes (single file with all complex types to resolve circular references)
+  // 13 Resources + parsable-resource-map.ts
+  const EXPECTED_NUM_GENERATED_MODELS = 40;
 
   describe('generator-app generate and write', () => {
     beforeAll(async () => {
@@ -58,15 +57,9 @@ describe('src/generator-app functional test suite', () => {
     it('should generate and write all FHIR R4 artifacts from ftest-cache FHIR cache', () => {
       const testOutput: string[] = readdirSync(testOut);
       expect(testOutput).toBeDefined();
-      expect(testOutput.length).toBe(5);
-      const expectedOutput: string[] = ['base', 'code-systems', 'complex-types', 'index.ts', 'resources'];
+      expect(testOutput.length).toBe(4);
+      const expectedOutput: string[] = ['code-systems', 'complex-types', 'index.ts', 'resources'];
       expect(testOutput).toEqual(expectedOutput);
-
-      const testBase: string[] = readdirSync(testOutBase);
-      expect(testBase).toBeDefined();
-      expect(testBase.length).toBe(2);
-      const expectedBase: string[] = ['parsable-datatype-map.ts', 'parsable-resource-map.ts'];
-      expect(testBase).toEqual(expectedBase);
 
       const testCodeSystems: string[] = readdirSync(testOutCodeSystems);
       expect(testCodeSystems).toBeDefined();
@@ -110,49 +103,13 @@ describe('src/generator-app functional test suite', () => {
 
       const testComplexTypes: string[] = readdirSync(testOutComplexTypes);
       expect(testComplexTypes).toBeDefined();
-      expect(testComplexTypes.length).toBe(35);
-      const expectedComplexTypes: string[] = [
-        'Address.ts',
-        'Age.ts',
-        'Annotation.ts',
-        'Attachment.ts',
-        'CodeableConcept.ts',
-        'Coding.ts',
-        'ContactDetail.ts',
-        'ContactPoint.ts',
-        'Contributor.ts',
-        'Count.ts',
-        'DataRequirement.ts',
-        'Distance.ts',
-        'Dosage.ts',
-        'Duration.ts',
-        'Expression.ts',
-        'Extension.ts',
-        'HumanName.ts',
-        'Identifier.ts',
-        'Meta.ts',
-        'Money.ts',
-        'Narrative.ts',
-        'ParameterDefinition.ts',
-        'Period.ts',
-        'ProdCharacteristic.ts',
-        'ProductShelfLife.ts',
-        'Quantity.ts',
-        'Range.ts',
-        'Ratio.ts',
-        'Reference.ts',
-        'RelatedArtifact.ts',
-        'SampledData.ts',
-        'Signature.ts',
-        'Timing.ts',
-        'TriggerDefinition.ts',
-        'UsageContext.ts',
-      ];
+      expect(testComplexTypes.length).toBe(1);
+      const expectedComplexTypes: string[] = ['complex-datatypes.ts'];
       expect(testComplexTypes).toEqual(expectedComplexTypes);
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(12);
+      expect(testResources.length).toBe(14);
       const expectedResources: string[] = [
         'Device.ts',
         'DeviceDefinition.ts',
@@ -160,12 +117,14 @@ describe('src/generator-app functional test suite', () => {
         'HealthcareService.ts',
         'Location.ts',
         'Organization.ts',
+        'Parameters.ts',
         'Patient.ts',
         'Practitioner.ts',
         'PractitionerRole.ts',
         'RelatedPerson.ts',
         'SimplePersonModel.ts',
-        'TestDataModel.ts',
+        'TestModel.ts',
+        'parsable-resource-map.ts',
       ];
       expect(testResources).toEqual(expectedResources);
     });

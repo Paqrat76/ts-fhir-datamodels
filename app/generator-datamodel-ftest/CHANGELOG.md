@@ -19,6 +19,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.0] - 2025-07-25
+
+### Added
+
+- Test mocks and test utilities to facilitate functional testing
+- StructureDefinition-Parameters.json to ftest-cache for functional testing for a resource that extends Resource rather than DomainResource
+- Functional tests for TestModel and its component classes
+- Functional tests for Parameters resource and Timing complex type
+
+### Changed
+
+- Update dependency
+- Refactored tests for elimination of "generated/base" directory
+- Refactored tests for combining all complex datatypes into a single file to resolve circular dependencies
+- Updated README-Functional-Testing.md
+- Updated SimplePersonModel and AddressTypeEnum functional tests
+
+
 ## [0.2.0] - 2025-07-12
 
 ### Added

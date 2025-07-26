@@ -8,8 +8,8 @@ CodeSystem pseudo-enums.
 This `generator` project includes a comprehensive unit test suite.
 
 A TypeScript library (`fhir-core`) has been created for use within the generated TypeScript classes.
-This core library contains the FHIR primitive data type definitions used by the generated classes
-as well as various common utilities and helpers required by the generated TypeScript classes.
+This core library contains the base classes and the FHIR primitive data type definitions used by the
+generated classes as well as various common utilities and helpers required by the generated TypeScript classes.
 This library includes its own comprehensive unit test suite.
 
 The generated TypeScript classes are not just "plain old objects" — they are sophisticated data models.
@@ -66,8 +66,8 @@ The primary custom FHIR data model shall support the following requirements:
   - Required single fields (1..1) and required list fields (n...m where n > 0 and m >= n) must support `null`
 - Constructors must initialize "required single fields", "required list fields", and "required EnumCodeType fields"
   where `null` is the default initialization value
-- Fully defined static `parse()` method
-- Fully defined `toJson()` method
+- Fully defined static `parse()` method for deserialization
+- Fully defined `toJson()` method for serialization
 - The following patterns demonstrate the characteristics for each of the above data element types:
   - Optional single field (cardinality `0..1`)
     - [ ] BackboneElement type / TBD01
@@ -132,66 +132,67 @@ The primary custom FHIR data model shall support the following requirements:
   - [ ] ConsentStateEnum: https://hl7.org/fhir/R4/codesystem-consent-state-codes.html
   - [ ] TaskCodeEnum: https://hl7.org/fhir/R4/codesystem-task-code.html
   - [ ] TaskStatusEnum: https://hl7.org/fhir/R4/codesystem-task-status.html
-- Uses a simple custom FHIR data model to be used for testing `DomainResource.contained`
+- Uses a simple custom FHIR data model to be used for testing `DomainResource.contained` and for the resource data type
 
 ## Data Model Definition
 
-Refer to examples:
+Refer to examples in `Paqrat76/typescript-hapi-models-poc`:
 
 - [Hand-crafted data models](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/src/test-models)
 - [Hand-crafted data model tests](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/test/test-models)
 
-### TestDataModel Base Requirements
+### TestModel Base Requirements
 
 BackboneElement nesting:
 
-- TestDataModelPrimitiveComponent
-- TestDataModelComplexComponent
-  - TestDataModelReferenceComponent
-    - TestDataModelEnumCodeComponent
-- TestDataModelPrimitiveComponent (`StructureDefinition.contentReference`)
+- TestModel
+  - TestModelPrimitiveComponent
+  - TestModelComplexComponent
+    - TestModelComplexReferenceComponent
+      - TestModelComplexReferenceEnumCodeComponent
+        - TestModelPrimitiveComponent (`StructureDefinition.contentReference`)
 
-### TestDataModel Class Definitions
+### TestModel Class Definitions
 
-- TestDataModel (`DomainResource`)
-  - `resourceType`: `TestDataModel`
-  - `fhirType()` => `TestDataModel`
+- TestModel (`DomainResource`)
+  - `resourceType`: `TestModel`
+  - `fhirType()` => `TestModel`
   - choice01[x]?: `Range` | `Quantity` | `undefined`;
   - resource01?: `Resource` | `undefined`;
-  - backbonePrimitive0x?: `TestDataModelPrimitiveComponent[]` | `undefined`
-  - backboneComplex01?: `TestDataModelComplexComponent` | `undefined`
+  - primitive?: `TestModelPrimitiveComponent[]` | `undefined`
+  - complex?: `TestModelComplexComponent` | `undefined`
 
-- TestDataModelPrimitiveComponent (`BackboneElement`)
+- TestModelPrimitiveComponent (`BackboneElement`)
   - primitive01?: `DateTimeType` | `undefined`
   - primitive0x?: `IntegerType[]` | `undefined`
   - primitive11: `BooleanType` | `null`
   - primitive1x: `StringType[]` | `null`
   - choice11[x]: `UriType` | `StringType` | `null`
 
-- TestDataModelComplexComponent (`BackboneElement`)
+- TestModelComplexComponent (`BackboneElement`)
   - complex01?: `HumanName` | `undefined`
   - complex0x?: `Address`[] | `undefined`
   - complex11: `Dosage` | `null`
   - complex1x: `Period[]` | `null`
-  - backboneReference11: `TestDataModelReferenceComponent` | `null`
+  - reference: `TestModelReferenceComponent` | `null`
 
-- TestDataModelReferenceComponent (`BackboneElement`)
+- TestModelReferenceComponent (`BackboneElement`)
   - reference01?: `Reference` | `undefined` // ANY
   - reference0x?: `Reference[]` | `undefined` // `Practitioner`, `PractitionerRole`, `Organization`
   - reference11: `Reference` | `null` // `SimplePersonModel` (for testing `contained`)
   - reference1x: `Reference[]` | `null` // `HealthcareService`
-  - backboneEnumCode1x: `TestDataModelEnumCodeComponent[]` | `null`
+  - enumCode: `TestModelEnumCodeComponent[]` | `null`
 
-- TestDataModelEnumCodeComponent (`BackboneElement`)
+- TestModelEnumCodeComponent (`BackboneElement`)
   - enumCode01?: `EnumCodeType` | `undefined` // `TaskCodeEnum`
   - enumCode0x?: `EnumCodeType[]` | `undefined` // `ContributorTypeEnum`
   - enumCode11: `EnumCodeType` | `null` // `TaskStatusEnum`
   - enumCode1x: `EnumCodeType[]` | `null` // `ConsentStateEnum`
-  - backbonePrimitive01?: `TestDataModelPrimitiveComponent` | `undefined` (`StructureDefinition.contentReference`)
+  - primitive?: `TestModelPrimitiveComponent` | `undefined` (`StructureDefinition.contentReference`)
 
 ### SimplePersonModel Class Definition
 
-**NOTE:** Used for `DomainResource.contained` testing
+**NOTE:** Used for `DomainResource.contained` and resource data type testing
 
 - SimplePersonModel (`DomainResource`)
   - `resourceType`: `SimplePersonModel`
@@ -203,17 +204,28 @@ BackboneElement nesting:
 
 ## Minimum Requirements for the Test FHIR Cache (`.fhir`)
 
-The required base classes are defined separately in the `base` directory and do not need to be included in the FHIR cache.
-Also, primitive data types are defined in `@paq-ts-fhir/fhir-core` and do not need to be included.
+The required base classes (`Resource` and `DomainResource`) and the primitive data types are defined
+in `@paq-ts-fhir/fhir-core` and do not need to be included in the `.fhir` cache.
 
-### Custom FHIR Resources
+### Custom FHIR Resources for Functional Testing
 
-- `TestDataModel`
+These custom resources are used for function testing of the various FHIR patterns described above.
+
+- `TestModel`
 - `SimplePersonModel`
 
-### Dependent FHIR Resources for References
+### FHIR Resource for Functional Testing
 
-Direct dependencies:
+This resource is used for function testing of a resource that extends `Resource` rather than `DomainResource`.
+
+- `Parameters`
+
+### Dependent FHIR Resources
+
+These dependent FHIR resources will not have their own functional tests because the functional tests for the resources
+above will cover all required FHIR patterns.
+
+Direct dependencies for `reference` data types:
 
 - `HealthcareService`
 - `Practitioner`
@@ -271,28 +283,38 @@ Indirect dependencies (references in indirect dependencies):
 
 ### FHIR Complex Data Types
 
+All FHIR complex data types are included since `Extension` and `Parameters` require ["open type elements"](https://www.hl7.org/fhir/datatypes.html#open).
+Because of common patterns for FHIR complex data types, not all complex data types need to be tested.
+Seven complex data types are defined in `@paq-ts-fhir/fhir-core` because of dependency requirements and
+are all fully tested in that library.
+These seven complex types represent data types that extend `Element`.
+The `Extension` complex type is also defined in `@paq-ts-fhir/fhir-core` and is also fully tested in that library.
+Several complex data types extend `Element` but also must support the inclusion of `modifiedExtension` properties.
+The `Timing` complex data type is one of these types (and it also has a child `Element` component) and will be
+included in the functional testing.
+
 **Data Types:**
 
 - `Address`
 - `Age`
 - `Annotation`
 - `Attachment`
-- `CodeableConcept`
-- `Coding`
+- `CodeableConcept` - fully tested in `@paq-ts-fhir/fhir-core`
+- `Coding` - fully tested in `@paq-ts-fhir/fhir-core`
 - `ContactPoint`
 - `Count`
 - `Distance`
 - `Duration`
 - `HumanName`
-- `Identifier`
+- `Identifier` - fully tested in `@paq-ts-fhir/fhir-core`
 - `Money`
-- `Period`
+- `Period` - fully tested in `@paq-ts-fhir/fhir-core`
 - `Quantity`
 - `Range`
 - `Ratio`
 - `SampledData`
 - `Signature`
-- `Timing`
+- `Timing` - will be fully tested in this project
 
 **MetaData Types:**
 
@@ -308,9 +330,9 @@ Indirect dependencies (references in indirect dependencies):
 **Special Types:**
 
 - `Dosage`
-- `Meta`
-- `Narrative`
-- `Reference`
+- `Meta` - fully tested in `@paq-ts-fhir/fhir-core`
+- `Narrative` - fully tested in `@paq-ts-fhir/fhir-core`
+- `Reference` - fully tested in `@paq-ts-fhir/fhir-core`
 
 **R4 Under Development Types:** (Required by resource `DeviceDefinition`)
 
@@ -321,7 +343,7 @@ Indirect dependencies (references in indirect dependencies):
 
 Resources:
 
-- For `TestDataModel`
+- For `TestModel`
   - http://hl7.org/fhir/ValueSet/consent-state-codes / http://hl7.org/fhir/consent-state-codes
   - http://hl7.org/fhir/ValueSet/contributor-type / http://hl7.org/fhir/contributor-type
   - http://hl7.org/fhir/ValueSet/task-code / http://hl7.org/fhir/CodeSystem/task-code

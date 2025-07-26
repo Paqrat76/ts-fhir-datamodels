@@ -67,11 +67,11 @@ export class GeneratorApp {
     const codeSystemEnumClasses = this.tsGenerator.generateCodeSystemEnumClasses();
     generatedContent.push(...codeSystemEnumClasses.generatedContent);
 
-    // Generate the FHIR ComplexType classes
-    const complexTypeClasses: GeneratedContent[] = this.tsGenerator.generateComplexTypeClasses(
+    // Generate the FHIR ComplexType classes combined into a single file to resolve circular references
+    const complexTypeClasses: GeneratedContent = this.tsGenerator.generateComplexTypeClasses(
       codeSystemEnumClasses.codeSystemEnumMap,
     );
-    generatedContent.push(...complexTypeClasses);
+    generatedContent.push(complexTypeClasses);
 
     // Generate the FHIR Resource classes
     const resourceClasses: GeneratedContent[] = this.tsGenerator.generateResourceClasses(
@@ -106,9 +106,8 @@ export class GeneratorApp {
       emptyDirSync(generatedPath);
     });
 
+    const fhirCoreExportStmt = `export { Resource, DomainResource, DateTimeUtil } from '@paq-ts-fhir/fhir-core';`;
     const barrelLines: Set<string> = new Set<string>();
-    barrelLines.add(`export { Resource, DomainResource } from '@paq-ts-fhir/fhir-core';`);
-
     generatedContent.forEach((content) => {
       /* istanbul ignore next */
       const filename = content.fileExtension ? `${content.filename}.${content.fileExtension}` : content.filename;
@@ -139,6 +138,7 @@ export class GeneratorApp {
       '',
       ...generateModuleContent(`index.ts`),
       '',
+      fhirCoreExportStmt,
       ...Array.from(barrelLines).sort(),
     ];
     const barrelOutputPath = resolve(baseOutputPath, 'index.ts');
@@ -162,7 +162,6 @@ export class GeneratorApp {
  * @type {Map<string, string>}
  */
 const DESTINATION_SUB_DIRECTORY_MAP: Map<string, string> = new Map<string, string>([
-  ['Base', 'base'],
   ['CodeSystem', 'code-systems'],
   ['ComplexType', 'complex-types'],
   ['Resource', 'resources'],

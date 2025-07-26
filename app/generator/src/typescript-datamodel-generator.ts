@@ -37,6 +37,7 @@ import {
 import {
   FhirPackage,
   FhirType,
+  GeneratedComplexTypeContent,
   GeneratedContent,
   generateLicenseContent,
   generateModuleContent,
@@ -48,6 +49,7 @@ import { generateCodeSystemEnum } from './generator-lib/templates/fhir-codesyste
 import { generateComplexType } from './generator-lib/templates/fhir-complex-datatype-hbs';
 import { generateResource } from './generator-lib/templates/fhir-resource-hbs';
 import { extractNameFromUrl } from './generator-lib/templates/utils-hbs';
+import { getHbsComplexTypes } from './generator-lib/templates/fhir-combined-complex-datatypes-hbs';
 
 const INITIALIZATION_ERROR_MSG = `This TypescriptDataModelGenerator instance must be initialized ('await tsDataModelGenerator.initialize();') before use.`;
 
@@ -291,14 +293,14 @@ export class TypescriptDataModelGenerator {
    *                                                  where the key represents the path from the source.
    * @returns {GeneratedContent[]} An array of generated content objects representing the data model classes for complex types.
    */
-  public generateComplexTypeClasses(codeSystemEnumMap: ReadonlyMap<string, string>): GeneratedContent[] {
+  public generateComplexTypeClasses(codeSystemEnumMap: ReadonlyMap<string, string>): GeneratedContent {
     assert(this.isInitialized, INITIALIZATION_ERROR_MSG);
 
-    const generatedContent: Set<GeneratedContent> = new Set<GeneratedContent>();
+    const generatedContent: Set<GeneratedComplexTypeContent> = new Set<GeneratedComplexTypeContent>();
 
     const complexTypes: StructureDefinition[] = this.getComplexTypes();
     complexTypes.forEach((value: StructureDefinition) => {
-      const genContent: GeneratedContent = generateComplexType(value, codeSystemEnumMap, this._fhirPackage);
+      const genContent: GeneratedComplexTypeContent = generateComplexType(value, codeSystemEnumMap, this._fhirPackage);
       generatedContent.add(genContent);
     });
 
@@ -307,10 +309,18 @@ export class TypescriptDataModelGenerator {
       `Generated ${String(generatedContent.size)} complex type data models for FHIR ${this._fhirPackage.release} release using ${this._fhirPackage.pkgName}@${this._fhirPackage.pkgVersion}`,
     );
 
-    const parsableMapContent: GeneratedContent = this.generateParsableMap(generatedContent, 'ComplexType');
-    generatedContent.add(parsableMapContent);
+    const parsableMapContent: GeneratedComplexTypeContent = this.generateParsableMap(generatedContent, 'ComplexType');
 
-    return Array.from<GeneratedContent>(generatedContent);
+    // Combine all complex-type content into a single file to resolve circular references
+    const dbsComplexTypesContent: string = getHbsComplexTypes(parsableMapContent, generatedContent);
+
+    return {
+      fhirPackage: this._fhirPackage,
+      filename: 'complex-datatypes',
+      fileExtension: 'ts',
+      fhirType: 'ComplexType',
+      fileContents: dbsComplexTypesContent,
+    };
   }
 
   /**
@@ -336,9 +346,7 @@ export class TypescriptDataModelGenerator {
       `Generated ${String(generatedContent.size)} resource data models for FHIR ${this._fhirPackage.release} release using ${this._fhirPackage.pkgName}@${this._fhirPackage.pkgVersion}`,
     );
 
-    // const resourceTypesContent: GeneratedContent = this.generateResourceTypes(generatedContent);
     const parsableMapContent: GeneratedContent = this.generateParsableMap(generatedContent, 'Resource');
-    // generatedContent.add(resourceTypesContent);
     generatedContent.add(parsableMapContent);
 
     return Array.from<GeneratedContent>(generatedContent);
@@ -351,7 +359,10 @@ export class TypescriptDataModelGenerator {
    * @param {FhirType} fhirType - The type of FHIR element being parsed, either 'ComplexType' or 'Resource'.
    * @returns {GeneratedContent} The generated content containing the file details and the constructed map.
    */
-  private generateParsableMap(generatedContent: Set<GeneratedContent>, fhirType: FhirType): GeneratedContent {
+  private generateParsableMap(
+    generatedContent: Set<GeneratedContent>,
+    fhirType: FhirType,
+  ): GeneratedComplexTypeContent {
     assert(
       fhirType === 'ComplexType' || fhirType === 'Resource',
       'fhirType must be either "ComplexType" or "Resource".',
@@ -361,22 +372,16 @@ export class TypescriptDataModelGenerator {
     let parsableType: string;
     let parsableTypeName: string;
     let parsableModelType: string;
-    let importParsable: string;
-    let importSource: string;
     if (fhirType === 'ComplexType') {
       mapName = 'PARSABLE_DATATYPE_MAP';
       parsableType = `ParsableDataType<DataType>`;
       parsableTypeName = 'ParsableDataType';
       parsableModelType = 'DataType';
-      importParsable = '@paq-ts-fhir/fhir-core';
-      importSource = 'complex-types';
     } else {
       mapName = 'PARSABLE_RESOURCE_MAP';
       parsableType = `ParsableResource<Resource>`;
       parsableTypeName = 'ParsableResource';
       parsableModelType = 'Resource';
-      importParsable = '@paq-ts-fhir/fhir-core';
-      importSource = 'resources';
     }
     const fileName = kebabCase(mapName);
 
@@ -392,36 +397,52 @@ export class TypescriptDataModelGenerator {
     headerLines.push(` * @category Utilities: FHIR Parsers`);
     headerLines.push(` */`);
 
-    const imports: string[] = [];
-    imports.push(`import { ${parsableModelType}, ${parsableTypeName} } from '${importParsable}';`);
+    const fhirCoreImports: Set<string> = new Set<string>();
+    if (fhirType === 'ComplexType') {
+      fhirCoreImports.add(parsableModelType);
+      fhirCoreImports.add(parsableTypeName);
+    } else {
+      fhirCoreImports.add(`import { ${parsableModelType}, ${parsableTypeName} } from '@paq-ts-fhir/fhir-core';`);
+    }
+    const generatedImports = new Set<string>();
 
     const mapEntries: string[] = [`export const ${mapName} = new Map<string, ${parsableType}>();`];
-
     generatedContent.forEach((genContent: GeneratedContent) => {
       // Extension does not implement the public static parse() method. so exclude it from the PARSABLE_DATATYPE_MAP
       if (genContent.filename !== 'Extension') {
-        imports.push(`import { ${genContent.filename} } from '../${importSource}/${genContent.filename}';`);
+        if (fhirType === 'Resource') {
+          generatedImports.add(`import { ${genContent.filename} } from './${genContent.filename}';`);
+        }
         mapEntries.push(`${mapName}.set('${genContent.filename}', ${genContent.filename});`);
       }
     });
 
-    const fileLines: string[] = [
-      ...generateLicenseContent(),
-      '',
-      ...generateModuleContent(`${fileName}.ts`),
-      '',
-      ...imports,
-      '',
-      ...headerLines,
-      ...mapEntries,
-    ];
+    const resourceImports = [...Array.from(fhirCoreImports), ...Array.from(generatedImports).sort()];
+
+    let fileLines: string[];
+    if (fhirType === 'ComplexType') {
+      fileLines = [...headerLines, ...mapEntries];
+    } else {
+      fileLines = [
+        ...generateLicenseContent(),
+        '',
+        ...generateModuleContent(`${fileName}.ts`),
+        '',
+        ...resourceImports,
+        '',
+        ...headerLines,
+        ...mapEntries,
+      ];
+    }
 
     return {
       fhirPackage: this._fhirPackage,
       filename: fileName,
       fileExtension: 'ts',
-      fhirType: 'Base',
+      fhirType: fhirType,
       fileContents: fileLines.join(os.EOL).concat(os.EOL),
-    } as GeneratedContent;
+      fhirCoreImports: fhirCoreImports,
+      generatedImports: generatedImports,
+    } as GeneratedComplexTypeContent;
   }
 }

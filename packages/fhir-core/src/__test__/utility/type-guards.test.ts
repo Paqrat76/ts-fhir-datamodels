@@ -846,12 +846,11 @@ describe('type-guards', () => {
         const enumCodeType = String('Invalid type');
         const prefix = 'Test Prefix';
         const t = () => {
-          // @ts-expect-error: allow for testing
-          assertEnumCodeTypeList<MockCodeEnum>(enumCodeType, MockCodeEnum, prefix);
+          assertEnumCodeTypeList<MockCodeEnum>([enumCodeType], MockCodeEnum, prefix);
         };
         expect(t).toThrow(InvalidTypeError);
         expect(t).toThrow(
-          `${prefix}; Provided instance array has 12 elements that are not an instance of ${MockCodeEnum.name}.`,
+          `${prefix}; Provided instance array has an element that is not an instance of ${MockCodeEnum.name}.`,
         );
       });
     });

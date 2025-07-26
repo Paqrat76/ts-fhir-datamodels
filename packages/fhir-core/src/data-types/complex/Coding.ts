@@ -23,6 +23,9 @@
 
 import { strict as assert } from 'node:assert';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
+import { IDataType } from '../../base-models/library-interfaces';
+import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
+import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { BooleanType } from '../primitive/BooleanType';
 import { CodeType } from '../primitive/CodeType';
@@ -43,12 +46,7 @@ import { isEmpty } from '../../utility/common-util';
 import { isElementEmpty } from '../../utility/fhir-util';
 import * as JSON from '../../utility/json-helpers';
 import { assertFhirType, isDefined } from '../../utility/type-guards';
-import { ICoding } from '../../base-models/library-interfaces';
-import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
-import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
-
-/* eslint-disable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */
 
 /**
  * Coding Class
@@ -56,26 +54,25 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * @remarks
  * Base StructureDefinition for Coding Type: A reference to a code defined by a terminology system.
  *
+ * References to codes are very common in healthcare models.
+ *
  * **FHIR Specification**
  * - **Short:** A reference to a code defined by a terminology system
  * - **Definition:** A reference to a code defined by a terminology system.
  * - **Comment:** Codes may be defined very casually in enumerations or code lists, up to very formal definitions such as SNOMED CT - see the HL7 v3 Core Principles for more information.
  * - **FHIR Version:** 4.0.1
  *
- * @privateRemarks
- * Loosely based on HAPI FHIR org.hl7.fhir-core.r4.model.Coding
- *
- * @category Datatypes: Complex
+ * @category DataModel: ComplexType
  * @see [FHIR Coding](http://hl7.org/fhir/StructureDefinition/Coding)
  */
-export class Coding extends DataType implements ICoding {
+export class Coding extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
   }
 
   /**
-   * Parse the provided `Coding` json to instantiate the Coding data model.
+   * Parse the provided `Coding` JSON to instantiate the Coding data model.
    *
    * @param sourceJson - JSON representing FHIR `Coding`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Coding
@@ -85,83 +82,59 @@ export class Coding extends DataType implements ICoding {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
       return undefined;
     }
-    const source = isDefined<string>(optSourceField) ? optSourceField : 'Coding';
-    const datatypeJsonObj: JSON.Object = JSON.asObject(sourceJson, `${source} JSON`);
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Coding';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
     const instance = new Coding();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
-    fhirParser.processElementJson(instance, datatypeJsonObj);
+    fhirParser.processElementJson(instance, classJsonObj);
 
-    let fieldName: string;
-    let sourceField: string;
-    let primitiveJsonType: 'boolean' | 'number' | 'string';
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
     fieldName = 'system';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       instance.setSystemElement(datatype);
     }
 
     fieldName = 'version';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setVersionElement(datatype);
     }
 
     fieldName = 'code';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       instance.setCodeElement(datatype);
     }
 
     fieldName = 'display';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       instance.setDisplayElement(datatype);
     }
 
     fieldName = 'userSelected';
-    sourceField = `${source}.${fieldName}`;
+    sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'boolean';
-    if (fieldName in datatypeJsonObj) {
-      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(
-        datatypeJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       instance.setUserSelectedElement(datatype);
     }
@@ -177,7 +150,7 @@ export class Coding extends DataType implements ICoding {
    * **FHIR Specification**
    * - **Short:** Identity of the terminology system
    * - **Definition:** The identification of the code system that defines the meaning of the symbol in the code.
-   * - **Comment:** The URI may be an OID (urn:oid:...) or a UUID (urn:uuid:...).  OIDs and UUIDs SHALL be references to the HL7 OID registry. Otherwise, the URI should come from HL7's list of FHIR defined special URIs or it should reference to some definition that establishes the system clearly and unambiguously.
+   * - **Comment:** The URI may be an OID (urn:oid:...) or a UUID (urn:uuid:...).  OIDs and UUIDs SHALL be references to the HL7 OID registry. Otherwise, the URI should come from HL7\'s list of FHIR defined special URIs or it should reference to some definition that establishes the system clearly and unambiguously.
    * - **Requirements:** Need to be unambiguous about the source of the definition of the symbol.
    * - **FHIR Type:** `uri`
    * - **Cardinality:** 0..1
@@ -238,7 +211,7 @@ export class Coding extends DataType implements ICoding {
    * **FHIR Specification**
    * - **Short:** If this coding was chosen directly by the user
    * - **Definition:** Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
-   * - **Comment:** Amongst a set of alternatives, a directly chosen code is the most appropriate starting point for new translations. There is some ambiguity about what exactly 'directly chosen' implies, and trading partner agreement may be needed to clarify the use of this element and its consequences more completely.
+   * - **Comment:** Amongst a set of alternatives, a directly chosen code is the most appropriate starting point for new translations. There is some ambiguity about what exactly \'directly chosen\' implies, and trading partner agreement may be needed to clarify the use of this element and its consequences more completely.
    * - **Requirements:** This has been identified as a clinical safety criterium - that this exact system/code pair was chosen explicitly, rather than inferred by the system based on some rules or language processing.
    * - **FHIR Type:** `boolean`
    * - **Cardinality:** 0..1
@@ -248,7 +221,7 @@ export class Coding extends DataType implements ICoding {
   private userSelected?: BooleanType | undefined;
 
   /**
-   * @returns the `system` property value as a PrimitiveType
+   * @returns the `system` property value as a UriType object if defined; else an empty UriType object
    */
   public getSystemElement(): UriType {
     return this.system ?? new UriType();
@@ -279,7 +252,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `system` property value as a primitive value
+   * @returns the `system` property value as a fhirUri if defined; else undefined
    */
   public getSystem(): fhirUri | undefined {
     return this.system?.getValue();
@@ -310,7 +283,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `version` property value as a PrimitiveType
+   * @returns the `version` property value as a StringType object if defined; else an empty StringType object
    */
   public getVersionElement(): StringType {
     return this.version ?? new StringType();
@@ -341,7 +314,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `version` property value as a primitive value
+   * @returns the `version` property value as a fhirString if defined; else undefined
    */
   public getVersion(): fhirString | undefined {
     return this.version?.getValue();
@@ -372,7 +345,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `code` property value as a PrimitiveType
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
   public getCodeElement(): CodeType {
     return this.code ?? new CodeType();
@@ -403,7 +376,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `code` property value as a primitive value
+   * @returns the `code` property value as a fhirCode if defined; else undefined
    */
   public getCode(): fhirCode | undefined {
     return this.code?.getValue();
@@ -434,7 +407,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `display` property value as a PrimitiveType
+   * @returns the `display` property value as a StringType object if defined; else an empty StringType object
    */
   public getDisplayElement(): StringType {
     return this.display ?? new StringType();
@@ -465,7 +438,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `display` property value as a primitive value
+   * @returns the `display` property value as a fhirString if defined; else undefined
    */
   public getDisplay(): fhirString | undefined {
     return this.display?.getValue();
@@ -496,7 +469,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `userSelected` property value as a PrimitiveType
+   * @returns the `userSelected` property value as a BooleanType object if defined; else an empty BooleanType object
    */
   public getUserSelectedElement(): BooleanType {
     return this.userSelected ?? new BooleanType();
@@ -527,7 +500,7 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * @returns the `userSelected` property value as a primitive value
+   * @returns the `userSelected` property value as a fhirBoolean if defined; else undefined
    */
   public getUserSelected(): fhirBoolean | undefined {
     return this.userSelected?.getValue();
@@ -542,7 +515,7 @@ export class Coding extends DataType implements ICoding {
    */
   public setUserSelected(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {
-      const optErrMsg = `Invalid Coding.userSelected (${String(value)}))`;
+      const optErrMsg = `Invalid Coding.userSelected (${String(value)})`;
       this.userSelected = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
     } else {
       this.userSelected = undefined;
@@ -558,21 +531,23 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * {@inheritDoc IBase.fhirType}
+   * @returns the FHIR type defined in the FHIR standard
    */
   public override fhirType(): string {
     return 'Coding';
   }
 
   /**
-   * {@inheritDoc IBase.isEmpty}
+   * @returns `true` if the instance is empty; `false` otherwise
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.system, this.version, this.code, this.display, this.userSelected);
   }
 
   /**
-   * {@inheritDoc Base.copy}
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
    */
   public override copy(): Coding {
     const dest = new Coding();
@@ -581,7 +556,10 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * {@inheritDoc Base.copyValues}
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
    */
   protected override copyValues(dest: Coding): void {
     super.copyValues(dest);
@@ -593,14 +571,14 @@ export class Coding extends DataType implements ICoding {
   }
 
   /**
-   * {@inheritDoc IBase.isComplexDataType}
+   * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
    */
   public override isComplexDataType(): boolean {
     return true;
   }
 
   /**
-   * {@inheritDoc IBase.toJSON}
+   * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -633,5 +611,3 @@ export class Coding extends DataType implements ICoding {
     return jsonObj;
   }
 }
-
-/* eslint-enable jsdoc/require-param, jsdoc/require-returns -- false positives when inheritDoc tag used */

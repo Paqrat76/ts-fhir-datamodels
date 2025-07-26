@@ -59,7 +59,7 @@ export type FhirRelease = 'R4' | 'R4B' | 'R5';
  * - 'Resource': Represents a FHIR resource, which is a modular unit of healthcare data.
  * - 'Base': Refers to an artifact considered to be a "base-level" artifact.
  */
-export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource' | 'Base';
+export type FhirType = 'CodeSystem' | 'ComplexType' | 'Resource';
 
 /**
  * Represents a FHIR package with details about its release, package information,
@@ -116,6 +116,24 @@ export interface GeneratedContent {
    * Generated code content to be written to the file
    */
   fileContents: string;
+}
+
+/**
+ * Interface representing the content of a generated complex type, extending the functionality
+ * of `GeneratedContent` to include specific import handling for FHIR-related and dynamically
+ * created content.
+ */
+export interface GeneratedComplexTypeContent extends GeneratedContent {
+  /**
+   * Represents a list of strings that specifies imports from the core FHIR library
+   */
+  fhirCoreImports: Set<string>;
+  /**
+   * An list of strings that represents dynamically generated import statements.
+   * This variable is typically used to store and manage imported module references or paths
+   * that are programmatically created during runtime or build processes.
+   */
+  generatedImports: Set<string>;
 }
 
 /**

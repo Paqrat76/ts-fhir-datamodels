@@ -1,10 +1,10 @@
-Resource:       TestDataModel
+Resource:       TestModel
 Parent:         DomainResource
-Id:             TestDataModel
+Id:             TestModel
 Title:          "Test Data Model"
-Description:    "Represents a FHIR data model for a non-existent FHIR StructureDefinition. This test class will be tested by a comprehensive test suite to ensure all possible FHIR patterns are tested to ensure reliable generated FHIR data models that use all of these possible patterns."
+Description:    "Represents a FHIR data model for a custom FHIR StructureDefinition. This class will be tested by a comprehensive test suite covering all possible FHIR patterns."
 
-* ^url = "https://test.ts-fhir-datamodels.com/StructureDefinition/TestDataModel"
+* ^url = "https://test.ts-fhir-datamodels.com/StructureDefinition/TestModel"
 * ^purpose = "Provide a test (mock) data model that contains all possible FHIR patterns for data model elements representing all types of FHIR data types having each possible cardinality type. The BackboneElement classes will handle a subset of FHIR data types. This class includes choice and Resource data types along with nested BackboneElement data types."
 * ^version = "1.0.0"
 * ^experimental = true
@@ -17,58 +17,58 @@ Description:    "Represents a FHIR data model for a non-existent FHIR StructureD
 * resource01 0..1 Resource "resource01"
 * resource01 ^requirements = "Optional single 'Resource' data type"
 
-* backbonePrimitive0x 0..* BackboneElement "backbonePrimitive0x"
-* backbonePrimitive0x ^requirements = "Optional list of TestDataModelPrimitiveComponent 'BackboneElement'"
-* backbonePrimitive0x insert RuleSetBackboneElement
-* backbonePrimitive0x.primitive01 0..1 dateTime "primitive01"
-* backbonePrimitive0x.primitive01 ^requirements = "Optional single 'dateTime' data type"
-* backbonePrimitive0x.primitive0x 0..* integer "primitive0x"
-* backbonePrimitive0x.primitive0x ^requirements = "Optional list of 'integer' data type"
-* backbonePrimitive0x.primitive11 1..1 boolean "primitive11"
-* backbonePrimitive0x.primitive11 ^requirements = "Required single 'boolean' data type"
-* backbonePrimitive0x.primitive1x 1..* string "primitive1x"
-* backbonePrimitive0x.primitive1x ^requirements = "Required list of 'string' data type"
-* backbonePrimitive0x.choice11[x] 1..1 uri or string "choice11"
-* backbonePrimitive0x.choice11[x] ^requirements = "Required single 'choice' data type supporting 'uri' or 'string'"
+* primitive 0..* BackboneElement "BackboneElement containing primitive datatype patterns"
+* primitive ^requirements = "Optional list of TestModelPrimitiveComponent 'BackboneElement'"
+* primitive insert RuleSetBackboneElement
+* primitive.primitive01 0..1 dateTime "primitive01"
+* primitive.primitive01 ^requirements = "Optional single 'dateTime' data type"
+* primitive.primitive0x 0..* integer "primitive0x"
+* primitive.primitive0x ^requirements = "Optional list of 'integer' data type"
+* primitive.primitive11 1..1 boolean "primitive11"
+* primitive.primitive11 ^requirements = "Required single 'boolean' data type"
+* primitive.primitive1x 1..* string "primitive1x"
+* primitive.primitive1x ^requirements = "Required list of 'string' data type"
+* primitive.choice11[x] 1..1 uri or string "choice11"
+* primitive.choice11[x] ^requirements = "Required single 'choice' data type supporting 'uri' or 'string'"
 
-* backboneComplex01 0..1 BackboneElement "backboneComplex01"
-* backboneComplex01 ^requirements = "Optional single TestDataModelComplexComponent 'BackboneElement'"
-* backboneComplex01 insert RuleSetBackboneElement
-* backboneComplex01.complex01 0..1 HumanName "complex01"
-* backboneComplex01.complex01 ^requirements = "Optional single 'HumanName' data type"
-* backboneComplex01.complex0x 0..* Address "complex0x"
-* backboneComplex01.complex0x ^requirements = "Optional list of 'Address' data type"
-* backboneComplex01.complex11 1..1 Dosage "complex11"
-* backboneComplex01.complex11 ^requirements = "Required single 'Dosage' data type"
-* backboneComplex01.complex1x 1..* Period "complex1x"
-* backboneComplex01.complex1x ^requirements = "Required list of 'Period' data type"
+* complex 0..1 BackboneElement "BackboneElement containing complex datatype patterns"
+* complex ^requirements = "Optional single TestModelComplexComponent 'BackboneElement'"
+* complex insert RuleSetBackboneElement
+* complex.complex01 0..1 HumanName "complex01"
+* complex.complex01 ^requirements = "Optional single 'HumanName' data type"
+* complex.complex0x 0..* Address "complex0x"
+* complex.complex0x ^requirements = "Optional list of 'Address' data type"
+* complex.complex11 1..1 Dosage "complex11"
+* complex.complex11 ^requirements = "Required single 'Dosage' data type"
+* complex.complex1x 1..* Period "complex1x"
+* complex.complex1x ^requirements = "Required list of 'Period' data type"
 
-* backboneComplex01.backboneReference11 1..1 BackboneElement "backboneReference11"
-* backboneComplex01.backboneReference11 ^requirements = "Required single TestDataModelReferenceComponent 'BackboneElement'"
-* backboneComplex01.backboneReference11 insert RuleSetBackboneElement
-* backboneComplex01.backboneReference11.reference01 0..1 Reference(Resource) "backboneReference11.reference01"
-* backboneComplex01.backboneReference11.reference01 ^requirements = "Optional single 'Reference(any)' data type"
-* backboneComplex01.backboneReference11.reference0x 0..* Reference(Practitioner or PractitionerRole or Organization) "backboneReference11.reference0x"
-* backboneComplex01.backboneReference11.reference0x ^requirements = "Optional list of 'Reference(Practitioner or PractitionerRole or Organization)' data type"
-* backboneComplex01.backboneReference11.reference11 1..1 Reference(SimplePersonModel) "backboneReference11.reference11"
-* backboneComplex01.backboneReference11.reference11 ^requirements = "Required single 'Reference(Patient or SimplePersonModel)' data type"
-* backboneComplex01.backboneReference11.reference1x 1..* Reference(HealthcareService) "backboneReference11.reference1x"
-* backboneComplex01.backboneReference11.reference1x ^requirements = "Required list of 'Reference(Condition)' data type"
+* complex.reference 1..1 BackboneElement "BackboneElement containing reference datatype patterns"
+* complex.reference ^requirements = "Required single TestModelComplexReferenceComponent 'BackboneElement'"
+* complex.reference insert RuleSetBackboneElement
+* complex.reference.reference01 0..1 Reference(Location) "reference.reference01"
+* complex.reference.reference01 ^requirements = "Optional single 'Reference(any)' data type"
+* complex.reference.reference0x 0..* Reference(Practitioner or PractitionerRole or Organization) "reference.reference0x"
+* complex.reference.reference0x ^requirements = "Optional list of 'Reference(Practitioner or PractitionerRole or Organization)' data type"
+* complex.reference.reference11 1..1 Reference(SimplePersonModel) "reference.reference11"
+* complex.reference.reference11 ^requirements = "Required single 'Reference(Patient or SimplePersonModel)' data type"
+* complex.reference.reference1x 1..* Reference(HealthcareService) "reference.reference1x"
+* complex.reference.reference1x ^requirements = "Required list of 'Reference(Condition)' data type"
 
-* backboneComplex01.backboneReference11.backboneEnumCode1x 1..* BackboneElement "backboneEnumCode1x"
-* backboneComplex01.backboneReference11.backboneEnumCode1x ^requirements = "Required list of TestDataModelEnumCodeComponent 'BackboneElement'"
-* backboneComplex01.backboneReference11.backboneEnumCode1x insert RuleSetBackboneElement
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode01 0..1 code "backboneEnumCode1x.enumCode01"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode01 ^requirements = "Optional single 'code' data type with required ValueSet"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode01 from http://hl7.org/fhir/ValueSet/task-code (required)
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode11 1..1 code "backboneEnumCode1x.enumCode11"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode11 ^requirements = "Required single 'code' data type with required ValueSet"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode11 from http://hl7.org/fhir/ValueSet/contributor-type (required)
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode0x 0..* code "backboneEnumCode1x.enumCode0x"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode0x ^requirements = "Optional list of 'code' data type with required ValueSet"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode0x from http://hl7.org/fhir/ValueSet/task-status (required)
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode1x 1..* code "backboneEnumCode1x.enumCode1x"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode1x ^requirements = "Required list of 'code' data type with required ValueSet"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.enumCode1x from http://hl7.org/fhir/ValueSet/consent-state-codes (required)
-* backboneComplex01.backboneReference11.backboneEnumCode1x.backbonePrimitive01 0..1 contentReference #TestDataModel.backbonePrimitive0x "backboneEnumCode1x.backbonePrimitive01"
-* backboneComplex01.backboneReference11.backboneEnumCode1x.backbonePrimitive01 ^requirements = "Optional single TestDataModelPrimitiveComponent 'BackboneElement'"
+* complex.reference.enumCode 1..* BackboneElement "BackboneElement containing EnumCode datatype patterns"
+* complex.reference.enumCode ^requirements = "Required list of TestModelComplexReferenceEnumCodeComponent 'BackboneElement'"
+* complex.reference.enumCode insert RuleSetBackboneElement
+* complex.reference.enumCode.enumCode01 0..1 code "enumCode.enumCode01"
+* complex.reference.enumCode.enumCode01 ^requirements = "Optional single 'code' data type with required ValueSet"
+* complex.reference.enumCode.enumCode01 from http://hl7.org/fhir/ValueSet/task-code (required)
+* complex.reference.enumCode.enumCode11 1..1 code "enumCode.enumCode11"
+* complex.reference.enumCode.enumCode11 ^requirements = "Required single 'code' data type with required ValueSet"
+* complex.reference.enumCode.enumCode11 from http://hl7.org/fhir/ValueSet/contributor-type (required)
+* complex.reference.enumCode.enumCode0x 0..* code "enumCode.enumCode0x"
+* complex.reference.enumCode.enumCode0x ^requirements = "Optional list of 'code' data type with required ValueSet"
+* complex.reference.enumCode.enumCode0x from http://hl7.org/fhir/ValueSet/task-status (required)
+* complex.reference.enumCode.enumCode1x 1..* code "enumCode.enumCode1x"
+* complex.reference.enumCode.enumCode1x ^requirements = "Required list of 'code' data type with required ValueSet"
+* complex.reference.enumCode.enumCode1x from http://hl7.org/fhir/ValueSet/consent-state-codes (required)
+* complex.reference.enumCode.primitive 0..1 contentReference #TestModel.primitive "enumCode.primitive"
+* complex.reference.enumCode.primitive ^requirements = "Optional single TestModelPrimitiveComponent 'BackboneElement'"

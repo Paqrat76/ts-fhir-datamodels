@@ -1,10 +1,10 @@
 {{!-- Constructor Required Partial Template --}}
-{{!-- context is a HbsElementComponent --}}
-  constructor({{#if hasRequiredFields}}{{{requiredConstructorParams elementDefinitions}}}{{/if}}) {
+{{!-- context is a (compHbs) HbsElementComponent --}}
+  constructor({{#if compHbs.hasRequiredFields}}{{{requiredConstructorParams compHbs.elementDefinitions}}}{{/if}}) {
     super();
-{{#if hasCodeSystemEnums}}
+{{#if compHbs.hasCodeSystemEnums}}
 
-{{#each elementDefinitions}}
+{{#each compHbs.elementDefinitions}}
 {{#if this.isEnumCodeType}}
 {{#unless this.type.isDupeCodeSystemName}}
     this.{{camelCase this.type.codeSystemEnumName}} = new {{this.type.codeSystemEnumName}}();
@@ -12,8 +12,8 @@
 {{/if}}
 {{/each}}
 {{/if}}
-{{#if hasRequiredFields}}
-{{#each elementDefinitions}}
+{{#if compHbs.hasRequiredFields}}
+{{#each compHbs.elementDefinitions}}
 {{#if this.isRequired}}
 {{#if this.type.codeSystemEnumName}}
 
@@ -22,14 +22,14 @@
       {{this.fieldIdentifierName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
-      '{{parentName}}.{{this.fieldName}}',
+      '{{../compHbs.rootElement.path}}.{{this.fieldName}}',
     );
 {{else}}
     this.{{this.fieldIdentifierName}} = constructorCodeValueAsEnumCodeType<{{this.type.codeSystemEnumName}}>(
       {{this.fieldIdentifierName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
-      '{{parentName}}.{{this.fieldName}}',
+      '{{../compHbs.rootElement.path}}.{{this.fieldName}}',
     );
 {{/if}}
 {{else}}
