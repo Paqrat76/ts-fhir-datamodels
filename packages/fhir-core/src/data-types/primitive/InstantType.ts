@@ -22,12 +22,7 @@
  */
 
 import { PrimitiveType } from '../../base-models/core-fhir-models';
-import {
-  DateTimeOpts,
-  getDateTimeObject,
-  getDateTimeObjectAsUTC,
-  getValueAsInstant,
-} from '../../utility/date-time-util';
+import { DateTimeUtil } from '../../utility/date-time-util';
 import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
 import { fhirInstant, fhirInstantSchema, InstantTypeImpl, parseFhirPrimitiveData } from './primitive-types';
@@ -63,18 +58,18 @@ export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiv
     return this;
   }
 
-  public getValueAsDateTime(opts?: DateTimeOpts): DateTime | undefined {
+  public getValueAsDateTime(opts?: DateTimeUtil.DateTimeOpts): DateTime | undefined {
     const currValue = this.getValue();
-    return getDateTimeObject(currValue, opts);
+    return DateTimeUtil.getDateTimeObject(currValue, opts);
   }
 
   public getValueAsDateTimeUTC(): DateTime | undefined {
     const currValue = this.getValue();
-    return getDateTimeObjectAsUTC(currValue);
+    return DateTimeUtil.getDateTimeObjectAsUTC(currValue);
   }
 
   public setValueAsInstant(dt: DateTime | undefined): this {
-    const newValue = getValueAsInstant(dt);
+    const newValue = DateTimeUtil.getValueAsInstant(dt);
     this.assignValue(newValue);
     return this;
   }

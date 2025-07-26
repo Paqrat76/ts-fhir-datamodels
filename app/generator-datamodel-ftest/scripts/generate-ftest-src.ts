@@ -55,10 +55,10 @@ async function generateFunctionalTestDataModels(): Promise<void> {
   assert(generatedContent, `Generated content is null or undefined.`);
   // 25 CodeSystemEnums
   // 1 ComplexTypes
-  // 12 Resources plus parsable-resource-map base
+  // 13 Resources plus parsable-resource-map base
   // index.ts
   assert(
-    generatedContent.length === 39,
+    generatedContent.length === 40,
     `Generated content should have 74 data models, but has ${String(generatedContent.length)}.`,
   );
   generatorLogger(

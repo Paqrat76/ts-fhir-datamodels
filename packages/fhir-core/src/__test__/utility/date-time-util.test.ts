@@ -21,18 +21,9 @@
  *
  */
 
-import { InvalidDateTimeError } from '../../errors/InvalidDateTimeError';
-import {
-  DateTimeOpts,
-  getDateTimeObject,
-  getDateTimeObjectAsUTC,
-  getValueAsDateOnly,
-  getValueAsDateTime,
-  getValueAsInstant,
-  getValueAsYear,
-  getValueAsYearMonth,
-} from '../../utility/date-time-util';
 import { DateTime, FixedOffsetZone, Zone } from 'luxon';
+import { InvalidDateTimeError } from '../../errors/InvalidDateTimeError';
+import { DateTimeUtil } from '../../utility/date-time-util';
 
 describe('date-time-util', () => {
   const INVALID_DATE = '2020-03-32';
@@ -47,11 +38,11 @@ describe('date-time-util', () => {
   describe('getDateTimeObject', () => {
     describe('General tests', () => {
       it('should return undefined for undefined value argument', () => {
-        expect(getDateTimeObject(undefined)).toBeUndefined();
+        expect(DateTimeUtil.getDateTimeObject(undefined)).toBeUndefined();
       });
 
       it('should properly handle milliseconds', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -74,7 +65,7 @@ describe('date-time-util', () => {
     describe('Throw InvalidDateTimeError', () => {
       it('should throw InvalidDateTimeError for invalid value argument', () => {
         const t = () => {
-          getDateTimeObject('invalidArgument');
+          DateTimeUtil.getDateTimeObject('invalidArgument');
         };
         expect(t).toThrow(InvalidDateTimeError);
         expect(t).toThrow(`Invalid DateTime: unparsable: the input "invalidArgument" can't be parsed as ISO 8601`);
@@ -82,7 +73,7 @@ describe('date-time-util', () => {
 
       it('should throw InvalidDateTimeError for invalid date value argument', () => {
         const t = () => {
-          getDateTimeObject(INVALID_DATE);
+          DateTimeUtil.getDateTimeObject(INVALID_DATE);
         };
         expect(t).toThrow(InvalidDateTimeError);
         expect(t).toThrow(
@@ -92,7 +83,7 @@ describe('date-time-util', () => {
 
       it('should throw InvalidDateTimeError for invalid datetime value argument', () => {
         const t = () => {
-          getDateTimeObject(INVALID_DATETIME);
+          DateTimeUtil.getDateTimeObject(INVALID_DATETIME);
         };
         expect(t).toThrow(InvalidDateTimeError);
         expect(t).toThrow(
@@ -114,7 +105,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_YEAR_ONLY);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_YEAR_ONLY);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -137,7 +128,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year-month only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_YEAR_MONTH);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_YEAR_MONTH);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -160,7 +151,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided date only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATE);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATE);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -183,7 +174,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided datetime only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -208,7 +199,7 @@ describe('date-time-util', () => {
       it('should return a valid DateTime object for the provided datetime with offset value argument', () => {
         // Expected: offset applied to provided time and zone set to UTC
         // 23:57:00-07:00 => 06:57:00 UTC
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME_OFFSET);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME_OFFSET);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -231,7 +222,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided datetime with UTC value argument ', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME_UTC);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME_UTC);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -259,7 +250,7 @@ describe('date-time-util', () => {
       let testZone: Zone;
       let expectedZoneType: string;
       let expectedZoneName: string;
-      let dtOpts: DateTimeOpts;
+      let dtOpts: DateTimeUtil.DateTimeOpts;
 
       beforeAll(() => {
         // set test Zone to -06:00 / -360
@@ -275,7 +266,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_YEAR_ONLY, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_YEAR_ONLY, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -298,7 +289,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year-month only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_YEAR_MONTH, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_YEAR_MONTH, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -321,7 +312,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided date only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATE, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATE, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -344,7 +335,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided datetime only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -369,7 +360,7 @@ describe('date-time-util', () => {
       it('should return a valid DateTime object for the provided datetime with offset value argument', () => {
         // Expected: offset applied between provided -07:00 and the changed zone of -06:00
         // 23:57:00-07:00 => 00:57:00 UTC-6
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME_OFFSET, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME_OFFSET, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -394,7 +385,7 @@ describe('date-time-util', () => {
       it('should return a valid DateTime object for the provided datetime with UTC value argument ', () => {
         // Expected: offset applied between provided UTC and the changed zone of -06:00
         // 23:57:00Z => 17:57:00 UTC-6
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME_UTC, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME_UTC, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -425,7 +416,7 @@ describe('date-time-util', () => {
       let expectedZone: Zone;
       let expectedZoneType: string;
       let expectedZoneName: string;
-      let dtOpts: DateTimeOpts;
+      let dtOpts: DateTimeUtil.DateTimeOpts;
 
       beforeAll(() => {
         expectedZone = DateTime.now().zone;
@@ -435,7 +426,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_YEAR_ONLY, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_YEAR_ONLY, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -458,7 +449,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year-month only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_YEAR_MONTH, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_YEAR_MONTH, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -481,7 +472,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided date only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATE, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATE, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -504,7 +495,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided datetime only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -528,7 +519,7 @@ describe('date-time-util', () => {
 
       it('should return a valid DateTime object for the provided datetime with offset value argument', () => {
         // Expected: The provided offset in the provided datetime string will be used rather than the default system zone
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME_OFFSET, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME_OFFSET, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -553,7 +544,7 @@ describe('date-time-util', () => {
 
       it('should return a valid DateTime object for the provided datetime with UTC value argument ', () => {
         // Expected: offset is 'Z' therefore this is a UTC datetime
-        const dt: DateTime | undefined = getDateTimeObject(VALID_DATETIME_UTC, dtOpts);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObject(VALID_DATETIME_UTC, dtOpts);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -581,11 +572,11 @@ describe('date-time-util', () => {
   describe('getDateTimeObjectAsUTC', () => {
     describe('General tests', () => {
       it('should return undefined for undefined value argument', () => {
-        expect(getDateTimeObjectAsUTC(undefined)).toBeUndefined();
+        expect(DateTimeUtil.getDateTimeObjectAsUTC(undefined)).toBeUndefined();
       });
 
       it('should properly handle milliseconds', () => {
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_DATETIME);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_DATETIME);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -606,7 +597,7 @@ describe('date-time-util', () => {
     describe('Throw InvalidDateTimeError', () => {
       it('should throw InvalidDateTimeError for invalid value argument', () => {
         const t = () => {
-          getDateTimeObjectAsUTC('invalidArgument');
+          DateTimeUtil.getDateTimeObjectAsUTC('invalidArgument');
         };
         expect(t).toThrow(InvalidDateTimeError);
         expect(t).toThrow(`Invalid DateTime: unparsable: the input "invalidArgument" can't be parsed as ISO 8601`);
@@ -614,7 +605,7 @@ describe('date-time-util', () => {
 
       it('should throw InvalidDateTimeError for invalid date value argument', () => {
         const t = () => {
-          getDateTimeObjectAsUTC(INVALID_DATE);
+          DateTimeUtil.getDateTimeObjectAsUTC(INVALID_DATE);
         };
         expect(t).toThrow(InvalidDateTimeError);
         expect(t).toThrow(
@@ -624,7 +615,7 @@ describe('date-time-util', () => {
 
       it('should throw InvalidDateTimeError for invalid datetime value argument', () => {
         const t = () => {
-          getDateTimeObjectAsUTC(INVALID_DATETIME);
+          DateTimeUtil.getDateTimeObjectAsUTC(INVALID_DATETIME);
         };
         expect(t).toThrow(InvalidDateTimeError);
         expect(t).toThrow(
@@ -648,7 +639,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_YEAR_ONLY);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_YEAR_ONLY);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -669,7 +660,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided year-month only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_YEAR_MONTH);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_YEAR_MONTH);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -690,7 +681,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided date only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_DATE);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_DATE);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -711,7 +702,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided datetime only value argument', () => {
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_DATETIME);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_DATETIME);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -734,7 +725,7 @@ describe('date-time-util', () => {
       it('should return a valid DateTime object for the provided datetime with offset value argument', () => {
         // Expected: offset applied to provided time and zone set to UTC
         // 23:57:00-07:00 => 06:57:00 UTC
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_DATETIME_OFFSET);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_DATETIME_OFFSET);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -755,7 +746,7 @@ describe('date-time-util', () => {
       });
 
       it('should return a valid DateTime object for the provided datetime with UTC value argument ', () => {
-        const dt: DateTime | undefined = getDateTimeObjectAsUTC(VALID_DATETIME_UTC);
+        const dt: DateTime | undefined = DateTimeUtil.getDateTimeObjectAsUTC(VALID_DATETIME_UTC);
         if (dt === undefined) {
           fail('Undefined DateTime was not expected');
         }
@@ -780,7 +771,7 @@ describe('date-time-util', () => {
   describe('Get DateTime as FHIR primitive date/dataTime/instant strings', () => {
     it('should throw InvalidDateTimeError for non-DateTime argument', () => {
       const t = () => {
-        getValueAsYear({ invalid: 'object' });
+        DateTimeUtil.getValueAsYear({ invalid: 'object' });
       };
       expect(t).toThrow(InvalidDateTimeError);
       expect(t).toThrow(`Provided dt argument is not a DataTime object`);
@@ -789,7 +780,7 @@ describe('date-time-util', () => {
     it('should throw InvalidDateTimeError for invalid DateTime argument', () => {
       const dt = DateTime.fromISO(INVALID_DATE);
       const t = () => {
-        getValueAsYear(dt);
+        DateTimeUtil.getValueAsYear(dt);
       };
       expect(t).toThrow(InvalidDateTimeError);
       expect(t).toThrow(
@@ -799,61 +790,61 @@ describe('date-time-util', () => {
 
     it('should return expected FHIR YYYY value', () => {
       const dt = DateTime.fromISO(VALID_DATETIME);
-      const dtValue = getValueAsYear(dt);
+      const dtValue = DateTimeUtil.getValueAsYear(dt);
       expect(dtValue).toBeDefined();
       expect(dtValue).toStrictEqual('2020');
     });
 
     it('should return undefined for undefined FHIR YYYY value', () => {
-      const dtValue = getValueAsYear(undefined);
+      const dtValue = DateTimeUtil.getValueAsYear(undefined);
       expect(dtValue).toBeUndefined();
     });
 
     it('should return expected FHIR YYYY-MM value', () => {
       const dt = DateTime.fromISO(VALID_DATETIME);
-      const dtValue = getValueAsYearMonth(dt);
+      const dtValue = DateTimeUtil.getValueAsYearMonth(dt);
       expect(dtValue).toBeDefined();
       expect(dtValue).toStrictEqual('2020-03');
     });
 
     it('should return undefined for undefined FHIR YYYY-MM value', () => {
-      const dtValue = getValueAsYearMonth(undefined);
+      const dtValue = DateTimeUtil.getValueAsYearMonth(undefined);
       expect(dtValue).toBeUndefined();
     });
 
     it('should return expected FHIR date value', () => {
       const dt = DateTime.fromISO(VALID_DATETIME);
-      const dtValue = getValueAsDateOnly(dt);
+      const dtValue = DateTimeUtil.getValueAsDateOnly(dt);
       expect(dtValue).toBeDefined();
       expect(dtValue).toStrictEqual('2020-03-15');
     });
 
     it('should return undefined for undefined FHIR date value', () => {
-      const dtValue = getValueAsDateOnly(undefined);
+      const dtValue = DateTimeUtil.getValueAsDateOnly(undefined);
       expect(dtValue).toBeUndefined();
     });
 
     it('should return expected FHIR dateTime value', () => {
       const dt = DateTime.fromISO(VALID_DATETIME_UTC, { zone: 'utc' });
-      const dtValue = getValueAsDateTime(dt);
+      const dtValue = DateTimeUtil.getValueAsDateTime(dt);
       expect(dtValue).toBeDefined();
       expect(dtValue).toStrictEqual('2020-03-15T23:57:00Z');
     });
 
     it('should return undefined for undefined FHIR dateTime value', () => {
-      const dtValue = getValueAsDateTime(undefined);
+      const dtValue = DateTimeUtil.getValueAsDateTime(undefined);
       expect(dtValue).toBeUndefined();
     });
 
     it('should return expected FHIR instant value', () => {
       const dt = DateTime.fromISO(VALID_DATETIME_UTC, { zone: 'utc' });
-      const dtValue = getValueAsInstant(dt);
+      const dtValue = DateTimeUtil.getValueAsInstant(dt);
       expect(dtValue).toBeDefined();
       expect(dtValue).toStrictEqual('2020-03-15T23:57:00.000Z');
     });
 
     it('should return undefined for undefined FHIR instant value', () => {
-      const dtValue = getValueAsInstant(undefined);
+      const dtValue = DateTimeUtil.getValueAsInstant(undefined);
       expect(dtValue).toBeUndefined();
     });
   });

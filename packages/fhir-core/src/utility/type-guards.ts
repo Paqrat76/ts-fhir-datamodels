@@ -92,7 +92,7 @@ export type NonEmptyArray<T> = [T, ...T[]];
  * @category Type Guards/Assertions
  */
 export function isDefinedList<T>(arr: T[] | undefined | null): arr is NonEmptyArray<T> {
-  return isDefined(arr) && arr.length > 0;
+  return isDefined(arr) && Array.isArray(arr) && arr.length > 0;
 }
 
 /**

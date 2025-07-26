@@ -16,6 +16,8 @@
   ],
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "build": "tsc",
     "test": "jest",
     "coverage": "jest --coverage",
@@ -24,7 +26,7 @@
   },
   "dependencies": {
     "luxon": "^3.7.1",
-    "zod": "^4.0.5"
+    "zod": "^4.0.10"
   },
   "engines": {
     "node": ">=22.11",

@@ -10,11 +10,12 @@
     "generate:ftest": "ts-node scripts/generate-ftest-src.ts",
     "precompile": "npm run generate:ftest",
     "compile": "tsc",
-    "xxxpretest:func": "npm run generate:ftest",
+    "pretest:func": "npm run generate:ftest",
     "test:func": "jest",
-    "precoverage": "npm run generate:ftest",
-    "coverage": "jest --coverage",
-    "jest:clear": "jest --clearCache"
+    "precoverage:func": "npm run generate:ftest",
+    "coverage:func": "jest --coverage",
+    "jest:clear": "jest --clearCache",
+    "jest:updateSnapshot": "jest --updateSnapshot"
   },
   "dependencies": {
     "@paq-ts-fhir/fhir-core": "^0.6.0"

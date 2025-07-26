@@ -29,18 +29,15 @@ import { ElementDefinition, ElementDefinitionType, StructureDefinition } from '.
 import { DATA_TYPE_MAPPINGS, DATA_TYPES, FhirDataType } from '../fhir-data-type';
 import { FhirPackage } from '../ts-datamodel-generator-helpers';
 
-interface StructureDefinitionRootElement {
-  short?: string;
-  definition?: string;
-  comment?: string;
-  requirements?: string;
-}
-
-export interface HbsElementComponentRoot extends StructureDefinitionRootElement {
+export interface HbsElementComponentRoot {
   path: string;
   componentName: string;
   componentLevel: number;
   typeCode: string;
+  short?: string;
+  definition?: string;
+  comment?: string;
+  requirements?: string;
 }
 
 export interface HbsElementDefinitionType {
@@ -102,8 +99,7 @@ export interface HbsElementComponent {
   isComponentElement: boolean;
   hasParsableDataType: boolean;
   hasParsableResource: boolean;
-  // StructureDefinitionRootElement for parent component; HbsElementComponentRoot for child components
-  rootElement: StructureDefinitionRootElement | HbsElementComponentRoot;
+  rootElement: HbsElementComponentRoot;
   numRequiredFields: number;
   hasRequiredFields: boolean;
   hasResourceFields: boolean;
@@ -335,11 +331,15 @@ function getParentElementComponent(
   const baseDefinitionType = getBaseDefinitionType(structureDef);
 
   const rootElement = {
+    path: structureDef.type,
+    componentName: structureDef.type,
+    componentLevel: 1,
+    typeCode: structureDef.type,
     short: fixDescriptiveString(structureDef.snapshot?.element[0]?.short),
     definition: fixDescriptiveString(structureDef.snapshot?.element[0]?.definition),
     comment: fixDescriptiveString(structureDef.snapshot?.element[0]?.comment),
     requirements: fixDescriptiveString(structureDef.snapshot?.element[0]?.requirements),
-  } as StructureDefinitionRootElement;
+  } as HbsElementComponentRoot;
 
   const parentElementDefinitions: HbsElementDefinition[] = getParentElementDefinitions(structureDef, codeSystemEnumMap);
 
@@ -459,12 +459,12 @@ function getHbsElementComponentRoots(structureDef: StructureDefinition): HbsElem
       path: element.path,
       componentName: `${upperFirst(camelCase(element.path))}Component`,
       componentLevel: element.path.split('.').length,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      typeCode: element.type![0]!.code,
       short: fixDescriptiveString(element.short),
       definition: fixDescriptiveString(element.definition),
       comment: fixDescriptiveString(element.comment),
       requirements: fixDescriptiveString(element.requirements),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      typeCode: element.type![0]!.code,
     } as HbsElementComponentRoot;
     hbsElementComponentRoots.push(hbsElementComponentRoot);
   });

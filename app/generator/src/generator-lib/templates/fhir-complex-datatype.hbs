@@ -30,7 +30,7 @@
 export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements {{complexTypeImplements sdHbs.type sdHbs.baseDefinitionType}} {
 {{#if sdHbs.parentComponent.requiredConstructor}}
 {{!-- Constructor Required Partial --}}
-{{> constructorRequiredPartial sdHbs.parentComponent}}
+{{> constructorRequiredPartial compHbs=sdHbs.parentComponent}}
 {{else}}
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {

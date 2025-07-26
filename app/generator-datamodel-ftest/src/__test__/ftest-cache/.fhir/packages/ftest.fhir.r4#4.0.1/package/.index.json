@@ -276,13 +276,13 @@
       "type": "SimplePersonModel"
     },
     {
-      "filename": "StructureDefinition-TestDataModel.json",
+      "filename": "StructureDefinition-TestModel.json",
       "resourceType": "StructureDefinition",
-      "id": "TestDataModel",
-      "url": "https://test.ts-fhir-datamodels.com/StructureDefinition/TestDataModel",
+      "id": "TestModel",
+      "url": "https://test.ts-fhir-datamodels.com/StructureDefinition/TestModel",
       "version": "4.0.1",
       "kind": "resource",
-      "type": "TestDataModel"
+      "type": "TestModel"
     },
     {
       "filename": "StructureDefinition-Address.json",
@@ -481,6 +481,15 @@
       "version": "4.0.1",
       "kind": "complex-type",
       "type": "ParameterDefinition"
+    },
+    {
+      "filename": "StructureDefinition-Parameters.json",
+      "resourceType": "StructureDefinition",
+      "id": "Parameters",
+      "url": "http://hl7.org/fhir/StructureDefinition/Parameters",
+      "version": "4.0.1",
+      "kind": "resource",
+      "type": "Parameters"
     },
     {
       "filename": "StructureDefinition-Period.json",

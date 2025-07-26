@@ -7750,7 +7750,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
   }
 
   // *** NOTE ***
-  // Next "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
+  // Following choice datatype-specific "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
 
   /**
    * @returns the \`bounds\` property value as a Duration object if defined; else undefined
@@ -7817,6 +7817,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
   public hasBoundsPeriod(): boolean {
     return this.hasBounds() && this.bounds instanceof Period;
   }
+
+  // End of choice datatype-specific "get"/"has" methods
 
   /**
    * @returns the \`count\` property value as a PositiveIntType object if defined; else an empty PositiveIntType object
@@ -8470,7 +8472,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    */
   public addDayOfWeekEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = \`Invalid Timing.repeat.dayOfWeek)\`;
+      const errMsgPrefix = \`Invalid Timing.repeat.dayOfWeek\`;
       assertEnumCodeType<DaysOfWeekEnum>(enumType, DaysOfWeekEnum, errMsgPrefix);
       this.initDayOfWeek();
       this.dayOfWeek?.push(enumType);
@@ -9203,7 +9205,7 @@ export class Bundle extends Resource implements IResource {
       type_,
       BundleTypeEnum,
       this.bundleTypeEnum,
-      '.type',
+      'Bundle.type',
     );
   }
 
@@ -11104,7 +11106,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
       method,
       HttpVerbEnum,
       this.httpVerbEnum,
-      '.method',
+      'Bundle.entry.request.method',
     );
 
     this.url = null;
@@ -13978,7 +13980,7 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    */
   public addDaysOfWeekEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = \`Invalid PractitionerRole.availableTime.daysOfWeek)\`;
+      const errMsgPrefix = \`Invalid PractitionerRole.availableTime.daysOfWeek\`;
       assertEnumCodeType<DaysOfWeekEnum>(enumType, DaysOfWeekEnum, errMsgPrefix);
       this.initDaysOfWeek();
       this.daysOfWeek?.push(enumType);
@@ -14816,7 +14818,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
       status,
       PublicationStatusEnum,
       this.publicationStatusEnum,
-      '.status',
+      'SearchParameter.status',
     );
 
     this.description = null;
@@ -14841,14 +14843,14 @@ export class SearchParameter extends DomainResource implements IDomainResource {
       base,
       ResourceTypesEnum,
       this.resourceTypesEnum,
-      '.base',
+      'SearchParameter.base',
     );
 
     this.type_ = constructorCodeValueAsEnumCodeType<SearchParamTypeEnum>(
       type_,
       SearchParamTypeEnum,
       this.searchParamTypeEnum,
-      '.type',
+      'SearchParameter.type',
     );
   }
 
@@ -15064,7 +15066,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
         }
       });
     } else {
-      missingReqdProperties.push(\`XxxxParentClassElement.base\`);
+      missingReqdProperties.push(sourceField);
     }
 
     fieldName = 'type';
@@ -16545,9 +16547,9 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * @param enumType - the \`base\` value
    * @returns this
    */
-  public addBaseEnumType(enumType: EnumCodeType | undefined): this {
+  public addBaseEnumType(enumType: EnumCodeType): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = \`Invalid SearchParameter.base)\`;
+      const errMsgPrefix = \`Invalid SearchParameter.base\`;
       assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
       this.initBase();
       this.base?.push(enumType);
@@ -16596,7 +16598,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * @param element - the \`base\` value
    * @returns this
    */
-  public addBaseElement(element: CodeType | undefined): this {
+  public addBaseElement(element: CodeType): this {
     if (isDefined<CodeType>(element)) {
       const optErrMsg = \`Invalid SearchParameter.base; Provided element is not an instance of CodeType.\`;
       assertFhirType<CodeType>(element, CodeType, optErrMsg);
@@ -16651,7 +16653,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * @param value - the \`base\` value
    * @returns this
    */
-  public addBase(value: fhirCode | undefined): this {
+  public addBase(value: fhirCode): this {
     if (isDefined<fhirCode>(value)) {
       this.initBase();
       const optErrMsg = \`Invalid SearchParameter.base; Provided value is not an instance of fhirCode.\`;
@@ -16983,7 +16985,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    */
   public addTargetEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = \`Invalid SearchParameter.target)\`;
+      const errMsgPrefix = \`Invalid SearchParameter.target\`;
       assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
       this.initTarget();
       this.target?.push(enumType);
@@ -17274,7 +17276,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    */
   public addComparatorEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = \`Invalid SearchParameter.comparator)\`;
+      const errMsgPrefix = \`Invalid SearchParameter.comparator\`;
       assertEnumCodeType<SearchComparatorEnum>(enumType, SearchComparatorEnum, errMsgPrefix);
       this.initComparator();
       this.comparator?.push(enumType);
@@ -17441,7 +17443,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    */
   public addModifierEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
-      const errMsgPrefix = \`Invalid SearchParameter.modifier)\`;
+      const errMsgPrefix = \`Invalid SearchParameter.modifier\`;
       assertEnumCodeType<SearchModifierCodeEnum>(enumType, SearchModifierCodeEnum, errMsgPrefix);
       this.initModifier();
       this.modifier?.push(enumType);

@@ -19,23 +19,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.6.0] 2025-07-??
+## [0.6.0] 2025-07-25
 
 ### Added
+
+- Package specific scripts to execute Prettier and ESLint
 
 ### Changed
 
 - Updated all complex data models to be consistent with generated complex data models
-
-### Deprecated
+- Wrapped all date/time utilities in a namespace to facilitate exports from the package
+- Added all Luxon date/time utility functions into a Namespace to facilitate importing them into generated data model packages
+- Updated all usages and unit tests of Luxon date/time utility functions to reference the new namespace
 
 ### Removed
 
 - Support for ICoding, IMeta, INarrative
-
-### Fixed
-
-### Security
 
 
 ## [0.5.0] - 2025-07-12

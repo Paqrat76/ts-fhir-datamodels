@@ -40,8 +40,8 @@ describe('generator-datamodel-ftest Functional Test Suite', () => {
   };
   // 25 CodeSystemEnums
   // 1 ComplexTypes (single file with all complex types to resolve circular references)
-  // 12 Resources + parsable-resource-map.ts
-  const EXPECTED_NUM_GENERATED_MODELS = 39;
+  // 13 Resources + parsable-resource-map.ts
+  const EXPECTED_NUM_GENERATED_MODELS = 40;
 
   describe('generator-app generate and write', () => {
     beforeAll(async () => {
@@ -109,7 +109,7 @@ describe('generator-datamodel-ftest Functional Test Suite', () => {
 
       const testResources: string[] = readdirSync(testOutResources);
       expect(testResources).toBeDefined();
-      expect(testResources.length).toBe(13);
+      expect(testResources.length).toBe(14);
       const expectedResources: string[] = [
         'Device.ts',
         'DeviceDefinition.ts',
@@ -117,12 +117,13 @@ describe('generator-datamodel-ftest Functional Test Suite', () => {
         'HealthcareService.ts',
         'Location.ts',
         'Organization.ts',
+        'Parameters.ts',
         'Patient.ts',
         'Practitioner.ts',
         'PractitionerRole.ts',
         'RelatedPerson.ts',
         'SimplePersonModel.ts',
-        'TestDataModel.ts',
+        'TestModel.ts',
         'parsable-resource-map.ts',
       ];
       expect(testResources).toEqual(expectedResources);

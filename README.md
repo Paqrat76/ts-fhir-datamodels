@@ -26,16 +26,16 @@ This project will be constructed in the following phases:
      resource data models) for FHIR R4
      - all generated code passes linting without errors or warnings
      - Typedoc does not report any errors or warnings for generated content
-3. (**Work-in-Progress**) Add comprehensive testing for generator
+3. (**Completed**) Add comprehensive testing for generator
    - Unit tests for generator components with coverage exceeding 90%
    - Functional tests for generated content. This will be achieved using custom FHIR artifacts (StructureDefinitions and
      CodeSystems) used to generate content that covers all possible template combinations (refer to `typescript-hapi-models-poc`
      [src/test-models](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/src/test-models) and
      [test/test-models](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/test/test-models)).
-4. Cleanup the `fhir-core` package removing all hand-crafted complex type data models. The goal is to trim down the project
-   to only include the primitive data type implementations, base models, utilities, errors, etc. Ensure unit test coverage
+4. (**Completed**) Cleanup the `fhir-core` package. The goal is to trim down the project to only include the primitive data type
+   implementations, base models, dependent complex type models, utilities, errors, etc. Ensure unit test coverage
    exceeds 90%.
-5. Fill out project documentation for all aspects of this mono-repository
+5. (**Work-in-Progress**) Fill out project documentation for all aspects of this mono-repository
 6. Add the `r4b-datamodels` and `r5-datamodels` packages. The `r6-datamodels`package will be added when FHIR R6 is released.
 7. Finalize component documentation (using [Typedoc](https://typedoc.org/)) for each package. Implement the publication
    of this documentation for consumers of these packages.

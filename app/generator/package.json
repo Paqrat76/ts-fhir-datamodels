@@ -6,6 +6,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo dist coverage sushi/output src/__test__/test-out",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "test": "jest",
     "coverage": "jest --coverage",
     "jest:clear": "jest --clearCache",

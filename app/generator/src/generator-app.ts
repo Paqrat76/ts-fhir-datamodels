@@ -106,7 +106,7 @@ export class GeneratorApp {
       emptyDirSync(generatedPath);
     });
 
-    const fhirCoreExportStmt = `export { Resource, DomainResource } from '@paq-ts-fhir/fhir-core';`;
+    const fhirCoreExportStmt = `export { Resource, DomainResource, DateTimeUtil } from '@paq-ts-fhir/fhir-core';`;
     const barrelLines: Set<string> = new Set<string>();
     generatedContent.forEach((content) => {
       /* istanbul ignore next */

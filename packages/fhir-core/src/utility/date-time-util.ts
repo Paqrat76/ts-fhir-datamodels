@@ -21,195 +21,202 @@
  *
  */
 
+import { DateTime, Zone } from 'luxon';
+import { InvalidDateTimeError } from '../errors/InvalidDateTimeError';
+import { isDefined } from './type-guards';
+
 /**
- * DateTime utilities
+ * Namespace for handling Luxon DateTime object operations and conversions.
  *
  * @remarks
- * Luxon is a library for working with dates and times in JavaScript and is used in this project.
- * These functions are used in the following FHIR primitive types: DateType, DateTimeType, and
- * InstantType.
+ * This namespace provides functions to work with Luxon's DateTime instances, providing
+ * helpers to handle FHIR date strings and various formatting needs.
  *
- * @module
+ * @privateRemarks
+ * This namespace is used to make it easier to export these items from this FHIR core library
+ * to make them easily available within the generated data models packages.
  *
  * @see [Luxon](https://moment.github.io/luxon/#/)
  */
-
-import { InvalidDateTimeError } from '../errors/InvalidDateTimeError';
-import { isDefined } from './type-guards';
-import { DateTime, Zone } from 'luxon';
-
-/**
- * Luxon DateTime options to affect the creation of the DateTime instance.
- *
- * @category Utilities: DateTime
- * @interface
- */
-export interface DateTimeOpts {
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace DateTimeUtil {
   /**
-   * Use this zone if no offset is specified in the input string itself. Will also convert the time to this zone.
-   * Defaults to `'local'`.
+   * Luxon DateTime options to affect the creation of the DateTime instance.
+   *
+   * @category Utilities: DateTime
+   * @interface
+   *
+   * @see [opts (Object = {}) options to affect the creation](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
    */
-  zone?: string | Zone;
-  /**
-   * Override the zone with a fixed-offset zone specified in the string itself, if it specifies one.
-   * Defaults to `false`
-   */
-  setZone?: boolean;
-  /**
-   * The locale to set on the resulting DateTime instance.
-   * Defaults to the system's locale.
-   */
-  locale?: string;
-  /**
-   * The output calendar to set on the resulting DateTime instance.
-   */
-  outputCalendar?: string;
-  /**
-   * The numbering system to set on the resulting DateTime instance.
-   */
-  numberingSystem?: string;
-  /**
-   * The week settings to set on the resulting DateTime instance.
-   */
-  weekSettings?: string;
-}
-
-/**
- * Returns a Luxon DateTime object for the provided ISO 8601 string value.
- *
- * @remarks
- * Uses DateTime.fromISO() static method to create a DateTime object.
- *
- * @param value - string that represents an ISO 8601 value used to instantiate a DataTime object
- * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
- * @returns an instance of a DateTime object
- * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
- *
- * @category Utilities: DateTime
- * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
- */
-export function getDateTimeObject(value: string | undefined, opts?: DateTimeOpts): DateTime | undefined {
-  if (!isDefined<string>(value)) {
-    return undefined;
+  export interface DateTimeOpts {
+    /**
+     * Use this zone if no offset is specified in the input string itself. Will also convert the time to this zone.
+     * Defaults to `'local'`.
+     *
+     * @see [Zone](https://moment.github.io/luxon/api-docs/index.html#zone
+     */
+    zone?: string | Zone;
+    /**
+     * Override the zone with a fixed-offset zone specified in the string itself, if it specifies one.
+     * Defaults to `false`
+     */
+    setZone?: boolean;
+    /**
+     * The locale to set on the resulting DateTime instance.
+     * Defaults to the system's locale.
+     */
+    locale?: string;
+    /**
+     * The output calendar to set on the resulting DateTime instance.
+     */
+    outputCalendar?: string;
+    /**
+     * The numbering system to set on the resulting DateTime instance.
+     */
+    numberingSystem?: string;
+    /**
+     * The week settings to set on the resulting DateTime instance.
+     */
+    weekSettings?: string;
   }
 
-  let dt;
-  if (isDefined<DateTimeOpts>(opts)) {
-    dt = DateTime.fromISO(value, opts as object);
-  } else {
-    dt = DateTime.fromISO(value);
+  /**
+   * Returns a Luxon DateTime object for the provided ISO 8601 string value.
+   *
+   * @remarks
+   * Uses DateTime.fromISO() static method to create a DateTime object.
+   *
+   * @param value - string that represents an ISO 8601 value used to instantiate a DataTime object
+   * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
+   * @returns an instance of a DateTime object
+   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   *
+   * @category Utilities: DateTime
+   * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
+   */
+  export function getDateTimeObject(value: string | undefined, opts?: DateTimeOpts): DateTime | undefined {
+    if (!isDefined<string>(value)) {
+      return undefined;
+    }
+
+    let dt;
+    if (isDefined<DateTimeOpts>(opts)) {
+      dt = DateTime.fromISO(value, opts as object);
+    } else {
+      dt = DateTime.fromISO(value);
+    }
+
+    if (!dt.isValid) {
+      throw new InvalidDateTimeError(dt.invalidReason, dt.invalidExplanation);
+    }
+
+    return dt;
   }
 
-  if (!dt.isValid) {
-    throw new InvalidDateTimeError(dt.invalidReason, dt.invalidExplanation);
+  /**
+   * Returns a Luxon DateTime object having the UTC time zone for the provided ISO 8601 string value.
+   *
+   * @remarks
+   * Uses DateTime.fromISO() static method to create a DateTime object.
+   *
+   * @param value - string that represents an ISO 8601 value used to instantiate a DataTime object
+   * @returns an instance of a DateTime object having the UTC time zone
+   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   *
+   * @category Utilities: DateTime
+   * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
+   */
+  export function getDateTimeObjectAsUTC(value: string | undefined): DateTime | undefined {
+    if (!isDefined<string>(value)) {
+      return undefined;
+    }
+
+    const dt = DateTime.fromISO(value, { zone: 'utc' });
+
+    if (!dt.isValid) {
+      throw new InvalidDateTimeError(dt.invalidReason, dt.invalidExplanation);
+    }
+
+    return dt;
   }
 
-  return dt;
-}
-
-/**
- * Returns a Luxon DateTime object having the UTC time zone for the provided ISO 8601 string value.
- *
- * @remarks
- * Uses DateTime.fromISO() static method to create a DateTime object.
- *
- * @param value - string that represents an ISO 8601 value used to instantiate a DataTime object
- * @returns an instance of a DateTime object having the UTC time zone
- * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
- *
- * @category Utilities: DateTime
- * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
- */
-export function getDateTimeObjectAsUTC(value: string | undefined): DateTime | undefined {
-  if (!isDefined<string>(value)) {
-    return undefined;
+  /**
+   * Returns the value of the provided dt argument as 'YYYY'
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns the FHIR primitive date/dateTime value as 'YYYY'
+   * @throws InvalidDateTimeError for an invalid dt argument
+   *
+   * @category Utilities: DateTime
+   */
+  export function getValueAsYear(dt: unknown): string | undefined {
+    verifyDateTime(dt);
+    return dt === undefined ? undefined : (dt as DateTime).toFormat('yyyy');
   }
 
-  const dt = DateTime.fromISO(value, { zone: 'utc' });
-
-  if (!dt.isValid) {
-    throw new InvalidDateTimeError(dt.invalidReason, dt.invalidExplanation);
+  /**
+   * Returns the value of the provided dt argument as 'YYYY-MM'
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns the FHIR primitive date/dateTime value as 'YYYY-MM'
+   * @throws InvalidDateTimeError for an invalid dt argument
+   *
+   * @category Utilities: DateTime
+   */
+  export function getValueAsYearMonth(dt: unknown): string | undefined {
+    verifyDateTime(dt);
+    return dt === undefined ? undefined : (dt as DateTime).toFormat('yyyy-MM');
   }
 
-  return dt;
-}
+  /**
+   * Returns the value of the provided dt argument as 'YYYY-MM-DD'
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns the FHIR primitive date/dateTime value as 'YYYY-MM-DD'
+   * @throws InvalidDateTimeError for an invalid dt argument
+   *
+   * @category Utilities: DateTime
+   */
+  export function getValueAsDateOnly(dt: unknown): string | undefined {
+    verifyDateTime(dt);
+    // dt.toISODate() returns null only if dt is not valid - verified in verifyDateTime()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return dt === undefined ? undefined : (dt as DateTime).toISODate()!;
+  }
 
-/**
- * Returns the value of the provided dt argument as 'YYYY'
- *
- * @param dt - DateTime object from which to obtain a string value
- * @returns the FHIR primitive date/dateTime value as 'YYYY'
- * @throws InvalidDateTimeError for an invalid dt argument
- *
- * @category Utilities: DateTime
- */
-export function getValueAsYear(dt: unknown): string | undefined {
-  verifyDateTime(dt);
-  return dt === undefined ? undefined : (dt as DateTime).toFormat('yyyy');
-}
+  /**
+   * Returns the value of the provided dt argument as an ISO datetime string excluding
+   * milliseconds from the format if they are 0
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns the FHIR primitive date/dateTime value as an ISO datetime string
+   * @throws InvalidDateTimeError for an invalid dt argument
+   *
+   * @category Utilities: DateTime
+   */
+  export function getValueAsDateTime(dt: unknown): string | undefined {
+    verifyDateTime(dt);
+    // dt.toISO() returns null only if dt is not valid - verified in verifyDateTime()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return dt === undefined ? undefined : (dt as DateTime).toISO({ suppressMilliseconds: true })!;
+  }
 
-/**
- * Returns the value of the provided dt argument as 'YYYY-MM'
- *
- * @param dt - DateTime object from which to obtain a string value
- * @returns the FHIR primitive date/dateTime value as 'YYYY-MM'
- * @throws InvalidDateTimeError for an invalid dt argument
- *
- * @category Utilities: DateTime
- */
-export function getValueAsYearMonth(dt: unknown): string | undefined {
-  verifyDateTime(dt);
-  return dt === undefined ? undefined : (dt as DateTime).toFormat('yyyy-MM');
-}
-
-/**
- * Returns the value of the provided dt argument as 'YYYY-MM-DD'
- *
- * @param dt - DateTime object from which to obtain a string value
- * @returns the FHIR primitive date/dateTime value as 'YYYY-MM-DD'
- * @throws InvalidDateTimeError for an invalid dt argument
- *
- * @category Utilities: DateTime
- */
-export function getValueAsDateOnly(dt: unknown): string | undefined {
-  verifyDateTime(dt);
-  // dt.toISODate() returns null only if dt is not valid - verified in verifyDateTime()
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return dt === undefined ? undefined : (dt as DateTime).toISODate()!;
-}
-
-/**
- * Returns the value of the provided dt argument as an ISO datetime string excluding
- * milliseconds from the format if they are 0
- *
- * @param dt - DateTime object from which to obtain a string value
- * @returns the FHIR primitive date/dateTime value as an ISO datetime string
- * @throws InvalidDateTimeError for an invalid dt argument
- *
- * @category Utilities: DateTime
- */
-export function getValueAsDateTime(dt: unknown): string | undefined {
-  verifyDateTime(dt);
-  // dt.toISO() returns null only if dt is not valid - verified in verifyDateTime()
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return dt === undefined ? undefined : (dt as DateTime).toISO({ suppressMilliseconds: true })!;
-}
-
-/**
- * Returns the value of the provided dt argument as an ISO datetime string including
- * milliseconds
- *
- * @param dt - DateTime object from which to obtain a string value
- * @returns the FHIR primitive date/dateTime value as an ISO datetime string
- * @throws InvalidDateTimeError for an invalid dt argument
- *
- * @category Utilities: DateTime
- */
-export function getValueAsInstant(dt: unknown): string | undefined {
-  verifyDateTime(dt);
-  // dt.toISO() returns null only if dt is not valid - verified in verifyDateTime()
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return dt === undefined ? undefined : (dt as DateTime).toISO()!;
+  /**
+   * Returns the value of the provided dt argument as an ISO datetime string including
+   * milliseconds
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns the FHIR primitive date/dateTime value as an ISO datetime string
+   * @throws InvalidDateTimeError for an invalid dt argument
+   *
+   * @category Utilities: DateTime
+   */
+  export function getValueAsInstant(dt: unknown): string | undefined {
+    verifyDateTime(dt);
+    // dt.toISO() returns null only if dt is not valid - verified in verifyDateTime()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return dt === undefined ? undefined : (dt as DateTime).toISO()!;
+  }
 }
 
 /**
