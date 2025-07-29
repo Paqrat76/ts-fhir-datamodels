@@ -19,9 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.4.0] - 2025-07-??
-
-### Added
+## [0.4.0] - 2025-07-29
 
 ### Changed
 
@@ -30,15 +28,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Moved `./src/gnerated` to `./src`
 - Completed functional test suite
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Local Jest configuration to resolve intermittent Jest issue: "Cannot find module" from CLI
-
-### Security
 
 
 ## [0.3.0] - 2025-07-25

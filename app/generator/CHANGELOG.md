@@ -19,21 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.14.0] - 2025-07-??
+## [0.14.0] - 2025-07-29
 
 ### Added
 
 - Configuration to support "istanbul ignore" for testing purposes
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 
 ## [0.13.0] - 2025-07-25
