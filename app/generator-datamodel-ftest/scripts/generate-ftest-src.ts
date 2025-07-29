@@ -26,9 +26,8 @@ import { resolve } from 'node:path';
 import { rmSync } from 'node:fs';
 import { FhirPackage, GeneratorApp, GeneratedContent, generatorLogger } from 'generator';
 
-const outputPath = resolve(__dirname, '../', 'src', 'generated');
-// const outputPath = resolve(__dirname, '..', 'src', '__test__', 'test-out');
-const testFhirCacheRoot = resolve(__dirname, '..', 'src', '__test__', 'ftest-cache');
+const outputPath = resolve(__dirname, '..', 'src');
+const testFhirCacheRoot = resolve(__dirname, '..', 'test', 'ftest-cache');
 
 const testFhirPackage: FhirPackage = {
   release: 'R4',
@@ -36,6 +35,7 @@ const testFhirPackage: FhirPackage = {
   pkgVersion: '4.0.1',
   baseOutputPath: outputPath,
   pkgLoaderCacheRootPath: testFhirCacheRoot,
+  isFunctionalTest: true,
 };
 
 /**
@@ -53,12 +53,12 @@ async function generateFunctionalTestDataModels(): Promise<void> {
   const generator = new GeneratorApp(testFhirPackage);
   const generatedContent: GeneratedContent[] = await generator.generate();
   assert(generatedContent, `Generated content is null or undefined.`);
-  // 25 CodeSystemEnums
+  // 28 CodeSystemEnums
   // 1 ComplexTypes
   // 13 Resources plus parsable-resource-map base
   // index.ts
   assert(
-    generatedContent.length === 40,
+    generatedContent.length === 43,
     `Generated content should have 74 data models, but has ${String(generatedContent.length)}.`,
   );
   generatorLogger(

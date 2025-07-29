@@ -218,7 +218,7 @@ These custom resources are used for function testing of the various FHIR pattern
 
 This resource is used for function testing of a resource that extends `Resource` rather than `DomainResource`.
 
-- `Parameters`
+- `Bundle`
 
 ### Dependent FHIR Resources
 

@@ -33,12 +33,14 @@ describe('src/generator-app unit test suite', () => {
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
   const testFhirCacheRoot = resolve(__dirname, 'utest-cache');
+  // While this is a unit test, set `isFunctionalTest` to `true` for testing purposes
   const testFhirPackage: FhirPackage = {
     release: 'R4',
     pkgName: 'utest.fhir.r4',
     pkgVersion: '4.0.1',
     baseOutputPath: testOut,
     pkgLoaderCacheRootPath: testFhirCacheRoot,
+    isFunctionalTest: true,
   };
 
   describe('generator-app generate and write', () => {

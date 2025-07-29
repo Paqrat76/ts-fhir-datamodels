@@ -27,7 +27,7 @@
  * @category DataModel: {{upperCamelCase sdHbs.kind}}
  * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
  */
-export class Extension extends CoreExtension {
+{{#if sdHbs.istanbulIgnore}}/* istanbul ignore next */ {{/if}}export class Extension extends CoreExtension {
   constructor(url: fhirUri | null = null, value?: IDataType) {
     super(url, value);
   }

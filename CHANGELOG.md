@@ -19,6 +19,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.15.0] - 2025-07-??
+
+### Added
+
+### Changed
+
+- Updated dependencies
+- Completed functional test suite in app/generator-datamodel-ftest
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+- app/generated-datamodel-ftest project's Jest configuration to resolve intermittent Jest issue: "Cannot find module" from CLI
+
+### Security
+
+- Resolved `critical` security issue ([CVE-2025-7783](https://www.cve.org/cverecord?id=CVE-2025-7783)) with `form-data`
+
 ## [0.14.0] - 2025-07-25
 
 ### Changed

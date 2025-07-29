@@ -89,6 +89,7 @@ export interface HbsElementComponent {
   parentType: string;
   parentKind: string;
   parentFieldName: string;
+  parentIstanbulIgnore?: boolean;
   componentName: string;
   baseDefinitionType: string;
   isComponentResource: boolean;
@@ -127,6 +128,7 @@ export interface HbsStructureDefinition {
   hasChildComponents: boolean;
   childComponents?: HbsElementComponent[];
   hasSymbolMetadata: boolean;
+  istanbulIgnore: boolean;
   fhirCoreImports: string[];
   generatedImports: string[];
 }
@@ -159,6 +161,22 @@ export function getSdHbsProperties(
 
   const hasSymbolMetadata = parentComponent.hasChoiceFields || hasChildChoiceFields;
 
+  // All complex data type models are collected in a single file to mitigate circular references.
+  // Jest coverage exclusions are only at the file level. Functional testing requirements for complex types
+  // are limited to only the `Timing` complex type. Selected complex types in the @paq-ts-fhir/fhir-core library
+  // already fully tested, so 'Timing' was selected due to its unique definition. The `istanbulIgnore` and
+  // `parentIstanbulIgnore` boolean values are used by the templates to insert "/* istanbul ignore next */" above
+  // the class declaration to exclude these types from functional testing. It will only be set to `true` if and
+  // only if the FhirPackage has its `isFunctionalTest` element set to true.
+  let istanbulIgnore = false;
+  if (fhirPackage.isFunctionalTest && structureDef.kind === 'complex-type' && structureDef.type !== 'Timing') {
+    istanbulIgnore = true;
+    parentComponent.parentIstanbulIgnore = true;
+    if (childComponents) {
+      childComponents.forEach((component: HbsElementComponent) => (component.parentIstanbulIgnore = true));
+    }
+  }
+
   const sdHbsProperties = {
     url: structureDef.url,
     name: structureDef.name,
@@ -173,6 +191,7 @@ export function getSdHbsProperties(
     hasChildComponents: !isEmpty(childComponents),
     childComponents: childComponents,
     hasSymbolMetadata: hasSymbolMetadata,
+    istanbulIgnore: istanbulIgnore,
     fhirCoreImports: [] as string[],
     generatedImports: [] as string[],
   } as HbsStructureDefinition;
@@ -359,6 +378,7 @@ function getParentElementComponent(
     parentType: structureDef.type,
     parentKind: structureDef.kind,
     parentFieldName: structureDef.name,
+    parentIstanbulIgnore: false,
     componentName: structureDef.type,
     baseDefinitionType: baseDefinitionType,
     isComponentResource: baseDefinitionType === 'Resource',
@@ -513,6 +533,7 @@ function getChildElementComponents(
       parentType: structureDef.type,
       parentKind: structureDef.kind,
       parentFieldName: hbsElementComponentRoot.path,
+      parentIstanbulIgnore: false,
       componentName: hbsElementComponentRoot.componentName,
       baseDefinitionType: componentDefinitionType === 'Element' ? 'DataType' : componentDefinitionType,
       isComponentResource: false,
