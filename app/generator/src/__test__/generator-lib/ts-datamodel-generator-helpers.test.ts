@@ -60,6 +60,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
         pkgVersion: '4.0.1',
         baseOutputPath: 'packages/r4-datamodels/src',
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
       const fhirPackage = getFhirPackage('R4');
       expect(fhirPackage).toEqual(expected);
@@ -72,6 +73,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
         pkgVersion: '4.3.0',
         // TODO: add baseOutputPath
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
       const fhirPackage = getFhirPackage('R4B');
       expect(fhirPackage).toEqual(expected);
@@ -84,6 +86,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
         pkgVersion: '5.0.0',
         // TODO: add baseOutputPath
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
       const fhirPackage = getFhirPackage('R5');
       expect(fhirPackage).toEqual(expected);

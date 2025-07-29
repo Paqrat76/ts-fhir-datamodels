@@ -37,6 +37,7 @@ describe('src/typescript-datamodel-generator', () => {
         pkgVersion: '4.0.1',
         baseOutputPath: 'packages/r4-datamodels/src',
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
 
       const tsDataModelGenerator = new TypescriptDataModelGenerator(FHIR_PACKAGE_R4);
@@ -142,6 +143,7 @@ describe('src/typescript-datamodel-generator', () => {
         pkgName: 'hl7.fhir.r4b.core',
         pkgVersion: '4.3.0',
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
 
       const tsDataModelGenerator = new TypescriptDataModelGenerator(FHIR_PACKAGE_R4B);
@@ -247,6 +249,7 @@ describe('src/typescript-datamodel-generator', () => {
         pkgName: 'hl7.fhir.r5.core',
         pkgVersion: '5.0.0',
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
 
       const tsDataModelGenerator = new TypescriptDataModelGenerator(FHIR_PACKAGE_R5);

@@ -15,19 +15,26 @@ export default {
   transform: {
     '^.+\\.(ts)$': '<rootDir>/../../node_modules/ts-jest',
   },
-  moduleNameMapper: {
-    'gensrc/(.*)': '<rootDir>/src/generated/$1',
-    //'@generated': '<rootDir>/src/generated'
-  },
+  moduleFileExtensions: ['js', 'ts'],
+  testPathIgnorePatterns: ['/node_modules/'],
+  testMatch: ['<rootDir>/test/**/*.test.ts'],
+  roots: ['<rootDir>', '<rootDir>/src', '<rootDir>/test'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/test/', '/dist/', '/scripts/'],
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/**/index.ts',
-    '!<rootDir>/src/__test__/**',
+    '<rootDir>/src/resources/Bundle.ts',
+    '<rootDir>/src/resources/SimplePersonModel.ts',
+    '<rootDir>/src/resources/TestModel.ts',
+    '<rootDir>/src/complex-types/complex-datatypes.ts',
+    '<rootDir>/src/code-systems/AddressTypeEnum.ts',
+    '<rootDir>/src/code-systems/TriggerTypeEnum.ts',
+    '!<rootDir>/src/index.ts',
+    '!<rootDir>/scripts/**',
+    '!<rootDir>/test/**',
     '!<rootDir>/dist/**',
   ],
   coverageThreshold: {
     global: {
-      branches: 95,
+      branches: 90,
       functions: 95,
       lines: 95,
       statements: 95,

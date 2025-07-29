@@ -4,6 +4,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -178,6 +179,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -332,6 +334,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -486,6 +489,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -630,6 +634,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -804,6 +809,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -998,6 +1004,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -1132,6 +1139,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -1296,6 +1304,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -1440,6 +1449,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -3024,6 +3034,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -3218,6 +3229,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -3412,6 +3424,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -3636,6 +3649,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -3791,7 +3805,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
  * @category DataModel: ComplexType
  * @see [FHIR ContactPoint](http://hl7.org/fhir/StructureDefinition/ContactPoint)
  */
-export class ContactPoint extends DataType implements IDataType {
+/* istanbul ignore next */ export class ContactPoint extends DataType implements IDataType {
   constructor() {
     super();
 
@@ -4418,7 +4432,7 @@ export class ContactPoint extends DataType implements IDataType {
  * @category DataModel: ComplexType
  * @see [FHIR Duration](http://hl7.org/fhir/StructureDefinition/Duration)
  */
-export class Duration extends DataType implements IDataType {
+/* istanbul ignore next */ export class Duration extends DataType implements IDataType {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
@@ -4990,7 +5004,7 @@ export class Duration extends DataType implements IDataType {
  * @category DataModel: ComplexType
  * @see [FHIR Extension](http://hl7.org/fhir/StructureDefinition/Extension)
  */
-export class Extension extends CoreExtension {
+/* istanbul ignore next */ export class Extension extends CoreExtension {
   constructor(url: fhirUri | null = null, value?: IDataType) {
     super(url, value);
   }
@@ -6116,7 +6130,7 @@ export class Extension extends CoreExtension {
  * @category DataModel: ComplexType
  * @see [FHIR Signature](http://hl7.org/fhir/StructureDefinition/Signature)
  */
-export class Signature extends DataType implements IDataType {
+/* istanbul ignore next */ export class Signature extends DataType implements IDataType {
   constructor(type_: Coding[] | null = null, when: InstantType | fhirInstant | null = null, who: Reference | null = null) {
     super();
 
@@ -9079,6 +9093,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -12368,6 +12383,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -14661,6 +14677,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
 {
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",
@@ -18333,6 +18350,7 @@ exports[`src/generator-app unit test suite generator-app verify generated conten
   },
   "fhirPackage": {
     "baseOutputPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/test-out",
+    "isFunctionalTest": true,
     "pkgLoaderCacheRootPath": "/home/jpaquette/DevNode/ts-fhir-datamodels/app/generator/src/__test__/utest-cache",
     "pkgName": "utest.fhir.r4",
     "pkgVersion": "4.0.1",

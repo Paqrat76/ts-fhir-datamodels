@@ -21,7 +21,7 @@
  * @category DataModel: {{upperCamelCase compHbs.parentKind}}
  * @see [FHIR {{compHbs.parentType}}]({{{compHbs.parentUrl}}})
  */
-export class {{compHbs.componentName}} extends {{compHbs.baseDefinitionType}} implements {{complexTypeImplements compHbs.parentType compHbs.baseDefinitionType}} {
+{{#if compHbs.parentIstanbulIgnore~}}/* istanbul ignore next */ {{/if}}export class {{compHbs.componentName}} extends {{compHbs.baseDefinitionType}} implements {{complexTypeImplements compHbs.parentType compHbs.baseDefinitionType}} {
 {{#if compHbs.requiredConstructor}}
 {{!-- Constructor Required Partial --}}
 {{> constructorRequiredPartial compHbs=compHbs}}

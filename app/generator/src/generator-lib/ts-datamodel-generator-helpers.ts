@@ -86,6 +86,13 @@ export interface FhirPackage {
    * FHIR cache root path. Defaults to `os.homedir()` in function getFhirPackage().
    */
   pkgLoaderCacheRootPath: string;
+  /**
+   * Indicates whether the current package is to be used for functional testing.
+   * This variable is typically used to distinguish between functional testing scenarios
+   * and normal application behavior. Its value determines if certain workflows or
+   * configurations specific to functional testing are activated.
+   */
+  isFunctionalTest?: boolean;
 }
 
 /**
@@ -176,6 +183,7 @@ export function getFhirPackage(fhirRelease: FhirRelease): FhirPackage {
         pkgVersion: '4.0.1',
         baseOutputPath: 'packages/r4-datamodels/src',
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
     case 'R4B':
       return {
@@ -184,6 +192,7 @@ export function getFhirPackage(fhirRelease: FhirRelease): FhirPackage {
         pkgVersion: '4.3.0',
         // TODO: add baseOutputPath
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
     case 'R5':
       return {
@@ -192,6 +201,7 @@ export function getFhirPackage(fhirRelease: FhirRelease): FhirPackage {
         pkgVersion: '5.0.0',
         // TODO: add baseOutputPath
         pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
       } as FhirPackage;
     default:
       throw new Error(`Invalid FHIR Release: ${String(fhirRelease)}`);
