@@ -21,9 +21,145 @@
  *
  */
 
+/**
+ * Luxon DateTime Helpers
+ *
+ * @remarks
+ * This module contains a set of interfaces and utilities for handling Luxon DateTime object operations and conversions.
+ *
+ * @module
+ */
+
 import { DateTime, Zone } from 'luxon';
 import { InvalidDateTimeError } from '../errors/InvalidDateTimeError';
 import { isDefined } from './type-guards';
+
+/**
+ * FHIR Primitive DateType implementation supporting Luxon DateTime object
+ *
+ * @see [Luxon](https://moment.github.io/luxon/#/)
+ * @interface
+ * @category Datatypes: Primitive
+ */
+export interface DateTypeImpl {
+  /**
+   * Returns a Luxon DateTime object for the PrimitiveType's `getValue()`.
+   *
+   * @remarks
+   * Uses DateTime.fromISO() static method to create a DateTime object.
+   *
+   * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
+   * @returns an instance of a DateTime object
+   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   *
+   * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
+   */
+  getValueAsDateTime: (opts?: DateTimeUtil.DateTimeOpts) => DateTime | undefined;
+  /**
+   * Returns a Luxon DateTime object having the UTC time zone for the PrimitiveType's `getValue()`.
+   *
+   * @remarks
+   * Uses DateTime.fromISO() static method to create a DateTime object.
+   *
+   * @returns an instance of a DateTime object having the UTC time zone
+   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   */
+  getValueAsDateTimeUTC: () => DateTime | undefined;
+  /**
+   * Sets the PrimitiveType's value of the provided dt argument as 'YYYY'
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns this
+   * @throws InvalidDateTimeError for an invalid dt argument
+   */
+  setValueAsYear: (dt: DateTime | undefined) => this;
+  /**
+   * Sets the PrimitiveType's value of the provided dt argument as 'YYYY-MM'
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns this
+   * @throws InvalidDateTimeError for an invalid dt argument
+   */
+  setValueAsYearMonth: (dt: DateTime | undefined) => this;
+  /**
+   * Sets the PrimitiveType's value of the provided dt argument as 'YYYY-MM-DD'
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns this
+   * @throws InvalidDateTimeError for an invalid dt argument
+   */
+  setValueAsDateOnly: (dt: DateTime | undefined) => this;
+}
+
+/**
+ * FHIR Primitive DateTimeType implementation supporting Luxon DateTime object
+ *
+ * @see [Luxon](https://moment.github.io/luxon/#/)
+ * @interface
+ * @category Datatypes: Primitive
+ */
+export interface DateTimeTypeImpl extends DateTypeImpl {
+  /**
+   * Sets the PrimitiveType's value of the provided dt argument as an ISO datetime string excluding
+   * milliseconds from the format if they are 0
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns this
+   * @throws InvalidDateTimeError for an invalid dt argument
+   */
+  setValueAsDateTime: (dt: DateTime | undefined) => this;
+  /**
+   * Sets the PrimitiveType's value of the provided dt argument as an ISO datetime string including
+   * milliseconds
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns this
+   * @throws InvalidDateTimeError for an invalid dt argument
+   */
+  setValueAsInstant: (dt: DateTime | undefined) => this;
+}
+
+/**
+ * FHIR Primitive InstantType implementation supporting Luxon DateTime object
+ *
+ * @see [Luxon](https://moment.github.io/luxon/#/)
+ * @interface
+ * @category Datatypes: Primitive
+ */
+export interface InstantTypeImpl {
+  /**
+   * Returns a Luxon DateTime object for the PrimitiveType's `getValue()`.
+   *
+   * @remarks
+   * Uses DateTime.fromISO() static method to create a DateTime object.
+   *
+   * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
+   * @returns an instance of a DateTime object
+   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   *
+   * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
+   */
+  getValueAsDateTime: (opts?: DateTimeUtil.DateTimeOpts) => DateTime | undefined;
+  /**
+   * Returns a Luxon DateTime object having the UTC time zone for the PrimitiveType's `getValue()`.
+   *
+   * @remarks
+   * Uses DateTime.fromISO() static method to create a DateTime object.
+   *
+   * @returns an instance of a DateTime object having the UTC time zone
+   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   */
+  getValueAsDateTimeUTC: () => DateTime | undefined;
+  /**
+   * Sets the PrimitiveType's value of the provided dt argument as an ISO datetime string including
+   * milliseconds
+   *
+   * @param dt - DateTime object from which to obtain a string value
+   * @returns this
+   * @throws InvalidDateTimeError for an invalid dt argument
+   */
+  setValueAsInstant: (dt: DateTime | undefined) => this;
+}
 
 /**
  * Namespace for handling Luxon DateTime object operations and conversions.

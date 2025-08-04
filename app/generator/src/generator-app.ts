@@ -106,7 +106,6 @@ export class GeneratorApp {
       emptyDirSync(generatedPath);
     });
 
-    const fhirCoreExportStmt = `export { Resource, DomainResource, DateTimeUtil } from '@paq-ts-fhir/fhir-core';`;
     const barrelLines: Set<string> = new Set<string>();
     generatedContent.forEach((content) => {
       /* istanbul ignore next */
@@ -138,7 +137,9 @@ export class GeneratorApp {
       '',
       ...generateModuleContent(`index.ts`),
       '',
-      fhirCoreExportStmt,
+      ...FHIR_CORE_LIB_EXPORTS,
+      ...FHIR_CORE_LIB_TYPE_EXPORTS,
+      '',
       ...Array.from(barrelLines).sort(),
     ];
     const barrelOutputPath = resolve(baseOutputPath, 'index.ts');
@@ -166,3 +167,62 @@ const DESTINATION_SUB_DIRECTORY_MAP: Map<string, string> = new Map<string, strin
   ['ComplexType', 'complex-types'],
   ['Resource', 'resources'],
 ]);
+
+const FHIR_CORE_LIB_EXPORTS: string[] = [
+  'export {',
+  '  Resource,',
+  '  DomainResource,',
+  '  PrimitiveType,',
+  '  DateTimeUtil,',
+  '  Base64BinaryType,',
+  '  BooleanType,',
+  '  CanonicalType,',
+  '  CodeType,',
+  '  DateTimeType,',
+  '  DateType,',
+  '  DecimalType,',
+  '  IdType,',
+  '  InstantType,',
+  '  Integer64Type,',
+  '  IntegerType,',
+  '  MarkdownType,',
+  '  OidType,',
+  '  PositiveIntType,',
+  '  StringType,',
+  '  TimeType,',
+  '  UnsignedIntType,',
+  '  UriType,',
+  '  UrlType,',
+  '  UuidType,',
+  '  XhtmlType,',
+  `} from '@paq-ts-fhir/fhir-core';`,
+];
+
+const FHIR_CORE_LIB_TYPE_EXPORTS: string[] = [
+  'export type {',
+  '  DateTypeImpl,',
+  '  DateTimeTypeImpl,',
+  '  InstantTypeImpl,',
+  '  fhirBase64Binary,',
+  '  fhirBoolean,',
+  '  fhirCanonical,',
+  '  fhirCode,',
+  '  fhirDateTime,',
+  '  fhirDate,',
+  '  fhirDecimal,',
+  '  fhirId,',
+  '  fhirInstant,',
+  '  fhirInteger64,',
+  '  fhirInteger,',
+  '  fhirMarkdown,',
+  '  fhirOid,',
+  '  fhirPositiveInt,',
+  '  fhirString,',
+  '  fhirTime,',
+  '  fhirUnsignedInt,',
+  '  fhirUri,',
+  '  fhirUrl,',
+  '  fhirUuid,',
+  '  fhirXhtml,',
+  `} from '@paq-ts-fhir/fhir-core';`,
+];

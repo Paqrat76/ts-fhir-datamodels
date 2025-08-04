@@ -19,6 +19,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.3.4] - 2025-08-??
+
+### Added
+
+### Changed
+
+- Updated README documentation
+- Updated dependency
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.3.3] - 2025-07-29
 
 ### Changed

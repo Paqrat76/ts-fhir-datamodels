@@ -29,6 +29,8 @@ export * from './base-models/Resource';
 export * from './base-models/core-fhir-codes';
 export * from './base-models/core-fhir-models';
 export * from './base-models/library-interfaces';
+export * from './data-types/code-systems/IdentifierUseEnum';
+export * from './data-types/code-systems/NarrativeStatusEnum';
 export * from './data-types/complex/CodeableConcept';
 export * from './data-types/complex/Coding';
 export * from './data-types/complex/Meta';

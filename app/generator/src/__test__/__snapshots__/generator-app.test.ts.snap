@@ -9069,7 +9069,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
  * @remarks
  * Map of all parsable DataTypes where the key is the name of the DataType and the value is its ParsableDataType<DataType> class.
  *
- * @category Utilities: FHIR Parsers
+ * @internal
  */
 export const PARSABLE_DATATYPE_MAP = new Map<string, ParsableDataType<DataType>>();
 PARSABLE_DATATYPE_MAP.set('CodeableConcept', CodeableConcept);
@@ -18402,7 +18402,7 @@ import { SearchParameter } from './SearchParameter';
  * @remarks
  * Map of all parsable Resources where the key is the name of the Resource and the value is its ParsableResource<Resource> class.
  *
- * @category Utilities: FHIR Parsers
+ * @internal
  */
 export const PARSABLE_RESOURCE_MAP = new Map<string, ParsableResource<Resource>>();
 PARSABLE_RESOURCE_MAP.set('Bundle', Bundle);

@@ -19,6 +19,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.14.1] - 2025-08-??
+
+### Added
+
+### Changed
+
+- Updated README documentation
+- Updated fhir-core library exports in the generated index.ts
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.14.0] - 2025-07-29
 
 ### Added

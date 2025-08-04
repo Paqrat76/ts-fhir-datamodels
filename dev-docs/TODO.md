@@ -2,7 +2,7 @@
 
 ## Feature Set
 
-- Consider re-adding profiled complex-types (e.g., SimpleQuantity, MoneyQuantity)
+- Consider adding profiled complex-types (e.g., SimpleQuantity, MoneyQuantity)
 
 ## Possible Considerations (future roadmap)
 

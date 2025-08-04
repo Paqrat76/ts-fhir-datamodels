@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.16.0] - 2025-08-??
+
+### Changed
+
+- Updated all README and dev-docs content
+- Updated Typedoc base config
+
+
 ## [0.15.0] - 2025-07-29
 
 ### Changed

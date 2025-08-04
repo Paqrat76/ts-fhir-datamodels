@@ -394,7 +394,7 @@ export class TypescriptDataModelGenerator {
       ` * Map of all parsable ${parsableModelType}s where the key is the name of the ${parsableModelType} and the value is its ${parsableType} class.`,
     );
     headerLines.push(` *`);
-    headerLines.push(` * @category Utilities: FHIR Parsers`);
+    headerLines.push(` * @internal`);
     headerLines.push(` */`);
 
     const fhirCoreImports: Set<string> = new Set<string>();

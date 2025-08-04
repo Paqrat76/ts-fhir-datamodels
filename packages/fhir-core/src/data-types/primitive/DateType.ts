@@ -21,12 +21,12 @@
  *
  */
 
-import { PrimitiveType } from '../../base-models/core-fhir-models';
-import { DateTimeUtil } from '../../utility/date-time-util';
-import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
-import { DateTypeImpl, fhirDate, fhirDateSchema, parseFhirPrimitiveData } from './primitive-types';
+import { fhirDate, fhirDateSchema, parseFhirPrimitiveData } from './primitive-types';
+import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { IPrimitiveType } from '../../base-models/library-interfaces';
+import { DateTimeUtil, DateTypeImpl } from '../../utility/date-time-util';
+import { isDefined } from '../../utility/type-guards';
 
 /**
  * Date Class

@@ -22,11 +22,11 @@
  */
 
 import { DateTime } from 'luxon';
+import { fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from './primitive-types';
 import { PrimitiveType } from '../../base-models/core-fhir-models';
-import { DateTimeUtil } from '../../utility/date-time-util';
-import { isDefined } from '../../utility/type-guards';
-import { DateTimeTypeImpl, fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from './primitive-types';
 import { IPrimitiveType } from '../../base-models/library-interfaces';
+import { DateTimeTypeImpl, DateTimeUtil } from '../../utility/date-time-util';
+import { isDefined } from '../../utility/type-guards';
 
 /**
  * DateTime Class

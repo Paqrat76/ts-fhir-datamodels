@@ -15,7 +15,7 @@ custom errors, and various utilities required by the FHIR release-specific gener
 - [FHIR R4](https://hl7.org/fhir/R4)
 - [FHIR R4B](https://hl7.org/fhir/R4B)
 - [FHIR R5](https://hl7.org/fhir/R5)
-- [FHIR (6.0.0-ballot2)](https://hl7.org/fhir/6.0.0-ballot2)
+- [FHIR (6.0.0-ballot3)](https://hl7.org/fhir/6.0.0-ballot3)
 - [FHIR (CI-build)](https://build.fhir.org/index.html)
 
 ### HAPI FHIR
@@ -67,7 +67,7 @@ GitHub: [hapifhir/org.hl7.fhir.core](https://github.com/hapifhir/org.hl7.fhir.co
 
 The FHIR specification defines date/time primitive data types represented by strings of specific ISO 8601 variations.
 
-**NOTE:** Where a timezone offset (`+zz:zz`) is specified, UTC (`Z`) may also be specified.
+**NOTE:** Where a timezone offset (`+zz:zz`/`-zz:zz`) is specified, UTC (`Z`) may also be specified.
 
 - [date](https://hl7.org/fhir/R5/datatypes.html#date)
   - `YYYY`
@@ -78,7 +78,7 @@ The FHIR specification defines date/time primitive data types represented by str
   - `YYYY-MM`
   - `YYYY-MM-DD`
   - `YYYY-MM-DDThh:mm:ss+zz:zz` / `YYYY-MM-DDThh:mm:ssZ`
-  - `YYYY-MM-DDThh:mm:ss.sss+zz:zz` / `YYYY-MM-DDThh:mm:ss.sssZ`
+  - `YYYY-MM-DDThh:mm:ss.000+zz:zz` / `YYYY-MM-DDThh:mm:ss.000Z`
 - [instant](https://hl7.org/fhir/R5/datatypes.html#instant)
   - `YYYY-MM-DDThh:mm:ss.sss+zz:zz` / `YYYY-MM-DDThh:mm:ss.sssZ`
 
@@ -114,21 +114,21 @@ The following Luxon capabilities are usd to support FHIR date/time related primi
 
 ##### Luxon Formatting ([ISO 8601](https://moment.github.io/luxon/#/parsing?id=iso-8601)) for FHIR
 
-- to ISO
+- toISO
   - `dt.toISO();` //=> '2017-04-20T11:32:00.000-04:00'
   - `dt.toISO({ suppressMilliseconds: true });` //=> '2017-04-20T11:32:00-04:00'
   - `dt.toISODate();` //=> '2017-04-20'
-- to Format
+- toFormat
   - `dt.toFormat("yyyy");` //=> '2017'
   - `dt.toFormat("yyyy-MM");` //=> '2017-04'
 
 #### Provided Date/Time Utilities
 
-The [date-time-util.ts](src/utility/date-time-util.ts) module provides convenience wrappers for
+The [date-time-util.ts](src/utility/date-time-util.ts) module provides convenience wrappers included in the `DateTimeUtil` namespace for
 Luxon DataTime parsing and formatting to support FHIR specified date/time primitive data types.
 These are available for independent date handling use cases.
-They have also been wrapped in the FHIR PrimitiveType DateType (interface DateTypeImpl),
-DateTimeType (interface DateTimeTypeImpl), and InstantType (interface InstantTypeImpl) implementations as
+They have also been wrapped in the FHIR PrimitiveType DateType (`interface DateTypeImpl`),
+DateTimeType (`interface DateTimeTypeImpl`), and InstantType (`interface InstantTypeImpl`) implementations as
 convenience methods.
 
 The `getDateTimeObject()` and `getDateTimeObjectAsUTC()` creation methods in the `date-time-util.ts` module return a valid

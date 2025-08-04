@@ -2,7 +2,7 @@
 
 [Mermaid Docs](https://mermaid.js.org/intro/)
 
-**Refer to [FHIR Type Framework](https://hl7.org/fhir/R5/types.html)**
+**Refer to [FHIR Type Framework](https://hl7.org/fhir/types.html)**
 
 ```mermaid
 classDiagram
@@ -30,22 +30,24 @@ classDiagram
     BackboneType : #List~Extension~ modifierExtension
   BackboneType --|> DataType
 
-  class PrimitiveType
+  class PrimitiveType~T~
   <<abstract>> PrimitiveType
+    PrimitiveType: - ~T~ coercedValue
+    PrimitiveType: - string stringValue
   PrimitiveType --|> DataType
 
   class Resource
-    Resource : +string id
-    Resource : +Meta meta
-    Resource : +uri impliciteRules
-    Resource : +code language
+    Resource : -string id
+    Resource : -Meta meta
+    Resource : -uri impliciteRules
+    Resource : -code language
   Resource --|> Base
 
   class DomainResource
-    DomainResource : +Narrative text
-    DomainResource : +List~Resource~ contained
-    DomainResource : +List~Extension~ extension
-    DomainResource : +List~Extension~ modifierExtension
+    DomainResource : -Narrative text
+    DomainResource : -List~Resource~ contained
+    DomainResource : -List~Extension~ extension
+    DomainResource : -List~Extension~ modifierExtension
   DomainResource --|> Resource
 
 ```

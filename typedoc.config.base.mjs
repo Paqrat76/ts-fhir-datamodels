@@ -2,6 +2,7 @@ import { OptionDefaults } from 'typedoc';
 
 /** @type {Partial<import('typedoc').TypeDocOptions>} */
 const config = {
+  excludeInternal: true,
   excludePrivate: false,
   includeVersion: true,
   suppressCommentWarningsInDeclarationFiles: true,

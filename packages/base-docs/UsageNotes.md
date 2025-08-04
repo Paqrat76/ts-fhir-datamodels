@@ -1,14 +1,12 @@
 # Usage Notes
 
-**NOTE:** This document is a WORK-IN-PROGRESS!
-
 ## Date/Time Handling for FHIR Primitive `date`, `dateTime`, and `instant`
 
 ### FHIR Date/Time Primitives
 
 The FHIR specification defines date/time primitive data types represented by strings of specific ISO 8601 variations.
 
-**NOTE:** Where a timezone offset (`+zz:zz`) is specified, UTC (`Z`) may also be specified.
+**NOTE:** Where a timezone offset (`+zz:zz`/`-zz:zz`) is specified, UTC (`Z`) may also be specified.
 
 - [date](https://hl7.org/fhir/R5/datatypes.html#date)
   - `YYYY`
@@ -68,8 +66,8 @@ The following Luxon capabilities are usd to support FHIR date/time related primi
 The `@paq-ts-fhir/fhir-core/utility/date-time-util.ts` module provides convenience wrappers for
 Luxon DataTime parsing and formatting to support FHIR specified date/time primitive data types.
 These are available for independent date handling use cases.
-They have also been wrapped in the FHIR PrimitiveType DateType (interface DateTypeImpl),
-DateTimeType (interface DateTimeTypeImpl), and InstantType (interface InstantTypeImpl) implementations as
+They have also been included in the FHIR PrimitiveType `DateType` (`interface DateTypeImpl`),
+`DateTimeType` (`interface DateTimeTypeImpl`), and `InstantType` (`interface InstantTypeImpl`) implementations as
 convenience methods.
 
 The `getDateTimeObject()` and `getDateTimeObjectAsUTC()` creation methods in the `date-time-util.ts` module return a valid
