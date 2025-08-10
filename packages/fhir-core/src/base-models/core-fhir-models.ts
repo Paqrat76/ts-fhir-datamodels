@@ -286,7 +286,7 @@ export abstract class Element extends Base implements IElement {
    * @protected
    */
   protected copyValues(dest: Element): void {
-    dest.id = this.id ? String(this.id) : undefined;
+    dest.id = this.id ?? undefined;
     const extensionList = copyListValues<IExtension>(this.extension);
     dest.extension = extensionList.length === 0 ? undefined : extensionList;
   }
@@ -545,12 +545,12 @@ export abstract class DataType extends Element implements IDataType {
    *
    * @returns the a new instance copied from the current instance
    */
-  abstract override copy(): DataType;
+  public abstract override copy(): DataType;
 
   /**
    * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
    */
-  public isDataType(): boolean {
+  public override isDataType(): boolean {
     return true;
   }
 }
@@ -1001,7 +1001,7 @@ export class Extension extends Element implements IExtension {
    */
   public setUrl(value: fhirUri): this {
     assertIsDefined<fhirUri>(value, `Extension.url is required`);
-    const optErrMsg = `Invalid Extension.url (${String(value)})`;
+    const optErrMsg = `Invalid Extension.url (${value})`;
     this.url = parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg);
     return this;
   }

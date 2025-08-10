@@ -64,14 +64,6 @@ export interface IBase {
   fhirType: () => string;
 
   /**
-   * Determines if any value in typeNames equals the current fhirType() value
-   *
-   * @param typeNames - array of FHIR type names
-   * @returns true if any value in typeNames equals (case-insensitive) the current fhirType() value; false otherwise
-   */
-  hasFireType: (...typeNames: string[]) => boolean;
-
-  /**
    * @returns `true` if the instance is empty; `false` otherwise
    */
   isEmpty: () => boolean;
@@ -89,7 +81,7 @@ export interface IBase {
   copy: () => any;
 
   // NOTE: `copyValues(dest: any): void` is a protected method in `Base` and is included here for documentation
-  //copyValues: (dest: any) => void;
+  // copyValues: (dest: any) => void;
 
   /**
    * @returns the JSON value
@@ -100,6 +92,11 @@ export interface IBase {
    * @returns `true` if the instance is a FHIR resource; `false` otherwise
    */
   isResource: () => boolean;
+
+  /**
+   * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
+   */
+  isDataType: () => boolean;
 
   /**
    * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise

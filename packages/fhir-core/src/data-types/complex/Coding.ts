@@ -267,7 +267,7 @@ export class Coding extends DataType implements IDataType {
    */
   public setSystem(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
-      const optErrMsg = `Invalid Coding.system (${String(value)})`;
+      const optErrMsg = `Invalid Coding.system (${value})`;
       this.system = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
     } else {
       this.system = undefined;
@@ -329,7 +329,7 @@ export class Coding extends DataType implements IDataType {
    */
   public setVersion(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid Coding.version (${String(value)})`;
+      const optErrMsg = `Invalid Coding.version (${value})`;
       this.version = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.version = undefined;
@@ -391,7 +391,7 @@ export class Coding extends DataType implements IDataType {
    */
   public setCode(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
-      const optErrMsg = `Invalid Coding.code (${String(value)})`;
+      const optErrMsg = `Invalid Coding.code (${value})`;
       this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
     } else {
       this.code = undefined;
@@ -453,7 +453,7 @@ export class Coding extends DataType implements IDataType {
    */
   public setDisplay(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid Coding.display (${String(value)})`;
+      const optErrMsg = `Invalid Coding.display (${value})`;
       this.display = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.display = undefined;

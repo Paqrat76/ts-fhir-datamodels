@@ -77,7 +77,7 @@ export class XhtmlType extends PrimitiveType<fhirXhtml> implements IPrimitiveTyp
   }
 
   public encodeToString(value: fhirXhtml): string {
-    return parseFhirPrimitiveData(value, fhirXhtmlSchema, this.typeErrorMessage()).toString();
+    return parseFhirPrimitiveData(value, fhirXhtmlSchema, this.typeErrorMessage());
   }
 
   public parseToPrimitive(value: string): fhirXhtml {

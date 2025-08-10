@@ -1443,8 +1443,8 @@ describe('FhirParser', () => {
     });
 
     describe('parseInteger64Type', () => {
-      const VALID_INTEGER64 = BigInt(FHIR_MIN_INTEGER64);
-      const INVALID_INTEGER64 = BigInt(FHIR_MAX_INTEGER64) + BigInt(1);
+      const VALID_INTEGER64 = FHIR_MIN_INTEGER64;
+      const INVALID_INTEGER64 = FHIR_MAX_INTEGER64 + BigInt(1);
       const VALID_INTEGER64_JSON = String(VALID_INTEGER64);
       const INVALID_INTEGER64_JSON = String(INVALID_INTEGER64);
 

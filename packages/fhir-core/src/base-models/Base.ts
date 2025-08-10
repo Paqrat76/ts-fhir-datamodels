@@ -55,24 +55,6 @@ export abstract class Base implements IBase {
   public abstract fhirType(): string;
 
   /**
-   * Determines if any value in typeNames equals the current fhirType() value
-   *
-   * @param typeNames - array of FHIR type names
-   * @returns true if any value in typeNames equals (case-insensitive) the current fhirType() value; false otherwise
-   */
-  public hasFireType(...typeNames: string[]): boolean {
-    const ft = this.fhirType();
-    let retValue = false;
-    for (const tn of typeNames) {
-      if (tn.toLowerCase() === ft.toLowerCase()) {
-        retValue = true;
-        break;
-      }
-    }
-    return retValue;
-  }
-
-  /**
    * @returns `true` if the instance is empty; `false` otherwise
    */
   public abstract isEmpty(): boolean;
@@ -111,6 +93,13 @@ export abstract class Base implements IBase {
    * @returns `true` if the instance is a FHIR resource; `false` otherwise
    */
   public isResource(): boolean {
+    return false;
+  }
+
+  /**
+   * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
+   */
+  public isDataType(): boolean {
     return false;
   }
 

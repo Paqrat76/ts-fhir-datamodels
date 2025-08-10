@@ -251,7 +251,7 @@ export class Reference extends DataType implements IDataType {
    */
   public setReference(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid Reference.reference (${String(value)})`;
+      const optErrMsg = `Invalid Reference.reference (${value})`;
       this.reference = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.reference = undefined;
@@ -313,7 +313,7 @@ export class Reference extends DataType implements IDataType {
    */
   public setType(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
-      const optErrMsg = `Invalid Reference.type (${String(value)})`;
+      const optErrMsg = `Invalid Reference.type (${value})`;
       this.type_ = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
     } else {
       this.type_ = undefined;
@@ -406,7 +406,7 @@ export class Reference extends DataType implements IDataType {
    */
   public setDisplay(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid Reference.display (${String(value)})`;
+      const optErrMsg = `Invalid Reference.display (${value})`;
       this.display = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.display = undefined;
@@ -878,7 +878,7 @@ export class Identifier extends DataType implements IDataType {
    */
   public setSystem(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
-      const optErrMsg = `Invalid Identifier.system (${String(value)})`;
+      const optErrMsg = `Invalid Identifier.system (${value})`;
       this.system = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
     } else {
       this.system = undefined;
@@ -940,7 +940,7 @@ export class Identifier extends DataType implements IDataType {
    */
   public setValue(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid Identifier.value (${String(value)})`;
+      const optErrMsg = `Invalid Identifier.value (${value})`;
       this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.value = undefined;

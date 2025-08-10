@@ -101,7 +101,7 @@ export class DateTimeType
   }
 
   public encodeToString(value: fhirDateTime): string {
-    return parseFhirPrimitiveData(value, fhirDateTimeSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirDateTimeSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirDateTime {

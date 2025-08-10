@@ -56,7 +56,7 @@ export class UrlType extends PrimitiveType<fhirUrl> implements IPrimitiveType<fh
   }
 
   public encodeToString(value: fhirUrl): string {
-    return parseFhirPrimitiveData(value, fhirUrlSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirUrlSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirUrl {

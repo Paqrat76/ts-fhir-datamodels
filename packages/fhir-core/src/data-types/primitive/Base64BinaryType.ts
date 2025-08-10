@@ -57,7 +57,7 @@ export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> implements
   }
 
   public encodeToString(value: fhirBase64Binary): string {
-    return parseFhirPrimitiveData(value, fhirBase64BinarySchema, this.typeErrorMessage()).toString();
+    return parseFhirPrimitiveData(value, fhirBase64BinarySchema, this.typeErrorMessage());
   }
 
   public parseToPrimitive(value: string): fhirBase64Binary {

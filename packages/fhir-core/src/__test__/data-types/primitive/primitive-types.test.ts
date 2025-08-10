@@ -203,7 +203,7 @@ describe('Primitive Type Schemas', () => {
       parseResult = fhirDecimalSchema.safeParse(validDecimal);
       expect(parseResult.success).toBe(true);
 
-      validDecimal = +0;
+      validDecimal = 0;
       parseResult = fhirDecimalSchema.safeParse(validDecimal);
       expect(parseResult.success).toBe(true);
 
@@ -238,19 +238,19 @@ describe('Primitive Type Schemas', () => {
       let parseResult = fhirInteger64Schema.safeParse(validInt64);
       expect(parseResult.success).toBe(true);
 
-      validInt64 = BigInt(FHIR_MIN_INTEGER64);
+      validInt64 = FHIR_MIN_INTEGER64;
       parseResult = fhirInteger64Schema.safeParse(validInt64);
       expect(parseResult.success).toBe(true);
 
-      validInt64 = BigInt(FHIR_MAX_INTEGER64);
+      validInt64 = FHIR_MAX_INTEGER64;
       parseResult = fhirInteger64Schema.safeParse(validInt64);
       expect(parseResult.success).toBe(true);
 
-      let invalidInt64 = BigInt(FHIR_MIN_INTEGER64) - BigInt(1);
+      let invalidInt64 = FHIR_MIN_INTEGER64 - BigInt(1);
       parseResult = fhirInteger64Schema.safeParse(invalidInt64);
       expect(parseResult.success).toBe(false);
 
-      invalidInt64 = BigInt(FHIR_MAX_INTEGER64) + BigInt(1);
+      invalidInt64 = FHIR_MAX_INTEGER64 + BigInt(1);
       parseResult = fhirInteger64Schema.safeParse(invalidInt64);
       expect(parseResult.success).toBe(false);
     });
@@ -674,7 +674,7 @@ describe('Primitive Type Schemas', () => {
       const parseIntResult = parseFhirPrimitiveData(validInt, fhirIntegerSchema);
       expect(parseIntResult).toStrictEqual(validInt);
 
-      const validInt64 = BigInt(FHIR_MIN_INTEGER64);
+      const validInt64 = FHIR_MIN_INTEGER64;
       const parseBigIntResult = parseFhirPrimitiveData(validInt64, fhirInteger64Schema);
       expect(parseBigIntResult).toStrictEqual(validInt64);
 
@@ -713,7 +713,7 @@ describe('Primitive Type Schemas', () => {
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid FHIR primitive data value`);
 
-      const invalidInt64 = BigInt(FHIR_MAX_INTEGER64) + BigInt(1);
+      const invalidInt64 = FHIR_MAX_INTEGER64 + BigInt(1);
       t = () => {
         parseFhirPrimitiveData(invalidInt64, fhirInteger64Schema);
       };

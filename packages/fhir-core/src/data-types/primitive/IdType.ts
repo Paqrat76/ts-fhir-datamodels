@@ -57,7 +57,7 @@ export class IdType extends PrimitiveType<fhirId> implements IPrimitiveType<fhir
   }
 
   public encodeToString(value: fhirId): string {
-    return parseFhirPrimitiveData(value, fhirIdSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirIdSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirId {

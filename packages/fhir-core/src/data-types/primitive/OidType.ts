@@ -57,7 +57,7 @@ export class OidType extends PrimitiveType<fhirOid> implements IPrimitiveType<fh
   }
 
   public encodeToString(value: fhirOid): string {
-    return parseFhirPrimitiveData(value, fhirOidSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirOidSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirOid {

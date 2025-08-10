@@ -56,7 +56,7 @@ export class TimeType extends PrimitiveType<fhirTime> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirTime): string {
-    return parseFhirPrimitiveData(value, fhirTimeSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirTimeSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirTime {

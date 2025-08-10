@@ -57,7 +57,7 @@ export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimit
   }
 
   public encodeToString(value: fhirMarkdown): string {
-    return parseFhirPrimitiveData(value, fhirMarkdownSchema, this.typeErrorMessage()).toString();
+    return parseFhirPrimitiveData(value, fhirMarkdownSchema, this.typeErrorMessage());
   }
 
   public parseToPrimitive(value: string): fhirMarkdown {

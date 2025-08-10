@@ -320,7 +320,7 @@ export class Meta extends DataType implements IDataType {
    */
   public setVersionId(value: fhirId | undefined): this {
     if (isDefined<fhirId>(value)) {
-      const optErrMsg = `Invalid Meta.versionId (${String(value)})`;
+      const optErrMsg = `Invalid Meta.versionId (${value})`;
       this.versionId = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
     } else {
       this.versionId = undefined;
@@ -382,7 +382,7 @@ export class Meta extends DataType implements IDataType {
    */
   public setLastUpdated(value: fhirInstant | undefined): this {
     if (isDefined<fhirInstant>(value)) {
-      const optErrMsg = `Invalid Meta.lastUpdated (${String(value)})`;
+      const optErrMsg = `Invalid Meta.lastUpdated (${value})`;
       this.lastUpdated = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
     } else {
       this.lastUpdated = undefined;
@@ -444,7 +444,7 @@ export class Meta extends DataType implements IDataType {
    */
   public setSource(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
-      const optErrMsg = `Invalid Meta.source (${String(value)})`;
+      const optErrMsg = `Invalid Meta.source (${value})`;
       this.source = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
     } else {
       this.source = undefined;
@@ -533,7 +533,7 @@ export class Meta extends DataType implements IDataType {
     if (isDefinedList<fhirCanonical>(value)) {
       const profileElements = [] as CanonicalType[];
       for (const profileValue of value) {
-        const optErrMsg = `Invalid Meta.profile array item (${String(profileValue)})`;
+        const optErrMsg = `Invalid Meta.profile array item (${profileValue})`;
         const element = new CanonicalType(parseFhirPrimitiveData(profileValue, fhirCanonicalSchema, optErrMsg));
         profileElements.push(element);
       }
@@ -552,7 +552,7 @@ export class Meta extends DataType implements IDataType {
    */
   public addProfile(value: fhirCanonical | undefined): this {
     if (isDefined<fhirCanonical>(value)) {
-      const optErrMsg = `Invalid Meta.profile array item (${String(value)})`;
+      const optErrMsg = `Invalid Meta.profile array item (${value})`;
       const element = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
       this.initProfile();
       this.addProfileElement(element);

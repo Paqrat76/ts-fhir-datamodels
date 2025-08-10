@@ -86,7 +86,7 @@ export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirDate): string {
-    return parseFhirPrimitiveData(value, fhirDateSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirDateSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirDate {

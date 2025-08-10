@@ -28,10 +28,10 @@ import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { FHIR_MAX_INTEGER64, FHIR_MIN_INTEGER64 } from '../../test-utils';
 
 describe('Integer64Type', () => {
-  const VALID_INTEGER64 = BigInt(FHIR_MIN_INTEGER64);
-  const VALID_INTEGER64_2 = 0n;
-  const VALID_INTEGER64_3 = BigInt(FHIR_MAX_INTEGER64);
-  const INVALID_INTEGER64 = BigInt(FHIR_MAX_INTEGER64) + 1n;
+  const VALID_INTEGER64 = FHIR_MIN_INTEGER64;
+  const VALID_INTEGER64_2 = BigInt(0);
+  const VALID_INTEGER64_3 = FHIR_MAX_INTEGER64;
+  const INVALID_INTEGER64 = FHIR_MAX_INTEGER64 + BigInt(1);
   const VALID_INTEGER64_JSON = String(VALID_INTEGER64);
 
   it('should be properly instantiated as empty', () => {

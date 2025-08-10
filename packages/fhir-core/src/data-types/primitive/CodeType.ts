@@ -72,7 +72,7 @@ export class CodeType extends PrimitiveType<fhirCode> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirCode): string {
-    return parseFhirPrimitiveData(value, fhirCodeSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirCodeSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirCode {

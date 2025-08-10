@@ -57,7 +57,7 @@ export class StringType extends PrimitiveType<fhirString> implements IPrimitiveT
   }
 
   public encodeToString(value: fhirString): string {
-    return parseFhirPrimitiveData(value, fhirStringSchema, this.typeErrorMessage()).toString();
+    return parseFhirPrimitiveData(value, fhirStringSchema, this.typeErrorMessage());
   }
 
   public parseToPrimitive(value: string): fhirString {

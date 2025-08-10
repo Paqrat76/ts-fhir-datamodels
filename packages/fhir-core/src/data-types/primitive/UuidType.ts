@@ -57,7 +57,7 @@ export class UuidType extends PrimitiveType<fhirUuid> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirUuid): string {
-    return parseFhirPrimitiveData(value, fhirUuidSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirUuidSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirUuid {

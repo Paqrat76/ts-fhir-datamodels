@@ -266,7 +266,7 @@ export class Narrative extends DataType implements IDataType {
    */
   public setStatus(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, `Narrative.status is required`);
-    const optErrMsg = `Invalid Narrative.status (${String(value)})`;
+    const optErrMsg = `Invalid Narrative.status (${value})`;
     this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.narrativeStatusEnum);
     return this;
   }
@@ -326,7 +326,7 @@ export class Narrative extends DataType implements IDataType {
    */
   public setDiv(value: fhirXhtml): this {
     assertIsDefined<fhirXhtml>(value, `Narrative.div is required`);
-    const optErrMsg = `Invalid Narrative.div (${String(value)})`;
+    const optErrMsg = `Invalid Narrative.div (${value})`;
     this.div = new XhtmlType(parseFhirPrimitiveData(value, fhirXhtmlSchema, optErrMsg));
     return this;
   }

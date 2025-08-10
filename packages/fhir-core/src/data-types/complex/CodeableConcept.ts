@@ -242,7 +242,7 @@ export class CodeableConcept extends DataType implements IDataType {
    */
   public setText(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
-      const optErrMsg = `Invalid CodeableConcept.text (${String(value)})`;
+      const optErrMsg = `Invalid CodeableConcept.text (${value})`;
       this.text = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
     } else {
       this.text = undefined;

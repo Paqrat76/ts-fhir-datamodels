@@ -178,7 +178,7 @@ export class Period extends DataType implements IDataType {
    */
   public setStart(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
-      const optErrMsg = `Invalid Period.start (${String(value)})`;
+      const optErrMsg = `Invalid Period.start (${value})`;
       this.start = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
     } else {
       this.start = undefined;
@@ -240,7 +240,7 @@ export class Period extends DataType implements IDataType {
    */
   public setEnd(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
-      const optErrMsg = `Invalid Period.end (${String(value)})`;
+      const optErrMsg = `Invalid Period.end (${value})`;
       this.end = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
     } else {
       this.end = undefined;

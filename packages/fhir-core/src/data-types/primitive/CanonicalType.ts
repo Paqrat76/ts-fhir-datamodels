@@ -56,7 +56,7 @@ export class CanonicalType extends PrimitiveType<fhirCanonical> implements IPrim
   }
 
   public encodeToString(value: fhirCanonical): string {
-    return parseFhirPrimitiveData(value, fhirCanonicalSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirCanonicalSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirCanonical {

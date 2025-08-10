@@ -57,7 +57,7 @@ export class UriType extends PrimitiveType<fhirUri> implements IPrimitiveType<fh
   }
 
   public encodeToString(value: fhirUri): string {
-    return parseFhirPrimitiveData(value, fhirUriSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirUriSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirUri {

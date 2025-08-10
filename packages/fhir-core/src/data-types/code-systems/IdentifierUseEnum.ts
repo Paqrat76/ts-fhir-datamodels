@@ -110,7 +110,7 @@ export class IdentifierUseEnum implements IFhirCodeEnum {
     } else if (IdentifierUseEnum.NULL.code === code) {
       return IdentifierUseEnum.NULL;
     } else {
-      throw new InvalidCodeError(`Unknown IdentifierUseEnum 'code' value '${String(code)}'`);
+      throw new InvalidCodeError(`Unknown IdentifierUseEnum 'code' value '${code}'`);
     }
   }
 }

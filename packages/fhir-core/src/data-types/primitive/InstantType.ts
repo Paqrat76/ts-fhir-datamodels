@@ -75,7 +75,7 @@ export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiv
   }
 
   public encodeToString(value: fhirInstant): string {
-    return parseFhirPrimitiveData(value, fhirInstantSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirInstantSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirInstant {
