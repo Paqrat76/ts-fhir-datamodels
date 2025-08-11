@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Updated README documentation
 - Updated dependencies
+- `public abstract dataTypeName(): string;` to `DataType` and `IDataType`; Updated all data type classes to implement this method
 
 ### Deprecated
 

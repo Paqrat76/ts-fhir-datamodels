@@ -48,11 +48,13 @@
 {{> privateFieldDeclarationPartial edHbs=this }}
 
 {{/each}}
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
 {{!-- Public Field Methods Partial --}}
 {{#each sdHbs.parentComponent.elementDefinitions}}
 {{> publicFieldMethodsPartial edHbs=this }}
 {{/each}}
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
 
 {{!-- Public Base Methods Partial --}}
 {{> publicBaseMethodsPartial sdHbs.parentComponent}}
@@ -62,6 +64,13 @@
    */
   public override isComplexDataType(): boolean {
     return true;
+  }
+
+  /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
 {{!-- Public toJSON Method Partial --}}

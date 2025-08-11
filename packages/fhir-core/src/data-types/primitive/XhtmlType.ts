@@ -92,6 +92,10 @@ export class XhtmlType extends PrimitiveType<fhirXhtml> implements IPrimitiveTyp
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): XhtmlType {
     const dest = new XhtmlType();
     this.copyValues(dest);

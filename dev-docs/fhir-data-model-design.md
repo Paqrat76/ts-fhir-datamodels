@@ -27,7 +27,7 @@ According to the FHIR specification, only `DomainResource`, `Bundle`, `Parameter
 All other FHIR resources extend `DomainResource`.
 All FHIR complex data types extend either `DataType` or `BackboneType`.
 All FHIR primitive data types extend `PrimitiveType<T>` where `T` represents the FHIR primitive as defined in the
-[FHIR Specification](https://www.hl7.org/fhir/datatypes.html#primitive) and implemented in th `@paq-ts-fhir/fhir-core`
+[FHIR Specification](https://www.hl7.org/fhir/datatypes.html#primitive) and implemented in the `@paq-ts-fhir/fhir-core`
 library.
 
 ## Element Definition Patterns

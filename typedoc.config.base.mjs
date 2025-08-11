@@ -9,6 +9,7 @@ const config = {
   blockTags: [...OptionDefaults.blockTags, '@decorator', '@since'],
   inlineTags: [...OptionDefaults.inlineTags, '@link'],
   sort: ['static-first', 'visibility'],
+  plugin: ['typedoc-plugin-zod'],
 };
 
 export default config;

@@ -72,6 +72,10 @@ export class DecimalType extends PrimitiveType<fhirDecimal> implements IPrimitiv
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): DecimalType {
     const dest = new DecimalType();
     this.copyValues(dest);

@@ -103,7 +103,7 @@ export class {{csHbs.name}}Enum implements IFhirCodeEnum {
     } else if ({{csHbs.name}}Enum.NULL.code === code) {
       return {{csHbs.name}}Enum.NULL;
     } else {
-      throw new InvalidCodeError(`Unknown {{csHbs.name}}Enum 'code' value '${String(code)}'`);
+      throw new InvalidCodeError(`Unknown {{csHbs.name}}Enum 'code' value '${code}'`);
     }
   }
 }

@@ -92,6 +92,7 @@ export interface HbsElementComponent {
   parentIstanbulIgnore?: boolean;
   componentName: string;
   baseDefinitionType: string;
+  isBaseDefinitionElement: boolean;
   isComponentResource: boolean;
   isComponentDomainResource: boolean;
   isComponentBackboneElement: boolean;
@@ -381,6 +382,7 @@ function getParentElementComponent(
     parentIstanbulIgnore: false,
     componentName: structureDef.type,
     baseDefinitionType: baseDefinitionType,
+    isBaseDefinitionElement: false,
     isComponentResource: baseDefinitionType === 'Resource',
     isComponentDomainResource: baseDefinitionType === 'DomainResource',
     isComponentBackboneElement: false,
@@ -536,6 +538,7 @@ function getChildElementComponents(
       parentIstanbulIgnore: false,
       componentName: hbsElementComponentRoot.componentName,
       baseDefinitionType: componentDefinitionType === 'Element' ? 'DataType' : componentDefinitionType,
+      isBaseDefinitionElement: componentDefinitionType === 'Element',
       isComponentResource: false,
       isComponentDomainResource: false,
       isComponentBackboneElement: componentDefinitionType === 'BackboneElement',

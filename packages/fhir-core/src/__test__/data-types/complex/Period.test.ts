@@ -51,6 +51,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(true);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
       expect(testPeriod.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -84,6 +85,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(false);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
       expect(testPeriod.toJSON()).toEqual(expectedJson1);
 
       // inherited properties from Element
@@ -116,6 +118,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(true);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
       expect(testPeriod.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -629,6 +632,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(false);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
 
       // inherited properties from Element
       expect(testPeriod.hasId()).toBe(true);
@@ -659,6 +663,7 @@ describe('Period', () => {
       expect(testType?.fhirType()).toStrictEqual('Period');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Period');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

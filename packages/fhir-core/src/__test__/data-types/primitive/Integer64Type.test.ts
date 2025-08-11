@@ -44,6 +44,7 @@ describe('Integer64Type', () => {
     expect(testInteger64Type.isEmpty()).toBe(true);
     expect(testInteger64Type.isPrimitive()).toBe(true);
     expect(testInteger64Type.isBigIntPrimitive()).toBe(true);
+    expect(testInteger64Type.dataTypeName()).toStrictEqual('Integer64Type');
     expect(testInteger64Type.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -197,6 +198,7 @@ describe('Integer64Type', () => {
     expect(testInteger64Type.isEmpty()).toBe(false);
     expect(testInteger64Type.isPrimitive()).toBe(true);
     expect(testInteger64Type.isBigIntPrimitive()).toBe(true);
+    expect(testInteger64Type.dataTypeName()).toStrictEqual('Integer64Type');
     expect(testInteger64Type.toJSON()).toStrictEqual(VALID_INTEGER64_JSON);
     expect(testInteger64Type.hasValue()).toBe(true);
     expect(testInteger64Type.getValue()).toBeDefined();

@@ -110,6 +110,7 @@ describe('Meta', () => {
       expect(testMeta.fhirType()).toStrictEqual('Meta');
       expect(testMeta.isEmpty()).toBe(true);
       expect(testMeta.isComplexDataType()).toBe(true);
+      expect(testMeta.dataTypeName()).toStrictEqual('Meta');
       expect(testMeta.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -159,6 +160,7 @@ describe('Meta', () => {
       expect(testMeta.fhirType()).toStrictEqual('Meta');
       expect(testMeta.isEmpty()).toBe(false);
       expect(testMeta.isComplexDataType()).toBe(true);
+      expect(testMeta.dataTypeName()).toStrictEqual('Meta');
       expect(testMeta.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -207,6 +209,7 @@ describe('Meta', () => {
       expect(testMeta.fhirType()).toStrictEqual('Meta');
       expect(testMeta.isEmpty()).toBe(true);
       expect(testMeta.isComplexDataType()).toBe(true);
+      expect(testMeta.dataTypeName()).toStrictEqual('Meta');
       expect(testMeta.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -803,6 +806,7 @@ describe('Meta', () => {
       expect(testMeta.fhirType()).toStrictEqual('Meta');
       expect(testMeta.isEmpty()).toBe(false);
       expect(testMeta.isComplexDataType()).toBe(true);
+      expect(testMeta.dataTypeName()).toStrictEqual('Meta');
 
       // inherited properties from Element
       expect(testMeta.hasId()).toBe(true);
@@ -849,6 +853,7 @@ describe('Meta', () => {
       expect(testType?.fhirType()).toStrictEqual('Meta');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Meta');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

@@ -42,6 +42,7 @@ describe('DecimalType', () => {
     expect(testDecimalType.isEmpty()).toBe(true);
     expect(testDecimalType.isPrimitive()).toBe(true);
     expect(testDecimalType.isNumberPrimitive()).toBe(true);
+    expect(testDecimalType.dataTypeName()).toStrictEqual('DecimalType');
     expect(testDecimalType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -204,6 +205,7 @@ describe('DecimalType', () => {
     expect(testDecimalType.isEmpty()).toBe(false);
     expect(testDecimalType.isPrimitive()).toBe(true);
     expect(testDecimalType.isNumberPrimitive()).toBe(true);
+    expect(testDecimalType.dataTypeName()).toStrictEqual('DecimalType');
     expect(testDecimalType.toJSON()).toStrictEqual(VALID_DECIMAL);
     expect(testDecimalType.hasValue()).toBe(true);
     expect(testDecimalType.getValue()).toBeDefined();

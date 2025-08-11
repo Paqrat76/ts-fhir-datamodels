@@ -93,6 +93,10 @@ export class BooleanType extends PrimitiveType<fhirBoolean> implements IPrimitiv
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): BooleanType {
     const dest = new BooleanType();
     this.copyValues(dest);

@@ -71,6 +71,10 @@ export class PositiveIntType extends PrimitiveType<fhirPositiveInt> implements I
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): PositiveIntType {
     const dest = new PositiveIntType();
     this.copyValues(dest);

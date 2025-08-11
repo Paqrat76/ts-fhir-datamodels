@@ -82,6 +82,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(true);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
       expect(testCoding.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -130,6 +131,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(false);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
       expect(testCoding.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -177,6 +179,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(true);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
       expect(testCoding.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -664,6 +667,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(false);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
 
       // inherited properties from Element
       expect(testCoding.hasId()).toBe(true);
@@ -706,6 +710,7 @@ describe('Coding', () => {
       expect(testType?.fhirType()).toStrictEqual('Coding');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Coding');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

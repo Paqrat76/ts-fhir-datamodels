@@ -61,6 +61,9 @@ export default tsEslint.config(
     linterOptions: {
       // https://eslint.org/docs/latest/use/configure/configuration-files#disabling-inline-configuration
       noInlineConfig: false,
+      // For linting generated files, use `--report-unused-disable-directives-severity off` on the linting NPM script.
+      // Refer to https://eslint.org/docs/latest/use/command-line-interface#--report-unused-disable-directives.
+      // Set to 'warn' to report unused disable directives withing non-generated files.
       // https://eslint.org/docs/latest/use/configure/configuration-files#reporting-unused-disable-directives
       reportUnusedDisableDirectives: 'warn',
     },

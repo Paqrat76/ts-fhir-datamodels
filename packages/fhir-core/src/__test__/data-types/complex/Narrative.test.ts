@@ -72,6 +72,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(true);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       const t = () => {
         testNarrative.toJSON();
       };
@@ -108,6 +109,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       expect(testNarrative.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -140,6 +142,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(true);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       const t = () => {
         testNarrative.toJSON();
       };
@@ -629,6 +632,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
 
       // inherited properties from Element
       expect(testNarrative.hasId()).toBe(true);
@@ -661,6 +665,7 @@ describe('Narrative', () => {
       expect(testType?.fhirType()).toStrictEqual('Narrative');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Narrative');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

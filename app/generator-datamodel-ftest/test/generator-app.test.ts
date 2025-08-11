@@ -22,11 +22,12 @@
  */
 
 import { join, resolve } from 'node:path';
-import { readdirSync, rmSync } from 'node:fs';
+import { readdirSync, readFileSync, rmSync } from 'node:fs';
 import { FhirPackage, GeneratedContent, GeneratorApp } from 'generator';
 
 describe('generator-datamodel-ftest Functional Test Suite', () => {
   const testOut = resolve(__dirname, '..', 'src');
+  const testOutIndex = resolve(testOut, 'index.ts');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
@@ -131,6 +132,11 @@ describe('generator-datamodel-ftest Functional Test Suite', () => {
         'parsable-resource-map.ts',
       ];
       expect(testResources).toEqual(expectedResources);
+
+      expect(testOutIndex).toBeDefined();
+      const indexFile = readFileSync(testOutIndex, 'utf8');
+      expect(indexFile).toBeDefined();
+      expect(indexFile).toMatchSnapshot();
     });
   });
 

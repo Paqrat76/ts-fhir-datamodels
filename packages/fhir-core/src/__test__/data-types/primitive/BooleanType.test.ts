@@ -39,6 +39,7 @@ describe('BooleanType', () => {
     expect(testBooleanType.isEmpty()).toBe(true);
     expect(testBooleanType.isPrimitive()).toBe(true);
     expect(testBooleanType.isBooleanPrimitive()).toBe(true);
+    expect(testBooleanType.dataTypeName()).toStrictEqual('BooleanType');
     expect(testBooleanType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -235,6 +236,7 @@ describe('BooleanType', () => {
     expect(testBooleanType.isEmpty()).toBe(false);
     expect(testBooleanType.isPrimitive()).toBe(true);
     expect(testBooleanType.isBooleanPrimitive()).toBe(true);
+    expect(testBooleanType.dataTypeName()).toStrictEqual('BooleanType');
     expect(testBooleanType.toJSON()).toBe(true);
     expect(testBooleanType.hasValue()).toBe(true);
     expect(testBooleanType.getValue()).toBeDefined();
@@ -250,6 +252,7 @@ describe('BooleanType', () => {
     expect(testBooleanType.isEmpty()).toBe(false);
     expect(testBooleanType.isPrimitive()).toBe(true);
     expect(testBooleanType.isBooleanPrimitive()).toBe(true);
+    expect(testBooleanType.dataTypeName()).toStrictEqual('BooleanType');
     expect(testBooleanType.toJSON()).toBe(false);
     expect(testBooleanType.hasValue()).toBe(true);
     expect(testBooleanType.getValue()).toBeDefined();

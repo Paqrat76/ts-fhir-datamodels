@@ -296,6 +296,11 @@ export interface IDataType extends IElement {
    * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
    */
   isDataType: () => boolean;
+
+  /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  dataTypeName: () => string;
 }
 
 /**

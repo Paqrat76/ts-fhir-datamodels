@@ -43,6 +43,7 @@ describe('XhtmlType', () => {
     expect(testXhtmlType.isEmpty()).toBe(true);
     expect(testXhtmlType.isPrimitive()).toBe(true);
     expect(testXhtmlType.isStringPrimitive()).toBe(true);
+    expect(testXhtmlType.dataTypeName()).toStrictEqual('XhtmlType');
     expect(testXhtmlType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -215,6 +216,7 @@ describe('XhtmlType', () => {
     expect(testXhtmlType.isEmpty()).toBe(false);
     expect(testXhtmlType.isPrimitive()).toBe(true);
     expect(testXhtmlType.isStringPrimitive()).toBe(true);
+    expect(testXhtmlType.dataTypeName()).toStrictEqual('XhtmlType');
     expect(testXhtmlType.toJSON()).toStrictEqual(VALID_XHTML);
     expect(testXhtmlType.hasValue()).toBe(true);
     expect(testXhtmlType.getValue()).toBeDefined();

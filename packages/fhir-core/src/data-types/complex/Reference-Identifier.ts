@@ -468,6 +468,13 @@ export class Reference extends DataType implements IDataType {
   }
 
   /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
+  /**
    * @returns the JSON value or undefined if the instance is empty
    */
   public override toJSON(): JSON.Value | undefined {
@@ -1065,6 +1072,13 @@ export class Identifier extends DataType implements IDataType {
    */
   public override isComplexDataType(): boolean {
     return true;
+  }
+
+  /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   /**

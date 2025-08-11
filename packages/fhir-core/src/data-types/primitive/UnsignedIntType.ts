@@ -71,6 +71,10 @@ export class UnsignedIntType extends PrimitiveType<fhirUnsignedInt> implements I
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): UnsignedIntType {
     const dest = new UnsignedIntType();
     this.copyValues(dest);

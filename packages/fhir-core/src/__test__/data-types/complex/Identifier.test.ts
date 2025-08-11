@@ -111,6 +111,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(true);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
       expect(testIdentifier.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -162,6 +163,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(false);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
       expect(testIdentifier.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -212,6 +214,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(true);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
       expect(testIdentifier.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -733,6 +736,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(false);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
 
       // inherited properties from Element
       expect(testIdentifier.hasId()).toBe(true);
@@ -777,6 +781,7 @@ describe('Identifier Tests', () => {
       expect(testType?.fhirType()).toStrictEqual('Identifier');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Identifier');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

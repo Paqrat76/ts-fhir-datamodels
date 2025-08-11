@@ -87,6 +87,10 @@ export class CodeType extends PrimitiveType<fhirCode> implements IPrimitiveType<
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): CodeType {
     const dest = new CodeType();
     this.copyValues(dest);
@@ -178,6 +182,10 @@ export class EnumCodeType extends CodeType {
 
   public override fhirType(): string {
     return 'code';
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): EnumCodeType {

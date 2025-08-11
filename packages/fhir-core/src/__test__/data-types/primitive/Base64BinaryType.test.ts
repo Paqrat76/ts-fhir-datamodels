@@ -41,6 +41,7 @@ describe('Base64BinaryType', () => {
     expect(testBase64BinaryType.isEmpty()).toBe(true);
     expect(testBase64BinaryType.isPrimitive()).toBe(true);
     expect(testBase64BinaryType.isStringPrimitive()).toBe(true);
+    expect(testBase64BinaryType.dataTypeName()).toStrictEqual('Base64BinaryType');
     expect(testBase64BinaryType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -190,6 +191,7 @@ describe('Base64BinaryType', () => {
     expect(testBase64BinaryType.isEmpty()).toBe(false);
     expect(testBase64BinaryType.isPrimitive()).toBe(true);
     expect(testBase64BinaryType.isStringPrimitive()).toBe(true);
+    expect(testBase64BinaryType.dataTypeName()).toStrictEqual('Base64BinaryType');
     expect(testBase64BinaryType.toJSON()).toStrictEqual(VALID_BASE64BINARY);
     expect(testBase64BinaryType.hasValue()).toBe(true);
     expect(testBase64BinaryType.getValue()).toBeDefined();

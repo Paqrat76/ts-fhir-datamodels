@@ -77,6 +77,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(true);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -107,6 +108,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(false);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -137,6 +139,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(true);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -462,6 +465,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(false);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
 
       // inherited properties from Element
       expect(testCodeableConcept.hasId()).toBe(true);
@@ -490,6 +494,7 @@ describe('CodeableConcept', () => {
       expect(testType?.fhirType()).toStrictEqual('CodeableConcept');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

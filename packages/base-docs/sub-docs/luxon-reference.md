@@ -1,38 +1,46 @@
-# Usage Notes
+---
+title: Luxon DateTime Reference
+---
 
-## Date/Time Handling for FHIR Primitive `date`, `dateTime`, and `instant`
+# Luxon DateTime Reference
 
-### FHIR Date/Time Primitives
+This documentation describes the use of Luxon DateTime handling for FHIR PrimitiveType classes for the FHIR
+primitive `date`, `dateTime`, and `instant` data types.
 
-The FHIR specification defines date/time primitive data types represented by strings of specific ISO 8601 variations.
+## FHIR datetime Primitives
+
+The FHIR specification defines datetime primitive data types represented by strings of specific ISO 8601 variations.
 
 **NOTE:** Where a timezone offset (`+zz:zz`/`-zz:zz`) is specified, UTC (`Z`) may also be specified.
 
-- [date](https://hl7.org/fhir/R5/datatypes.html#date)
+FHIR Primitive DateTime Formats:
+
+- [date](https://hl7.org/fhir/datatypes.html#date)
   - `YYYY`
   - `YYYY-MM`
   - `YYYY-MM-DD`
-- [dateTime](https://hl7.org/fhir/R5/datatypes.html#dateTime)
+- [dateTime](https://hl7.org/fhir/datatypes.html#dateTime)
   - `YYYY`
   - `YYYY-MM`
   - `YYYY-MM-DD`
   - `YYYY-MM-DDThh:mm:ss+zz:zz` / `YYYY-MM-DDThh:mm:ssZ`
   - `YYYY-MM-DDThh:mm:ss.sss+zz:zz` / `YYYY-MM-DDThh:mm:ss.sssZ`
-- [instant](https://hl7.org/fhir/R5/datatypes.html#instant)
+- [instant](https://hl7.org/fhir/datatypes.html#instant)
   - `YYYY-MM-DDThh:mm:ss.sss+zz:zz` / `YYYY-MM-DDThh:mm:ss.sssZ`
 
-### Luxon Date/Time Library
+## Luxon DateTime Library
 
-The [Luzon](https://moment.github.io/luxon/#/) library is the de-facto date/time handling library for JavaScript.
+The [Luzon](https://moment.github.io/luxon/#/) library is the de-facto datetime handling library for JavaScript.
 It is a powerful, modern, and friendly wrapper for JavaScript dates and times.
-It provides support for date/times, durations, and intervals that are immutable with native time zone and Intl
+It provides support for datetime, duration, and interval that are immutable with native time zone and Intl
 support (no locale or tz files).
 The provided [APIs](https://moment.github.io/luxon/api-docs/index.html) are unambiguous and chainable.
-Additionally, Luxon supports handling for time zones and offsets ([Time zones and offsets](https://moment.github.io/luxon/#/zones?id=time-zones-and-offsets)).
+Additionally, Luxon supports handling for time zones and offsets
+([Time zones and offsets](https://moment.github.io/luxon/#/zones?id=time-zones-and-offsets)).
 
-The following Luxon capabilities are usd to support FHIR date/time related primitives.
+The following Luxon capabilities are used to support FHIR datetime-related primitives.
 
-#### Luxon Parsing ([ISO 8601](https://moment.github.io/luxon/#/parsing?id=iso-8601))
+### Luxon Parsing ([ISO 8601](https://moment.github.io/luxon/#/parsing?id=iso-8601))
 
 - All supported FHIR formats are directly parsable by Luzon
   - `const dt: DateTime = DateTime.fromISO("2016");`
@@ -48,42 +56,49 @@ The following Luxon capabilities are usd to support FHIR date/time related primi
   - `const dt: DateTime = DateTime.fromISO("2016-05-25T09:24:15-04.00");`
   - `const dt: DateTime = DateTime.fromISO("2016-05-25", { zone: "utc" });`
   - `const dt: DateTime = DateTime.fromISO("2016-05-25", { zone: "America/New_York" });`
-- `DateTime.now().toISO()` will default to the system's local date/time and timezone in ISO format
+- `DateTime.now().toISO()` will default to the system's local datetime and timezone in ISO format
 - `DateTime.utc().toISO()` will default to UTC and timezone in ISO format
 
-#### Luxon Formatting ([ISO 8601](https://moment.github.io/luxon/#/parsing?id=iso-8601)) for FHIR
+### Luxon Formatting ([ISO 8601](https://moment.github.io/luxon/#/parsing?id=iso-8601)) for FHIR
 
-- to ISO
+- toISO
   - `dt.toISO();` //=> '2017-04-20T11:32:00.000-04:00'
   - `dt.toISO({ suppressMilliseconds: true });` //=> '2017-04-20T11:32:00-04:00'
   - `dt.toISODate();` //=> '2017-04-20'
-- to Format
+- toFormat
   - `dt.toFormat("yyyy");` //=> '2017'
   - `dt.toFormat("yyyy-MM");` //=> '2017-04'
 
-### Provided Date/Time Utilities
+## Provided DateTime Utilities
 
-The `@paq-ts-fhir/fhir-core/utility/date-time-util.ts` module provides convenience wrappers for
-Luxon DataTime parsing and formatting to support FHIR specified date/time primitive data types.
-These are available for independent date handling use cases.
-They have also been included in the FHIR PrimitiveType `DateType` (`interface DateTypeImpl`),
-`DateTimeType` (`interface DateTimeTypeImpl`), and `InstantType` (`interface InstantTypeImpl`) implementations as
-convenience methods.
+The `DateTimeUtil` namespace provides convenience wrapper functions for Luxon DataTime parsing and formatting to
+support FHIR specified datetime primitive data types.
+These are available for independent datetime handling use cases.
+They have also been incorporated in the FHIR PrimitiveType `DateType` (implements `interface DateTypeImpl`),
+`DateTimeType` (implements `interface DateTimeTypeImpl`), and `InstantType` (implements`interface InstantTypeImpl`)
+implementations as convenience methods.
 
-The `getDateTimeObject()` and `getDateTimeObjectAsUTC()` creation methods in the `date-time-util.ts` module return a valid
-Luxon DataTime object that allows full access to the Luxon DataTime APIs for virtually any kind of date/time handling.
-The `getValueAs[FHIR Primitive]` methods take a Luxon DateTime object as the method argument that is then formatted
-appropriately into the allowed FHIR primitive format and returned as a string.
+The `DateTimeUtil.getDateTimeObject(...)` and `DateTimeUtil.getDateTimeObjectAsUTC(...)` creation methods return a
+valid Luxon DataTime object that allows full access to the Luxon DataTime APIs for virtually any kind of datetime
+handling.
+The following methods take a Luxon DateTime object as the method argument which is formatted appropriately into the
+allowed FHIR primitive format and returned as a string:
 
-### Handling Time Zones and Offsets
+- `DateTimeUtil.getValueAsYear`
+- `DateTimeUtil.getValueAsYearMonth`
+- `DateTimeUtil.getValueAsDateOnly`
+- `DateTimeUtil.getValueAsDateTime`
+- `DateTimeUtil.getValueAsInstant`
+
+## Handling Time Zones and Offsets
 
 The Luxon library supports handling for time zones and offsets.
-The recommended approach is to use the `getDateTimeObjectAsUTC()` creation method.
+The recommended approach is to use the `DateTimeUtil.getDateTimeObjectAsUTC(...)` creation method.
 It automatically converts the provided ISO 8601 datetime string into UTC and returns a UTC DateTime object.
 
-The `getDateTimeObject()` creation method provides an optional `opts` parameter to control the creation of the DateTime
-object (see [fromISO(text, opts)](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso) `opts` parameter
-for supported options).
+The `DateTimeUtil.getDateTimeObject()` creation method provides an optional `opts` parameter to control the creation
+of the DateTime object (see [fromISO(text, opts)](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
+`opts` parameter for supported options).
 In particular, refer to `opts.zone` and `opts.setZone` options for managing time zones and offsets.
 The following use cases are supported:
 
@@ -91,9 +106,11 @@ The following use cases are supported:
   - provided ISO 8601 text string **DOES NOT** include a time zone offset:
     - the created DateTime object will default to the system's "local" time zone
   - provided ISO 8601 text string **DOES** include a time zone offset:
-    - the created DateTime object will default to the system's "local" time zone after applying the provided time zone offset
+    - the created DateTime object will default to the system's "local" time zone after applying the provided time
+      zone offset
   - provided ISO 8601 text string **DOES** specify UTC (as `Z`):
-    - the created DateTime object will default to the system's "local" time zone after converting UTC to the "local" time zone
+    - the created DateTime object will default to the system's "local" time zone after converting UTC to the "local"
+      time zone
 - `opts` parameter provided with `opts.setZone` option set to `true`
   - provided ISO 8601 text string **DOES NOT** include a time zone offset:
     - the created DateTime object will default to the system's "local" time zone
@@ -105,6 +122,8 @@ The following use cases are supported:
   - provided ISO 8601 text string **DOES NOT** include a time zone offset:
     - the created DateTime object will set the DateTime object's time zone based on the provided time zone
   - provided ISO 8601 text string **DOES** include a time zone offset:
-    - the created DateTime object will set the DateTime object's time zone based on the provided time zone after applying the provided time zone offset
+    - the created DateTime object will set the DateTime object's time zone based on the provided time zone after
+      applying the provided time zone offset
   - provided ISO 8601 text string **DOES** specify UTC (as `Z`):
-    - the created DateTime object will set the DateTime object's time zone based on the provided time zone after converting UTC to the provided time zone
+    - the created DateTime object will set the DateTime object's time zone based on the provided time zone after
+      converting UTC to the provided time zone

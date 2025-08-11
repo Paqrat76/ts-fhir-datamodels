@@ -71,6 +71,10 @@ export class TimeType extends PrimitiveType<fhirTime> implements IPrimitiveType<
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): TimeType {
     const dest = new TimeType();
     this.copyValues(dest);

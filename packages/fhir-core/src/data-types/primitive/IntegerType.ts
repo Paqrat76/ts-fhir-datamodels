@@ -72,6 +72,10 @@ export class IntegerType extends PrimitiveType<fhirInteger> implements IPrimitiv
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): IntegerType {
     const dest = new IntegerType();
     this.copyValues(dest);

@@ -71,6 +71,10 @@ export class CanonicalType extends PrimitiveType<fhirCanonical> implements IPrim
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): CanonicalType {
     const dest = new CanonicalType();
     this.copyValues(dest);

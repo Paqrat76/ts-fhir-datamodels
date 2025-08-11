@@ -73,6 +73,10 @@ export class Integer64Type extends PrimitiveType<fhirInteger64> implements IPrim
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): Integer64Type {
     const dest = new Integer64Type();
     this.copyValues(dest);

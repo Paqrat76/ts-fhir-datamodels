@@ -101,6 +101,10 @@ export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): DateType {
     const dest = new DateType();
     this.copyValues(dest);

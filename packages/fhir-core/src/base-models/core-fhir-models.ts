@@ -553,6 +553,11 @@ export abstract class DataType extends Element implements IDataType {
   public override isDataType(): boolean {
     return true;
   }
+
+  /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  public abstract dataTypeName(): string;
 }
 
 /**

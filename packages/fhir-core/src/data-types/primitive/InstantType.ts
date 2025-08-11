@@ -90,6 +90,10 @@ export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiv
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): InstantType {
     const dest = new InstantType();
     this.copyValues(dest);

@@ -72,6 +72,10 @@ export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> implements
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): Base64BinaryType {
     const dest = new Base64BinaryType();
     this.copyValues(dest);

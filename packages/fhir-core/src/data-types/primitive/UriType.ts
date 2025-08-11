@@ -72,6 +72,10 @@ export class UriType extends PrimitiveType<fhirUri> implements IPrimitiveType<fh
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): UriType {
     const dest = new UriType();
     this.copyValues(dest);

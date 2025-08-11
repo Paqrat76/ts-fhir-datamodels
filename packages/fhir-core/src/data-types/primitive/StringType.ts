@@ -72,6 +72,10 @@ export class StringType extends PrimitiveType<fhirString> implements IPrimitiveT
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): StringType {
     const dest = new StringType();
     this.copyValues(dest);

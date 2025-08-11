@@ -20,3 +20,5 @@ heading-start-left: true
 no-empty-links: true
 no-alt-text: true
 no-bare-urls: false
+MD025:
+  front_matter_title: ''

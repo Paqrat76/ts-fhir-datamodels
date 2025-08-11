@@ -168,16 +168,28 @@ const DESTINATION_SUB_DIRECTORY_MAP: Map<string, string> = new Map<string, strin
   ['Resource', 'resources'],
 ]);
 
+/**
+ * An array of strings representing exports from the `@paq-ts-fhir/fhir-core` library.
+ *
+ * This variable defines the exported members from the FHIR core package which are primarily used
+ * for handling various FHIR resource types, elements, data types, and utilities.
+ */
 const FHIR_CORE_LIB_EXPORTS: string[] = [
   'export {',
+  '  Base,',
+  '  Element,',
+  '  BackboneElement,',
+  '  DataType,',
+  '  BackboneType,',
+  '  PrimitiveType,',
   '  Resource,',
   '  DomainResource,',
-  '  PrimitiveType,',
   '  DateTimeUtil,',
   '  Base64BinaryType,',
   '  BooleanType,',
   '  CanonicalType,',
   '  CodeType,',
+  '  EnumCodeType,',
   '  DateTimeType,',
   '  DateType,',
   '  DecimalType,',
@@ -198,8 +210,25 @@ const FHIR_CORE_LIB_EXPORTS: string[] = [
   `} from '@paq-ts-fhir/fhir-core';`,
 ];
 
+/**
+ * An array of strings representing the types exported from the `@paq-ts-fhir/fhir-core` library.
+ *
+ * This array defines a set of FHIR core data types and implementations that are being re-exported
+ * for use in other parts of the application. These types primarily pertain to various FHIR
+ * primitive data types, such as `fhirString`, `fhirDate`, `fhirBoolean`, etc., as well as
+ * specific FHIR element implementations like `DateTypeImpl` or `DateTimeTypeImpl`.
+ */
 const FHIR_CORE_LIB_TYPE_EXPORTS: string[] = [
   'export type {',
+  '  IBase,',
+  '  IElement,',
+  '  IExtension,',
+  '  IBackboneElement,',
+  '  IDataType,',
+  '  IBackboneType,',
+  '  IPrimitiveType,',
+  '  IResource,',
+  '  IDomainResource,',
   '  DateTypeImpl,',
   '  DateTimeTypeImpl,',
   '  InstantTypeImpl,',

@@ -27,6 +27,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Updated README documentation
 - Updated fhir-core library exports in the generated index.ts
+- Snapshot testing for generated root index.ts
+- Updated dependencies
+- Resolved linting issues in generated code due to updated ESLint version
 
 ### Deprecated
 

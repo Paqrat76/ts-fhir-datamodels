@@ -72,6 +72,10 @@ export class UuidType extends PrimitiveType<fhirUuid> implements IPrimitiveType<
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): UuidType {
     const dest = new UuidType();
     this.copyValues(dest);

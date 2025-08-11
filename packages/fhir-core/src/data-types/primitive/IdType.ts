@@ -72,6 +72,10 @@ export class IdType extends PrimitiveType<fhirId> implements IPrimitiveType<fhir
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): IdType {
     const dest = new IdType();
     this.copyValues(dest);

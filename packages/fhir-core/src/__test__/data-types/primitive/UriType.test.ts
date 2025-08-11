@@ -41,6 +41,7 @@ describe('UriType', () => {
     expect(testUriType.isEmpty()).toBe(true);
     expect(testUriType.isPrimitive()).toBe(true);
     expect(testUriType.isStringPrimitive()).toBe(true);
+    expect(testUriType.dataTypeName()).toStrictEqual('UriType');
     expect(testUriType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -185,6 +186,7 @@ describe('UriType', () => {
     expect(testUriType.isEmpty()).toBe(false);
     expect(testUriType.isPrimitive()).toBe(true);
     expect(testUriType.isStringPrimitive()).toBe(true);
+    expect(testUriType.dataTypeName()).toStrictEqual('UriType');
     expect(testUriType.toJSON()).toStrictEqual(VALID_URI);
     expect(testUriType.hasValue()).toBe(true);
     expect(testUriType.getValue()).toBeDefined();

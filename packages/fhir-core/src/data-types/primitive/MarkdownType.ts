@@ -72,6 +72,10 @@ export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimit
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): MarkdownType {
     const dest = new MarkdownType();
     this.copyValues(dest);

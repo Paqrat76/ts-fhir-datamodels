@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Test suite demonstrating examples of data model usage
+- Snapshot testing for generated root index.ts
+
 ### Changed
 
 - Updated README documentation

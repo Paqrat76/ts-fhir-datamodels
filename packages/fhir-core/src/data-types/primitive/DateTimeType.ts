@@ -116,6 +116,10 @@ export class DateTimeType
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): DateTimeType {
     const dest = new DateTimeType();
     this.copyValues(dest);

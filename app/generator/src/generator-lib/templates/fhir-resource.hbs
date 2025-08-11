@@ -102,11 +102,13 @@ export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements I{{s
 {{> privateFieldDeclarationPartial edHbs=this }}
 
 {{/each}}
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
 {{!-- Public Field Methods Partial --}}
 {{#each sdHbs.parentComponent.elementDefinitions}}
 {{> publicFieldMethodsPartial edHbs=this }}
 {{/each}}
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
 
 {{!-- Public Base Methods Partial --}}
 {{> publicBaseMethodsPartial sdHbs.parentComponent}}

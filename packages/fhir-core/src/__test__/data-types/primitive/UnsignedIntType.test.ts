@@ -42,6 +42,7 @@ describe('UnsignedIntType', () => {
     expect(testUnsignedIntType.isEmpty()).toBe(true);
     expect(testUnsignedIntType.isPrimitive()).toBe(true);
     expect(testUnsignedIntType.isNumberPrimitive()).toBe(true);
+    expect(testUnsignedIntType.dataTypeName()).toStrictEqual('UnsignedIntType');
     expect(testUnsignedIntType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -186,6 +187,7 @@ describe('UnsignedIntType', () => {
     expect(testUnsignedIntType.isEmpty()).toBe(false);
     expect(testUnsignedIntType.isPrimitive()).toBe(true);
     expect(testUnsignedIntType.isNumberPrimitive()).toBe(true);
+    expect(testUnsignedIntType.dataTypeName()).toStrictEqual('UnsignedIntType');
     expect(testUnsignedIntType.toJSON()).toStrictEqual(VALID_INTEGER);
     expect(testUnsignedIntType.hasValue()).toBe(true);
     expect(testUnsignedIntType.getValue()).toBeDefined();

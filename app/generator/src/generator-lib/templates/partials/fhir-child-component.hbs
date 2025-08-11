@@ -40,11 +40,13 @@
 {{> privateFieldDeclarationPartial edHbs=this }}
 
 {{/each}}
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
 {{!-- Public Field Methods Partial --}}
 {{#each compHbs.elementDefinitions}}
 {{> publicFieldMethodsPartial edHbs=this }}
 {{/each}}
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
 
 {{!-- Public Base Methods Partial --}}
 {{> publicBaseMethodsPartial compHbs}}

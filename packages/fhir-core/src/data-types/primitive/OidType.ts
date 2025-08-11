@@ -72,6 +72,10 @@ export class OidType extends PrimitiveType<fhirOid> implements IPrimitiveType<fh
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): OidType {
     const dest = new OidType();
     this.copyValues(dest);

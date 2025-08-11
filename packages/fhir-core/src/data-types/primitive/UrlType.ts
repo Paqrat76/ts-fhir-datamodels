@@ -71,6 +71,10 @@ export class UrlType extends PrimitiveType<fhirUrl> implements IPrimitiveType<fh
     return true;
   }
 
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
   public override copy(): UrlType {
     const dest = new UrlType();
     this.copyValues(dest);

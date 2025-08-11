@@ -44,6 +44,7 @@ describe('DateType', () => {
       expect(testDateType.isEmpty()).toBe(true);
       expect(testDateType.isPrimitive()).toBe(true);
       expect(testDateType.isDateTimePrimitive()).toBe(true);
+      expect(testDateType.dataTypeName()).toStrictEqual('DateType');
       expect(testDateType.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -188,6 +189,7 @@ describe('DateType', () => {
       expect(testDateType.isEmpty()).toBe(false);
       expect(testDateType.isPrimitive()).toBe(true);
       expect(testDateType.isDateTimePrimitive()).toBe(true);
+      expect(testDateType.dataTypeName()).toStrictEqual('DateType');
       expect(testDateType.toJSON()).toStrictEqual(VALID_DATE);
       expect(testDateType.hasValue()).toBe(true);
       expect(testDateType.getValue()).toBeDefined();

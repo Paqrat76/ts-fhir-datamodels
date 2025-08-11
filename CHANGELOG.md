@@ -21,10 +21,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.16.0] - 2025-08-??
 
+### Added
+
+- `public abstract dataTypeName(): string;` to `DataType` and `IDataType`; Updated all data type classes and generators to implement this method
+
 ### Changed
 
 - Updated all README and dev-docs content
 - Updated Typedoc base config
+- Updated dependencies
+- Updated eslint dependencies and fixed new lint issues
+- Updated ESLint and Typedoc configurations
 
 
 ## [0.15.0] - 2025-07-29
