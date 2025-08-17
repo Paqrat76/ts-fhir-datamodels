@@ -24,6 +24,7 @@
 import { AssertionError } from 'node:assert';
 import {
   FhirError,
+  IBackboneElement,
   InstantType,
   InvalidTypeError,
   PrimitiveTypeError,
@@ -74,8 +75,8 @@ describe('BundleEntryResponseComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new BundleEntryResponseComponent();
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -111,8 +112,8 @@ describe('BundleEntryResponseComponent', () => {
     it('should be properly instantiated with required elements', () => {
       let testInstance = new BundleEntryResponseComponent(HTTP_STATUS_404_TYPE);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -142,8 +143,8 @@ describe('BundleEntryResponseComponent', () => {
 
       testInstance = new BundleEntryResponseComponent(HTTP_STATUS_404);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -184,8 +185,8 @@ describe('BundleEntryResponseComponent', () => {
 
       let testInstance: BundleEntryResponseComponent = testModel.copy();
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -230,8 +231,8 @@ describe('BundleEntryResponseComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -271,8 +272,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModified(TestData.VALID_INSTANT);
       testInstance.setOutcome(OUTCOME_SIMPLE_PERSON_MODEL);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -310,8 +311,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModified(TestData.VALID_INSTANT_2);
       testInstance.setOutcome(OUTCOME_SIMPLE_PERSON_MODEL_2);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -354,8 +355,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModified(TestData.UNDEFINED_VALUE);
       testInstance.setOutcome(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -395,8 +396,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModifiedElement(TestData.VALID_INSTANT_TYPE);
       testInstance.setOutcome(OUTCOME_SIMPLE_PERSON_MODEL);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -434,8 +435,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModifiedElement(TestData.VALID_INSTANT_TYPE_2);
       testInstance.setOutcome(OUTCOME_SIMPLE_PERSON_MODEL_2);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -478,8 +479,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModifiedElement(TestData.UNDEFINED_VALUE);
       testInstance.setOutcome(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -599,8 +600,8 @@ describe('BundleEntryResponseComponent', () => {
       testInstance.setLastModifiedElement(TestData.VALID_INSTANT_TYPE);
       testInstance.setOutcome(OUTCOME_SIMPLE_PERSON_MODEL);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
@@ -655,8 +656,8 @@ describe('BundleEntryResponseComponent', () => {
     it('should return parsed Bundle for valid json', () => {
       const testInstance: BundleEntryResponseComponent | undefined = BundleEntryResponseComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<BundleEntryResponseComponent>(
-        BundleEntryResponseComponent,
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryResponseComponent',
         'Bundle.entry.response',

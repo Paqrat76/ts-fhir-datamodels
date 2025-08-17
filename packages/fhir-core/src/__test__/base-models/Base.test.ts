@@ -52,14 +52,6 @@ describe('Base', () => {
     expect(testBase.isEmpty()).toBe(false);
   });
 
-  it('should return expected values for hasFireType()', () => {
-    const mockBase = new MockBase();
-    expect(mockBase.hasFireType('MockBase')).toBe(true);
-    expect(mockBase.hasFireType('MockBase', 'TypeA', 'TypeB')).toBe(true);
-    expect(mockBase.hasFireType('TypeA', 'MockBase', 'TypeB')).toBe(true);
-    expect(mockBase.hasFireType('InvalidType')).toBe(false);
-  });
-
   it('should return default value of false for all is[Type] methods', () => {
     const mockBase = new MockBase();
     // The is[Type] methods default to false and must be overridden in subclasses as appropriate

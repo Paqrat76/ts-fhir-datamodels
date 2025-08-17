@@ -22,7 +22,7 @@
  */
 
 import { AssertionError } from 'node:assert';
-import { FhirError, InvalidTypeError, PrimitiveTypeError } from '@paq-ts-fhir/fhir-core';
+import { FhirError, IBackboneElement, InvalidTypeError, PrimitiveTypeError } from '@paq-ts-fhir/fhir-core';
 import { BundleLinkComponent } from '../../../src/resources/Bundle';
 import {
   expectBackboneElementBase,
@@ -41,8 +41,8 @@ describe('BundleLinkComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new BundleLinkComponent();
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -68,8 +68,8 @@ describe('BundleLinkComponent', () => {
     it('should be properly instantiated with required elements', () => {
       let testInstance = new BundleLinkComponent(TestData.VALID_STRING_TYPE, TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -89,8 +89,8 @@ describe('BundleLinkComponent', () => {
 
       testInstance = new BundleLinkComponent(TestData.VALID_STRING, TestData.VALID_URI);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -116,8 +116,8 @@ describe('BundleLinkComponent', () => {
 
       let testInstance: BundleLinkComponent = testModel.copy();
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -152,8 +152,8 @@ describe('BundleLinkComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -180,8 +180,8 @@ describe('BundleLinkComponent', () => {
       testInstance.setRelation(TestData.VALID_STRING);
       testInstance.setUrl(TestData.VALID_URI);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -206,8 +206,8 @@ describe('BundleLinkComponent', () => {
       testInstance.setRelation(TestData.VALID_STRING_2);
       testInstance.setUrl(TestData.VALID_URI_2);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -240,8 +240,8 @@ describe('BundleLinkComponent', () => {
       expect(t).toThrow(AssertionError);
       expect(t).toThrow('Bundle.link.url is required');
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -268,8 +268,8 @@ describe('BundleLinkComponent', () => {
       testInstance.setRelationElement(TestData.VALID_STRING_TYPE);
       testInstance.setUrlElement(TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -294,8 +294,8 @@ describe('BundleLinkComponent', () => {
       testInstance.setRelationElement(TestData.VALID_STRING_TYPE_2);
       testInstance.setUrlElement(TestData.VALID_URI_TYPE_2);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -328,8 +328,8 @@ describe('BundleLinkComponent', () => {
       expect(t).toThrow(AssertionError);
       expect(t).toThrow('Bundle.link.url is required');
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -406,8 +406,8 @@ describe('BundleLinkComponent', () => {
 
       initializeBackboneElementProperties(testInstance, 2);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',
@@ -452,8 +452,8 @@ describe('BundleLinkComponent', () => {
     it('should return parsed Bundle for valid json', () => {
       const testInstance: BundleLinkComponent | undefined = BundleLinkComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<BundleLinkComponent>(
-        BundleLinkComponent,
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
         testInstance,
         'BundleLinkComponent',
         'Bundle.link',

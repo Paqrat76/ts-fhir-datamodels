@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** Systems are not required to have markdown support, so the text should be readable without markdown processing. The markdown syntax is GFM - see https://github.github.com/gfm/
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR markdown](http://hl7.org/fhir/StructureDefinition/markdown)
  */
 export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimitiveType<fhirMarkdown> {
   /**
    * @param value - the value of the primitive `fhirMarkdown`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirMarkdown) {
     super();
@@ -57,7 +57,7 @@ export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimit
   }
 
   public encodeToString(value: fhirMarkdown): string {
-    return parseFhirPrimitiveData(value, fhirMarkdownSchema, this.typeErrorMessage()).toString();
+    return parseFhirPrimitiveData(value, fhirMarkdownSchema, this.typeErrorMessage());
   }
 
   public parseToPrimitive(value: string): fhirMarkdown {
@@ -70,6 +70,10 @@ export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimit
 
   public override isStringPrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): MarkdownType {

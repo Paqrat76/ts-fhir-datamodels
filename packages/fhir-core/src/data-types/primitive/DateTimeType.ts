@@ -22,11 +22,11 @@
  */
 
 import { DateTime } from 'luxon';
+import { fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from './primitive-types';
 import { PrimitiveType } from '../../base-models/core-fhir-models';
-import { DateTimeUtil } from '../../utility/date-time-util';
-import { isDefined } from '../../utility/type-guards';
-import { DateTimeTypeImpl, fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from './primitive-types';
 import { IPrimitiveType } from '../../base-models/library-interfaces';
+import { DateTimeTypeImpl, DateTimeUtil } from '../../utility/date-time-util';
+import { isDefined } from '../../utility/type-guards';
 
 /**
  * DateTime Class
@@ -39,7 +39,7 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** A date, date-time or partial date (e.g. just year or year + month).  If hours and minutes are specified, a time zone SHALL be populated. The format is a union of the schema types gYear, gYearMonth, date and dateTime. Seconds must be provided due to schema type constraints but may be zero-filled and may be ignored. Dates SHALL be valid dates.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR dateTime](http://hl7.org/fhir/StructureDefinition/dateTime)
  */
 export class DateTimeType
@@ -48,7 +48,7 @@ export class DateTimeType
 {
   /**
    * @param value - the value of the primitive `fhirDateTime`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirDateTime) {
     super();
@@ -101,7 +101,7 @@ export class DateTimeType
   }
 
   public encodeToString(value: fhirDateTime): string {
-    return parseFhirPrimitiveData(value, fhirDateTimeSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirDateTimeSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirDateTime {
@@ -114,6 +114,10 @@ export class DateTimeType
 
   public override isDateTimePrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): DateTimeType {

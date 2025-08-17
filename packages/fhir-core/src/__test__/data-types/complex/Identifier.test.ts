@@ -21,7 +21,6 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
 import { DataType, Extension } from '../../../base-models/core-fhir-models';
 import { IdentifierUseEnum } from '../../../data-types/code-systems/IdentifierUseEnum';
 import { CodeableConcept } from '../../../data-types/complex/CodeableConcept';
@@ -31,6 +30,7 @@ import { CodeType, EnumCodeType } from '../../../data-types/primitive/CodeType';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, INVALID_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
 
@@ -111,6 +111,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(true);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
       expect(testIdentifier.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -162,6 +163,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(false);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
       expect(testIdentifier.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -212,6 +214,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(true);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
       expect(testIdentifier.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -641,7 +644,7 @@ describe('Identifier Tests', () => {
         // @ts-expect-error: allow invalid type for testing
         testIdentifier.setAssigner(INVALID_NON_STRING_TYPE);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setAssigner (Identifier.assigner) expects a single argument to be type of 'Reference | undefined | null'`,
       );
@@ -695,11 +698,11 @@ describe('Identifier Tests', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Identifier.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Identifier JSON is not a JSON object.`);
     });
 
@@ -733,6 +736,7 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
       expect(testIdentifier.isEmpty()).toBe(false);
       expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
 
       // inherited properties from Element
       expect(testIdentifier.hasId()).toBe(true);
@@ -777,6 +781,7 @@ describe('Identifier Tests', () => {
       expect(testType?.fhirType()).toStrictEqual('Identifier');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Identifier');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

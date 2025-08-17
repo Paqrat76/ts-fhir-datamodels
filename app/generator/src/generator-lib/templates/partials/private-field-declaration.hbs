@@ -52,6 +52,10 @@
    * - **isModifierReason:** {{edHbs.isModifierReason}}
 {{/if}}
    * - **isSummary:** {{edHbs.isSummary}}
+{{#if edHbs.isEnumCodeType}}
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
+{{/if}}
    */
 {{#if edHbs.isChoiceType}}
   @ChoiceDataTypesMeta('{{edHbs.path}}',[

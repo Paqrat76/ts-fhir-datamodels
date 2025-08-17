@@ -42,6 +42,7 @@ describe('PositiveIntType', () => {
     expect(testPositiveIntType.isEmpty()).toBe(true);
     expect(testPositiveIntType.isPrimitive()).toBe(true);
     expect(testPositiveIntType.isNumberPrimitive()).toBe(true);
+    expect(testPositiveIntType.dataTypeName()).toStrictEqual('PositiveIntType');
     expect(testPositiveIntType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -186,6 +187,7 @@ describe('PositiveIntType', () => {
     expect(testPositiveIntType.isEmpty()).toBe(false);
     expect(testPositiveIntType.isPrimitive()).toBe(true);
     expect(testPositiveIntType.isNumberPrimitive()).toBe(true);
+    expect(testPositiveIntType.dataTypeName()).toStrictEqual('PositiveIntType');
     expect(testPositiveIntType.toJSON()).toStrictEqual(VALID_INTEGER);
     expect(testPositiveIntType.hasValue()).toBe(true);
     expect(testPositiveIntType.getValue()).toBeDefined();

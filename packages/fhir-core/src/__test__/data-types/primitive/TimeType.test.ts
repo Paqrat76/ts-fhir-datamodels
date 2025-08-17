@@ -41,6 +41,7 @@ describe('TimeType', () => {
     expect(testTimeType.isEmpty()).toBe(true);
     expect(testTimeType.isPrimitive()).toBe(true);
     expect(testTimeType.isStringPrimitive()).toBe(true);
+    expect(testTimeType.dataTypeName()).toStrictEqual('TimeType');
     expect(testTimeType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -185,6 +186,7 @@ describe('TimeType', () => {
     expect(testTimeType.isEmpty()).toBe(false);
     expect(testTimeType.isPrimitive()).toBe(true);
     expect(testTimeType.isStringPrimitive()).toBe(true);
+    expect(testTimeType.dataTypeName()).toStrictEqual('TimeType');
     expect(testTimeType.toJSON()).toStrictEqual(VALID_TIME);
     expect(testTimeType.hasValue()).toBe(true);
     expect(testTimeType.getValue()).toBeDefined();

@@ -59,7 +59,7 @@ export function isDefined<T>(value: T | undefined | null): value is NonNullable<
  * @typeParam T - the value type
  * @param value - value to be evaluated
  * @param errorMessage - optional error message to override the default
- * @throws AssertionError when instance is either `undefined` or `null`
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) when instance is either `undefined` or `null`
  *
  * @category Type Guards/Assertions
  */
@@ -101,7 +101,7 @@ export function isDefinedList<T>(arr: T[] | undefined | null): arr is NonEmptyAr
  * @typeParam T - the value type
  * @param arr - array to be evaluated
  * @param errorMessage - optional error message to override the default
- * @throws AssertionError when instance is either `undefined` or `null` or an empty array
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) when instance is either `undefined` or `null` or an empty array
  *
  * @category Type Guards/Assertions
  */
@@ -151,7 +151,7 @@ export function FhirTypeGuard<T>(classInstance: unknown, className: Class<T>): c
  * @param classInstance - class instance to evaluate
  * @param className - class name for evaluation
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when FhirTypeGuard assertion is false
+ * @throws {@link InvalidTypeError} when FhirTypeGuard assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -173,7 +173,7 @@ export function assertFhirType<T>(
  * @param listInstance - array of class instances to evaluate
  * @param className - class name for evaluation
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when FhirTypeGuard assertion is false
+ * @throws {@link InvalidTypeError} when FhirTypeGuard assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -218,7 +218,7 @@ export function isString(value: unknown): value is string {
  *
  * @param value - value to be evaluated
  * @param errorMessage - optional error message to override the default
- * @throws AssertionError when instance is not a `string` type
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) when instance is not a `string` type
  *
  * @category Type Guards/Assertions
  */
@@ -246,7 +246,7 @@ export function isNumber(value: unknown): value is number {
  *
  * @param value - value to be evaluated
  * @param errorMessage - optional error message to override the default
- * @throws AssertionError when instance is not a `number` type
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) when instance is not a `number` type
  *
  * @category Type Guards/Assertions
  */
@@ -274,7 +274,7 @@ export function isBoolean(value: unknown): value is boolean {
  *
  * @param value - value to be evaluated
  * @param errorMessage - optional error message to override the default
- * @throws AssertionError when instance is not a `boolean` type
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) when instance is not a `boolean` type
  *
  * @category Type Guards/Assertions
  */

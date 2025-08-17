@@ -287,6 +287,10 @@ export class MockComplexDataType extends DataType implements IDataType {
     dest.mockCode = this.mockCode?.copy();
   }
 
+  public override dataTypeName(): string {
+    return 'MockComplexDataType';
+  }
+
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
       return undefined;

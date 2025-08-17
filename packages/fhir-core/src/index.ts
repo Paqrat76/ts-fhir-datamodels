@@ -21,6 +21,14 @@
  *
  */
 
+/**
+ * FHIR Core Library Module
+ *
+ * For questions, suggestions, or bugs, please open an issue at [GitHub ts-fhir-datamodels/issues](https://github.com/Paqrat76/ts-fhir-datamodels/issues).
+ *
+ * @module FHIR-Core-Library
+ */
+
 export * from './constants';
 export * from './base-models/Base';
 export * from './base-models/DomainResource';
@@ -29,6 +37,8 @@ export * from './base-models/Resource';
 export * from './base-models/core-fhir-codes';
 export * from './base-models/core-fhir-models';
 export * from './base-models/library-interfaces';
+export * from './data-types/code-systems/IdentifierUseEnum';
+export * from './data-types/code-systems/NarrativeStatusEnum';
 export * from './data-types/complex/CodeableConcept';
 export * from './data-types/complex/Coding';
 export * from './data-types/complex/Meta';
@@ -61,6 +71,7 @@ export * from './errors/FhirError';
 export * from './errors/InvalidCodeError';
 export * from './errors/InvalidDateTimeError';
 export * from './errors/InvalidTypeError';
+export * from './errors/JsonError';
 export * from './errors/PrimitiveTypeError';
 export * from './utility/FhirParser';
 export * from './utility/common-util';

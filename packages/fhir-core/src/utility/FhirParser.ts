@@ -66,6 +66,7 @@ import { UrlType } from '../data-types/primitive/UrlType';
 import { UuidType } from '../data-types/primitive/UuidType';
 import { XhtmlType } from '../data-types/primitive/XhtmlType';
 import { FhirError } from '../errors/FhirError';
+import { JsonError } from '../errors/JsonError';
 
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 
@@ -217,7 +218,7 @@ export class FhirParser {
    *                                         If undefined or does not contain valid FHIR data, returns undefined.
    * @returns {Extension | undefined} The initialized Extension instance derived from the JSON object, or undefined if input is invalid.
    *                                  Throws an error if required properties are missing.
-   * @throws {FhirError} If the Extension.url property is not provided.
+   * @throws {@link FhirError} If the Extension.url property is not provided.
    */
   public parseExtension(json: JSON.Object | undefined): IExtension | undefined {
     if (!JSON.hasFhirData(json)) {
@@ -443,9 +444,8 @@ export class FhirParser {
    * @param {string} fieldName - The specific field name to check and parse from jsonObj.
    * @param {string[]} supportedFieldNames - A list of valid field names that are supported for parsing.
    * @returns {IDataType | undefined} The parsed data type if valid, or undefined if parsing fails or the field is not present.
-   * @throws {FhirError} If the field name exists directly in the JSON or if multiple matching fields are found.
-   * @throws {TypeError} If an error occurs while parsing the data type.
-   * @throws {Error} If an unexpected parsing error occurs.
+   * @throws {@link FhirError} If the field name exists directly in the JSON or if multiple matching fields are found.
+   * @throws {@link JsonError} If an error occurs while parsing the data type.
    */
   private getParsedDataType(
     jsonObj: JSON.Object,
@@ -464,11 +464,11 @@ export class FhirParser {
       try {
         instance = this.getFhirDataTypeParseResults(jsonObj, fieldName);
       } catch (err) {
-        if (err instanceof TypeError) {
-          throw new TypeError(`Failed to parse ${sourceField}: ${err.message}`, err);
+        if (err instanceof JsonError) {
+          throw new JsonError(`Failed to parse ${sourceField}: ${err.message}`, err);
         } else {
           const unexpectedErrorMsg = `Unexpected error parsing ${sourceField} from the provided JSON`;
-          throw new Error(unexpectedErrorMsg);
+          throw new JsonError(unexpectedErrorMsg);
         }
       }
       return instance;
@@ -561,6 +561,25 @@ export class FhirParser {
   //endregion
 
   //region Resource Parser Helpers
+
+  /**
+   * Verifies if the provided JSON object contains the expected resourceType.
+   *
+   * @param {JSON.Object} classJsonObj - JSON object representing the resource to be validated.
+   * @param {string} resourceType - The expected resource type as a string.
+   * @throws {@link FhirError} If the 'resourceType' field is missing, or its value does not match the expected resource type.
+   */
+  public verifyResourceType(classJsonObj: JSON.Object, resourceType: string): void {
+    if (!('resourceType' in classJsonObj)) {
+      throw new FhirError(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
+    }
+    const jsonResourceType = JSON.asString(classJsonObj['resourceType'], 'resourceType');
+    if (jsonResourceType !== resourceType) {
+      throw new FhirError(
+        `Invalid FHIR JSON: Provided JSON 'resourceType' value ('${jsonResourceType}') must be '${resourceType}'`,
+      );
+    }
+  }
 
   /**
    * Processes the given JSON data and updates the provided Resource instance accordingly.
@@ -710,7 +729,7 @@ export class FhirParser {
    * @param {JSON.Value | undefined} json - The JSON object representing the resource to parse. Can be undefined or empty.
    * @param {string} sourceField - The field name or reference for identifying the source of the JSON data, used for error reporting.
    * @returns {IResource | undefined} The parsed Resource object if the JSON conforms to a valid resource structure, otherwise undefined.
-   * @throws {FhirError} If the JSON is missing the 'resourceType' property.
+   * @throws {@link FhirError} If the JSON is missing the 'resourceType' property.
    */
   public parseInlineResource(json: JSON.Value | undefined, sourceField: string): IResource | undefined {
     if (!isDefined<JSON.Value>(json) || (JSON.isJsonObject(json) && isEmpty(json))) {

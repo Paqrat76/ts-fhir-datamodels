@@ -129,7 +129,7 @@ export abstract class Element extends Base implements IElement {
    *
    * @param value - the `id` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   public setId(value: fhirString | undefined): this {
     this.id =
@@ -175,7 +175,7 @@ export abstract class Element extends Base implements IElement {
    *
    * @param url - the url that identifies a specific Extension
    * @returns `true` if an Extension has the provided url; false otherwise
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public hasExtension(url?: fhirUri): boolean {
     if (url !== undefined) {
@@ -194,7 +194,7 @@ export abstract class Element extends Base implements IElement {
    *
    * @param url - the url that identifies a specific Extension
    * @returns an Extension having the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public getExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
@@ -230,7 +230,7 @@ export abstract class Element extends Base implements IElement {
    * Removes the Extension having the provided url from the `extension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public removeExtension(url: fhirUri): void {
     validateUrl(url);
@@ -286,7 +286,7 @@ export abstract class Element extends Base implements IElement {
    * @protected
    */
   protected copyValues(dest: Element): void {
-    dest.id = this.id ? String(this.id) : undefined;
+    dest.id = this.id ?? undefined;
     const extensionList = copyListValues<IExtension>(this.extension);
     dest.extension = extensionList.length === 0 ? undefined : extensionList;
   }
@@ -382,7 +382,7 @@ export abstract class BackboneElement extends Element implements IBackboneElemen
    *
    * @param url - the url that identifies a specific Extension
    * @returns `true` if an Extension has the provided url; false otherwise
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public hasModifierExtension(url?: fhirUri): boolean {
     if (url !== undefined) {
@@ -397,7 +397,7 @@ export abstract class BackboneElement extends Element implements IBackboneElemen
    *
    * @param url - the url that identifies a specific Extension
    * @returns the Extension having the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public getModifierExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
@@ -433,7 +433,7 @@ export abstract class BackboneElement extends Element implements IBackboneElemen
    * Removes the Extension having the provided url from the `modifierExtension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public removeModifierExtension(url: fhirUri): void {
     validateUrl(url);
@@ -545,14 +545,19 @@ export abstract class DataType extends Element implements IDataType {
    *
    * @returns the a new instance copied from the current instance
    */
-  abstract override copy(): DataType;
+  public abstract override copy(): DataType;
 
   /**
    * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
    */
-  public isDataType(): boolean {
+  public override isDataType(): boolean {
     return true;
   }
+
+  /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  public abstract dataTypeName(): string;
 }
 
 /**
@@ -633,7 +638,7 @@ export abstract class BackboneType extends DataType implements IBackboneType {
    *
    * @param url - the url that identifies a specific Extension
    * @returns the Extension having the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public getModifierExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
@@ -669,7 +674,7 @@ export abstract class BackboneType extends DataType implements IBackboneType {
    * Removes the Extension having the provided url from the `modifierExtension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public removeModifierExtension(url: fhirUri): void {
     validateUrl(url);
@@ -801,7 +806,7 @@ export abstract class PrimitiveType<T> extends DataType implements IPrimitiveTyp
    *
    * @param value - the generic T value
    * @returns this
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   public setValue(value?: T): this {
     this.coercedValue = value ?? undefined;
@@ -827,7 +832,7 @@ export abstract class PrimitiveType<T> extends DataType implements IPrimitiveTyp
    * Assigns the provided value and coerces it to the T type.
    *
    * @param value - the `string` value of the primitive type
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   public setValueAsString(value?: string): void {
     this.stringValue = value;
@@ -841,7 +846,7 @@ export abstract class PrimitiveType<T> extends DataType implements IPrimitiveTyp
   /**
    * Updates this.stringValue based on the current this.coercedValue.
    *
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   private updateStringValue(): void {
     if (this.coercedValue !== undefined) {
@@ -856,7 +861,7 @@ export abstract class PrimitiveType<T> extends DataType implements IPrimitiveTyp
    *
    * @param value - the generic T value
    * @returns the `string` representation of T
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   public abstract encodeToString(value: T): string;
 
@@ -865,7 +870,7 @@ export abstract class PrimitiveType<T> extends DataType implements IPrimitiveTyp
    *
    * @param value - the `string` representation of the generic T value
    * @returns the generic T value
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   public abstract parseToPrimitive(value: string): T;
 
@@ -997,11 +1002,11 @@ export class Extension extends Element implements IExtension {
    *
    * @param value - the `url` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrl(value: fhirUri): this {
     assertIsDefined<fhirUri>(value, `Extension.url is required`);
-    const optErrMsg = `Invalid Extension.url (${String(value)})`;
+    const optErrMsg = `Invalid Extension.url (${value})`;
     this.url = parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg);
     return this;
   }
@@ -1092,7 +1097,7 @@ export class Extension extends Element implements IExtension {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     if (this.isEmpty()) {
@@ -1148,7 +1153,7 @@ export class Extension extends Element implements IExtension {
  * @param value - Polymorphic DataType value
  * @param propName - the property name for the provided FHIR DataType
  * @param jsonObj - JSON.Object to which to add the transformed FHIR DataType
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1190,7 +1195,7 @@ export function setPolymorphicValueJson(value: IDataType, propName: string, json
  * @param extensions - FHIR Extensions to be transformed (can be empty array)
  * @param jsonObj - JSON.Object to which to add the transformed Extensions
  * @param isModifierExtension - optional boolean (default: `false`); sets JSON object key name to `modifierExtension` if true; otherwise `extension`
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1226,7 +1231,7 @@ export function setFhirExtensionJson(
  * @param ptElement - FHIR primitive DataType to transform
  * @param propName - the property name for the provided FHIR primitive DataType
  * @param jsonObj - JSON.Object to which to add the transformed FHIR primitive DataType
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @see [JSON representation of primitive elements](https://hl7.org/fhir/R4/json.html#primitive)
  * @category Utilities: JSON
@@ -1260,7 +1265,7 @@ export function setFhirPrimitiveJson<T>(ptElement: IPrimitiveType<T>, propName: 
  * @param ptElements - array of FHIR primitive DataTypes to transform (can be empty array)
  * @param propName - the property name for the provided FHIR complex DataTypes
  * @param jsonObj - JSON.Object to which to add the transformed FHIR complex DataTypes
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @see [JSON representation of primitive elements](https://hl7.org/fhir/R4/json.html#primitive)
  * @category Utilities: JSON
@@ -1319,7 +1324,7 @@ export function setFhirPrimitiveListJson<T>(
  * @param cElement - FHIR complex DataType to transform
  * @param propName - the property name for the provided FHIR complex DataType
  * @param jsonObj - JSON.Object to which to add the transformed FHIR complex DataType
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1345,7 +1350,7 @@ export function setFhirComplexJson(cElement: IDataType, propName: string, jsonOb
  * @param cElements - array of FHIR complex DataTypes to transform (can be empty array)
  * @param propName - the property name for the provided FHIR complex DataTypes
  * @param jsonObj - JSON.Object to which to add the transformed FHIR complex DataTypes
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1376,7 +1381,7 @@ export function setFhirComplexListJson(cElements: IDataType[], propName: string,
  * @param bElement - FHIR BackboneElement to transform
  * @param propName - the property name for the provided FHIR BackboneElement
  * @param jsonObj - JSON.Object to which to add the transformed FHIR BackboneElement
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1402,7 +1407,7 @@ export function setFhirBackboneElementJson(bElement: IBackboneElement, propName:
  * @param bElements - array of FHIR BackboneElements to transform (can be empty array)
  * @param propName - the property name for the provided FHIR BackboneElements
  * @param jsonObj - JSON.Object to which to add the transformed FHIR BackboneElements
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1437,7 +1442,7 @@ export function setFhirBackboneElementListJson(
  * @param bType - FHIR BackboneType to transform
  * @param propName - the property name for the provided FHIR BackboneType
  * @param jsonObj - JSON.Object to which to add the transformed FHIR BackboneType
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1463,7 +1468,7 @@ export function setFhirBackboneTypeJson(bType: IBackboneType, propName: string, 
  * @param bTypes - array of FHIR BackboneType to transform (can be empty array)
  * @param propName - the property name for the provided FHIR BackboneTypes
  * @param jsonObj - JSON.Object to which to add the transformed FHIR BackboneTypes
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -1514,8 +1519,8 @@ export function setFhirBackboneTypeListJson(bTypes: IBackboneType[], propName: s
  *
  * @param sourceField - source field name
  * @returns OpenDataTypes decorator
- * @throws AssertionError for invalid uses
- * @throws InvalidTypeError for actual data type does not agree with the specified FhirOpenDataType
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid uses
+ * @throws {@link InvalidTypeError} for actual data type does not agree with the specified FhirOpenDataType
  *
  * @category Decorators
  */
@@ -1572,7 +1577,7 @@ export function OpenDataTypes(sourceField: string) {
  *
  * @param classInstance - class instance to evaluate
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when BackboneElement assertion is false
+ * @throws {@link InvalidTypeError} when BackboneElement assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -1591,7 +1596,7 @@ export function assertFhirBackboneElement(
  *
  * @param classInstance - class instance to evaluate
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when BackboneType assertion is false
+ * @throws {@link InvalidTypeError} when BackboneType assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -1610,7 +1615,7 @@ export function assertFhirBackboneType(
  *
  * @param classInstance - class instance to evaluate
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when DataType assertion is false
+ * @throws {@link InvalidTypeError} when DataType assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -1627,7 +1632,7 @@ export function assertFhirDataType(classInstance: unknown, errorMessage?: string
  * @typeParam T - the FHIR primitive type
  * @param classInstance - class instance to evaluate
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when DataType assertion is false
+ * @throws {@link InvalidTypeError} when DataType assertion is false
  *
  * @category Type Guards/Assertions
  */

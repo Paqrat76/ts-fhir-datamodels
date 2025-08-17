@@ -21,12 +21,12 @@
  *
  */
 
-import { PrimitiveType } from '../../base-models/core-fhir-models';
-import { DateTimeUtil } from '../../utility/date-time-util';
-import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
-import { fhirInstant, fhirInstantSchema, InstantTypeImpl, parseFhirPrimitiveData } from './primitive-types';
+import { fhirInstant, fhirInstantSchema, parseFhirPrimitiveData } from './primitive-types';
+import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { IPrimitiveType } from '../../base-models/library-interfaces';
+import { DateTimeUtil, InstantTypeImpl } from '../../utility/date-time-util';
+import { isDefined } from '../../utility/type-guards';
 
 /**
  * Instant Class
@@ -40,13 +40,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** This is intended for where precisely observed times are required, typically system logs etc., and not human-reported times - for them, see date and dateTime (which can be as precise as instant, but is not required to be) below. Time zone is always required
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR instant](http://hl7.org/fhir/StructureDefinition/instant)
  */
 export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiveType<fhirInstant>, InstantTypeImpl {
   /**
    * @param value - the value of the primitive `fhirInstant`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirInstant) {
     super();
@@ -75,7 +75,7 @@ export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiv
   }
 
   public encodeToString(value: fhirInstant): string {
-    return parseFhirPrimitiveData(value, fhirInstantSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirInstantSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirInstant {
@@ -88,6 +88,10 @@ export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiv
 
   public override isDateTimePrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): InstantType {

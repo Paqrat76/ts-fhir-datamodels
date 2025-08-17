@@ -47,6 +47,7 @@ describe('EnumCodeType', () => {
     expect(testEnumCodeType.isEmpty()).toBe(false);
     expect(testEnumCodeType.isPrimitive()).toBe(true);
     expect(testEnumCodeType.isStringPrimitive()).toBe(true);
+    expect(testEnumCodeType.dataTypeName()).toStrictEqual('EnumCodeType');
     expect(testEnumCodeType.toJSON()).toStrictEqual(VALID_CODE);
 
     // inherited properties from Element
@@ -83,6 +84,7 @@ describe('EnumCodeType', () => {
     expect(testEnumCodeType.isEmpty()).toBe(false);
     expect(testEnumCodeType.isPrimitive()).toBe(true);
     expect(testEnumCodeType.isStringPrimitive()).toBe(true);
+    expect(testEnumCodeType.dataTypeName()).toStrictEqual('EnumCodeType');
     expect(testEnumCodeType.toJSON()).toStrictEqual(VALID_CODE_2);
 
     // inherited properties from Element
@@ -124,6 +126,7 @@ describe('EnumCodeType', () => {
     expect(testEnumCodeType.isEmpty()).toBe(false);
     expect(testEnumCodeType.isPrimitive()).toBe(true);
     expect(testEnumCodeType.isStringPrimitive()).toBe(true);
+    expect(testEnumCodeType.dataTypeName()).toStrictEqual('EnumCodeType');
     expect(testEnumCodeType.toJSON()).toStrictEqual(VALID_CODE_2);
     expect(testEnumCodeType.toSiblingJSON()).toEqual({
       id: 'id1234',
@@ -217,6 +220,7 @@ describe('EnumCodeType', () => {
     expect(testEnumCodeType.isEmpty()).toBe(false);
     expect(testEnumCodeType.isPrimitive()).toBe(true);
     expect(testEnumCodeType.isStringPrimitive()).toBe(true);
+    expect(testEnumCodeType.dataTypeName()).toStrictEqual('EnumCodeType');
     expect(testEnumCodeType.toJSON()).toStrictEqual(VALID_CODE);
 
     // inherited properties from Element

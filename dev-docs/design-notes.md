@@ -389,7 +389,7 @@ Examples of circular references in the FHIR specification include:
 When designing data structures using TypeScript, these circular references cannot be avoided and must be resolved.
 Various strategies exist to resolve circular references such as:
 
-- Use relative imports inside of the same module
+- Use relative imports inside the same module
 - Move common code into a separate file to be imported
 - Move code from one module to another
 - Last resort: Combine files with circular dependencies into one file

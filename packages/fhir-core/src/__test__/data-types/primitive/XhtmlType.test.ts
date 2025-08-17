@@ -43,6 +43,7 @@ describe('XhtmlType', () => {
     expect(testXhtmlType.isEmpty()).toBe(true);
     expect(testXhtmlType.isPrimitive()).toBe(true);
     expect(testXhtmlType.isStringPrimitive()).toBe(true);
+    expect(testXhtmlType.dataTypeName()).toStrictEqual('XhtmlType');
     expect(testXhtmlType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -103,7 +104,7 @@ describe('XhtmlType', () => {
     expect(testXhtmlType.getExtension()).toEqual([] as Extension[]);
   });
 
-  it('should throw TypeError when attempting to setExtension()', () => {
+  it('should throw JsonError when attempting to setExtension()', () => {
     const testXhtmlType = new XhtmlType(VALID_XHTML);
     const t = () => {
       testXhtmlType.setExtension([testExtension]);
@@ -112,7 +113,7 @@ describe('XhtmlType', () => {
     expect(t).toThrow(`According to the FHIR specification, Extensions are not permitted on the xhtml type`);
   });
 
-  it('should throw TypeError when attempting to addExtension()', () => {
+  it('should throw JsonError when attempting to addExtension()', () => {
     const testXhtmlType = new XhtmlType(VALID_XHTML);
     const t = () => {
       testXhtmlType.addExtension(testExtension);
@@ -215,6 +216,7 @@ describe('XhtmlType', () => {
     expect(testXhtmlType.isEmpty()).toBe(false);
     expect(testXhtmlType.isPrimitive()).toBe(true);
     expect(testXhtmlType.isStringPrimitive()).toBe(true);
+    expect(testXhtmlType.dataTypeName()).toStrictEqual('XhtmlType');
     expect(testXhtmlType.toJSON()).toStrictEqual(VALID_XHTML);
     expect(testXhtmlType.hasValue()).toBe(true);
     expect(testXhtmlType.getValue()).toBeDefined();

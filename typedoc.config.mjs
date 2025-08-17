@@ -10,7 +10,6 @@ const config = {
   },
   out: 'merged-docs',
   sort: ['source-order'],
-  plugin: ['typedoc-plugin-zod'],
 };
 
 export default config;

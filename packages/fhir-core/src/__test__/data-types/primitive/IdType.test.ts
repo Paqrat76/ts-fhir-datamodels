@@ -41,6 +41,7 @@ describe('IdType', () => {
     expect(testIdType.isEmpty()).toBe(true);
     expect(testIdType.isPrimitive()).toBe(true);
     expect(testIdType.isStringPrimitive()).toBe(true);
+    expect(testIdType.dataTypeName()).toStrictEqual('IdType');
     expect(testIdType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -185,6 +186,7 @@ describe('IdType', () => {
     expect(testIdType.isEmpty()).toBe(false);
     expect(testIdType.isPrimitive()).toBe(true);
     expect(testIdType.isStringPrimitive()).toBe(true);
+    expect(testIdType.dataTypeName()).toStrictEqual('IdType');
     expect(testIdType.toJSON()).toStrictEqual(VALID_ID);
     expect(testIdType.hasValue()).toBe(true);
     expect(testIdType.getValue()).toBeDefined();

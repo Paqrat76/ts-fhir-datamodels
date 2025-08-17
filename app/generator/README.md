@@ -3,17 +3,17 @@
 ## Overview
 
 The generator defined in this mono-repository is not published or used independently.
-It is intended to be executed from NPM scripts in the root package.json to generate TypeScript classes representing
+It is intended to be executed from NPM scripts in the root `package.json` to generate TypeScript classes representing
 FHIR data models for FHIR resources, complex data types, and selected code systems.
-These generated TypeScript classes along with the @paq-ts-fhir/fhir-core` library will be published as public NPM
+These generated TypeScript classes along with the `@paq-ts-fhir/fhir-core` library will be published as public NPM
 libraries for each supported FHIR release (i.e., R4, R4B, R5, etc.).
 
-## fhir-package-loader
+## FHIR Package Loader
 
 The FHIR Package Loader provides TypeScript/JavaScript classes for loading FHIR packages and querying them for
 FHIR resources.
 It can load FHIR packages from a local cache, the FHIR registry, an NPM registry, and/or the FHIR build server.
-It is used in this project as a dependency library rather than as a CLI application.
+It is used in this project as a dependent library rather than as a CLI application.
 
 - [fhir-package-loader](https://github.com/FHIR/fhir-package-loader/tree/main)
   - [README](https://github.com/FHIR/fhir-package-loader/blob/main/README.md)
@@ -65,14 +65,14 @@ export interface GeneratorPackageLoaderOptions extends BasePackageLoaderOptions 
 To provide local control of the .fhir cache location, this project uses the FHIR Package Loader's `BasePackageLoader`
 rather than the FHIR Package Loader's `defaultPackageLoader`.
 This implementation is provided by `function generatorPackageLoader(options: GeneratorPackageLoaderOptions)` in the
-ts-datamodel-generator-helpers module.
+ts-datamodel-generator-helpers.ts module.
 
 ## Generator Implementation
 
-This generator was designed to be executed from NPM scripts in the root package.json.
+This generator was designed to be executed from NPM scripts in the root `package.json`.
 The `GeneratorApp` class in the generator-app.ts module provides for the generation of the data models and the writing
 of these generated data models to disk within the appropriate NPM workspace (e.g., `packages/r4-datamodels`, etc.).
-It is instantiated and used from within the generator's NPM workspace in the index.ts module.
+It is instantiated and executed from within the generator's NPM workspace in the index.ts module.
 The `function main()` selects the appropriate configuration for the provided FHIR release (i.e., R4, R5, etc.),
 instantiates the `GeneratorApp` class with this configuration data and executes the generation of the data models and
 their writing to the appropriate NPM workspace for eventual publication.

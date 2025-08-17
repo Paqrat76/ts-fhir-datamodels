@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** 32 bit number; for values larger than this, use decimal
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR integer](http://hl7.org/fhir/StructureDefinition/integer)
  */
 export class IntegerType extends PrimitiveType<fhirInteger> implements IPrimitiveType<fhirInteger> {
   /**
    * @param value - the value of the primitive `fhirInteger`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirInteger) {
     super();
@@ -70,6 +70,10 @@ export class IntegerType extends PrimitiveType<fhirInteger> implements IPrimitiv
 
   public override isNumberPrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): IntegerType {

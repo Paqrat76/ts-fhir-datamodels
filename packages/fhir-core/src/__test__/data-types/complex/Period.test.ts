@@ -26,6 +26,7 @@ import { Period } from '../../../data-types/complex/Period';
 import { DateTimeType } from '../../../data-types/primitive/DateTimeType';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
 
@@ -51,6 +52,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(true);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
       expect(testPeriod.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -84,6 +86,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(false);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
       expect(testPeriod.toJSON()).toEqual(expectedJson1);
 
       // inherited properties from Element
@@ -116,6 +119,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(true);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
       expect(testPeriod.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -595,11 +599,11 @@ describe('Period', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Period.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Period JSON is not a JSON object.`);
     });
 
@@ -629,6 +633,7 @@ describe('Period', () => {
       expect(testPeriod.fhirType()).toStrictEqual('Period');
       expect(testPeriod.isEmpty()).toBe(false);
       expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
 
       // inherited properties from Element
       expect(testPeriod.hasId()).toBe(true);
@@ -659,6 +664,7 @@ describe('Period', () => {
       expect(testType?.fhirType()).toStrictEqual('Period');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Period');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

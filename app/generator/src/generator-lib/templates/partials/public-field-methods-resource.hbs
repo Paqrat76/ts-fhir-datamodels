@@ -12,6 +12,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid resource type
    */
   public set{{upperFirst edHbs.fieldName}}(value: IResource | undefined): this {
     if (isDefined<IResource>(value)) {

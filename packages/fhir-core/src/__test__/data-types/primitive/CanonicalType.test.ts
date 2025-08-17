@@ -42,6 +42,7 @@ describe('CanonicalType', () => {
     expect(testCanonicalType.isEmpty()).toBe(true);
     expect(testCanonicalType.isPrimitive()).toBe(true);
     expect(testCanonicalType.isStringPrimitive()).toBe(true);
+    expect(testCanonicalType.dataTypeName()).toStrictEqual('CanonicalType');
     expect(testCanonicalType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -191,6 +192,7 @@ describe('CanonicalType', () => {
     expect(testCanonicalType.isEmpty()).toBe(false);
     expect(testCanonicalType.isPrimitive()).toBe(true);
     expect(testCanonicalType.isStringPrimitive()).toBe(true);
+    expect(testCanonicalType.dataTypeName()).toStrictEqual('CanonicalType');
     expect(testCanonicalType.toJSON()).toStrictEqual(VALID_CANONICAL);
     expect(testCanonicalType.hasValue()).toBe(true);
     expect(testCanonicalType.getValue()).toBeDefined();

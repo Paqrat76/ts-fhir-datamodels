@@ -19,21 +19,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.14.0] - 2025-07-??
+## [0.14.1] - 2025-08-17
+
+### Changed
+
+- Updated README documentation
+- Updated fhir-core library exports in the generated index.ts
+- Snapshot testing for generated root index.ts
+- Updated dependencies
+- Resolved linting issues in generated code due to updated ESLint version
+- Updated Handlebars templates to support tweaks to the generated Typedoc documentation
+
+### Fixed
+
+- Resource parsing issue: add check for existence of `resourceType` property
+
+
+## [0.14.0] - 2025-07-29
 
 ### Added
 
 - Configuration to support "istanbul ignore" for testing purposes
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 
 ## [0.13.0] - 2025-07-25

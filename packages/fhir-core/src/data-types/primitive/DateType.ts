@@ -21,12 +21,12 @@
  *
  */
 
-import { PrimitiveType } from '../../base-models/core-fhir-models';
-import { DateTimeUtil } from '../../utility/date-time-util';
-import { isDefined } from '../../utility/type-guards';
 import { DateTime } from 'luxon';
-import { DateTypeImpl, fhirDate, fhirDateSchema, parseFhirPrimitiveData } from './primitive-types';
+import { fhirDate, fhirDateSchema, parseFhirPrimitiveData } from './primitive-types';
+import { PrimitiveType } from '../../base-models/core-fhir-models';
 import { IPrimitiveType } from '../../base-models/library-interfaces';
+import { DateTimeUtil, DateTypeImpl } from '../../utility/date-time-util';
+import { isDefined } from '../../utility/type-guards';
 
 /**
  * Date Class
@@ -39,13 +39,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** A date or partial date (e.g. just year or year + month). There is no time zone. The format is a union of the schema types gYear, gYearMonth and date. Dates SHALL be valid dates.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR date](http://hl7.org/fhir/StructureDefinition/date)
  */
 export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<fhirDate>, DateTypeImpl {
   /**
    * @param value - the value of the primitive `fhirDate`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirDate) {
     super();
@@ -86,7 +86,7 @@ export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirDate): string {
-    return parseFhirPrimitiveData(value, fhirDateSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirDateSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirDate {
@@ -99,6 +99,10 @@ export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<
 
   public override isDateTimePrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): DateType {

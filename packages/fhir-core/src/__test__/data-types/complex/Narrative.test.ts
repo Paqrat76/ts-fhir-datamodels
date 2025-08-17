@@ -31,6 +31,7 @@ import { XhtmlType } from '../../../data-types/primitive/XhtmlType';
 import { FhirError } from '../../../errors/FhirError';
 import { InvalidCodeError } from '../../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE } from '../../test-utils';
 
@@ -72,6 +73,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(true);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       const t = () => {
         testNarrative.toJSON();
       };
@@ -108,6 +110,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       expect(testNarrative.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -140,6 +143,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(true);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       const t = () => {
         testNarrative.toJSON();
       };
@@ -566,11 +570,11 @@ describe('Narrative', () => {
       expect(t).toThrow(`The following required properties must be included in the provided JSON: Narrative.div`);
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Narrative.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Narrative JSON is not a JSON object.`);
     });
 
@@ -629,6 +633,7 @@ describe('Narrative', () => {
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
 
       // inherited properties from Element
       expect(testNarrative.hasId()).toBe(true);
@@ -661,6 +666,7 @@ describe('Narrative', () => {
       expect(testType?.fhirType()).toStrictEqual('Narrative');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Narrative');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

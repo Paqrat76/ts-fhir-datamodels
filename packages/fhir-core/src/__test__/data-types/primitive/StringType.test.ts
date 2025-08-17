@@ -41,6 +41,7 @@ describe('StringType', () => {
     expect(testStringType.isEmpty()).toBe(true);
     expect(testStringType.isPrimitive()).toBe(true);
     expect(testStringType.isStringPrimitive()).toBe(true);
+    expect(testStringType.dataTypeName()).toStrictEqual('StringType');
     expect(testStringType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -229,6 +230,7 @@ describe('StringType', () => {
     expect(testStringType.isEmpty()).toBe(false);
     expect(testStringType.isPrimitive()).toBe(true);
     expect(testStringType.isStringPrimitive()).toBe(true);
+    expect(testStringType.dataTypeName()).toStrictEqual('StringType');
     expect(testStringType.toJSON()).toStrictEqual(VALID_STRING);
     expect(testStringType.hasValue()).toBe(true);
     expect(testStringType.getValue()).toBeDefined();

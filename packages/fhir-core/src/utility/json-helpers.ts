@@ -62,6 +62,7 @@
 
 import { isEmpty } from './common-util';
 import { assertIsDefined, assertIsString, isBoolean, isDefined, isNumber, isString } from './type-guards';
+import { JsonError } from '../errors/JsonError';
 
 export type { JsonObject as Object, JsonArray as Array };
 
@@ -101,17 +102,18 @@ export function isNull(x: Value): x is null {
 }
 
 /**
- * Cast a JSON value to `null`, throwing a `TypeError` if the cast fails.
+ * Cast a JSON value to `null`, throwing a `JsonError` if the cast fails.
  *
  * @param x - JSON value to cast
  * @param prefix - optional error message prefix
  * @returns null
+ * @throws {@link JsonError} if the cast fails
  *
  * @category Utilities: JSON
  */
 export function asNull(x: Value, prefix?: string): null {
   if (!isNull(x)) {
-    throw new TypeError(msg(prefix, 'null'));
+    throw new JsonError(msg(prefix, 'null'));
   }
   return null;
 }
@@ -129,17 +131,18 @@ export function isJsonBoolean(x: Value): x is boolean {
 }
 
 /**
- * Cast a JSON value to `boolean`, throwing a `TypeError` if the cast fails.
+ * Cast a JSON value to `boolean`, throwing a `JsonError` if the cast fails.
  *
  * @param x - JSON value to cast
  * @param prefix - optional error message prefix
  * @returns boolean
+ * @throws {@link JsonError} if the cast fails
  *
  * @category Utilities: JSON
  */
 export function asBoolean(x: Value, prefix?: string): boolean {
   if (!isJsonBoolean(x)) {
-    throw new TypeError(msg(prefix, 'a boolean'));
+    throw new JsonError(msg(prefix, 'a boolean'));
   }
   return x;
 }
@@ -157,17 +160,18 @@ export function isJsonNumber(x: Value): x is number {
 }
 
 /**
- * Cast a JSON value to `number`, throwing a `TypeError` if the cast fails.
+ * Cast a JSON value to `number`, throwing a `JsonError` if the cast fails.
  *
  * @param x - JSON value to cast
  * @param prefix - optional error message prefix
- * @returns boolean
+ * @returns number
+ * @throws {@link JsonError} if the cast fails
  *
  * @category Utilities: JSON
  */
 export function asNumber(x: Value, prefix?: string): number {
   if (!isJsonNumber(x)) {
-    throw new TypeError(msg(prefix, 'a number'));
+    throw new JsonError(msg(prefix, 'a number'));
   }
   return x;
 }
@@ -185,17 +189,18 @@ export function isJsonString(x: Value): x is string {
 }
 
 /**
- * Cast a JSON value to `string`, throwing a `TypeError` if the cast fails.
+ * Cast a JSON value to `string`, throwing a `JsonError` if the cast fails.
  *
  * @param x - JSON value to cast
  * @param prefix - optional error message prefix
- * @returns boolean
+ * @returns string
+ * @throws {@link JsonError} if the cast fails
  *
  * @category Utilities: JSON
  */
 export function asString(x: Value, prefix?: string): string {
   if (!isJsonString(x)) {
-    throw new TypeError(msg(prefix, 'a string'));
+    throw new JsonError(msg(prefix, 'a string'));
   }
   return x;
 }
@@ -213,17 +218,18 @@ export function isJsonObject(x: Value): x is JsonObject {
 }
 
 /**
- * Cast a JSON value to `Object`, throwing a `TypeError` if the cast fails.
+ * Cast a JSON value to `Object`, throwing a `JsonError` if the cast fails.
  *
  * @param x - JSON value to cast
  * @param prefix - optional error message prefix
- * @returns boolean
+ * @returns JsonObject
+ * @throws {@link JsonError} if the cast fails
  *
  * @category Utilities: JSON
  */
 export function asObject(x: Value, prefix?: string): JsonObject {
   if (!isJsonObject(x)) {
-    throw new TypeError(msg(prefix, 'a JSON object'));
+    throw new JsonError(msg(prefix, 'a JSON object'));
   }
   return x;
 }
@@ -241,17 +247,18 @@ export function isJsonArray(x: Value): x is JsonArray {
 }
 
 /**
- * Cast a JSON value to `Array`, throwing a `TypeError` if the cast fails.
+ * Cast a JSON value to `Array`, throwing a `JsonError` if the cast fails.
  *
  * @param x - JSON value to cast
  * @param prefix - optional error message prefix
- * @returns boolean
+ * @returns JsonArray
+ * @throws {@link JsonError} if the cast fails
  *
  * @category Utilities: JSON
  */
 export function asArray(x: Value, prefix?: string): JsonArray {
   if (!isJsonArray(x)) {
-    throw new TypeError(msg(prefix, 'a JSON array'));
+    throw new JsonError(msg(prefix, 'a JSON array'));
   }
   return x;
 }
@@ -298,7 +305,7 @@ export function safeStringify(value: Value): string {
  *   as a JSON number, the FHIR type `boolean` as a JSON boolean, and all other types
  *   (including `integer64`) are represented as a JSON string which has the same content
  *   as that specified for the relevant datatype. Whitespace is always significant
- *   (i.e. no leading and trailing spaces for non-strings).
+ *   (i.e., no leading and trailing spaces for non-strings).
  *
  * @param x - JSON Value
  * @returns true if argument has actual data; false otherwise

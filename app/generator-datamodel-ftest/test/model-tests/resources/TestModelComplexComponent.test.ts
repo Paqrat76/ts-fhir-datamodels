@@ -21,7 +21,8 @@
  *
  */
 
-import { EnumCodeType, FhirError, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
+import { AssertionError } from 'node:assert';
+import { EnumCodeType, FhirError, IBackboneElement, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
 import {
   TestModelComplexComponent,
   TestModelComplexReferenceComponent,
@@ -52,7 +53,6 @@ import {
   VALID_PERIOD_2,
 } from '../../ftest-mocks';
 import { TestData } from '../../ftest-data';
-import { AssertionError } from 'node:assert';
 
 describe('TestModelComplexComponent', () => {
   let testModelComplexReferenceComponent: TestModelComplexReferenceComponent;
@@ -97,8 +97,8 @@ describe('TestModelComplexComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new TestModelComplexComponent();
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -132,8 +132,8 @@ describe('TestModelComplexComponent', () => {
         testModelComplexReferenceComponent,
       );
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -167,8 +167,8 @@ describe('TestModelComplexComponent', () => {
 
       let testInstance: TestModelComplexComponent = testModel.copy();
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -212,8 +212,8 @@ describe('TestModelComplexComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -245,8 +245,8 @@ describe('TestModelComplexComponent', () => {
       testInstance.setComplex1x([VALID_PERIOD]);
       testInstance.setReference(testModelComplexReferenceComponent);
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -276,8 +276,8 @@ describe('TestModelComplexComponent', () => {
       testInstance.setComplex1x([VALID_PERIOD_2]);
       testInstance.setReference(testModelComplexReferenceComponent_2);
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -319,8 +319,8 @@ describe('TestModelComplexComponent', () => {
       expect(t).toThrow(AssertionError);
       expect(t).toThrow('TestModel.complex.reference is required');
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -448,8 +448,8 @@ describe('TestModelComplexComponent', () => {
       testInstance.setComplex1x([VALID_PERIOD]);
       testInstance.setReference(testModelComplexReferenceComponent);
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
@@ -496,8 +496,8 @@ describe('TestModelComplexComponent', () => {
     it('should return parsed TestModelComplexComponent for valid json', () => {
       const testInstance: TestModelComplexComponent | undefined = TestModelComplexComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<TestModelComplexComponent>(
-        TestModelComplexComponent,
+      expectBackboneElementBase(
+        TestModelComplexComponent as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',

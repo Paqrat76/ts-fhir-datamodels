@@ -43,6 +43,7 @@ describe('MarkdownType', () => {
     expect(testMarkdownType.isEmpty()).toBe(true);
     expect(testMarkdownType.isPrimitive()).toBe(true);
     expect(testMarkdownType.isStringPrimitive()).toBe(true);
+    expect(testMarkdownType.dataTypeName()).toStrictEqual('MarkdownType');
     expect(testMarkdownType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -231,6 +232,7 @@ describe('MarkdownType', () => {
     expect(testMarkdownType.isEmpty()).toBe(false);
     expect(testMarkdownType.isPrimitive()).toBe(true);
     expect(testMarkdownType.isStringPrimitive()).toBe(true);
+    expect(testMarkdownType.dataTypeName()).toStrictEqual('MarkdownType');
     expect(testMarkdownType.toJSON()).toStrictEqual(VALID_MARKDOWN);
     expect(testMarkdownType.hasValue()).toBe(true);
     expect(testMarkdownType.getValue()).toBeDefined();

@@ -10,7 +10,7 @@ The generator consumes FHIR artifacts for selected FHIR releases to generate the
 The data models are generated for FHIR resources and complex data types using FHIR StructureDefinitions.
 FHIR CodeSystems are used to generate "pseudo-enums" for FHIR `code` data elements defined in StructureDefinitions
 having a `required` binding.
-This project also includes a FHIR core library (`fhir-core`) used by all generated data models.
+This project also includes a FHIR core library (`fhir-core`) used by all generated data model projects.
 It includes the base models, primitive FHIR data types, utilities, and custom errors.
 
 ## Development Plan
@@ -35,9 +35,12 @@ This project will be constructed in the following phases:
 4. (**Completed**) Cleanup the `fhir-core` package. The goal is to trim down the project to only include the primitive data type
    implementations, base models, dependent complex type models, utilities, errors, etc. Ensure unit test coverage
    exceeds 90%.
-5. (**Work-in-Progress**) Fill out project documentation for all aspects of this mono-repository
-6. Add the `r4b-datamodels` and `r5-datamodels` packages. The `r6-datamodels`package will be added when FHIR R6 is released.
-7. Finalize component documentation (using [Typedoc](https://typedoc.org/)) for each package. Implement the publication
-   of this documentation for consumers of these packages.
-8. In each of the data model packages, implement the publication process to the NPM repository to make these libraries
+5. (**Completed**) Fill out project documentation for all aspects of this mono-repository
+6. (**Completed**) Finalize component documentation (using [Typedoc](https://typedoc.org/)) for each package
+7. (**Work-in-Progress**) Prepare the project for publication to NPM for fhir-core and r4-datamodels
+8. Add the `r4b-datamodels` and `r5-datamodels` packages.
+   Add a document in dev-docs that describes in detail the process of adding new data model packages.
+   The `r6-datamodels`package will be added when FHIR R6 is released.
+9. In each of the data model packages, implement the publication process to the NPM repository to make these libraries
    available for use by FHIR developers.
+   Implement the publication of the data model documentation for consumers of these packages.

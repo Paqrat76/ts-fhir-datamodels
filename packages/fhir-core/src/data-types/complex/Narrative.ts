@@ -63,7 +63,7 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * - **Definition:** A human-readable summary of the resource conveying the essential clinical and business information for the resource.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Narrative](http://hl7.org/fhir/StructureDefinition/Narrative)
  */
 export class Narrative extends DataType implements IDataType {
@@ -95,6 +95,8 @@ export class Narrative extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Narrative`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Narrative
    * @returns Narrative data model or undefined for `Narrative`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Narrative | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -191,6 +193,8 @@ export class Narrative extends DataType implements IDataType {
 
   /**
    * @returns the `status` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link NarrativeStatusEnum }
    */
   public getStatusEnumType(): EnumCodeType | null {
     return this.status;
@@ -201,6 +205,8 @@ export class Narrative extends DataType implements IDataType {
    *
    * @param enumType - the `status` value
    * @returns this
+   *
+   * @see CodeSystem Enumeration: {@link NarrativeStatusEnum }
    */
   public setStatusEnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, `Narrative.status is required`);
@@ -219,6 +225,8 @@ export class Narrative extends DataType implements IDataType {
 
   /**
    * @returns the `status` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link NarrativeStatusEnum }
    */
   public getStatusElement(): CodeType | null {
     if (this.status === null) {
@@ -232,6 +240,8 @@ export class Narrative extends DataType implements IDataType {
    *
    * @param element - the `status` value
    * @returns this
+   *
+   * @see CodeSystem Enumeration: {@link NarrativeStatusEnum }
    */
   public setStatusElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, `Narrative.status is required`);
@@ -250,6 +260,8 @@ export class Narrative extends DataType implements IDataType {
 
   /**
    * @returns the `status` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link NarrativeStatusEnum }
    */
   public getStatus(): fhirCode | null {
     if (this.status === null) {
@@ -263,10 +275,12 @@ export class Narrative extends DataType implements IDataType {
    *
    * @param value - the `status` value
    * @returns this
+   *
+   * @see CodeSystem Enumeration: {@link NarrativeStatusEnum }
    */
   public setStatus(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, `Narrative.status is required`);
-    const optErrMsg = `Invalid Narrative.status (${String(value)})`;
+    const optErrMsg = `Invalid Narrative.status (${value})`;
     this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.narrativeStatusEnum);
     return this;
   }
@@ -322,11 +336,11 @@ export class Narrative extends DataType implements IDataType {
    *
    * @param value - the `div` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDiv(value: fhirXhtml): this {
     assertIsDefined<fhirXhtml>(value, `Narrative.div is required`);
-    const optErrMsg = `Invalid Narrative.div (${String(value)})`;
+    const optErrMsg = `Invalid Narrative.div (${value})`;
     this.div = new XhtmlType(parseFhirPrimitiveData(value, fhirXhtmlSchema, optErrMsg));
     return this;
   }
@@ -383,8 +397,15 @@ export class Narrative extends DataType implements IDataType {
   }
 
   /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  public override dataTypeName(): string {
+    return this.constructor.name;
+  }
+
+  /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!

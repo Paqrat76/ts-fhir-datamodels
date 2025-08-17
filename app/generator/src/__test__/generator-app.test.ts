@@ -22,13 +22,14 @@
  */
 
 import { join, resolve } from 'node:path';
-import { readdirSync, rmSync } from 'node:fs';
+import { readdirSync, readFileSync, rmSync } from 'node:fs';
 import * as os from 'node:os';
 import { GeneratorApp } from '../generator-app';
 import { FhirPackage, GeneratedContent } from '../generator-lib/ts-datamodel-generator-helpers';
 
 describe('src/generator-app unit test suite', () => {
   const testOut = resolve(__dirname, 'test-out');
+  const testOutIndex = resolve(__dirname, 'test-out', 'index.ts');
   const testOutCodeSystems = join(testOut, 'code-systems');
   const testOutComplexTypes = join(testOut, 'complex-types');
   const testOutResources = join(testOut, 'resources');
@@ -101,6 +102,11 @@ describe('src/generator-app unit test suite', () => {
         'parsable-resource-map.ts',
       ];
       expect(testResources).toEqual(expectedResources);
+
+      expect(testOutIndex).toBeDefined();
+      const indexFile = readFileSync(testOutIndex, 'utf8');
+      expect(indexFile).toBeDefined();
+      expect(indexFile).toMatchSnapshot();
     });
   });
 

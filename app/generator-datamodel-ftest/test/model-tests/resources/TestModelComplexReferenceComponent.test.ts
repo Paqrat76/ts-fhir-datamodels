@@ -21,7 +21,7 @@
  *
  */
 
-import { EnumCodeType, FhirError, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
+import { EnumCodeType, FhirError, IBackboneElement, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
 import { ConsentStateCodesEnum } from '../../../src/code-systems/ConsentStateCodesEnum';
 import { ContributorTypeEnum } from '../../../src/code-systems/ContributorTypeEnum';
 import { Reference } from '../../../src/complex-types/complex-datatypes';
@@ -77,8 +77,8 @@ describe('TestModelComplexReferenceComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new TestModelComplexReferenceComponent();
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -112,8 +112,8 @@ describe('TestModelComplexReferenceComponent', () => {
         [testTestModelComplexReferenceEnumCodeComponent],
       );
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -147,8 +147,8 @@ describe('TestModelComplexReferenceComponent', () => {
 
       let testInstance: TestModelComplexReferenceComponent = testModel.copy();
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -192,8 +192,8 @@ describe('TestModelComplexReferenceComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -225,8 +225,8 @@ describe('TestModelComplexReferenceComponent', () => {
       testInstance.setReference1x([VALID_HEALTHCARESERVICE_REFERENCE]);
       testInstance.setEnumCode([testTestModelComplexReferenceEnumCodeComponent]);
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -256,8 +256,8 @@ describe('TestModelComplexReferenceComponent', () => {
       testInstance.addReference1x(VALID_HEALTHCARESERVICE_REFERENCE_2);
       testInstance.addEnumCode(testTestModelComplexReferenceEnumCodeComponent_2);
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -305,8 +305,8 @@ describe('TestModelComplexReferenceComponent', () => {
       expect(t).toThrow(AssertionError);
       expect(t).toThrow('TestModel.complex.reference.enumCode is required');
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -430,8 +430,8 @@ describe('TestModelComplexReferenceComponent', () => {
       testInstance.setEnumCode([testTestModelComplexReferenceEnumCodeComponent]);
       testInstance.addEnumCode(testTestModelComplexReferenceEnumCodeComponent_2);
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -485,8 +485,8 @@ describe('TestModelComplexReferenceComponent', () => {
       const testInstance: TestModelComplexReferenceComponent | undefined =
         TestModelComplexReferenceComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<TestModelComplexReferenceComponent>(
-        TestModelComplexReferenceComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceComponent',
         'TestModel.complex.reference',
@@ -519,7 +519,7 @@ describe('TestModelComplexReferenceComponent', () => {
       let t = () => {
         new TestModelComplexReferenceComponent(VALID_MOCK_COMPLEX_DATATYPE, null, null);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setReference11 (TestModel.complex.reference.reference11) expects a single argument to be type of 'Reference | undefined | null'`,
       );
@@ -527,7 +527,7 @@ describe('TestModelComplexReferenceComponent', () => {
       t = () => {
         new TestModelComplexReferenceComponent(null, [VALID_MOCK_COMPLEX_DATATYPE], null);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setReference1x (TestModel.complex.reference.reference1x) expects argument[0] to be type of 'Reference'`,
       );
@@ -546,7 +546,7 @@ describe('TestModelComplexReferenceComponent', () => {
       const t = () => {
         testTestDataModelReferenceComponent.setReference01(VALID_MOCK_COMPLEX_DATATYPE);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setReference01 (TestModel.complex.reference.reference01) expects a single argument to be type of 'Reference | undefined | null'`,
       );
@@ -557,7 +557,7 @@ describe('TestModelComplexReferenceComponent', () => {
       let t = () => {
         testTestDataModelReferenceComponent.setReference0x([VALID_MOCK_COMPLEX_DATATYPE]);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setReference0x (TestModel.complex.reference.reference0x) expects argument[0] to be type of 'Reference'`,
       );
@@ -565,7 +565,7 @@ describe('TestModelComplexReferenceComponent', () => {
       t = () => {
         testTestDataModelReferenceComponent.addReference0x(VALID_MOCK_COMPLEX_DATATYPE);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on addReference0x (TestModel.complex.reference.reference0x) expects a single argument to be type of 'Reference | undefined | null'`,
       );
@@ -576,7 +576,7 @@ describe('TestModelComplexReferenceComponent', () => {
       let t = () => {
         testTestDataModelReferenceComponent.setReference11(VALID_MOCK_COMPLEX_DATATYPE);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setReference11 (TestModel.complex.reference.reference11) expects a single argument to be type of 'Reference | undefined | null'`,
       );
@@ -599,7 +599,7 @@ describe('TestModelComplexReferenceComponent', () => {
       let t = () => {
         testTestDataModelReferenceComponent.setReference1x([VALID_MOCK_COMPLEX_DATATYPE]);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on setReference1x (TestModel.complex.reference.reference1x) expects argument[0] to be type of 'Reference'`,
       );
@@ -607,7 +607,7 @@ describe('TestModelComplexReferenceComponent', () => {
       t = () => {
         testTestDataModelReferenceComponent.addReference1x(VALID_MOCK_COMPLEX_DATATYPE);
       };
-      expect(t).toThrow(AssertionError);
+      expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ReferenceTargets decorator on addReference1x (TestModel.complex.reference.reference1x) expects a single argument to be type of 'Reference | undefined | null'`,
       );

@@ -26,6 +26,7 @@ import { Identifier, Reference } from '../../../data-types/complex/Reference-Ide
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, INVALID_STRING, INVALID_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
 
@@ -68,6 +69,7 @@ describe('Reference', () => {
       expect(testReference.fhirType()).toStrictEqual('Reference');
       expect(testReference.isEmpty()).toBe(true);
       expect(testReference.isComplexDataType()).toBe(true);
+      expect(testReference.dataTypeName()).toStrictEqual('Reference');
       expect(testReference.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -109,6 +111,7 @@ describe('Reference', () => {
       expect(testReference.fhirType()).toStrictEqual('Reference');
       expect(testReference.isEmpty()).toBe(false);
       expect(testReference.isComplexDataType()).toBe(true);
+      expect(testReference.dataTypeName()).toStrictEqual('Reference');
       expect(testReference.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -149,6 +152,7 @@ describe('Reference', () => {
       expect(testReference.fhirType()).toStrictEqual('Reference');
       expect(testReference.isEmpty()).toBe(true);
       expect(testReference.isComplexDataType()).toBe(true);
+      expect(testReference.dataTypeName()).toStrictEqual('Reference');
       expect(testReference.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -584,11 +588,11 @@ describe('Reference', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Reference.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Reference JSON is not a JSON object.`);
     });
 
@@ -620,6 +624,7 @@ describe('Reference', () => {
       expect(testReference.fhirType()).toStrictEqual('Reference');
       expect(testReference.isEmpty()).toBe(false);
       expect(testReference.isComplexDataType()).toBe(true);
+      expect(testReference.dataTypeName()).toStrictEqual('Reference');
 
       // inherited properties from Element
       expect(testReference.hasId()).toBe(true);
@@ -656,6 +661,7 @@ describe('Reference', () => {
       expect(testType?.fhirType()).toStrictEqual('Reference');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Reference');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

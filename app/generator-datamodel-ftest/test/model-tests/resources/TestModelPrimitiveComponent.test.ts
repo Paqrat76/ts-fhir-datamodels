@@ -27,6 +27,7 @@ import {
   FhirError,
   fhirInteger,
   fhirString,
+  IBackboneElement,
   IntegerType,
   InvalidTypeError,
   PrimitiveTypeError,
@@ -50,8 +51,8 @@ describe('TestModelPrimitiveComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new TestModelPrimitiveComponent();
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -97,8 +98,8 @@ describe('TestModelPrimitiveComponent', () => {
         TestData.VALID_URI_TYPE,
       );
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -145,8 +146,8 @@ describe('TestModelPrimitiveComponent', () => {
       );
       initializeBackboneElementProperties(testInstance, 1);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -198,8 +199,8 @@ describe('TestModelPrimitiveComponent', () => {
 
       let testInstance = testModel.copy();
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -307,8 +308,8 @@ describe('TestModelPrimitiveComponent', () => {
 
       let testInstance = testModel.copy();
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -414,8 +415,8 @@ describe('TestModelPrimitiveComponent', () => {
       testInstance.setPrimitive1x([TestData.VALID_STRING]);
       testInstance.setChoice11(TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -463,8 +464,8 @@ describe('TestModelPrimitiveComponent', () => {
       testInstance.addPrimitive1x(TestData.VALID_STRING_2);
       testInstance.setChoice11(TestData.VALID_STRING_TYPE);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -571,8 +572,8 @@ describe('TestModelPrimitiveComponent', () => {
       testInstance.setPrimitive1xElement([TestData.VALID_STRING_TYPE]);
       testInstance.setChoice11(TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -620,8 +621,8 @@ describe('TestModelPrimitiveComponent', () => {
       testInstance.addPrimitive1xElement(TestData.VALID_STRING_TYPE_2);
       testInstance.setChoice11(TestData.VALID_STRING_TYPE);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -788,8 +789,8 @@ describe('TestModelPrimitiveComponent', () => {
       testInstance.addPrimitive1xElement(TestData.VALID_STRING_TYPE_2);
       testInstance.setChoice11(TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',
@@ -857,8 +858,8 @@ describe('TestModelPrimitiveComponent', () => {
     it('should return parsed TestModelPrimitiveComponent for valid json', () => {
       const testInstance: TestModelPrimitiveComponent | undefined = TestModelPrimitiveComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<TestModelPrimitiveComponent>(
-        TestModelPrimitiveComponent,
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelPrimitiveComponent',
         'TestModel.primitive',

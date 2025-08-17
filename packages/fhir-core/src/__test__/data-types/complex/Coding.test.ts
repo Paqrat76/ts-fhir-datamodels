@@ -29,6 +29,7 @@ import { fhirBoolean } from '../../../data-types/primitive/primitive-types';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import {
   INVALID_NON_STRING_TYPE,
@@ -82,6 +83,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(true);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
       expect(testCoding.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -130,6 +132,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(false);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
       expect(testCoding.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -177,6 +180,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(true);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
       expect(testCoding.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -628,11 +632,11 @@ describe('Coding', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Coding.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Coding JSON is not a JSON object.`);
     });
 
@@ -664,6 +668,7 @@ describe('Coding', () => {
       expect(testCoding.fhirType()).toStrictEqual('Coding');
       expect(testCoding.isEmpty()).toBe(false);
       expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
 
       // inherited properties from Element
       expect(testCoding.hasId()).toBe(true);
@@ -706,6 +711,7 @@ describe('Coding', () => {
       expect(testType?.fhirType()).toStrictEqual('Coding');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('Coding');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

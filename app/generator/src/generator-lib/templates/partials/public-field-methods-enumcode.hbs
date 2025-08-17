@@ -2,6 +2,8 @@
 {{#if this.isOptionalItem}}
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType | undefined {
     return this.{{edHbs.fieldIdentifierName}};
@@ -12,6 +14,10 @@
    *
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code values
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -33,6 +39,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType | undefined {
     if (this.{{edHbs.fieldIdentifierName}} === undefined) {
@@ -46,6 +54,10 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -67,6 +79,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode | undefined {
     if (this.{{edHbs.fieldIdentifierName}} === undefined) {
@@ -80,6 +94,10 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -101,6 +119,8 @@
 {{#if this.isRequiredItem}}
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType | null {
     return this.{{edHbs.fieldIdentifierName}};
@@ -111,6 +131,10 @@
    *
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, `{{edHbs.path}} is required`);
@@ -129,6 +153,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType | null {
     if (this.{{edHbs.fieldIdentifierName}} === null) {
@@ -142,6 +168,10 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType): this {
     assertIsDefined<CodeType>(element, `{{edHbs.path}} is required`);
@@ -160,6 +190,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode | null {
     if (this.{{edHbs.fieldIdentifierName}} === null) {
@@ -173,6 +205,10 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, `{{edHbs.path}} is required`);
@@ -191,6 +227,8 @@
 {{#if this.isOptionalList}}
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType[] {
     return this.{{edHbs.fieldIdentifierName}} ?? ([] as EnumCodeType[]);
@@ -201,6 +239,10 @@
    *
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
@@ -218,6 +260,9 @@
    *
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -238,6 +283,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType[] {
     if (this.{{edHbs.fieldIdentifierName}} === undefined) {
@@ -251,6 +298,10 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -272,6 +323,10 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -292,6 +347,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode[] {
     if (this.{{edHbs.fieldIdentifierName}} === undefined) {
@@ -309,7 +366,10 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -330,6 +390,10 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -359,6 +423,8 @@
 {{#if this.isRequiredList}}
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}EnumType(): EnumCodeType[] {
     return this.{{edHbs.fieldIdentifierName}} ?? ([] as EnumCodeType[]);
@@ -369,6 +435,10 @@
    *
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType[]): this {
     assertIsDefinedList<EnumCodeType>(enumType, `{{edHbs.path}} is required`);
@@ -383,6 +453,10 @@
    *
    * @param enumType - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public add{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -403,6 +477,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}Element(): CodeType[] {
     if (this.{{edHbs.fieldIdentifierName}} === null) {
@@ -416,6 +492,10 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: CodeType[]): this {
     assertIsDefinedList<CodeType>(element, `{{edHbs.path}} is required`);
@@ -434,6 +514,10 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: CodeType): this {
     if (isDefined<CodeType>(element)) {
@@ -454,6 +538,8 @@
 
   /**
    * @returns the `{{edHbs.fieldIdentifierName}}` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public get{{upperFirst edHbs.fieldName}}(): fhirCode[] {
     if (this.{{edHbs.fieldIdentifierName}} === null) {
@@ -471,7 +557,10 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhirCode[]): this {
     assertIsDefinedList<fhirCode>(value, `{{edHbs.path}} is required`);
@@ -489,6 +578,10 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhirCode): this {
     if (isDefined<fhirCode>(value)) {

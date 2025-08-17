@@ -2,42 +2,21 @@
 
 ## Background
 
-The `generator` project provides the mechanism to consume FHIR `StructureDefinition`s for a specified FHIR release
-to generate TypeScript classes (data models) representing each FHIR resource, complex data type, and associated
-CodeSystem pseudo-enums.
-This `generator` project includes a comprehensive unit test suite.
+Refer to [README](README.md) for additional background.
 
-A TypeScript library (`fhir-core`) has been created for use within the generated TypeScript classes.
-This core library contains the base classes and the FHIR primitive data type definitions used by the
-generated classes as well as various common utilities and helpers required by the generated TypeScript classes.
-This library includes its own comprehensive unit test suite.
-
-The generated TypeScript classes are not just "plain old objects" — they are sophisticated data models.
-They include private data element properties and public methods that provide for reading and modifying the values of
-these data elements.
-Public helper methods are provided to help identify the type of FHIR resource and to facilitate the handling
-of class instances.
-Additionally, they contain public methods used to serialize and deserialize the data according to the FHIR
-specification.
-
-Testing all generated classes is not possible, so we must test the patterns used to generate these data models.
-FHIR resources have many common characteristics that can be defined in various patterns that are used by the
-code generator templates.
-These various patterns can be tested, giving us confidence that generated classes will be dependable.
-
-Code patterns have been defined and applied to the various Handlebars templates used in the `generator`.
+Code patterns were defined and applied to the various Handlebars templates used in the `generator`.
 Testing these code patterns is necessary to ensure generated code works as expected.
 To test all of these code patterns, we created two custom FHIR `StructureDefinition`s to define custom FHIR
 resources that contain all the possible patterns.
 These two two custom FHIR `StructureDefinition`s will be consumed by the `generator` to generate their associated
-data models.
+data models (`TestModel` and `SimplePersonModel`).
 These custom generated data models are only used to perform a comprehensive set of functional tests to verify the
 patterns used to create the data models result is correct code.
 
 These custom resource data models make use of standard FHIR data types and reference standard FHIR resources.
 The primitive FHIR data types are defined in `@paq-ts-fhir/fhir-core`.
 The complex FHIR data types are generated along with the FHIR resources.
-A separate FHIR cache (`.fhir`) was created in `functional-test/ftest-cache` to contain the two custom FHIR
+A separate FHIR cache (`.fhir`) was created in `test/ftest-cache` to contain the two custom FHIR
 resources along with all dependent FHIR resources and complex data types.
 Additionally, ValueSets and CodeSystems required to generate the pseudo-enum classes for those used by
 the `code` primitive data type having a "required" ValueSet binding are included.
@@ -57,14 +36,15 @@ The primary custom FHIR data model shall support the following requirements:
   - Primitive data type
   - Reference data type (uses TypeScript decorators)
   - Resource data type (optional single field only)
-    > NOTE: While no specific rule exists in the FHIR specification, use of Resource as an element data type is
+    > [!NOTE]
+    > While no specific rule exists in the FHIR specification, use of Resource as an element data type is
     > limited to Bundle and Parameters. In these use cases, the data element is always a single, optional
     > value (0..1).
     > The exception is the DomainResource.contained. It is always an optional list (0..\*).
 - Private class fields define data elements containing the above data element types
   - Optional single fields (0..1) and optional list fields (0...m where m > 0) must support `undefined`
   - Required single fields (1..1) and required list fields (n...m where n > 0 and m >= n) must support `null`
-- Constructors must initialize "required single fields", "required list fields", and "required EnumCodeType fields"
+- Constructors must initialize "required single fields," "required list fields," and "required EnumCodeType fields"
   where `null` is the default initialization value
 - Fully defined static `parse()` method for deserialization
 - Fully defined `toJson()` method for serialization
@@ -217,6 +197,7 @@ These custom resources are used for function testing of the various FHIR pattern
 ### FHIR Resource for Functional Testing
 
 This resource is used for function testing of a resource that extends `Resource` rather than `DomainResource`.
+It also contains many of the data model requirements defined above.
 
 - `Bundle`
 
@@ -283,7 +264,7 @@ Indirect dependencies (references in indirect dependencies):
 
 ### FHIR Complex Data Types
 
-All FHIR complex data types are included since `Extension` and `Parameters` require ["open type elements"](https://www.hl7.org/fhir/datatypes.html#open).
+All FHIR complex data types are included since `Extension` require ["open type elements"](https://www.hl7.org/fhir/datatypes.html#open).
 Because of common patterns for FHIR complex data types, not all complex data types need to be tested.
 Seven complex data types are defined in `@paq-ts-fhir/fhir-core` because of dependency requirements and
 are all fully tested in that library.
@@ -314,7 +295,7 @@ included in the functional testing.
 - `Ratio`
 - `SampledData`
 - `Signature`
-- `Timing` - will be fully tested in this project
+- `Timing` - **will be fully tested in this project**
 
 **MetaData Types:**
 
@@ -362,7 +343,7 @@ Resources:
   - http://hl7.org/fhir/ValueSet/days-of-week / http://hl7.org/fhir/days-of-week
 - For `Endpoint`
   - http://hl7.org/fhir/ValueSet/endpoint-status / http://hl7.org/fhir/location-mode
-  - http://hl7.org/fhir/ValueSet/mimetypes / NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/mimetypes / IGNORED: NON-FHIR CodeSystem
 - For `Device`
   - http://hl7.org/fhir/ValueSet/udi-entry-type / http://hl7.org/fhir/udi-entry-type
   - http://hl7.org/fhir/ValueSet/device-status / http://hl7.org/fhir/device-status
@@ -383,8 +364,8 @@ Complex Data Types:
 - For `Age` - N/A
 - For `Annotation` - N/A
 - For `Attachment`
-  - http://hl7.org/fhir/ValueSet/mimetypes / NON-FHIR CodeSystem
-  - http://hl7.org/fhir/ValueSet/languages / NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/mimetypes / IGNORED: NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/languages / IGNORED: NON-FHIR CodeSystem
 - For `CodeableConcept` - N/A
 - For `Coding` - N/A
 - For `ContactDetail` - N/A
@@ -395,7 +376,7 @@ Complex Data Types:
   - http://hl7.org/fhir/ValueSet/contributor-type / http://hl7.org/fhir/contributor-type
 - For `Count` - N/A
 - For `DataRequirement`
-  - http://hl7.org/fhir/ValueSet/all-types / MULTIPLE CodeSystems
+  - http://hl7.org/fhir/ValueSet/all-types / IGNORED: MULTIPLE CodeSystems in ValueSet
   - http://hl7.org/fhir/ValueSet/sort-direction / http://hl7.org/fhir/sort-direction
 - For `Distance` - N/A
 - For `Dosage` - N/A
@@ -407,12 +388,12 @@ Complex Data Types:
   - http://hl7.org/fhir/ValueSet/identifier-use / http://hl7.org/fhir/identifier-use
 - For `Meta` - N/A
 - For `Money`
-  - http://hl7.org/fhir/ValueSet/currencies / NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/currencies / IGNORED: NON-FHIR CodeSystem
 - For `Narrative`
   - http://hl7.org/fhir/ValueSet/narrative-status / http://hl7.org/fhir/narrative-status
 - For `ParameterDefinition`
   - http://hl7.org/fhir/ValueSet/operation-parameter-use / http://hl7.org/fhir/operation-parameter-use
-  - http://hl7.org/fhir/ValueSet/all-types / MULTIPLE CodeSystems
+  - http://hl7.org/fhir/ValueSet/all-types / IGNORED: MULTIPLE CodeSystems in ValueSet
 - For `Period` - N/A
 - For `Quantity`
   - http://hl7.org/fhir/ValueSet/quantity-comparator / http://hl7.org/fhir/quantity-comparator
@@ -423,11 +404,11 @@ Complex Data Types:
   - http://hl7.org/fhir/ValueSet/related-artifact-type / http://hl7.org/fhir/related-artifact-type
 - For `SampledData` - N/A
 - For `Signature`
-  - http://hl7.org/fhir/ValueSet/mimetypes / NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/mimetypes / IGNORED: NON-FHIR CodeSystem
 - For `Timing`
   - http://hl7.org/fhir/ValueSet/days-of-week / http://hl7.org/fhir/days-of-week
-  - http://hl7.org/fhir/ValueSet/units-of-time / NON-FHIR CodeSystem
-  - http://hl7.org/fhir/ValueSet/event-timing / MULTIPLE CodeSystems
+  - http://hl7.org/fhir/ValueSet/units-of-time / IGNORED: NON-FHIR CodeSystem
+  - http://hl7.org/fhir/ValueSet/event-timing / IGNORED: MULTIPLE CodeSystems in ValueSet
 - For `TriggerDefinition`
   - http://hl7.org/fhir/ValueSet/trigger-type / http://hl7.org/fhir/trigger-type
 - For `UsageContext` - N/A

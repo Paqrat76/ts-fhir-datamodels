@@ -26,6 +26,7 @@ import {
   CodeType,
   EnumCodeType,
   FhirError,
+  IBackboneElement,
   InstantType,
   InvalidCodeError,
   InvalidTypeError,
@@ -62,8 +63,8 @@ describe('BundleEntryRequestComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new BundleEntryRequestComponent();
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -109,8 +110,8 @@ describe('BundleEntryRequestComponent', () => {
     it('should be properly instantiated with required elements', () => {
       let testInstance = new BundleEntryRequestComponent(VALID_HTTP_VERB_GET_ENUMCODE, TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -148,8 +149,8 @@ describe('BundleEntryRequestComponent', () => {
 
       testInstance = new BundleEntryRequestComponent(VALID_HTTP_VERB_GET_ENUMCODE as CodeType, TestData.VALID_URI_TYPE);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -187,8 +188,8 @@ describe('BundleEntryRequestComponent', () => {
 
       testInstance = new BundleEntryRequestComponent(HttpVerbEnum.GET.code, TestData.VALID_URI);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -239,8 +240,8 @@ describe('BundleEntryRequestComponent', () => {
 
       let testInstance: BundleEntryRequestComponent = testModel.copy();
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -338,8 +339,8 @@ describe('BundleEntryRequestComponent', () => {
       testInstance.setIfMatch(matchStringType.getValue());
       testInstance.setIfNoneExist(noneExistStringType.getValue());
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -386,8 +387,8 @@ describe('BundleEntryRequestComponent', () => {
       testInstance.setIfMatch(matchStringType_2.getValue());
       testInstance.setIfNoneExist(noneExistStringType_2.getValue());
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -482,8 +483,8 @@ describe('BundleEntryRequestComponent', () => {
       testInstance.setIfMatchElement(matchStringType);
       testInstance.setIfNoneExistElement(noneExistStringType);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -530,8 +531,8 @@ describe('BundleEntryRequestComponent', () => {
       testInstance.setIfMatchElement(matchStringType_2);
       testInstance.setIfNoneExistElement(noneExistStringType_2);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -683,8 +684,8 @@ describe('BundleEntryRequestComponent', () => {
       testInstance.setIfMatchElement(matchStringType);
       testInstance.setIfNoneExistElement(noneExistStringType);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',
@@ -747,8 +748,8 @@ describe('BundleEntryRequestComponent', () => {
     it('should return parsed Bundle for valid json', () => {
       const testInstance: BundleEntryRequestComponent | undefined = BundleEntryRequestComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<BundleEntryRequestComponent>(
-        BundleEntryRequestComponent,
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryRequestComponent',
         'Bundle.entry.request',

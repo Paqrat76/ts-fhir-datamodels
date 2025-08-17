@@ -19,18 +19,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.15.0] - 2025-07-??
+## [0.16.0] - 2025-08-17
 
 ### Added
+
+- `public abstract dataTypeName(): string;` to `DataType` and `IDataType`; Updated all data type classes and generators to implement this method
+
+### Changed
+
+- Updated all README and dev-docs content
+- Updated Typedoc base config
+- Updated dependencies
+- Updated eslint dependencies and fixed new lint issues
+- Updated ESLint and Typedoc configurations
+- Updated TypeScript to latest version (5.9.2)
+
+
+## [0.15.0] - 2025-07-29
 
 ### Changed
 
 - Updated dependencies
 - Completed functional test suite in app/generator-datamodel-ftest
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 
@@ -39,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Security
 
 - Resolved `critical` security issue ([CVE-2025-7783](https://www.cve.org/cverecord?id=CVE-2025-7783)) with `form-data`
+
 
 ## [0.14.0] - 2025-07-25
 

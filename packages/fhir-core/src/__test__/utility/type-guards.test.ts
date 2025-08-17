@@ -33,6 +33,7 @@ import { assertEnumCodeType, assertEnumCodeTypeList, EnumCodeType } from '../../
 import { StringType } from '../../data-types/primitive/StringType';
 import { InvalidCodeError } from '../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
+import { JsonError } from '../../errors/JsonError';
 import {
   assertFhirType,
   assertFhirTypeList,
@@ -192,7 +193,7 @@ describe('type-guards', () => {
         expect(isString(NULL_VALUE)).toBe(false);
         expect(isString(true)).toBe(false);
         expect(isString(123)).toBe(false);
-        expect(isString(123n)).toBe(false);
+        expect(isString(BigInt(123))).toBe(false);
         expect(isString(['a'])).toBe(false);
         expect(isString({ key: 'value' })).toBe(false);
       });
@@ -254,7 +255,6 @@ describe('type-guards', () => {
       it('should return false', () => {
         expect(isNumber(UNDEFINED_VALUE)).toBe(false);
         expect(isNumber(NULL_VALUE)).toBe(false);
-        expect(isNumber(123n)).toBe(false);
         expect(isNumber(BigInt(123))).toBe(false);
         expect(isNumber(true)).toBe(false);
         expect(isNumber('')).toBe(false);
@@ -321,7 +321,6 @@ describe('type-guards', () => {
       it('should return false', () => {
         expect(isBoolean(UNDEFINED_VALUE)).toBe(false);
         expect(isBoolean(NULL_VALUE)).toBe(false);
-        expect(isBoolean(123n)).toBe(false);
         expect(isBoolean(BigInt(123))).toBe(false);
         expect(isBoolean(123)).toBe(false);
         expect(isBoolean('')).toBe(false);
@@ -572,7 +571,7 @@ describe('type-guards', () => {
       const t = () => {
         assertFhirResourceTypeJson(VALID_JSON, 'Task');
       };
-      expect(t).not.toThrow(TypeError);
+      expect(t).not.toThrow(JsonError);
     });
 
     it('should throw InvalidTypeError for non-FhirResourceType', () => {
@@ -767,7 +766,7 @@ describe('type-guards', () => {
       });
 
       it('should throw InvalidTypeError for invalid type', () => {
-        const enumCodeType = String('Invalid type');
+        const enumCodeType = 'Invalid type';
         const t = () => {
           assertEnumCodeType<MockCodeEnum>(enumCodeType, MockCodeEnum);
         };
@@ -776,7 +775,7 @@ describe('type-guards', () => {
       });
 
       it('should throw InvalidTypeError for invalid type with error message prefix', () => {
-        const enumCodeType = String('Invalid type');
+        const enumCodeType = 'Invalid type';
         const prefix = 'Test Prefix';
         const t = () => {
           assertEnumCodeType<MockCodeEnum>(enumCodeType, MockCodeEnum, prefix);
@@ -834,7 +833,7 @@ describe('type-guards', () => {
       });
 
       it('should throw InvalidTypeError for invalid type', () => {
-        const enumCodeType = String('Invalid type');
+        const enumCodeType = 'Invalid type';
         const t = () => {
           assertEnumCodeTypeList<MockCodeEnum>([enumCodeType], MockCodeEnum);
         };
@@ -843,7 +842,7 @@ describe('type-guards', () => {
       });
 
       it('should throw InvalidTypeError for invalid type with error message prefix', () => {
-        const enumCodeType = String('Invalid type');
+        const enumCodeType = 'Invalid type';
         const prefix = 'Test Prefix';
         const t = () => {
           assertEnumCodeTypeList<MockCodeEnum>([enumCodeType], MockCodeEnum, prefix);

@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** See The Open Group, CDE 1.1 Remote Procedure Call specification, Appendix A
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR uuid](http://hl7.org/fhir/StructureDefinition/uuid)
  */
 export class UuidType extends PrimitiveType<fhirUuid> implements IPrimitiveType<fhirUuid> {
   /**
    * @param value - the value of the primitive `fhirUuid`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirUuid) {
     super();
@@ -57,7 +57,7 @@ export class UuidType extends PrimitiveType<fhirUuid> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirUuid): string {
-    return parseFhirPrimitiveData(value, fhirUuidSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirUuidSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirUuid {
@@ -70,6 +70,10 @@ export class UuidType extends PrimitiveType<fhirUuid> implements IPrimitiveType<
 
   public override isStringPrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): UuidType {

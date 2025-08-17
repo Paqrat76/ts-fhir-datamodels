@@ -41,6 +41,7 @@ describe('OidType', () => {
     expect(testOidType.isEmpty()).toBe(true);
     expect(testOidType.isPrimitive()).toBe(true);
     expect(testOidType.isStringPrimitive()).toBe(true);
+    expect(testOidType.dataTypeName()).toStrictEqual('OidType');
     expect(testOidType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -185,6 +186,7 @@ describe('OidType', () => {
     expect(testOidType.isEmpty()).toBe(false);
     expect(testOidType.isPrimitive()).toBe(true);
     expect(testOidType.isStringPrimitive()).toBe(true);
+    expect(testOidType.dataTypeName()).toStrictEqual('OidType');
     expect(testOidType.toJSON()).toStrictEqual(VALID_OID);
     expect(testOidType.hasValue()).toBe(true);
     expect(testOidType.getValue()).toBeDefined();

@@ -37,13 +37,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** A time during the day, with no date specified
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR time](http://hl7.org/fhir/StructureDefinition/time)
  */
 export class TimeType extends PrimitiveType<fhirTime> implements IPrimitiveType<fhirTime> {
   /**
    * @param value - the value of the primitive `fhirTime`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirTime) {
     super();
@@ -56,7 +56,7 @@ export class TimeType extends PrimitiveType<fhirTime> implements IPrimitiveType<
   }
 
   public encodeToString(value: fhirTime): string {
-    return parseFhirPrimitiveData(value, fhirTimeSchema, this.typeErrorMessage(value)).toString();
+    return parseFhirPrimitiveData(value, fhirTimeSchema, this.typeErrorMessage(value));
   }
 
   public parseToPrimitive(value: string): fhirTime {
@@ -69,6 +69,10 @@ export class TimeType extends PrimitiveType<fhirTime> implements IPrimitiveType<
 
   public override isStringPrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): TimeType {

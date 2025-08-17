@@ -41,6 +41,7 @@ describe('CodeType', () => {
     expect(testCodeType.isEmpty()).toBe(true);
     expect(testCodeType.isPrimitive()).toBe(true);
     expect(testCodeType.isStringPrimitive()).toBe(true);
+    expect(testCodeType.dataTypeName()).toStrictEqual('CodeType');
     expect(testCodeType.toJSON()).toBeUndefined();
 
     // inherited properties from Element
@@ -185,6 +186,7 @@ describe('CodeType', () => {
     expect(testCodeType.isEmpty()).toBe(false);
     expect(testCodeType.isPrimitive()).toBe(true);
     expect(testCodeType.isStringPrimitive()).toBe(true);
+    expect(testCodeType.dataTypeName()).toStrictEqual('CodeType');
     expect(testCodeType.toJSON()).toStrictEqual(VALID_CODE);
     expect(testCodeType.hasValue()).toBe(true);
     expect(testCodeType.getValue()).toBeDefined();

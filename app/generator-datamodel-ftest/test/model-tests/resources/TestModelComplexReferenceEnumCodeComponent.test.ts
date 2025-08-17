@@ -27,6 +27,7 @@ import {
   EnumCodeType,
   fhirCode,
   FhirError,
+  IBackboneElement,
   InvalidCodeError,
   InvalidTypeError,
   PrimitiveTypeError,
@@ -88,8 +89,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -139,8 +140,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
     it('should be properly instantiated with required elements', () => {
       let testInstance = new TestModelComplexReferenceEnumCodeComponent(enumCode11, [enumCode1x]);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -182,8 +183,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testInstance = new TestModelComplexReferenceEnumCodeComponent(enumCode11 as CodeType, [enumCode1x as CodeType]);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -227,8 +228,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         TestData.VALID_CONSENT_DRAFT,
       ]);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -282,8 +283,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       let testInstance = testModel.copy();
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -343,8 +344,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -396,8 +397,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.setEnumCode1xEnumType([enumCode1x]);
       testInstance.setPrimitive(testModelPrimitiveComponent);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -447,8 +448,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.addEnumCode1xEnumType(enumCode1x_2);
       testInstance.setPrimitive(testModelPrimitiveComponent_2);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -509,8 +510,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -562,8 +563,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.setEnumCode1xElement([TestData.VALID_CONSENT_DRAFT_TYPE]);
       testInstance.setPrimitive(testModelPrimitiveComponent);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -613,8 +614,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.addEnumCode1xElement(TestData.VALID_CONSENT_ACTIVE_TYPE);
       testInstance.setPrimitive(testModelPrimitiveComponent_2);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -675,8 +676,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -728,8 +729,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.setEnumCode1x([TestData.VALID_CONSENT_DRAFT]);
       testInstance.setPrimitive(testModelPrimitiveComponent);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -779,8 +780,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.addEnumCode1x(TestData.VALID_CONSENT_ACTIVE);
       testInstance.setPrimitive(testModelPrimitiveComponent_2);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -841,8 +842,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -958,8 +959,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       testInstance.setEnumCode1xEnumType([enumCode1x]);
       testInstance.setPrimitive(testModelPrimitiveComponent);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
@@ -1027,8 +1028,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       const testInstance: TestModelComplexReferenceEnumCodeComponent | undefined =
         TestModelComplexReferenceEnumCodeComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<TestModelComplexReferenceEnumCodeComponent>(
-        TestModelComplexReferenceEnumCodeComponent,
+      expectBackboneElementBase(
+        TestModelComplexReferenceEnumCodeComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',

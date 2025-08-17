@@ -37,7 +37,7 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** Value of "true" or "false"
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR boolean](http://hl7.org/fhir/StructureDefinition/boolean)
  */
 export class BooleanType extends PrimitiveType<fhirBoolean> implements IPrimitiveType<fhirBoolean> {
@@ -45,7 +45,7 @@ export class BooleanType extends PrimitiveType<fhirBoolean> implements IPrimitiv
 
   /**
    * @param value - the value of the primitive `fhirBoolean`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirBoolean) {
     super();
@@ -91,6 +91,10 @@ export class BooleanType extends PrimitiveType<fhirBoolean> implements IPrimitiv
 
   public override isBooleanPrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): BooleanType {

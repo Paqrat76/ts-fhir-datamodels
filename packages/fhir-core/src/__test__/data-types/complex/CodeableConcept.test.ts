@@ -26,6 +26,7 @@ import { CodeableConcept } from '../../../data-types/complex/CodeableConcept';
 import { Coding } from '../../../data-types/complex/Coding';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, INVALID_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
 
@@ -77,6 +78,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(true);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -107,6 +109,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(false);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.toJSON()).toEqual(expectedJson);
 
       // inherited properties from Element
@@ -137,6 +140,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(true);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.toJSON()).toBeUndefined();
 
       // inherited properties from Element
@@ -421,11 +425,11 @@ describe('CodeableConcept', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         CodeableConcept.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`CodeableConcept JSON is not a JSON object.`);
     });
 
@@ -462,6 +466,7 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
       expect(testCodeableConcept.isEmpty()).toBe(false);
       expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
 
       // inherited properties from Element
       expect(testCodeableConcept.hasId()).toBe(true);
@@ -490,6 +495,7 @@ describe('CodeableConcept', () => {
       expect(testType?.fhirType()).toStrictEqual('CodeableConcept');
       expect(testType?.isEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
+      expect(testType?.dataTypeName()).toStrictEqual('CodeableConcept');
       expect(testType?.toJSON()).toEqual(VALID_JSON);
     });
   });

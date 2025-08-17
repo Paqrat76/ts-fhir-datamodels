@@ -93,136 +93,17 @@ export namespace TestData {
   export const VALID_MOCK_COMPLEX_DATATYPE = new MockComplexDataType('test/system', 'test-code');
   export const VALID_MOCK_COMPLEX_DATATYPE_2 = new MockComplexDataType('test/system2', 'test-code2');
 
-  // export const VALID_QUANTITY = new Quantity();
-  // VALID_QUANTITY.setValue(VALID_DECIMAL);
-
-  // export const VALID_PERSON_REFERENCE_VALUE = 'Person/PER-13579';
-  // export const VALID_PERSON_REFERENCE = new Reference();
-  // VALID_PERSON_REFERENCE.setReference(VALID_PERSON_REFERENCE_VALUE);
-  // export const VALID_PERSON_REFERENCE_VALUE_2 = 'Person/PER-97531';
-  // export const VALID_PERSON_REFERENCE_2 = new Reference();
-  // VALID_PERSON_REFERENCE_2.setReference(VALID_PERSON_REFERENCE_VALUE_2);
-
-  // export const VALID_CONDITION_REFERENCE_VALUE = 'Condition/CON-24680';
-  // export const VALID_CONDITION_REFERENCE = new Reference();
-  // VALID_CONDITION_REFERENCE.setReference(VALID_CONDITION_REFERENCE_VALUE);
-  // export const VALID_CONDITION_REFERENCE_VALUE_2 = 'Condition/CON-8642';
-  // export const VALID_CONDITION_REFERENCE_2 = new Reference();
-  // VALID_CONDITION_REFERENCE_2.setReference(VALID_CONDITION_REFERENCE_VALUE_2);
-
   const VALID_START_DATETIME = `2024-03-15T00:00:00.000Z`;
   const VALID_END_DATETIME = `2024-07-03T01:00:00.000Z`;
   export const VALID_PERIOD = new Period();
   VALID_PERIOD.setStart(VALID_START_DATETIME);
   VALID_PERIOD.setEnd(VALID_END_DATETIME);
-  // const VALID_START_DATETIME_2 = `2024-10-31T15:00:00.000Z`;
-  // export const VALID_PERIOD_2 = new Period();
-  // VALID_PERIOD_2.setStart(VALID_START_DATETIME_2);
-
-  // export const VALID_SYSTEM = 'http://sample/system/one';
-  // export const VALID_SYSTEM_2 = 'http://sample/system/two';
-  // export const VALID_IDENTIFIER = new Identifier();
-  // VALID_IDENTIFIER.setSystem(VALID_SYSTEM);
-  // VALID_IDENTIFIER.setValue(VALID_STRING);
-  // export const VALID_IDENTIFIER_2 = new Identifier();
-  // VALID_IDENTIFIER_2.setSystem(VALID_SYSTEM_2);
-  // VALID_IDENTIFIER_2.setValue(VALID_STRING_2);
+  const VALID_START_DATETIME_2 = `2024-10-31T15:00:00.000Z`;
+  export const VALID_PERIOD_2 = new Period();
+  VALID_PERIOD_2.setStart(VALID_START_DATETIME_2);
 
   export const VALID_TASK_NAME = 'MockTask Name';
   export const VALID_TASK_NAME_2 = 'MockTask Name Two';
   export const VALID_MOCK_TASK = new MockTask(new StringType(VALID_TASK_NAME), VALID_MOCK_COMPLEX_DATATYPE);
   export const VALID_MOCK_TASK_2 = new MockTask(new StringType(VALID_TASK_NAME_2), VALID_MOCK_COMPLEX_DATATYPE_2);
-
-  // export const VALID_FAMILY = 'Surname';
-  // export const VALID_FAMILY_2 = 'LastName';
-  // export const VALID_FIRST_NAME = 'First';
-  // export const VALID_FIRST_NAME_2 = 'First2';
-  // export const VALID_MIDDLE_NAME = 'Middle';
-  // export const VALID_MIDDLE_NAME_2 = 'Middle2';
-  // export const VALID_PREFIX = 'Mr.';
-  // export const VALID_PREFIX_2 = 'Ms.';
-  // export const VALID_SUFFIX = 'Sr.';
-  // export const VALID_SUFFIX_2 = 'MD';
-  // export const VALID_HUMAN_NAME = new HumanName();
-  // VALID_HUMAN_NAME.setFamily(VALID_FAMILY);
-  // VALID_HUMAN_NAME.setGiven([VALID_FIRST_NAME, VALID_MIDDLE_NAME]);
-  // VALID_HUMAN_NAME.addPrefix(VALID_PREFIX);
-  // VALID_HUMAN_NAME.addSuffix(VALID_SUFFIX);
-  // export const VALID_HUMAN_NAME_2 = new HumanName();
-  // VALID_HUMAN_NAME_2.setFamily(VALID_FAMILY_2);
-  // VALID_HUMAN_NAME_2.setGiven([VALID_FIRST_NAME_2, VALID_MIDDLE_NAME_2]);
-  // VALID_HUMAN_NAME_2.addPrefix(VALID_PREFIX_2);
-  // VALID_HUMAN_NAME_2.addSuffix(VALID_SUFFIX_2);
-
-  // export const VALID_USE_HOME = `home`;
-  // export const VALID_USE_WORK = `work`;
-  // export const VALID_TYPE_POSTAL = `postal`;
-  // export const VALID_LINE_A = '1234 Main ST';
-  // export const VALID_LINE_A_2 = '4321 Central ST';
-  // export const VALID_LINE_B = 'APT 15A';
-  // export const VALID_CITY = 'Nashua';
-  // export const VALID_CITY_2 = 'Renton';
-  // export const VALID_STATE = 'NH';
-  // export const VALID_STATE_2 = 'WA';
-  // export const VALID_POSTAL = '03064';
-  // export const VALID_POSTAL_2 = '98058';
-  // export const VALID_COUNTRY = 'US';
-  // export const VALID_ADDRESS = new Address();
-  // VALID_ADDRESS.setUse(VALID_USE_HOME);
-  // VALID_ADDRESS.setType(VALID_TYPE_POSTAL);
-  // VALID_ADDRESS.setLine([VALID_LINE_A, VALID_LINE_B]);
-  // VALID_ADDRESS.setCity(VALID_CITY);
-  // VALID_ADDRESS.setState(VALID_STATE);
-  // VALID_ADDRESS.setPostalCode(VALID_POSTAL);
-  // VALID_ADDRESS.setCountry(VALID_COUNTRY);
-  // export const VALID_ADDRESS_2 = new Address();
-  // VALID_ADDRESS_2.setUse(VALID_USE_WORK);
-  // VALID_ADDRESS_2.setType(VALID_TYPE_POSTAL);
-  // VALID_ADDRESS_2.setLine([VALID_LINE_A_2]);
-  // VALID_ADDRESS_2.setCity(VALID_CITY_2);
-  // VALID_ADDRESS_2.setState(VALID_STATE_2);
-  // VALID_ADDRESS_2.setPostalCode(VALID_POSTAL_2);
-  // VALID_ADDRESS_2.setCountry(VALID_COUNTRY);
-
-  // export const VALID_PHONE = '888-555-1234';
-  // export const VALID_PHONE_TYPE = new StringType(VALID_PHONE);
-  // export const VALID_PHONE_2 = '888-555-9876';
-  // export const VALID_PHONE_TYPE_2 = new StringType(VALID_PHONE_2);
-
-  // export const VALID_CODE = `testCodeType`;
-  // export const VALID_URL = `testUrlType`;
-  // export const VALID_UNSIGNED_INT = 697276;
-  // export const VALID_BASE64BINARY_HASH = `0f60168295bc9d6b0535feaf0975a63532959834`;
-  // export const VALID_CODE_2 = `testCodeType2`;
-  // export const VALID_URL_2 = `testUrlType2`;
-  // export const VALID_UNSIGNED_INT_2 = 767269;
-  // export const VALID_BASE64BINARY_HASH_2 = `0f60168295bc9d6b0535feaf0975a63532959845`;
-  // export const VALID_ATTACHMENT = new Attachment();
-  // VALID_ATTACHMENT.setContentType(VALID_CODE);
-  // VALID_ATTACHMENT.setUrl(VALID_URL);
-  // VALID_ATTACHMENT.setSize(VALID_UNSIGNED_INT);
-  // VALID_ATTACHMENT.setHash(VALID_BASE64BINARY_HASH);
-  // VALID_ATTACHMENT.setTitle(TestData.VALID_STRING);
-  // export const VALID_ATTACHMENT_2 = new Attachment();
-  // VALID_ATTACHMENT_2.setContentType(VALID_CODE_2);
-  // VALID_ATTACHMENT_2.setUrl(VALID_URL_2);
-  // VALID_ATTACHMENT_2.setSize(VALID_UNSIGNED_INT_2);
-  // VALID_ATTACHMENT_2.setHash(VALID_BASE64BINARY_HASH_2);
-  // VALID_ATTACHMENT_2.setTitle(TestData.VALID_STRING_2);
-
-  // export const SIMPLE_PERSON_MODEL_ID = 'SMP-123';
-  // export const SIMPLE_PERSON_MODEL = new SimplePersonModel();
-  // SIMPLE_PERSON_MODEL.setId(SIMPLE_PERSON_MODEL_ID);
-  // SIMPLE_PERSON_MODEL.setIdentifier(TestData.VALID_IDENTIFIER);
-  // SIMPLE_PERSON_MODEL.setName(TestData.VALID_HUMAN_NAME);
-  // SIMPLE_PERSON_MODEL.setAddress(TestData.VALID_ADDRESS);
-  // SIMPLE_PERSON_MODEL.setPhone(TestData.VALID_PHONE);
-
-  // export const SIMPLE_PERSON_MODEL_ID_2 = 'SMP-987';
-  // export const SIMPLE_PERSON_MODEL_2 = new SimplePersonModel();
-  // SIMPLE_PERSON_MODEL_2.setId(SIMPLE_PERSON_MODEL_ID_2);
-  // SIMPLE_PERSON_MODEL_2.setIdentifier(TestData.VALID_IDENTIFIER_2);
-  // SIMPLE_PERSON_MODEL_2.setName(TestData.VALID_HUMAN_NAME_2);
-  // SIMPLE_PERSON_MODEL_2.setAddress(TestData.VALID_ADDRESS_2);
-  // SIMPLE_PERSON_MODEL_2.setPhone(TestData.VALID_PHONE_2);
 }

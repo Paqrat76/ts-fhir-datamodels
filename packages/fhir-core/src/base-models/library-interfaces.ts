@@ -64,14 +64,6 @@ export interface IBase {
   fhirType: () => string;
 
   /**
-   * Determines if any value in typeNames equals the current fhirType() value
-   *
-   * @param typeNames - array of FHIR type names
-   * @returns true if any value in typeNames equals (case-insensitive) the current fhirType() value; false otherwise
-   */
-  hasFireType: (...typeNames: string[]) => boolean;
-
-  /**
    * @returns `true` if the instance is empty; `false` otherwise
    */
   isEmpty: () => boolean;
@@ -89,7 +81,7 @@ export interface IBase {
   copy: () => any;
 
   // NOTE: `copyValues(dest: any): void` is a protected method in `Base` and is included here for documentation
-  //copyValues: (dest: any) => void;
+  // copyValues: (dest: any) => void;
 
   /**
    * @returns the JSON value
@@ -100,6 +92,11 @@ export interface IBase {
    * @returns `true` if the instance is a FHIR resource; `false` otherwise
    */
   isResource: () => boolean;
+
+  /**
+   * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
+   */
+  isDataType: () => boolean;
 
   /**
    * @returns `true` if the instance is a FHIR complex datatype; `false` otherwise
@@ -164,7 +161,7 @@ export interface IBaseExtension {
    * if the `extension` property exists and has any values.
    *
    * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   hasExtension: (url?: fhirUri) => boolean;
 
@@ -172,7 +169,7 @@ export interface IBaseExtension {
    * Returns the Extension having the provided url.
    *
    * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   getExtensionByUrl: (url: fhirUri) => IExtension | undefined;
 
@@ -187,7 +184,7 @@ export interface IBaseExtension {
    * Removes the Extension having the provided url from the `extension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   removeExtension: (url: fhirUri) => void;
 }
@@ -219,7 +216,7 @@ export interface IBaseModifierExtension {
    * if the `modifierExtension` property exists and has any values.
    *
    * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   hasModifierExtension: (url?: fhirUri) => boolean;
 
@@ -227,7 +224,7 @@ export interface IBaseModifierExtension {
    * Returns the Extension having the provided url.
    *
    * @param url - the url that identifies a specific Extension
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   getModifierExtensionByUrl: (url: fhirUri) => IExtension | undefined;
 
@@ -242,7 +239,7 @@ export interface IBaseModifierExtension {
    * Removes the Extension having the provided url from the `modifierExtension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   removeModifierExtension: (url: fhirUri) => void;
 }
@@ -264,7 +261,7 @@ export interface IElement extends IBase, IBaseExtension {
    *
    * @param value - the `id` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   setId: (value: fhirString | undefined) => this;
 
@@ -299,6 +296,11 @@ export interface IDataType extends IElement {
    * @returns `true` if the instance is a FHIR complex or primitive datatype; `false` otherwise
    */
   isDataType: () => boolean;
+
+  /**
+   * @returns the complex or primitive data model type name (e.g., 'Period", 'StringType', `UriType', etc.)
+   */
+  dataTypeName: () => string;
 }
 
 /**
@@ -332,7 +334,7 @@ export interface IPrimitiveType<T> extends IDataType {
    *
    * @param value - the generic T value
    * @returns this
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   setValue: (value?: T) => this;
 
@@ -350,7 +352,7 @@ export interface IPrimitiveType<T> extends IDataType {
    * Assigns the provided value and coerces it to the T type.
    *
    * @param value - the `string` value of the primitive type
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   setValueAsString: (value?: string) => void;
 
@@ -359,7 +361,7 @@ export interface IPrimitiveType<T> extends IDataType {
    *
    * @param value - the generic T value
    * @returns the `string` representation of T
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   encodeToString: (value: T) => string;
 
@@ -368,7 +370,7 @@ export interface IPrimitiveType<T> extends IDataType {
    *
    * @param value - the `string` representation of the generic T value
    * @returns the generic T value
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   parseToPrimitive: (value: string) => T;
 
@@ -397,7 +399,7 @@ export interface IExtension extends IElement {
    *
    * @param value - the url value
    * @returns this
-   * @throws AssertionError for invalid value
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid value
    */
   setUrl: (value: fhirUri) => this;
 
@@ -520,7 +522,7 @@ export interface IResource extends IBase {
    *
    * @param value - the `implicitRules` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   setImplicitRules: (value: fhirUri | undefined) => this;
 
@@ -557,7 +559,7 @@ export interface IResource extends IBase {
    *
    * @param value - the `language` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   setLanguage: (value: fhirCode | undefined) => this;
 
@@ -591,7 +593,6 @@ export interface IDomainResource extends IResource, IBase, IBaseExtension, IBase
   /**
    * Assigns the provided value to the `text` property.
    *
-   * @param value - the `text` value
    * @returns this
    */
   hasText: () => boolean;
@@ -652,7 +653,7 @@ export interface IDomainResource extends IResource, IBase, IBaseExtension, IBase
    *
    * @param url - the url that identifies a specific Extension
    * @returns `true` if an Extension has the provided url; false otherwise
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   hasExtension: (url?: fhirUri) => boolean;
 
@@ -686,7 +687,7 @@ export interface IDomainResource extends IResource, IBase, IBaseExtension, IBase
    *
    * @param url - the url that identifies a specific Extension
    * @returns `true` if an Extension has the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   hasModifierExtension: (url?: fhirUri) => boolean;
 }

@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** A stream of bytes, base64 encoded
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR base64Binary](http://hl7.org/fhir/StructureDefinition/base64Binary)
  */
 export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> implements IPrimitiveType<fhirBase64Binary> {
   /**
    * @param value - the value of the primitive `fhirBase64Binary`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirBase64Binary) {
     super();
@@ -57,7 +57,7 @@ export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> implements
   }
 
   public encodeToString(value: fhirBase64Binary): string {
-    return parseFhirPrimitiveData(value, fhirBase64BinarySchema, this.typeErrorMessage()).toString();
+    return parseFhirPrimitiveData(value, fhirBase64BinarySchema, this.typeErrorMessage());
   }
 
   public parseToPrimitive(value: string): fhirBase64Binary {
@@ -70,6 +70,10 @@ export class Base64BinaryType extends PrimitiveType<fhirBase64Binary> implements
 
   public override isStringPrimitive(): boolean {
     return true;
+  }
+
+  public override dataTypeName(): string {
+    return this.constructor.name;
   }
 
   public override copy(): Base64BinaryType {
