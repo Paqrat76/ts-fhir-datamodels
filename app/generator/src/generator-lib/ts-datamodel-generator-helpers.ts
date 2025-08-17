@@ -280,9 +280,10 @@ export function generateModuleContent(moduleName: string): string[] {
     ' * For questions, suggestions, or bugs, please open an issue at [GitHub ts-fhir-datamodels/issues](https://github.com/Paqrat76/ts-fhir-datamodels/issues).',
   );
   moduleContent.push(' *');
-  moduleContent.push(' * @packageDocumentation');
   if (moduleName === 'index.ts') {
-    moduleContent.push(' * @module DataModels');
+    moduleContent.push(' * @module Data Models Index');
+  } else {
+    moduleContent.push(' * @packageDocumentation');
   }
   moduleContent.push(' */');
 

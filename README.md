@@ -36,8 +36,11 @@ This project will be constructed in the following phases:
    implementations, base models, dependent complex type models, utilities, errors, etc. Ensure unit test coverage
    exceeds 90%.
 5. (**Completed**) Fill out project documentation for all aspects of this mono-repository
-6. (**Work-in-Progress**) Add the `r4b-datamodels` and `r5-datamodels` packages. The `r6-datamodels`package will be added when FHIR R6 is released.
-7. (**Work-in-Progress**) Finalize component documentation (using [Typedoc](https://typedoc.org/)) for each package. Implement the publication
-   of this documentation for consumers of these packages.
-8. In each of the data model packages, implement the publication process to the NPM repository to make these libraries
+6. (**Completed**) Finalize component documentation (using [Typedoc](https://typedoc.org/)) for each package
+7. (**Work-in-Progress**) Prepare the project for publication to NPM for fhir-core and r4-datamodels
+8. Add the `r4b-datamodels` and `r5-datamodels` packages.
+   Add a document in dev-docs that describes in detail the process of adding new data model packages.
+   The `r6-datamodels`package will be added when FHIR R6 is released.
+9. In each of the data model packages, implement the publication process to the NPM repository to make these libraries
    available for use by FHIR developers.
+   Implement the publication of the data model documentation for consumers of these packages.

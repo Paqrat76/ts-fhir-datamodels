@@ -70,7 +70,7 @@ import {
  * - **Definition:** The metadata about a resource. This is content in the resource that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Meta](http://hl7.org/fhir/StructureDefinition/Meta)
  */
 export class Meta extends DataType implements IDataType {
@@ -85,6 +85,7 @@ export class Meta extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Meta`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Meta
    * @returns Meta data model or undefined for `Meta`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Meta | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -316,7 +317,7 @@ export class Meta extends DataType implements IDataType {
    *
    * @param value - the `versionId` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setVersionId(value: fhirId | undefined): this {
     if (isDefined<fhirId>(value)) {
@@ -378,7 +379,7 @@ export class Meta extends DataType implements IDataType {
    *
    * @param value - the `lastUpdated` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setLastUpdated(value: fhirInstant | undefined): this {
     if (isDefined<fhirInstant>(value)) {
@@ -440,7 +441,7 @@ export class Meta extends DataType implements IDataType {
    *
    * @param value - the `source` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSource(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -527,7 +528,7 @@ export class Meta extends DataType implements IDataType {
    *
    * @param value - the `profile` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setProfile(value: fhirCanonical[] | undefined): this {
     if (isDefinedList<fhirCanonical>(value)) {

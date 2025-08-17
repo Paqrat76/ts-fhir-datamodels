@@ -33,6 +33,7 @@ import { assertEnumCodeType, assertEnumCodeTypeList, EnumCodeType } from '../../
 import { StringType } from '../../data-types/primitive/StringType';
 import { InvalidCodeError } from '../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
+import { JsonError } from '../../errors/JsonError';
 import {
   assertFhirType,
   assertFhirTypeList,
@@ -570,7 +571,7 @@ describe('type-guards', () => {
       const t = () => {
         assertFhirResourceTypeJson(VALID_JSON, 'Task');
       };
-      expect(t).not.toThrow(TypeError);
+      expect(t).not.toThrow(JsonError);
     });
 
     it('should throw InvalidTypeError for non-FhirResourceType', () => {

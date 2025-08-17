@@ -24,7 +24,7 @@
 {{/if}}
  * - **FHIR Version:** {{sdHbs.fhirVersion}}
  *
- * @category DataModel: {{upperCamelCase sdHbs.kind}}
+ * @category Data Models: {{upperCamelCase sdHbs.kind}}
  * @see [FHIR {{sdHbs.type}}]({{{sdHbs.url}}})
  */
 {{#if sdHbs.istanbulIgnore}}/* istanbul ignore next */ {{/if}}export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements {{complexTypeImplements sdHbs.type sdHbs.baseDefinitionType}} {

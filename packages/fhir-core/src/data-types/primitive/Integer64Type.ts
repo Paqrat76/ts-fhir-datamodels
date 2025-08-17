@@ -39,13 +39,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** Typically this is used for record counters (e.g. database keys)
  * - **FHIR Version:** 5.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR integer64](http://hl7.org/fhir/StructureDefinition/integer64)
  */
 export class Integer64Type extends PrimitiveType<fhirInteger64> implements IPrimitiveType<fhirInteger64> {
   /**
    * @param value - the value of the primitive `fhirInteger64`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirInteger64) {
     super();

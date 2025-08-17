@@ -26,6 +26,7 @@ import { Period } from '../../../data-types/complex/Period';
 import { DateTimeType } from '../../../data-types/primitive/DateTimeType';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
 
@@ -598,11 +599,11 @@ describe('Period', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Period.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Period JSON is not a JSON object.`);
     });
 

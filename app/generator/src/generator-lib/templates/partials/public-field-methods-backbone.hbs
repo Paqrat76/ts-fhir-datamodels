@@ -12,6 +12,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}} | undefined): this {
     if (isDefined<{{edHbs.type.code}}>(value)) {
@@ -44,6 +45,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}}): this {
     assertIsDefined<{{edHbs.type.code}}>(value, `{{edHbs.path}} is required`);
@@ -73,6 +75,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}}[] | undefined): this {
     if (isDefinedList<{{edHbs.type.code}}>(value)) {
@@ -90,6 +93,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public add{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}} | undefined): this {
     if (isDefined<{{edHbs.type.code}}>(value)) {
@@ -130,6 +134,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}}[]): this {
     assertIsDefinedList<{{edHbs.type.code}}>(value, `{{edHbs.path}} is required`);
@@ -144,6 +149,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public add{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}} | undefined): this {
     if (isDefined<{{edHbs.type.code}}>(value)) {

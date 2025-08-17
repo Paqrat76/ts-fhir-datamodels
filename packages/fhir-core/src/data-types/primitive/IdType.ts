@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** RFC 4122
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR id](http://hl7.org/fhir/StructureDefinition/id)
  */
 export class IdType extends PrimitiveType<fhirId> implements IPrimitiveType<fhirId> {
   /**
    * @param value - the value of the primitive `fhirId`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirId) {
     super();

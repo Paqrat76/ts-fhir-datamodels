@@ -39,13 +39,13 @@ import { isDefined } from '../../utility/type-guards';
  * - **Definition:** A date or partial date (e.g. just year or year + month). There is no time zone. The format is a union of the schema types gYear, gYearMonth and date. Dates SHALL be valid dates.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR date](http://hl7.org/fhir/StructureDefinition/date)
  */
 export class DateType extends PrimitiveType<fhirDate> implements IPrimitiveType<fhirDate>, DateTypeImpl {
   /**
    * @param value - the value of the primitive `fhirDate`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirDate) {
     super();

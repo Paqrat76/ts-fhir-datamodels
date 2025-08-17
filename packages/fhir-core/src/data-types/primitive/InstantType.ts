@@ -40,13 +40,13 @@ import { isDefined } from '../../utility/type-guards';
  * - **Comment:** This is intended for where precisely observed times are required, typically system logs etc., and not human-reported times - for them, see date and dateTime (which can be as precise as instant, but is not required to be) below. Time zone is always required
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR instant](http://hl7.org/fhir/StructureDefinition/instant)
  */
 export class InstantType extends PrimitiveType<fhirInstant> implements IPrimitiveType<fhirInstant>, InstantTypeImpl {
   /**
    * @param value - the value of the primitive `fhirInstant`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirInstant) {
     super();

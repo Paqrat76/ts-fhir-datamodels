@@ -2,65 +2,85 @@
 title: Data Model Usage
 ---
 
-# FHIR Data Model Usage Patterns
+# FHIR Data Model Usage
 
-The examples below demonstrate how to use the FHIR data models.
-The FHIR data models have the following standard accessors:
+## Data Model Structure
 
-- Single field (`max` cardinality = 1): Has `get`/`set`/`has` methods as appropriate for the data type
-- Array field (`max` cardinality > 1): Has `get`/`set`/`has`/`add` methods as appropriate for the data type
+All generated resource and complex type data models share a common structure.
 
-These accessors can be used in both standard and fluent style.
+> [!TIP]
+> First, it is helpful to understand ["required" vs. "optional" fields](data-model-features.md#required-vs-optional-fields).
 
-**NOTE:**
-When dealing with "array fields," the `set` methods take an array of data elements that **replaces** the existing
-underlying array.
-The `add` methods take a single data element and **adds** it to the existing underlying array.
+The following describes the common structure of all generated data models:
+
+- **Constructor:** Data models have a `constructor` method for data model initialization.
+  Constructor arguments only exist for "required" fields and are used to initialize the "required" fields when the
+  data model is instantiated.
+  All "required" fields default to `null` when their constructor arguments are not provided.
+- **`public static parse()` Method:** Data models have a static `parse()` method that takes a JSON object that is
+  deserialized into the object's data elements and returns a new instance of the data model.
+  It is basically a static factory method that creates a new instance of the data model from a JSON object.
+- **Private Field Definitions:** Data models have private fields for each data element used to store the data element's
+  value.
+  These private fields are only accessible through the public accessor methods for the data element.
+  Their API property documentation includes their FHIR `ElementDefinition` metadata.
+- **Public Accessor Methods:** Data models have public accessor methods for each data element.
+  These accessor methods are used to get and set the data element's value.
+  The FHIR data models have the following standard accessors that can be used in both standard and fluent style:
+  - Single field (`max` cardinality = 1): Has `get`/`set`/`has` methods as appropriate for the data type
+  - Array field (`max` cardinality > 1): Has `get`/`set`/`has`/`add` methods as appropriate for the data type
+    > [!WARNING]
+    > When dealing with "array fields," the `set` methods take an array of data elements that **replaces** the existing
+    > underlying array.
+    > The `add` methods take a single data element and **adds** it to the existing underlying array.
+- **Abstract Base Class Implementations:** Data models implement a set of public methods defined in the `Base`
+  class as abstract methods and selectively override a set of public boolean methods.
+  Refer to [Abstract Base Class Implementation](data-model-features.md#abstract-base-class-implementation) for details.
 
 ## Primitive Data Type Usage
 
 FHIR primitive data types are represented in TypeScript as `string`, `number`, `boolean`, and `BigInt()`.
 They are implemented using the [Zod](https://zod.dev/) library's `z.string()`, `z.number()`, `z.boolean()`,
 and `z.bigint()` methods.
-These primitives are defined using Zod's "schema" feature that allows for validation and type-safety.
-Validation is defined based on the FHIR specification's [primitive type](https://www.hl7.org/fhir/R5/datatypes.html#primitive)
+These primitives are defined using [Zod schemas](https://zod.dev/api) that allow for validation and type-safety.
+Validation is defined based on the FHIR specification's [primitive type](https://www.hl7.org/fhir/datatypes.html#primitive)
 regular expressions and for numbers, the minimum and maximum values.
 This allows the use of TypeScript's primitives while also providing validation and type-safety.
 
 While FHIR primitive types are meant to be a single primitive value with no additional data elements, the FHIR
 specification does require them to support the `id` and `extension` data elements.
-This is achieved by defining a base primitive type (`PrimitiveType`) that combines the FHIR primitive type with the
+This is achieved by defining the base primitive type (`PrimitiveType`) that combines the FHIR primitive type with
 the base `DataType` class (that extends `Element` that extends `Base`).
 The base `PrimitiveType` includes the `id` and `extension` data elements and retains the FHIR primitive type as
 its `value` property.
-As such, they meet the requirements of the [FHIR specification](https://www.hl7.org/fhir/R5/datatypes.html#representations)
+As such, they meet the requirements of the [FHIR specification](https://www.hl7.org/fhir/datatypes.html#representations)
 regarding their representation in JSON.
 
 The following table shows the mapping among the primitive data types:
 
-| FHIR Primitive Type | TypeScript Primitive | Primitive (Zod type) | PrimitiveType      |
-| ------------------- | -------------------- | -------------------- | ------------------ |
-| `base64Binary`      | `string`             | `fhirBase64Binary`   | `Base64BinaryType` |
-| `boolean`           | `boolean`            | `fhirBoolean`        | `BooleanType`      |
-| `canonical`         | `string`             | `fhirCanonical`      | `CanonicalType`    |
-| `code`              | `string`             | `fhirCode`           | `CodeType`         |
-| `dateTime`          | `string`             | `fhirDateTime`       | `DateTimeType`     |
-| `date`              | `string`             | `fhirDate`           | `DateType`         |
-| `decimal`           | `number`             | `fhirDecimal`        | `DecimalType`      |
-| `id`                | `string`             | `fhirId`             | `IdType`           |
-| `instant`           | `string`             | `fhirInstant`        | `InstantType`      |
-| `integer`           | `number`             | `fhirInteger`        | `IntegerType`      |
-| `integer64`         | `BigInt`             | `fhirInteger64`      | `Integer64Type`    |
-| `markdown`          | `string`             | `fhirMarkdown`       | `MarkdownType`     |
-| `oid`               | `string`             | `fhirOid`            | `OidType`          |
-| `positiveInt`       | `number`             | `fhirPositiveInt`    | `PositiveIntType`  |
-| `string`            | `string`             | `fhirString`         | `StringType`       |
-| `time`              | `string`             | `fhirTime`           | `TimeType`         |
-| `unsignedInt`       | `number`             | `fhirUnsignedInt`    | `UnsignedIntType`  |
-| `uri`               | `string`             | `fhirUri`            | `UriType`          |
-| `url`               | `string`             | `fhirUrl`            | `UrlType`          |
-| `uuid`              | `string`             | `fhirUuid`           | `UuidType`         |
-| `xhtml`             | `string`             | `fhirXhtml`          | `XhtmlType`        |
+| FHIR Primitive Type                                              | TypeScript Primitive | Primitive (Zod type) | PrimitiveType      |
+| ---------------------------------------------------------------- | -------------------- | -------------------- | ------------------ |
+| [base64Binary](https://hl7.org/fhir/datatypes.html#base64Binary) | `string`             | `fhirBase64Binary`   | `Base64BinaryType` |
+| [boolean](https://hl7.org/fhir/datatypes.html#boolean)           | `boolean`            | `fhirBoolean`        | `BooleanType`      |
+| [canonical](https://hl7.org/fhir/datatypes.html#canonical)       | `string`             | `fhirCanonical`      | `CanonicalType`    |
+| [code](https://hl7.org/fhir/datatypes.html#code)                 | `string`             | `fhirCode`           | `CodeType`         |
+| [dateTime](https://hl7.org/fhir/datatypes.html#dateTime)         | `string`             | `fhirDateTime`       | `DateTimeType`     |
+| [date](https://hl7.org/fhir/datatypes.html#date)                 | `string`             | `fhirDate`           | `DateType`         |
+| [decimal](https://hl7.org/fhir/datatypes.html#decimal)           | `number`             | `fhirDecimal`        | `DecimalType`      |
+| [id](https://hl7.org/fhir/datatypes.html#id)                     | `string`             | `fhirId`             | `IdType`           |
+| [instant](https://hl7.org/fhir/datatypes.html#instant)           | `string`             | `fhirInstant`        | `InstantType`      |
+| [integer](https://hl7.org/fhir/datatypes.html#integer)           | `number`             | `fhirInteger`        | `IntegerType`      |
+| [integer64](https://hl7.org/fhir/datatypes.html#integer64)       | `BigInt`             | `fhirInteger64`      | `Integer64Type`    |
+| [markdown](https://hl7.org/fhir/datatypes.html#markdown)         | `string`             | `fhirMarkdown`       | `MarkdownType`     |
+| [oid](https://hl7.org/fhir/datatypes.html#oid)                   | `string`             | `fhirOid`            | `OidType`          |
+| [positiveInt](https://hl7.org/fhir/datatypes.html#positiveInt)   | `number`             | `fhirPositiveInt`    | `PositiveIntType`  |
+| [string](https://hl7.org/fhir/datatypes.html#string)             | `string`             | `fhirString`         | `StringType`       |
+| [time](https://hl7.org/fhir/datatypes.html#time)                 | `string`             | `fhirTime`           | `TimeType`         |
+| [unsignedInt](https://hl7.org/fhir/datatypes.html#unsignedInt)   | `number`             | `fhirUnsignedInt`    | `UnsignedIntType`  |
+| [uri](https://hl7.org/fhir/datatypes.html#uri)                   | `string`             | `fhirUri`            | `UriType`          |
+| [url](https://hl7.org/fhir/datatypes.html#url)                   | `string`             | `fhirUrl`            | `UrlType`          |
+| [uuid](https://hl7.org/fhir/datatypes.html#uuid)                 | `string`             | `fhirUuid`           | `UuidType`         |
+| [xhtml](https://hl7.org/fhir/narrative.html#xhtml)               | `string`             | `fhirXhtml`          | `XhtmlType`        |
 
 All data models have one or more "primitive" data elements.
 These are represented as `PrimitiveType` objects in the data models.
@@ -77,9 +97,15 @@ For example:
 Any primitive or PrimitiveType "setter" will throw a `PrimitiveTypeError` if the provided value does not match the
 primitive's validation pattern.
 
+> [!TIP]
+> In general, use the "get"/"set" methods for primitives because they do not require the creation of a
+> `PrimitiveType` instance.
+> When there is a need to add extensions to primitive data elements, use the "get"/"set" methods for PrimitiveTypes
+> because they allow you to add extensions to the PrimitiveType instance.
+
 ### EnumCodeType Usage
 
-The `EnumCodeType` PrimitiveType class extends `CodeType` to represent FHIR `code` data types that have a defined set
+The `EnumCodeType` class extends `CodeType` to represent FHIR `code` data types that have a defined set
 of allowed values.
 These `EnumCodeType` class methods are defined to automatically include a specific implementation of a "pseudo-enum"
 class (`IFhirCodeEnum`) that defines the allowed values.
@@ -88,7 +114,7 @@ resource when it is specified in the `ElementDefinition.binding` property for th
 These "pseudo-enum" classes expose the allowed values as static "enumerated" properties that can be easily referenced.
 Using the `EnumCodeType` provides validation of the `code` values from the associated "pseudo-enum" class.
 
-The `EnumCodeType` class is instantiated with a `fhirCode` value or `CodeType` object along with and the
+The `EnumCodeType` PrimitiveType class is instantiated with a `fhirCode` value or `CodeType` object along with and the
 "pseudo-enum" class instance that defines the allowed values.
 If the provided `fhirCode` value or `CodeType` object is not for a valid `code` value, the `EnumCodeType` will
 throw a `CodeTypeError`.
@@ -96,10 +122,90 @@ throw a `CodeTypeError`.
 Since the `EnumCodeType` class extends `CodeType`, it supports the ability to add the `id` and `extension` data
 elements.
 
+In addition to the "get"/"set" methods for `fhirCode` and `CodeType` objects described above, the `EnumCodeType` class
+also provides "get"/"set" methods for the `EnumCodeType`.
+The "get"/"set" methods for the `EnumCodeType` class instance are named using the following naming convention:
+`get{upperFirst(fieldName)}EnumType()` and `set{upperFirst(fieldName)}EnumType()` for `EnumCodeType`.
+For example:
+
+- Field name: `gender` for a FHIR `code` primitive
+- Primitive "get"/"set" method names: `getGender()` and `setGender()` for `fhirCode` primitive
+- PrimitiveType "get"/"set" method names: `getGenderElement()` and `setGenderElement()` for `CodeType` PrimitiveType
+- EnumCodeType "get"/"set" method names: `getGenderEnumType()` and `setGenderEnumType()` for `EnumCodeType` PrimitiveType;
+  These methods for `EnumCodeType` are only provided because the underlying private field is defined as an `EnumCodeType`.
+
+Any primitive, PrimitiveType, or EnumCodeType "setter" will throw a `InvalidCodeError` if the provided value is not a
+valid `code`.
+
+> [!TIP]
+> In general, use the "get"/"set" methods for primitive `code` because they do not require the creation of a
+> `CodeType` or `EnumCodeType` instance.
+> When there is a need to add extensions to primitive `code` elements, use the "get"/"set" methods for `CodeType`
+> because they allow you to add extensions to the `CodeType` instance and because they do not require the creation of
+> an `EnumCodeType` instance.
+> While it is permissible to use the "get"/"set" methods for `EnumCodeType`, it is not recommended because it requires
+> the creation of an `EnumCodeType` instance that requires the appropriate "pseudo-enum" class instance as an argument.
+
+#### Determine the Appropriate "Pseudo-Enum" Class
+
+To use the public static code enumerations, you must determine the proper "pseudo-enum" class to use.
+All "pseudo-enum" classes are named using the following naming convention: `{CodeSystem.name}Enum`.
+For example, the `AdministrativeGenderEnum` "pseudo-enum" class is generated from the
+[AdministrativeGender](https://www.hl7.org/fhir/valueset-administrative-gender.html) CodeSystem.
+
+The Data Models documentation provides a list of the "pseudo-enum" classes that are generated from selected FHIR
+[CodeSystem](https://www.hl7.org/fhir/codesystem.html) resources where `CodeSystem.status` is set to `active`
+and `CodeSystem.content` is set to `complete`.
+On the "Data Models Index" page, expand the "CodeSystems" heading to view the list of supported "pseudo-enum" classes.
+
+Individual resource and complex type data models may include one or more data elements that represent a primitive
+FHIR `code` data type (i.e., `EnumCodeType`, `CodeType`, `fhirCode`) that is associated with a "pseudo-enum" class.
+On the individual "Data Models Index" / "{data model name}" page, you can identify the required "pseudo-enum" classes
+for the data model under the "Properties" heading where the property name matches `{camelCase(CodeSystem.name)}Enum`.
+Also, under the "Methods" heading, you can locate the "EnumType" accessor methods that require a "pseudo-enum" class
+where the method name matches `[get|set|add]{CodeSystem.name}EnumType()`.
+In the method documentation, locate the "CodeSystem Enumeration" tag where a link to the required "pseudo-enum" class
+is provided.
+
+Following the link to the required `{CodeSystem.name}Enum` class, you can view the list of supported "enumerated"
+properties.
+By convention, the "enumerated" properties are named with the uppercased `code` value.
+The "enumerated" properties are static readonly instances of the `FhirCodeDefinition` object defined as:
+
+```typescript
+export interface IFhirCodeDefinition {
+  /**
+   * Enum name (all UPPERCASE)
+   */
+  name: string;
+  /**
+   * A string pattern that identifies a concept as defined by the code system
+   */
+  code: fhirCode;
+  /**
+   * A URI that identifies the system
+   */
+  system?: string | undefined;
+  /**
+   * A description of the concept as defined by the code system
+   */
+  display?: string | undefined;
+  /**
+   * Additional descriptive information about the code
+   */
+  definition?: string | undefined;
+}
+```
+
+To use an enumerated primitive `code` value, access the static "enumerated" property for the `code` value.
+For example, to use the `AdministrativeGender` `code` value for "female":
+`const femaleCode: fhirCode = AdministrativeGenderEnum.FEMALE.code`.
+
 ### PrimitiveType Examples
 
 Set and get a primitive data element:
 
+<!-- prettier-ignore -->
 ```typescript
 const patient: Patient = new Patient();
 // Set the patient's birth date as a `fhirDate` primitive
@@ -116,10 +222,14 @@ const patientBirthDateElement: DateType = patient.getBirthDateElement();
 
 Set and get a primitive data element with an `id` and `extension`:
 
+<!-- prettier-ignore -->
 ```typescript
 const patientBirthDateType = new DateType('1978-01-28');
 patientBirthDateType.setId('birthDate'); // NOTE: Element.id is rarely used
-const birthDateExtension = new Extension('http://example.com/extensions/birthDate', new StringType('January 28, 1978'));
+const birthDateExtension = new Extension(
+  'http://example.com/extensions/birthDate',
+  new StringType('January 28, 1978'),
+);
 patientBirthDateType.setExtension([birthDateExtension]);
 
 const patient: Patient = new Patient();
@@ -141,30 +251,31 @@ const patientBirthDateElement: DateType = patient.getBirthDateElement();
 
 Set and get an EnumCodeType primitive data element:
 
+<!-- prettier-ignore -->
 ```typescript
 const patient: Patient = new Patient();
-// NOTE: Following "setters" will throw a CodeTypeError if the provided value
-//       is not a valid code
+// NOTE: Following "setters" examples will throw a CodeTypeError because
+//       the provided value is not a valid code!
 // patient.setGender('invalidCode');
 // patient.setGenderElement(new CodeType('invalidCode'));
-// NOTE: Following "setters" use the recommended approach of using an "enum"
-//       code value
+//
+// NOTE: Following "setters" examples use the recommended approach of using
+//       an "enum" code value.
 // patient.setGender(AdministrativeGenderEnum.FEMALE.code);
 // patient.setGenderElement(new CodeType(AdministrativeGenderEnum.FEMALE.code));
 
-const genderEnumCodeType = new EnumCodeType(AdministrativeGenderEnum.FEMALE.code, new AdministrativeGenderEnum());
-patient.setGenderEnumType(genderEnumCodeType);
+patient.setGender(AdministrativeGenderEnum.FEMALE.code);
 
-const patientGenderEnumType = patient.getGenderEnumType();
-// Returns patientGenderEnumType.getValue() = 'female' as `fhirCode`
-// Returns patientGenderEnumType.getId() = undefined
-// Returns patientGenderEnumType.getExtension() = [] as IExtension[]
+const patientGender = patient.getGender();
+// Returns 'female' as `fhirCode`
 const patientGenderElement = patient.getGenderElement();
 // Returns patientGenderElement.getValue() = 'female' as `fhirCode`
 // Returns patientGenderElement.getId() = undefined
 // Returns patientGenderElement.getExtension() = [] as IExtension[]
-const patientGender = patient.getGender();
-// Returns 'female' as `fhirCode`
+const patientGenderEnumType = patient.getGenderEnumType();
+// Returns patientGenderEnumType.getValue() = 'female' as `fhirCode`
+// Returns patientGenderEnumType.getId() = undefined
+// Returns patientGenderEnumType.getExtension() = [] as IExtension[]
 ```
 
 ## Complex Data Type Usage
@@ -181,21 +292,28 @@ The following complex data types may include `modifierExtension` data elements a
 These data models are generated from the FHIR specification's [StructureDefinition](https://www.hl7.org/fhir/structuredefinition.html)
 resource where `StructureDefinition.kind` is set to `complex-type`.
 
-All complex data models typically contain one or more "primitive" data elements and may contain one or more "complex"
-data elements.
+All complex data models typically contain one or more "primitive" data elements and may contain one or more other
+"complex" data elements.
 
 ### Complex Data Type Examples
 
 Set and get a complex data element:
 
+<!-- prettier-ignore -->
 ```typescript
-const namePeriod = new Period().setStart('1978-01-28').setEnd('2000-08-06');
+const namePeriod = new Period()
+  .setStart('1978-01-28')
+  .setEnd('2000-08-06');
 
 const patientNameType = new HumanName();
 patientNameType.setFamily('Jones');
 patientNameType.addGiven('Jennifer');
 patientNameType.addGiven('Marie');
 patientNameType.setPrefix(['Ms.']);
+// Could also use:
+// - `setUse(NameUseEnum.OFFICIAL.code)`
+// - `setUseElement(new CodeType(NameUseEnum.OFFICIAL.code))`
+// - `setUseEnumType(new EnumCodeType(NameUseEnum.OFFICIAL.code, new NameUseEnum()))`
 patientNameType.setUse('official');
 patientNameType.setPeriod(namePeriod);
 
@@ -208,7 +326,7 @@ const patientNameArray = patient.getName();
 // Returns patientNameArray[0].getGiven()[0] = 'Jennifer' as `fhirString`
 // Returns patientNameArray[0].getGiven()[1] = 'Marie' as `fhirString`
 // Returns patientNameArray[0].getPrefix()[0] = 'Ms.' as `fhirString`
-// Returns patientNameArray[0].getUse() = 'official' as `fhirString`
+// Returns patientNameArray[0].getUse() = 'official' as `fhirCode`
 // Returns patientNameArray[0].getPeriod().getStart() = '1978-01-28' as `fhirDateTime`
 // Returns patientNameArray[0].getPeriod().getEnd() = '2000-08-06' as `fhirDateTime`
 // Returns patientNameArray[0].getPeriod().getId() = undefined
@@ -219,8 +337,11 @@ const patientNameArray = patient.getName();
 
 Set and get a complex data element with an `id` and `extension`:
 
+<!-- prettier-ignore -->
 ```typescript
-const namePeriod = new Period().setStart('1978-01-28').setEnd('2000-08-06');
+const namePeriod = new Period()
+  .setStart('1978-01-28')
+  .setEnd('2000-08-06');
 
 const patientNameType = new HumanName();
 patientNameType.setFamily('Jones');
@@ -231,7 +352,10 @@ patientNameType.setUse('official');
 patientNameType.setPeriod(namePeriod);
 
 patientNameType.setId('HumanName'); // NOTE: Element.id is rarely used
-const patientNameExtension = new Extension('http://hl7.org/fhir/StructureDefinition/language', new CodeType('en-US'));
+const patientNameExtension = new Extension(
+  'http://hl7.org/fhir/StructureDefinition/language',
+  new CodeType('en-US'),
+);
 patientNameType.addExtension(patientNameExtension);
 
 const patient: Patient = new Patient();
@@ -243,7 +367,7 @@ const patientNameArray = patient.getName();
 // Returns patientNameArray[0].getGiven()[0] = 'Jennifer' as `fhirString`
 // Returns patientNameArray[0].getGiven()[1] = 'Marie' as `fhirString`
 // Returns patientNameArray[0].getPrefix()[0] = 'Ms.' as `fhirString`
-// Returns patientNameArray[0].getUse() = 'official' as `fhirString`
+// Returns patientNameArray[0].getUse() = 'official' as `fhirCode`
 // Returns patientNameArray[0].getPeriod().getStart() = '1978-01-28' as `fhirDateTime`
 // Returns patientNameArray[0].getPeriod().getEnd() = '2000-08-06' as `fhirDateTime`
 // Returns patientNameArray[0].getPeriod().getId() = undefined
@@ -261,9 +385,13 @@ The FHIR `Extension` class is a core data model that extends the `Element` base 
 Every resource or datatype element may include one or more "extension" child elements.
 The extension is either "simple" or "complex".
 "Simple" extensions have only a required `url` (`fhirUri`) and an optional value implemented as `value[x]` (`IDataType`)
-[open data type](https://www.hl7.org/fhir/R5/datatypes.html#open) and no nested extensions.
-"Complex" extensions contain the required `url` (`fhirUri`) and one or more nested extensions and no value.
+[open data type](https://www.hl7.org/fhir/datatypes.html#open) but no nested extensions.
+"Complex" extensions contain the required `url` (`fhirUri`) and one or more nested extensions but no value.
 An extension cannot have both a value and nested extensions.
+
+> [!IMPORTANT]
+> This constraint is enforced by the `static parse()` method when parsing the source JSON data and by the instance
+> `toJSON()` method when serializing the instance's data to JSON.
 
 The core FHIR `Extension` class exposes the value getter/setter methods for the `value[x]` by processing the value as
 a `DataType` meaning it can take either a complex data type or PrimitiveType (both extend `DataType`).
@@ -272,13 +400,15 @@ Note that the `Extension.value` getter/setter methods cannot directly use FHIR p
 To use a FHIR primitive, use the PrimitiveType (e.g., `StringType`, `CodeType`, etc.).
 
 The list of supported `value[x]` open data types are specific to each FHIR release (e.g., R4, R5, etc.).
-Therefore, the generated complex data models include a FHIR release specific subclass of the core `Extension` class
+Therefore, the generated complex data models include a FHIR release-specific subclass of the core `Extension` class
 that contains additional type-specific "has" and "getter" convenience methods for each of the supported data types.
 The "hasValue{datatype}()" (e.g., `hasValueCoding()`, etc.) returns `true` if the extension has a value of the specified
-data type, otherwise `false`.
+data type, otherwise `false` (i.e., either `undefined` or is not an instance of the specified data type).
 The "getValue{datatype}()" (e.g., `getValueCoding()`, etc.) returns the value of the specified data type if the
 extension has a value of that specified data type, otherwise throws a `InvalidTypeError`.
 If the `Extension.value` is undefined, the "getValue{datatype}()" returns `undefined`.
+Keep in mind that the `getValue()` method always returns the `Extension.value` property which is an instance of the
+`DataType` subclass.
 
 Since the core `Extension` class does not have the open data type convenience methods, to execute these convenience
 methods, the core `Extension` must be cast to the data model package's `Extension`.
@@ -288,6 +418,7 @@ See the example below (i.e., `(extensions[0] as Extension).getValueCodeType()`).
 
 Set and get a "simple" extension data element:
 
+<!-- prettier-ignore -->
 ```typescript
 const birthSexExtension: Extension = new Extension(
   'http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex',
@@ -312,12 +443,19 @@ const extensions = patient.getExtension();
 
 Set and get, using `getExtensionByUrl()`, a "complex" extension data element:
 
+<!-- prettier-ignore -->
 ```typescript
-const ombCoding = new Coding().setSystem('urn:oid:2.16.840.1.113883.6.238').setCode('2054-5');
-const detailedCoding = new Coding().setSystem('urn:oid:2.16.840.1.113883.6.238').setCode('2056-0');
+const ombCoding = new Coding()
+  .setSystem('urn:oid:2.16.840.1.113883.6.238')
+  .setCode('2054-5');
+const detailedCoding = new Coding()
+  .setSystem('urn:oid:2.16.840.1.113883.6.238')
+  .setCode('2056-0');
 const textStringType = new StringType('Black American');
 
-const raceExtension: Extension = new Extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-race');
+const raceExtension: Extension = new Extension(
+  'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race',
+);
 raceExtension
   .addExtension(new Extension('ombCategory', ombCoding))
   .addExtension(new Extension('detailed', detailedCoding))
@@ -326,7 +464,9 @@ raceExtension
 const patient: Patient = new Patient();
 patient.setExtension([raceExtension]);
 
-const patientRaceExtension = patient.getExtensionByUrl('http://hl7.org/fhir/us/core/StructureDefinition/us-core-race');
+const patientRaceExtension = patient.getExtensionByUrl(
+  'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race',
+);
 // Returns single Extension object
 // Returns patientRaceExtension.getUrl() =
 //   'http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex' as `fhirUri`
@@ -359,8 +499,14 @@ const textExtension = patientRaceExtension.getExtensionByUrl('text');
 // Returns textExtension.getExtension() = [] as IExtension[]
 ```
 
-## Populating the Patient Resource using Standard Accessors
+## Populating the Patient Resource
 
+The following examples show how to populate the [Patient](https://www.hl7.org/fhir/patient.html) resource using
+the `Patient` data model.
+
+### Standard Accessor Usage
+
+<!-- prettier-ignore -->
 ```typescript
 const patient: Patient = new Patient();
 // Set "id" assuming this data came from a data source
@@ -368,11 +514,15 @@ patient.setId('54321-0013');
 
 // US Core v4.0 Meta.profile example
 const meta = new Meta();
-meta.addProfile('http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient');
+meta.addProfile(
+  'http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient',
+);
 patient.setMeta(meta);
 
 // US Core v4.0 profile extensions
-const raceExtension: Extension = new Extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-race');
+const raceExtension: Extension = new Extension(
+  'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race',
+);
 const raceOmbCoding = new Coding();
 raceOmbCoding.setSystem('urn:oid:2.16.840.1.113883.6.238');
 raceOmbCoding.setCode('2054-5');
@@ -492,37 +642,75 @@ managingOrganization.setDisplay('Acme Healthcare');
 patient.setManagingOrganization(managingOrganization);
 ```
 
-## Populating the Patient Resource Using Fluent Style Accessors
+### Fluent Style Accessor Usage
 
+<!-- prettier-ignore -->
 ```typescript
 const patient: Patient = new Patient();
 // Set "id" assuming this data came from a data source
 patient.setId('54321-0013');
 
 // US Core v4.0 Meta.profile example
-patient.setMeta(new Meta().addProfile('http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient'));
+patient.setMeta(
+  new Meta()
+    .addProfile(
+      'http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient',
+    ),
+);
 
 // US Core v4.0 profile extensions
-const raceExtension: Extension = new Extension('http://hl7.org/fhir/us/core/StructureDefinition/us-core-race');
+const raceExtension: Extension = new Extension(
+  'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race',
+);
 raceExtension
   .addExtension(
-    new Extension('ombCategory', new Coding().setSystem('urn:oid:2.16.840.1.113883.6.238').setCode('2054-5')),
+    new Extension(
+      'ombCategory',
+      new Coding()
+        .setSystem('urn:oid:2.16.840.1.113883.6.238')
+        .setCode('2054-5'),
+    ),
   )
-  .addExtension(new Extension('detailed', new Coding().setSystem('urn:oid:2.16.840.1.113883.6.238').setCode('2056-0')))
-  .addExtension(new Extension('text', new StringType('Black American')));
+  .addExtension(
+    new Extension(
+      'detailed',
+      new Coding()
+        .setSystem('urn:oid:2.16.840.1.113883.6.238')
+        .setCode('2056-0'),
+    ),
+  )
+  .addExtension(
+    new Extension(
+      'text',
+      new StringType('Black American'),
+    ),
+  );
 const ethnicityExtension: Extension = new Extension(
   'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity',
 );
 ethnicityExtension
   .addExtension(
-    new Extension('ombCategory', new Coding().setSystem('urn:oid:2.16.840.1.113883.6.238').setCode('2186-5')),
+    new Extension(
+      'ombCategory',
+      new Coding()
+        .setSystem('urn:oid:2.16.840.1.113883.6.238')
+        .setCode('2186-5'),
+    ),
   )
-  .addExtension(new Extension('text', new StringType('Not Hispanic or Latino')));
+  .addExtension(
+    new Extension(
+      'text',
+      new StringType('Not Hispanic or Latino'),
+    ),
+  );
 const birthSexExtension: Extension = new Extension(
   'http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex',
   new CodeType('F'),
 );
-patient.addExtension(raceExtension).addExtension(ethnicityExtension).addExtension(birthSexExtension);
+patient
+  .addExtension(raceExtension)
+  .addExtension(ethnicityExtension)
+  .addExtension(birthSexExtension);
 
 patient.addIdentifier(
   new Identifier()
@@ -559,7 +747,7 @@ patient
 // Chain setting multiple primitive data types
 patient
   .setActive(true)
-  // Use valid code value instead of available EnumCodeType code
+  // Use valid code value instead of available "pseudo-enum" code
   .setGender('female')
   .setBirthDate('1978-01-28');
 
@@ -578,7 +766,9 @@ patient.addAddress(
 
 patient.setMaritalStatus(
   new CodeableConcept().addCoding(
-    new Coding().setSystem('http://terminology.hl7.org/CodeSystem/v3-MaritalStatus').setCode('M'),
+    new Coding()
+      .setSystem('http://terminology.hl7.org/CodeSystem/v3-MaritalStatus')
+      .setCode('M'),
   ),
 );
 
@@ -587,7 +777,11 @@ patient.addCommunication(
   new PatientCommunicationComponent()
     .setLanguage(
       new CodeableConcept()
-        .addCoding(new Coding().setSystem('urn:ietf:bcp:47').setCode('en-US'))
+        .addCoding(
+          new Coding()
+            .setSystem('urn:ietf:bcp:47')
+            .setCode('en-US'),
+        )
         .setText('English (United States)'),
     )
     .setPreferred(true),
@@ -606,5 +800,9 @@ patient
           .setUse(IdentifierUseEnum.OFFICIAL.code),
       ),
   )
-  .setManagingOrganization(new Reference().setReference('Organization/ORG-24680').setDisplay('Acme Healthcare'));
+  .setManagingOrganization(
+    new Reference()
+      .setReference('Organization/ORG-24680')
+      .setDisplay('Acme Healthcare'),
+  );
 ```

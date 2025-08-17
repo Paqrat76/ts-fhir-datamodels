@@ -697,49 +697,97 @@ describe('Primitive Type Schemas', () => {
         parseFhirPrimitiveData(invalidBool, fhirBooleanSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirBoolean`);
 
       const invalidString = TOO_BIG_STRING;
       t = () => {
         parseFhirPrimitiveData(invalidString, fhirStringSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirString`);
 
       const invalidInt = FHIR_MAX_INTEGER + 1;
       t = () => {
         parseFhirPrimitiveData(invalidInt, fhirIntegerSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirInteger`);
 
       const invalidInt64 = FHIR_MAX_INTEGER64 + BigInt(1);
       t = () => {
         parseFhirPrimitiveData(invalidInt64, fhirInteger64Schema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirInteger64`);
 
       const invalidPositiveInt = 0;
       t = () => {
         parseFhirPrimitiveData(invalidPositiveInt, fhirPositiveIntSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirPositiveInt`);
 
       const invalidUnsignedInt = -1;
       t = () => {
         parseFhirPrimitiveData(invalidUnsignedInt, fhirUnsignedIntSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirUnsignedInt`);
 
       const invalidDecimal = Number.MAX_VALUE;
       t = () => {
         parseFhirPrimitiveData(invalidDecimal, fhirDecimalSchema);
       };
       expect(t).toThrow(PrimitiveTypeError);
-      expect(t).toThrow(`Invalid FHIR primitive data value`);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirDecimal`);
+
+      // date passes Zod parsing but fails Luxon parsing
+      let invalidDate = '2020-02-30';
+      t = () => {
+        parseFhirPrimitiveData(invalidDate, fhirDateSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirDate`);
+
+      // date fails Zod parsing
+      invalidDate = '2020-13-28';
+      t = () => {
+        parseFhirPrimitiveData(invalidDate, fhirDateSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirDate`);
+
+      // dateTime passes Zod parsing but fails Luxon parsing
+      let invalidDateTime = '2020-02-30T13:28:17+02:00';
+      t = () => {
+        parseFhirPrimitiveData(invalidDateTime, fhirDateTimeSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirDateTime`);
+
+      // dateTime fails Zod parsing
+      invalidDateTime = '2020-13-28T13:28:17+02:00';
+      t = () => {
+        parseFhirPrimitiveData(invalidDateTime, fhirDateTimeSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirDateTime`);
+
+      // date passes Zod parsing but fails Luxon parsing
+      let invalidInstant = '2020-02-30T13:28:17.239+02:00';
+      t = () => {
+        parseFhirPrimitiveData(invalidInstant, fhirInstantSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirInstant`);
+
+      // dateTime fails Zod parsing
+      invalidInstant = '2020-13-28T13:28:17.239+02:00';
+      t = () => {
+        parseFhirPrimitiveData(invalidInstant, fhirInstantSchema);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid FHIR primitive data value for fhirInstant`);
     });
 
     it('should throw appropriate parse error with override message', () => {

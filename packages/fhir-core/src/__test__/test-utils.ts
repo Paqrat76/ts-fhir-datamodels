@@ -63,46 +63,6 @@ export {
   FHIR_MAX_INTEGER64,
 } from '../data-types/primitive/primitive-types';
 
-/**
- * Property values used in FHIR resource data model testing for Resource and DomainResource
- */
-
-// export const VALID_ID = 'id12345';
-// export const VALID_ID_TYPE = new IdType(VALID_ID);
-// export const VERSION_ID = 'VID-1972';
-// export const VALID_META = new Meta();
-// VALID_META.setVersionId(VERSION_ID);
-// export const IMPLICIT_RULES_VALUE = 'implicitRules';
-// export const LANGUAGE_VALUE = 'en-US';
-// export const VALID_CODE_GENERATED = `generated`;
-// export const VALID_XHTML = '<div xmlns="http://www.w3.org/1999/xhtml">text</div>';
-// export const VALID_NARRATIVE = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
-// export const VALID_EXTENSION = new Extension('extUrl', new StringType('Extension string value'));
-// export const VALID_MODIFIER_EXTENSION = new Extension('modExtUrl', new StringType('ModifierExtension string value'));
-
-// export const VALID_ID_2 = 'id67890';
-// export const VALID_ID_TYPE_2 = new IdType(VALID_ID_2);
-// export const VERSION_ID_2 = 'VID-1976';
-// export const VALID_META_2 = new Meta();
-// VALID_META_2.setVersionId(VERSION_ID_2);
-// export const IMPLICIT_RULES_VALUE_2 = 'implicitRules2';
-// export const LANGUAGE_VALUE_2 = 'en-UK';
-// export const VALID_CODE_GENERATED_2 = `generated`;
-// export const VALID_XHTML_2 = '<div xmlns="http://www.w3.org/1999/xhtml">text two</div>';
-// export const VALID_NARRATIVE_2 = new Narrative(VALID_CODE_GENERATED_2, VALID_XHTML_2);
-// export const VALID_EXTENSION_2 = new Extension('extUrl2', new StringType('Extension string value 2'));
-// export const VALID_MODIFIER_EXTENSION_2 = new Extension(
-//   'modExtUrl2',
-//   new StringType('ModifierExtension string value 2'),
-// );
-
-/**
- * Property values used for datatype testing for Element.id and Element.extension
- */
-
-// export const DATATYPE_ID = 'DT-1357';
-// export const DATATYPE_EXTENSION = new Extension('datatypeUrl', new StringType('datatype extension string value'));
-
 export const UNDEFINED_VALUE = undefined;
 
 /**
@@ -110,7 +70,6 @@ export const UNDEFINED_VALUE = undefined;
  */
 
 export const INVALID_CODE_VALUE = ' Invalid code ';
-// export const INVALID_CODE_TYPE = new StringType(INVALID_CODE_VALUE);
 export const INVALID_NON_STRING_TYPE_VALUE = 'Invalid datatype';
 export const INVALID_NON_STRING_TYPE = new StringType(INVALID_NON_STRING_TYPE_VALUE);
 export const INVALID_STRING_TYPE_VALUE = 12345;
@@ -182,6 +141,10 @@ export class MockElement extends DataType implements IDataType {
     }
   }
 
+  public dataTypeName(): string {
+    return 'MockElement';
+  }
+
   public override isDataType(): boolean {
     return true;
   }
@@ -222,6 +185,10 @@ export class MockBackboneType extends BackboneType implements IBackboneType {
     if (modifierExtension !== undefined) {
       super.setModifierExtension(modifierExtension);
     }
+  }
+
+  public dataTypeName(): string {
+    return 'MockBackboneType';
   }
 
   public override isEmpty(): boolean {
@@ -410,6 +377,10 @@ export class MockComplexDataType extends DataType implements IDataType {
     return 'Coding';
   }
 
+  public dataTypeName(): string {
+    return 'MockComplexDataType';
+  }
+
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(this.mockSystem, this.mockCode);
   }
@@ -507,7 +478,7 @@ PARSABLE_RESOURCE_MAP.set('MockTask', MockTask);
  * @param dataJsonObj - source JSON object
  * @param fhirResourceType - expected FhirResourceType
  * @throws AssertionError for invalid arguments
- * @throws InvalidTypeError for invalid fhirResourceType
+ * @throws {@link InvalidTypeError} for invalid fhirResourceType
  *
  * @category Type Guards/Assertions
  */

@@ -37,13 +37,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** A URI that is a reference to a canonical URL on a FHIR resource
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR canonical](http://hl7.org/fhir/StructureDefinition/canonical)
  */
 export class CanonicalType extends PrimitiveType<fhirCanonical> implements IPrimitiveType<fhirCanonical> {
   /**
    * @param value - the value of the primitive `fhirCanonical`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirCanonical) {
     super();

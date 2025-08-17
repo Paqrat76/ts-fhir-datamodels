@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.4.1] - 2025-08-??
+## [0.4.1] - 2025-08-17
 
 ### Added
 
@@ -30,14 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Updated README documentation
 - Updated dependency
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
+- Minor test updates
 
 
 ## [0.4.0] - 2025-07-29

@@ -58,7 +58,7 @@ describe('ReferenceTargets', () => {
     const t = () => {
       testMockTaskR1.setMyReferenceProperty5(testIdentifier);
     };
-    expect(t).toThrow(AssertionError);
+    expect(t).toThrow(InvalidTypeError);
     expect(t).toThrow(
       `ReferenceTargets decorator on setMyReferenceProperty5 (MockTaskR1.myReferenceProperty5) expects a single argument to be type of 'Reference | undefined | null'`,
     );
@@ -100,7 +100,6 @@ describe('ReferenceTargets', () => {
 
   it('should succeed with null reference', () => {
     const testMockTaskR1 = new MockTaskR1();
-    // @ts-expect-error: allow for testing
     testMockTaskR1.setMyReferenceProperty7(null);
     expect(testMockTaskR1.getMyReferenceProperty7()).toBeNull();
   });
@@ -255,7 +254,6 @@ export class MockTaskR1 extends MockTask {
 
   protected myReferenceProperty4?: Reference | undefined;
 
-  // @ts-expect-error: allow for testing
   @ReferenceTargets('MockTaskR1.myReferenceProperty4', ['InvalidResource'])
   public setMyReferenceProperty4(value: Reference | undefined): this {
     this.myReferenceProperty4 = value;
@@ -285,7 +283,6 @@ export class MockTaskR1 extends MockTask {
   protected myReferenceProperty7: Reference | null = null;
 
   public getMyReferenceProperty7(): Reference {
-    // @ts-expect-error: allow for testing
     return this.myReferenceProperty7;
   }
 

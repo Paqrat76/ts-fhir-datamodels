@@ -19,9 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.14.1] - 2025-08-??
-
-### Added
+## [0.14.1] - 2025-08-17
 
 ### Changed
 
@@ -30,14 +28,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Snapshot testing for generated root index.ts
 - Updated dependencies
 - Resolved linting issues in generated code due to updated ESLint version
-
-### Deprecated
-
-### Removed
+- Updated Handlebars templates to support tweaks to the generated Typedoc documentation
 
 ### Fixed
 
-### Security
+- Resource parsing issue: add check for existence of `resourceType` property
 
 
 ## [0.14.0] - 2025-07-29

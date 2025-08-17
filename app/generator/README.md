@@ -8,7 +8,7 @@ FHIR data models for FHIR resources, complex data types, and selected code syste
 These generated TypeScript classes along with the `@paq-ts-fhir/fhir-core` library will be published as public NPM
 libraries for each supported FHIR release (i.e., R4, R4B, R5, etc.).
 
-## fhir-package-loader
+## FHIR Package Loader
 
 The FHIR Package Loader provides TypeScript/JavaScript classes for loading FHIR packages and querying them for
 FHIR resources.

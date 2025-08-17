@@ -18,7 +18,7 @@
  * - **Requirements:** {{{compHbs.rootElement.requirements}}}
 {{/if}}
  *
- * @category DataModel: {{upperCamelCase compHbs.parentKind}}
+ * @category Data Models: {{upperCamelCase compHbs.parentKind}}
  * @see [FHIR {{compHbs.parentType}}]({{{compHbs.parentUrl}}})
  */
 {{#if compHbs.parentIstanbulIgnore~}}/* istanbul ignore next */ {{/if}}export class {{compHbs.componentName}} extends {{compHbs.baseDefinitionType}} implements {{complexTypeImplements compHbs.parentType compHbs.baseDefinitionType}} {

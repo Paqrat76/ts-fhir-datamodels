@@ -21,7 +21,7 @@
  *
  */
 
-import { InvalidTypeError, PrimitiveTypeError, StringType } from '@paq-ts-fhir/fhir-core';
+import { FhirError, IDomainResource, InvalidTypeError, PrimitiveTypeError, StringType } from '@paq-ts-fhir/fhir-core';
 import { Address, HumanName, Identifier } from '../../../src/complex-types/complex-datatypes';
 import { SimplePersonModel } from '../../../src/resources/SimplePersonModel';
 import { TestData } from '../../ftest-data';
@@ -50,7 +50,7 @@ describe('SimplePersonModel', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new SimplePersonModel();
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
@@ -79,7 +79,7 @@ describe('SimplePersonModel', () => {
 
       let testInstance = testModel.copy();
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedDomainResourceProperties(testInstance, 1);
@@ -106,7 +106,7 @@ describe('SimplePersonModel', () => {
 
       testInstance = testModel.copy();
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
@@ -133,7 +133,7 @@ describe('SimplePersonModel', () => {
       testInstance.setAddress([VALID_ADDRESS]);
       testInstance.setPhoneElement(TestData.VALID_PHONE_TYPE);
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedDomainResourceProperties(testInstance, 1);
@@ -159,7 +159,7 @@ describe('SimplePersonModel', () => {
       testInstance.addAddress(VALID_ADDRESS_2);
       testInstance.setPhone(TestData.VALID_PHONE_2);
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetDomainResourceProperties(testInstance);
@@ -184,7 +184,7 @@ describe('SimplePersonModel', () => {
       testInstance.setAddress(TestData.UNDEFINED_VALUE);
       testInstance.setPhone(TestData.UNDEFINED_VALUE);
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
@@ -280,6 +280,9 @@ describe('SimplePersonModel', () => {
         ],
       },
     };
+    const INVALID_JSON = {
+      bogusField: 'bogus value',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new SimplePersonModel();
@@ -291,7 +294,7 @@ describe('SimplePersonModel', () => {
       testInstance.setAddress([VALID_ADDRESS, VALID_ADDRESS_2]);
       testInstance.setPhoneElement(altPhone);
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
@@ -308,10 +311,18 @@ describe('SimplePersonModel', () => {
       expect(testInstance).toBeUndefined();
     });
 
+    it('should throw FhirError from parse() when JSON is missing required properties', () => {
+      const t = () => {
+        SimplePersonModel.parse(INVALID_JSON);
+      };
+      expect(t).toThrow(FhirError);
+      expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
+    });
+
     it('should return parsed SimplePersonModel for valid json', () => {
       const testInstance: SimplePersonModel | undefined = SimplePersonModel.parse(VALID_JSON);
 
-      expectDomainResourceBase<SimplePersonModel>(SimplePersonModel, testInstance, 'SimplePersonModel');
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
       expect(testInstance?.isEmpty()).toBe(false);
       expect(testInstance?.toJSON()).toEqual(VALID_JSON);
       expectInitializedDomainResourceProperties(testInstance, 2);
@@ -333,6 +344,7 @@ describe('SimplePersonModel', () => {
     it('identifier: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new SimplePersonModel();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIdentifier(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -342,6 +354,7 @@ describe('SimplePersonModel', () => {
     it('name: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new SimplePersonModel();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setName(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -351,6 +364,7 @@ describe('SimplePersonModel', () => {
     it('address: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new SimplePersonModel();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setAddress([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -359,6 +373,7 @@ describe('SimplePersonModel', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addAddress(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -368,12 +383,14 @@ describe('SimplePersonModel', () => {
     it('phone: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new SimplePersonModel();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPhoneElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid SimplePersonModel.phone; Provided element is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPhone(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);

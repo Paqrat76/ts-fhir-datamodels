@@ -6,6 +6,17 @@
    * @param sourceJson - JSON representing FHIR `{{componentName}}`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{componentName}}
    * @returns {{componentName}} data model or undefined for `{{componentName}}`
+{{#if hasRequiredFields}}
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+{{else}}
+{{#if isComponentResource}}
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+{{/if}}
+{{#if isComponentDomainResource}}
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+{{/if}}
+{{/if}}
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public {{staticParseKeywords isComponentResource isComponentDomainResource}} parse(sourceJson: JSON.Value, optSourceField?: string): {{componentName}} | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -18,9 +29,11 @@
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
 {{#if isComponentResource}}
+    fhirParser.verifyResourceType(classJsonObj, '{{componentName}}');
     fhirParser.processResourceJson(instance, classJsonObj);
 {{/if}}
 {{#if isComponentDomainResource}}
+    fhirParser.verifyResourceType(classJsonObj, '{{componentName}}');
     fhirParser.processDomainResourceJson(instance, classJsonObj);
 {{/if}}
 {{#if isComponentBackboneElement}}

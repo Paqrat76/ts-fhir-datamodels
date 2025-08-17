@@ -45,6 +45,7 @@
  */
 
 import * as z from 'zod';
+import { DateTime } from 'luxon';
 import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
 
 /**
@@ -55,9 +56,9 @@ import { PrimitiveTypeError } from '../../errors/PrimitiveTypeError';
  * @param schema - custom Zod schema for FHIR primitive
  * @param errMessage - optional error message to override the default
  * @returns the FHIR primitive value as the FHIR primitive type
- * @throws PrimitiveTypeError for invalid data value
+ * @throws {@link PrimitiveTypeError} for invalid data value
  *
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export function parseFhirPrimitiveData<T extends z.ZodType>(
   data: unknown,
@@ -65,6 +66,7 @@ export function parseFhirPrimitiveData<T extends z.ZodType>(
   errMessage?: string,
 ): z.output<T> {
   let dataValue = data;
+  const metaId: string = schema.meta()?.id ?? 'unknown';
 
   // A string representation of data for the following datatypes cannot be processed directly by
   // schema.safeParse(). They must be converted to the appropriate data types.
@@ -84,11 +86,28 @@ export function parseFhirPrimitiveData<T extends z.ZodType>(
     }
   }
 
+  const errMsg = errMessage ?? `Invalid FHIR primitive data value for ${metaId}`;
   const parseResult = schema.safeParse(dataValue);
   if (parseResult.success) {
+    // Parsing with the datetime-related schemas based on the FHIR specification's regular expressions
+    // can miss some edge cases, so we do a more thorough check here.
+    if (['fhirDate', 'fhirDateTime', 'fhirInstant'].includes(metaId)) {
+      const dt = DateTime.fromISO(dataValue as string);
+      if (!dt.isValid) {
+        // The PrimitiveTypeError constructor expects its second argument to be a ZodError instance.
+        const cause = new z.ZodError([
+          {
+            code: 'invalid_format',
+            format: '',
+            path: [],
+            message: errMsg,
+          },
+        ]);
+        throw new PrimitiveTypeError(errMsg, cause);
+      }
+    }
     return parseResult.data as z.infer<T>;
   } else {
-    const errMsg = errMessage ?? `Invalid FHIR primitive data value`;
     throw new PrimitiveTypeError(errMsg, parseResult.error);
   }
 }
@@ -129,58 +148,58 @@ const FHIR_REGEX_XHTML = new RegExp('^\\S[ \\r\\n\\t\\S]+$');
 // FHIR boolean primitive
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirBooleanSchema = z.boolean();
+export const fhirBooleanSchema = z.boolean().meta({ id: 'fhirBoolean' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirBoolean = z.infer<typeof fhirBooleanSchema>;
 
 // FHIR string primitive
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirBase64BinarySchema = z.string().regex(FHIR_REGEX_BASE64BINARY);
+export const fhirBase64BinarySchema = z.string().regex(FHIR_REGEX_BASE64BINARY).meta({ id: 'fhirBase64Binary' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirBase64Binary = z.infer<typeof fhirBase64BinarySchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirStringSchema = z.string().min(1).max(FHIR_MAX_STRING_LENGTH);
+export const fhirStringSchema = z.string().min(1).max(FHIR_MAX_STRING_LENGTH).meta({ id: 'fhirString' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirString = z.infer<typeof fhirStringSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirMarkdownSchema = z.string().min(1).max(FHIR_MAX_STRING_LENGTH);
+export const fhirMarkdownSchema = z.string().min(1).max(FHIR_MAX_STRING_LENGTH).meta({ id: 'fhirMarkdown' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirMarkdown = z.infer<typeof fhirMarkdownSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirCodeSchema = z.string().regex(FHIR_REGEX_CODE);
+export const fhirCodeSchema = z.string().regex(FHIR_REGEX_CODE).meta({ id: 'fhirCode' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirCode = z.infer<typeof fhirCodeSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirIdSchema = z.string().regex(FHIR_REGEX_ID);
+export const fhirIdSchema = z.string().regex(FHIR_REGEX_ID).meta({ id: 'fhirId' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirId = z.infer<typeof fhirIdSchema>;
 
@@ -189,152 +208,164 @@ export type fhirId = z.infer<typeof fhirIdSchema>;
 // NOTE: This FHIR decimal schema definition DOES NOT currently support the FHIR precision requirements.
 //       See the "warning" box at https://hl7.org/fhir/R5/json.html#primitive).
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirDecimalSchema = z.number().refine((val) => {
-  const valStr = String(val);
-  // Decimals in FHIR cannot have more than 18 digits and a decimal point.
-  if (valStr.includes('.')) {
-    return valStr.length <= 19 && FHIR_REGEX_DECIMAL.test(valStr);
-  }
-  return valStr.length <= 18 && FHIR_REGEX_DECIMAL.test(valStr);
-});
+export const fhirDecimalSchema = z
+  .number()
+  .refine((val) => {
+    const valStr = String(val);
+    // Decimals in FHIR cannot have more than 18 digits and a decimal point.
+    if (valStr.includes('.')) {
+      return valStr.length <= 19 && FHIR_REGEX_DECIMAL.test(valStr);
+    }
+    return valStr.length <= 18 && FHIR_REGEX_DECIMAL.test(valStr);
+  })
+  .meta({ id: 'fhirDecimal' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirDecimal = z.infer<typeof fhirDecimalSchema>;
 
 // integer64 was added to the FHIR specification in FHIR R5
 /**
  * @since 5.0.0
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirInteger64Schema = z.bigint().gte(FHIR_MIN_INTEGER64).lte(FHIR_MAX_INTEGER64);
+export const fhirInteger64Schema = z
+  .bigint()
+  .gte(FHIR_MIN_INTEGER64)
+  .lte(FHIR_MAX_INTEGER64)
+  .meta({ id: 'fhirInteger64' });
 /**
  * @since 5.0.0
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirInteger64 = z.infer<typeof fhirInteger64Schema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirIntegerSchema = z.number().int().gte(FHIR_MIN_INTEGER).lte(FHIR_MAX_INTEGER);
+export const fhirIntegerSchema = z
+  .number()
+  .int()
+  .gte(FHIR_MIN_INTEGER)
+  .lte(FHIR_MAX_INTEGER)
+  .meta({ id: 'fhirInteger' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirInteger = z.infer<typeof fhirIntegerSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirUnsignedIntSchema = z.number().int().gte(0).lte(FHIR_MAX_INTEGER);
+export const fhirUnsignedIntSchema = z.number().int().gte(0).lte(FHIR_MAX_INTEGER).meta({ id: 'fhirUnsignedInt' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirUnsignedInt = z.infer<typeof fhirUnsignedIntSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirPositiveIntSchema = z.number().int().gte(1).lte(FHIR_MAX_INTEGER);
+export const fhirPositiveIntSchema = z.number().int().gte(1).lte(FHIR_MAX_INTEGER).meta({ id: 'fhirPositiveInt' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirPositiveInt = z.infer<typeof fhirPositiveIntSchema>;
 
 // FHIR uri primitive
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirUriSchema = z.string().regex(FHIR_REGEX_URI);
+export const fhirUriSchema = z.string().regex(FHIR_REGEX_URI).meta({ id: 'fhirUri' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirUri = z.infer<typeof fhirUriSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirUrlSchema = z.string().regex(FHIR_REGEX_URI);
+export const fhirUrlSchema = z.string().regex(FHIR_REGEX_URI).meta({ id: 'fhirUrl' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirUrl = z.infer<typeof fhirUrlSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirCanonicalSchema = z.string().regex(FHIR_REGEX_URI);
+export const fhirCanonicalSchema = z.string().regex(FHIR_REGEX_URI).meta({ id: 'fhirCanonical' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirCanonical = z.infer<typeof fhirCanonicalSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirUuidSchema = z.string().regex(FHIR_REGEX_UUID);
+export const fhirUuidSchema = z.string().regex(FHIR_REGEX_UUID).meta({ id: 'fhirUuid' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirUuid = z.infer<typeof fhirUuidSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirOidSchema = z.string().regex(FHIR_REGEX_OID);
+export const fhirOidSchema = z.string().regex(FHIR_REGEX_OID).meta({ id: 'fhirOid' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirOid = z.infer<typeof fhirOidSchema>;
 
 // FHIR date/time primitive
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirDateSchema = z.string().regex(FHIR_REGEX_DATE);
+export const fhirDateSchema = z.string().regex(FHIR_REGEX_DATE).meta({ id: 'fhirDate' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirDate = z.infer<typeof fhirDateSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirDateTimeSchema = z.string().regex(FHIR_REGEX_DATETIME);
+export const fhirDateTimeSchema = z.string().regex(FHIR_REGEX_DATETIME).meta({ id: 'fhirDateTime' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirDateTime = z.infer<typeof fhirDateTimeSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirTimeSchema = z.string().regex(FHIR_REGEX_TIME);
+export const fhirTimeSchema = z.string().regex(FHIR_REGEX_TIME).meta({ id: 'fhirTime' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirTime = z.infer<typeof fhirTimeSchema>;
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirInstantSchema = z.string().regex(FHIR_REGEX_INSTANT);
+export const fhirInstantSchema = z.string().regex(FHIR_REGEX_INSTANT).meta({ id: 'fhirInstant' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirInstant = z.infer<typeof fhirInstantSchema>;
 
 // FHIR xhtml fragment
 
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
-export const fhirXhtmlSchema = z.string().regex(FHIR_REGEX_XHTML);
+export const fhirXhtmlSchema = z.string().regex(FHIR_REGEX_XHTML).meta({ id: 'fhirXhtml' });
 /**
- * @category Datatypes: Primitive Base Types
+ * @category Data Types: Primitive Base Types
  */
 export type fhirXhtml = z.infer<typeof fhirXhtmlSchema>;

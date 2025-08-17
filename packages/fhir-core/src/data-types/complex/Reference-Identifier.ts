@@ -73,7 +73,7 @@ import { ReferenceTargets } from '../../utility/decorators';
  * - **Comment:** References SHALL be a reference to an actual FHIR resource, and SHALL be resolveable (allowing for access control, temporary unavailability, etc.). Resolution can be either by retrieval from the URL, or, where applicable by resource type, by treating an absolute reference as a canonical URL and looking it up in a local registry/repository.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Reference](http://hl7.org/fhir/StructureDefinition/Reference)
  */
 export class Reference extends DataType implements IDataType {
@@ -88,6 +88,7 @@ export class Reference extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Reference`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Reference
    * @returns Reference data model or undefined for `Reference`
+   * @throws {@link JsonError} tf the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Reference | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -247,7 +248,7 @@ export class Reference extends DataType implements IDataType {
    *
    * @param value - the `reference` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setReference(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -309,7 +310,7 @@ export class Reference extends DataType implements IDataType {
    *
    * @param value - the `type_` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setType(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -402,7 +403,7 @@ export class Reference extends DataType implements IDataType {
    *
    * @param value - the `display` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDisplay(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -518,7 +519,7 @@ export class Reference extends DataType implements IDataType {
  * - **Definition:** An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Identifier](http://hl7.org/fhir/StructureDefinition/Identifier)
  */
 export class Identifier extends DataType implements IDataType {
@@ -534,6 +535,7 @@ export class Identifier extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Identifier`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Identifier
    * @returns Identifier data model or undefined for `Identifier`
+   * @throws {@link JsonError} If the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Identifier | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -711,6 +713,8 @@ export class Identifier extends DataType implements IDataType {
 
   /**
    * @returns the `use` property value as a EnumCodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link IdentifierUseEnum }
    */
   public getUseEnumType(): EnumCodeType | undefined {
     return this.use;
@@ -721,6 +725,8 @@ export class Identifier extends DataType implements IDataType {
    *
    * @param enumType - the `use` value
    * @returns this
+   *
+   * @see CodeSystem Enumeration: {@link IdentifierUseEnum }
    */
   public setUseEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -742,6 +748,8 @@ export class Identifier extends DataType implements IDataType {
 
   /**
    * @returns the `use` property value as a CodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link IdentifierUseEnum }
    */
   public getUseElement(): CodeType | undefined {
     if (this.use === undefined) {
@@ -755,6 +763,8 @@ export class Identifier extends DataType implements IDataType {
    *
    * @param element - the `use` value
    * @returns this
+   *
+   * @see CodeSystem Enumeration: {@link IdentifierUseEnum }
    */
   public setUseElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -776,6 +786,8 @@ export class Identifier extends DataType implements IDataType {
 
   /**
    * @returns the `use` property value as a fhirCode if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link IdentifierUseEnum }
    */
   public getUse(): fhirCode | undefined {
     if (this.use === undefined) {
@@ -789,6 +801,8 @@ export class Identifier extends DataType implements IDataType {
    *
    * @param value - the `use` value
    * @returns this
+   *
+   * @see CodeSystem Enumeration: {@link IdentifierUseEnum }
    */
   public setUse(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -881,7 +895,7 @@ export class Identifier extends DataType implements IDataType {
    *
    * @param value - the `system` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSystem(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -943,7 +957,7 @@ export class Identifier extends DataType implements IDataType {
    *
    * @param value - the `value` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setValue(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {

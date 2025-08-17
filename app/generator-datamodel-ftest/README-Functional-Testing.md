@@ -16,7 +16,7 @@ patterns used to create the data models result is correct code.
 These custom resource data models make use of standard FHIR data types and reference standard FHIR resources.
 The primitive FHIR data types are defined in `@paq-ts-fhir/fhir-core`.
 The complex FHIR data types are generated along with the FHIR resources.
-A separate FHIR cache (`.fhir`) was created in `functional-test/ftest-cache` to contain the two custom FHIR
+A separate FHIR cache (`.fhir`) was created in `test/ftest-cache` to contain the two custom FHIR
 resources along with all dependent FHIR resources and complex data types.
 Additionally, ValueSets and CodeSystems required to generate the pseudo-enum classes for those used by
 the `code` primitive data type having a "required" ValueSet binding are included.
@@ -36,14 +36,15 @@ The primary custom FHIR data model shall support the following requirements:
   - Primitive data type
   - Reference data type (uses TypeScript decorators)
   - Resource data type (optional single field only)
-    > NOTE: While no specific rule exists in the FHIR specification, use of Resource as an element data type is
+    > [!NOTE]
+    > While no specific rule exists in the FHIR specification, use of Resource as an element data type is
     > limited to Bundle and Parameters. In these use cases, the data element is always a single, optional
     > value (0..1).
     > The exception is the DomainResource.contained. It is always an optional list (0..\*).
 - Private class fields define data elements containing the above data element types
   - Optional single fields (0..1) and optional list fields (0...m where m > 0) must support `undefined`
   - Required single fields (1..1) and required list fields (n...m where n > 0 and m >= n) must support `null`
-- Constructors must initialize "required single fields", "required list fields", and "required EnumCodeType fields"
+- Constructors must initialize "required single fields," "required list fields," and "required EnumCodeType fields"
   where `null` is the default initialization value
 - Fully defined static `parse()` method for deserialization
 - Fully defined `toJson()` method for serialization

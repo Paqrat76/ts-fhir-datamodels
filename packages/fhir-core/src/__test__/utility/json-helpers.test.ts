@@ -42,6 +42,7 @@ import { IntegerType } from '../../data-types/primitive/IntegerType';
 import { fhirString } from '../../data-types/primitive/primitive-types';
 import { StringType } from '../../data-types/primitive/StringType';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
+import { JsonError } from '../../errors/JsonError';
 import { isEmpty as _isEmpty } from '../../utility/common-util';
 import * as JSON from '../../utility/json-helpers';
 import {
@@ -92,19 +93,19 @@ describe('json-helpers', () => {
       let t = () => {
         asNull('null');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not null.`);
 
       t = () => {
         asNull(undefined);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not null.`);
 
       t = () => {
         asNull('null', 'Test value');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Test value is not null.`);
     });
 
@@ -123,19 +124,19 @@ describe('json-helpers', () => {
       let t = () => {
         asBoolean('notBoolean');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a boolean.`);
 
       t = () => {
         asBoolean(undefined);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a boolean.`);
 
       t = () => {
         asBoolean('notBoolean', 'Test value');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Test value is not a boolean.`);
     });
 
@@ -154,19 +155,19 @@ describe('json-helpers', () => {
       let t = () => {
         asNumber('notNumber');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a number.`);
 
       t = () => {
         asNumber(undefined);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a number.`);
 
       t = () => {
         asNumber('notNumber', 'Test value');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Test value is not a number.`);
     });
 
@@ -182,19 +183,19 @@ describe('json-helpers', () => {
       let t = () => {
         asString(123);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a string.`);
 
       t = () => {
         asString(undefined);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a string.`);
 
       t = () => {
         asString(123, 'Test value');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Test value is not a string.`);
     });
 
@@ -219,19 +220,19 @@ describe('json-helpers', () => {
       let t = () => {
         asObject(null);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a JSON object.`);
 
       t = () => {
         asObject(undefined);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a JSON object.`);
 
       t = () => {
         asObject(123, 'Test value');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Test value is not a JSON object.`);
     });
 
@@ -260,19 +261,19 @@ describe('json-helpers', () => {
       let t = () => {
         asArray(null);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a JSON array.`);
 
       t = () => {
         asArray(undefined);
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Is not a JSON array.`);
 
       t = () => {
         asArray(123, 'Test value');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Test value is not a JSON array.`);
     });
 
@@ -1685,6 +1686,10 @@ class MockPrimitiveDataType<fhirString> extends PrimitiveType<fhirString> implem
 
   override isEmpty(): boolean {
     return _isEmpty(this.mockValue);
+  }
+
+  public dataTypeName(): string {
+    return 'MockPrimitiveDataType';
   }
 
   // NOT USED

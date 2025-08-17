@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** see http://en.wikipedia.org/wiki/Uniform_resource_identifier
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR uri](http://hl7.org/fhir/StructureDefinition/uri)
  */
 export class UriType extends PrimitiveType<fhirUri> implements IPrimitiveType<fhirUri> {
   /**
    * @param value - the value of the primitive `fhirUri`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirUri) {
     super();

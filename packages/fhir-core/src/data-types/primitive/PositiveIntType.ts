@@ -37,13 +37,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** An integer with a value that is positive (e.g. >0)
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR positiveInt](http://hl7.org/fhir/StructureDefinition/positiveInt)
  */
 export class PositiveIntType extends PrimitiveType<fhirPositiveInt> implements IPrimitiveType<fhirPositiveInt> {
   /**
    * @param value - the value of the primitive `fhirPositiveInt`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirPositiveInt) {
     super();

@@ -28,24 +28,38 @@
  */
 
 /**
- * @category Constants
+ * INSTANCE_EMPTY_ERROR_MSG = `Parsed instance is unexpectedly "empty"`
+ *
+ * @internal
  */
 export const INSTANCE_EMPTY_ERROR_MSG = `Parsed instance is unexpectedly "empty"`;
+
 /**
- * @category Constants
+ * REQUIRED_PROPERTIES_DO_NOT_EXIST = 'The following required properties do not exist:'
+ *
+ * @internal
  */
 export const REQUIRED_PROPERTIES_DO_NOT_EXIST = 'The following required properties do not exist:';
+
 /**
- * @category Constants
+ * REQUIRED_PROPERTIES_REQD_IN_JSON = 'The following required properties must be included in the provided JSON:'
+ *
+ * @internal
  */
 export const REQUIRED_PROPERTIES_REQD_IN_JSON =
   'The following required properties must be included in the provided JSON:';
+
 /**
- * @category Constants
+ * INVALID_VALUEX_MULTIPLE_PROPERTIES = 'The value[x] property must have only one representation. Has multiple value[x] representations:'
+ *
+ * @internal
  */
 export const INVALID_VALUEX_MULTIPLE_PROPERTIES =
   'The value[x] property must have only one representation. Has multiple value[x] representations:';
+
 /**
- * @category Constants
+ * INVALID_VALUEX_PROPERTY = `The value[x] property cannot be represented by "value".`
+ *
+ * @internal
  */
 export const INVALID_VALUEX_PROPERTY = `The value[x] property cannot be represented by "value".`;

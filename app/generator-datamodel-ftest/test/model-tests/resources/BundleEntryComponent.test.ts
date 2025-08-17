@@ -21,7 +21,7 @@
  *
  */
 
-import { EnumCodeType, InvalidTypeError, PrimitiveTypeError, UriType } from '@paq-ts-fhir/fhir-core';
+import { EnumCodeType, IBackboneElement, InvalidTypeError, PrimitiveTypeError, UriType } from '@paq-ts-fhir/fhir-core';
 import {
   BundleEntryComponent,
   BundleEntryRequestComponent,
@@ -105,8 +105,8 @@ describe('BundleEntryComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new BundleEntryComponent();
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -145,8 +145,8 @@ describe('BundleEntryComponent', () => {
 
       let testInstance: BundleEntryComponent = testModel.copy();
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -183,8 +183,8 @@ describe('BundleEntryComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -221,8 +221,8 @@ describe('BundleEntryComponent', () => {
       testInstance.setRequest(bundleEntryRequestComponent);
       testInstance.setResponse(bundleEntryResponseComponent);
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -257,8 +257,8 @@ describe('BundleEntryComponent', () => {
       testInstance.setRequest(bundleEntryRequestComponent_2);
       testInstance.setResponse(bundleEntryResponseComponent_2);
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -293,8 +293,8 @@ describe('BundleEntryComponent', () => {
       testInstance.setRequest(TestData.UNDEFINED_VALUE);
       testInstance.setResponse(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -412,8 +412,8 @@ describe('BundleEntryComponent', () => {
       testInstance.setRequest(bundleEntryRequestComponent);
       testInstance.setResponse(bundleEntryResponseComponent);
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',
@@ -454,8 +454,8 @@ describe('BundleEntryComponent', () => {
     it('should return parsed Bundle for valid json', () => {
       const testInstance = BundleEntryComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<BundleEntryComponent>(
-        BundleEntryComponent,
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntryComponent',
         'Bundle.entry',

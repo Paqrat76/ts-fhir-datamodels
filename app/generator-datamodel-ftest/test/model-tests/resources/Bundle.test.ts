@@ -29,6 +29,7 @@ import {
   InstantType,
   InvalidCodeError,
   InvalidTypeError,
+  IResource,
   PrimitiveTypeError,
   UnsignedIntType,
 } from '@paq-ts-fhir/fhir-core';
@@ -83,7 +84,7 @@ describe('Bundle', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new Bundle();
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(true);
       const t = () => {
         testInstance.toJSON();
@@ -119,7 +120,7 @@ describe('Bundle', () => {
     it('should be properly instantiated with required elements', () => {
       let testInstance = new Bundle(VALID_BUNDLETYPE_BATCH_ENUMCODE);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
@@ -149,7 +150,7 @@ describe('Bundle', () => {
 
       testInstance = new Bundle(VALID_BUNDLETYPE_BATCH_ENUMCODE as CodeType);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
@@ -179,7 +180,7 @@ describe('Bundle', () => {
 
       testInstance = new Bundle(TestData.VALID_BUNDLETYPE_BATCH);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
@@ -223,7 +224,7 @@ describe('Bundle', () => {
 
       let testInstance = testModel.copy();
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedResourceProperties(testInstance);
@@ -269,7 +270,7 @@ describe('Bundle', () => {
 
       testInstance = testModel.copy();
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
@@ -311,7 +312,7 @@ describe('Bundle', () => {
       testInstance.setEntry([bundleEntryComponent]);
       testInstance.setSignature(VALID_SIGNATURE);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedResourceProperties(testInstance);
@@ -351,7 +352,7 @@ describe('Bundle', () => {
       testInstance.addEntry(bundleEntryComponent_2);
       testInstance.setSignature(VALID_SIGNATURE_2);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetResourceProperties(testInstance);
@@ -395,7 +396,7 @@ describe('Bundle', () => {
       testInstance.setEntry(TestData.UNDEFINED_VALUE);
       testInstance.setSignature(TestData.UNDEFINED_VALUE);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
@@ -437,7 +438,7 @@ describe('Bundle', () => {
       testInstance.setEntry([bundleEntryComponent]);
       testInstance.setSignature(VALID_SIGNATURE);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedResourceProperties(testInstance);
@@ -477,7 +478,7 @@ describe('Bundle', () => {
       testInstance.addEntry(bundleEntryComponent_2);
       testInstance.setSignature(VALID_SIGNATURE_2);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetResourceProperties(testInstance);
@@ -523,7 +524,7 @@ describe('Bundle', () => {
       testInstance.setEntry(TestData.UNDEFINED_VALUE);
       testInstance.setSignature(TestData.UNDEFINED_VALUE);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
@@ -605,6 +606,10 @@ describe('Bundle', () => {
         },
       },
     };
+    const INVALID_BUNDLE_JSON = {
+      resourceType: 'Bundle',
+      bogusField: 'bogus value',
+    };
     const INVALID_JSON = {
       bogusField: 'bogus value',
     };
@@ -631,7 +636,7 @@ describe('Bundle', () => {
       testInstance.setEntry([bundleEntryComponent]);
       testInstance.setSignature(VALID_SIGNATURE);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expectInitializedResourceProperties(testInstance);
 
@@ -674,17 +679,23 @@ describe('Bundle', () => {
     });
 
     it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        Bundle.parse(INVALID_JSON);
+      let t = () => {
+        Bundle.parse(INVALID_BUNDLE_JSON);
       };
       expect(t).toThrow(FhirError);
       expect(t).toThrow(`The following required properties must be included in the provided JSON: Bundle.type`);
+
+      t = () => {
+        Bundle.parse(INVALID_JSON);
+      };
+      expect(t).toThrow(FhirError);
+      expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
     });
 
     it('should return parsed Bundle for valid json', () => {
       const testInstance: Bundle | undefined = Bundle.parse(VALID_JSON);
 
-      expectResourceBase<Bundle>(Bundle, testInstance, 'Bundle');
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedResourceProperties(testInstance);
@@ -717,6 +728,7 @@ describe('Bundle', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: Allow for testing
         new Bundle(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidCodeError);
@@ -738,6 +750,7 @@ describe('Bundle', () => {
     it('identifier: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIdentifier(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -747,12 +760,14 @@ describe('Bundle', () => {
     it('type: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setTypeEnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.type; Provided type is not an instance of BundleTypeEnum.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setTypeElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -768,6 +783,7 @@ describe('Bundle', () => {
     it('timestamp: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setTimestampElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -783,12 +799,14 @@ describe('Bundle', () => {
     it('total: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       let t = () => {
+        // @ts-expect-error: Allowing for testing
         testInstance.setTotalElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.total; Provided element is not an instance of UnsignedIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allowing for testing
         testInstance.setTotal(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -798,6 +816,7 @@ describe('Bundle', () => {
     it('link: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setLink([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -806,6 +825,7 @@ describe('Bundle', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addLink(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -815,6 +835,7 @@ describe('Bundle', () => {
     it('entry: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEntry([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -823,6 +844,7 @@ describe('Bundle', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addEntry(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -832,6 +854,7 @@ describe('Bundle', () => {
     it('signature: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Bundle();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setSignature(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);

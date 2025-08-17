@@ -53,13 +53,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** A string which has at least one character and no leading or trailing whitespace and where there is no whitespace other than single spaces in the contents
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR code](http://hl7.org/fhir/StructureDefinition/code)
  */
 export class CodeType extends PrimitiveType<fhirCode> implements IPrimitiveType<fhirCode> {
   /**
    * @param value - the value of the primitive `fhirCode`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirCode) {
     super();
@@ -127,7 +127,7 @@ export class CodeType extends PrimitiveType<fhirCode> implements IPrimitiveType<
  * - **Definition:** A string which has at least one character and no leading or trailing whitespace and where there is no whitespace other than single spaces in the contents
  * - **FHIR Version:** N/A
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR code](http://hl7.org/fhir/StructureDefinition/code)
  */
 export class EnumCodeType extends CodeType {
@@ -206,7 +206,7 @@ export class EnumCodeType extends CodeType {
  * @param type - class instance to evaluate
  * @param enumCodeType - class name for evaluation
  * @param errorMessagePrefix - optional error message prefix for the error message
- * @throws InvalidTypeError when EnumCodeType assertion is false
+ * @throws {@link InvalidTypeError} when EnumCodeType assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -237,7 +237,7 @@ export function assertEnumCodeType<T>(
  * @param types - array of class instances to evaluate
  * @param enumCodeType - class name for evaluation
  * @param errorMessagePrefix - optional error message prefix for the error message
- * @throws InvalidTypeError when FhirTypeGuard assertion is false
+ * @throws {@link InvalidTypeError} when FhirTypeGuard assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -278,7 +278,7 @@ export function assertEnumCodeTypeList<T>(
  * @param typeEnum - instance of type enumeration class (allowed code values)
  * @param property - FHIR data model property (<class name>.<property name>)
  * @returns instance of EnumCodeType
- * @throws InvalidCodeError or InvalidTypeError
+ * @throws {@link InvalidCodeError} or InvalidTypeError
  *
  * @category Utilities
  */
@@ -328,7 +328,7 @@ export function constructorCodeValueAsEnumCodeType<T>(
  * @param typeEnum - instance of type enumeration class (allowed code values)
  * @param property - FHIR data model property (<class name>.<property name>)
  * @returns instance of EnumCodeType[]
- * @throws InvalidCodeError or InvalidTypeError
+ * @throws {@link InvalidCodeError} or InvalidTypeError
  *
  * @category Utilities
  */

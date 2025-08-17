@@ -1,4 +1,4 @@
-# generator-datamodel-ftest
+# Generator Datamodel Functional Tests
 
 This project is intended to simulate the production projects for FHIR data models.
 It contains a limited FHIR cache (`.fhir`) containing the custom FHIR StructureDefinitions used to generate two custom
@@ -30,4 +30,4 @@ Testing all generated classes is not possible, so we must test the patterns used
 FHIR resources have many common characteristics that can be defined in various patterns that are used by the
 code generator templates.
 These various patterns can be tested, giving us confidence that generated classes will be dependable.
-Refer to [# FHIR Data Model Design](../../dev-docs/fhir-data-model-design.md) for more information.
+Refer to [FHIR Data Model Design](../../dev-docs/fhir-data-model-design.md) for more information.

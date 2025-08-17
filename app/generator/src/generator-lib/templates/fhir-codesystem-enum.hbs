@@ -91,7 +91,7 @@ export class {{csHbs.name}}Enum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {

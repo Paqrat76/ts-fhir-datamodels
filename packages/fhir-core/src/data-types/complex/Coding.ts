@@ -62,7 +62,7 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * - **Comment:** Codes may be defined very casually in enumerations or code lists, up to very formal definitions such as SNOMED CT - see the HL7 v3 Core Principles for more information.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Coding](http://hl7.org/fhir/StructureDefinition/Coding)
  */
 export class Coding extends DataType implements IDataType {
@@ -77,6 +77,7 @@ export class Coding extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Coding`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Coding
    * @returns Coding data model or undefined for `Coding`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Coding | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -263,7 +264,7 @@ export class Coding extends DataType implements IDataType {
    *
    * @param value - the `system` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSystem(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -325,7 +326,7 @@ export class Coding extends DataType implements IDataType {
    *
    * @param value - the `version` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setVersion(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -387,7 +388,7 @@ export class Coding extends DataType implements IDataType {
    *
    * @param value - the `code` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCode(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -449,7 +450,7 @@ export class Coding extends DataType implements IDataType {
    *
    * @param value - the `display` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDisplay(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -511,7 +512,7 @@ export class Coding extends DataType implements IDataType {
    *
    * @param value - the `userSelected` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUserSelected(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {

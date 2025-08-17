@@ -31,6 +31,7 @@ import { XhtmlType } from '../../../data-types/primitive/XhtmlType';
 import { FhirError } from '../../../errors/FhirError';
 import { InvalidCodeError } from '../../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE } from '../../test-utils';
 
@@ -569,11 +570,11 @@ describe('Narrative', () => {
       expect(t).toThrow(`The following required properties must be included in the provided JSON: Narrative.div`);
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Narrative.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Narrative JSON is not a JSON object.`);
     });
 

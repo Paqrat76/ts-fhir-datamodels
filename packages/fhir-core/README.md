@@ -1,4 +1,4 @@
-# fhir-core
+# FHIR Core Library
 
 The design of the generated FHIR release-specific data models is inspired by the data models defined in the
 [HAPI FHIR](https://hapifhir.io/) Java library.

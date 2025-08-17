@@ -50,7 +50,7 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * - **Comment:** Not all terminology uses fit this general pattern. In some cases, models should not use CodeableConcept and use Coding directly and provide their own structure for managing text, codings, translations and the relationship between elements and pre- and post-coordination.
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR CodeableConcept](http://hl7.org/fhir/StructureDefinition/CodeableConcept)
  */
 export class CodeableConcept extends DataType implements IDataType {
@@ -65,6 +65,7 @@ export class CodeableConcept extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `CodeableConcept`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeableConcept
    * @returns CodeableConcept data model or undefined for `CodeableConcept`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CodeableConcept | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -238,7 +239,7 @@ export class CodeableConcept extends DataType implements IDataType {
    *
    * @param value - the `text` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setText(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {

@@ -803,6 +803,7 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
       importsSet.add('InvalidTypeError');
       importsSet.add('setPolymorphicValueJson');
       importsSet.add('assertIsDefined');
+      importsSet.add('InvalidTypeError');
       ed.type.choiceDataTypes.forEach((choiceType: string) => {
         // Add choice primitive data types
         if (choiceType.endsWith('Type')) {

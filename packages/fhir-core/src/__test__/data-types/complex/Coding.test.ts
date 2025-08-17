@@ -29,6 +29,7 @@ import { fhirBoolean } from '../../../data-types/primitive/primitive-types';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
+import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import {
   INVALID_NON_STRING_TYPE,
@@ -631,11 +632,11 @@ describe('Coding', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw TypeError for invalid json type', () => {
+    it('should throw JsonError for invalid json type', () => {
       const t = () => {
         Coding.parse('NOT AN OBJECT');
       };
-      expect(t).toThrow(TypeError);
+      expect(t).toThrow(JsonError);
       expect(t).toThrow(`Coding JSON is not a JSON object.`);
     });
 

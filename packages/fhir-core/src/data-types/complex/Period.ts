@@ -47,7 +47,7 @@ import { FhirParser, getPrimitiveTypeJson } from '../../utility/FhirParser';
  * - **Comment:** A Period specifies a range of time; the context of use will specify whether the entire range applies (e.g. "the patient was an inpatient of the hospital for this time range") or one value from the range applies (e.g. "give to the patient between these two times"). Period is not used for a duration (a measure of elapsed time). See [Duration](https://hl7.org/fhir/datatypes.html#Duration).
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Period](http://hl7.org/fhir/StructureDefinition/Period)
  */
 export class Period extends DataType implements IDataType {
@@ -62,6 +62,7 @@ export class Period extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Period`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Period
    * @returns Period data model or undefined for `Period`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Period | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -174,7 +175,7 @@ export class Period extends DataType implements IDataType {
    *
    * @param value - the `start` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setStart(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
@@ -236,7 +237,7 @@ export class Period extends DataType implements IDataType {
    *
    * @param value - the `end` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setEnd(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {

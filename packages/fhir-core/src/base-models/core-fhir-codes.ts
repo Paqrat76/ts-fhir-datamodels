@@ -75,7 +75,7 @@ export class FhirCodeDefinition implements IFhirCodeDefinition {
    * @param system - A URI that identifies the system
    * @param display - A description of the concept as defined by the code system
    * @param definition - Additional descriptive information about the code
-   * @throws PrimitiveTypeError when provided code is not valid
+   * @throws {@link PrimitiveTypeError} when provided code is not valid
    */
   constructor(name: string, code: fhirCode, system?: string, display?: string, definition?: string) {
     // Ensure the code value is a valid fhirCode
@@ -110,7 +110,7 @@ export interface IFhirCodeEnum {
   /**
    * @param code - fhirCode primitive value
    * @returns the IFhirCodeDefinition instance for the provided code value
-   * @throws InvalidCodeError for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode: (code: fhirCode | undefined) => IFhirCodeDefinition;
 }

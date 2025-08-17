@@ -32,8 +32,7 @@ exports[`src/generator-app unit test suite generator-app generate and write shou
  *
  * For questions, suggestions, or bugs, please open an issue at [GitHub ts-fhir-datamodels/issues](https://github.com/Paqrat76/ts-fhir-datamodels/issues).
  *
- * @packageDocumentation
- * @module DataModels
+ * @module Data Models Index
  */
 
 export {
@@ -54,13 +53,20 @@ export {
   DateTimeType,
   DateType,
   DecimalType,
+  FhirCodeDefinition,
+  FhirError,
   IdType,
   InstantType,
   Integer64Type,
   IntegerType,
+  InvalidCodeError,
+  InvalidDateTimeError,
+  InvalidTypeError,
+  JsonError,
   MarkdownType,
   OidType,
   PositiveIntType,
+  PrimitiveTypeError,
   StringType,
   TimeType,
   UnsignedIntType,
@@ -79,6 +85,8 @@ export type {
   IPrimitiveType,
   IResource,
   IDomainResource,
+  IFhirCodeDefinition,
+  IFhirCodeEnum,
   DateTypeImpl,
   DateTimeTypeImpl,
   InstantTypeImpl,
@@ -269,7 +277,7 @@ export class ContactPointSystemEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -428,7 +436,7 @@ export class ContactPointUseEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -583,7 +591,7 @@ export class IdentifierUseEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -730,7 +738,7 @@ export class NarrativeStatusEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -899,7 +907,7 @@ export class DaysOfWeekEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -1090,7 +1098,7 @@ export class BundleTypeEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -1237,7 +1245,7 @@ export class SearchEntryModeEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -1396,7 +1404,7 @@ export class HttpVerbEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -1545,7 +1553,7 @@ export class PublicationStatusEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -2842,7 +2850,7 @@ export class ResourceTypesEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -3315,7 +3323,7 @@ export class SearchParamTypeEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -3510,7 +3518,7 @@ export class SearchComparatorEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -3729,7 +3737,7 @@ export class SearchModifierCodeEnum implements IFhirCodeEnum {
    *
    * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
    * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
-   * @throws {InvalidCodeError} for undefined or invalid code value
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
    */
   fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
     if (code === undefined) {
@@ -3928,7 +3936,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
  * - **Definition:** Details for all kinds of technology mediated contact points for a person or organization, including telephone, email, etc.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR ContactPoint](http://hl7.org/fhir/StructureDefinition/ContactPoint)
  */
 /* istanbul ignore next */ export class ContactPoint extends DataType implements IDataType {
@@ -3945,6 +3953,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    * @param sourceJson - JSON representing FHIR \`ContactPoint\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to ContactPoint
    * @returns ContactPoint data model or undefined for \`ContactPoint\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContactPoint | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -4028,6 +4037,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    * - **Cardinality:** 0..1
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   private system?: EnumCodeType | undefined;
 
@@ -4068,6 +4079,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    * - **isModifier:** true
    * - **isModifierReason:** This is labeled as &quot;Is Modifier&quot; because applications should not mistake a temporary or old contact etc.for a current/permanent one
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   private use?: EnumCodeType | undefined;
 
@@ -4104,6 +4117,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the \`system\` property value as a EnumCodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   public getSystemEnumType(): EnumCodeType | undefined {
     return this.system;
@@ -4114,6 +4129,10 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param enumType - the \`system\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code values
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   public setSystemEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -4135,6 +4154,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the \`system\` property value as a CodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   public getSystemElement(): CodeType | undefined {
     if (this.system === undefined) {
@@ -4148,6 +4169,10 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`system\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   public setSystemElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -4169,6 +4194,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the \`system\` property value as a fhirCode if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   public getSystem(): fhirCode | undefined {
     if (this.system === undefined) {
@@ -4182,6 +4209,10 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`system\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointSystemEnum }
    */
   public setSystem(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -4212,6 +4243,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`value\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setValueElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -4243,7 +4276,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`value\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setValue(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -4264,6 +4297,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the \`use\` property value as a EnumCodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   public getUseEnumType(): EnumCodeType | undefined {
     return this.use;
@@ -4274,6 +4309,10 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param enumType - the \`use\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code values
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   public setUseEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -4295,6 +4334,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the \`use\` property value as a CodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   public getUseElement(): CodeType | undefined {
     if (this.use === undefined) {
@@ -4308,6 +4349,10 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`use\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   public setUseElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -4329,6 +4374,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the \`use\` property value as a fhirCode if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   public getUse(): fhirCode | undefined {
     if (this.use === undefined) {
@@ -4342,6 +4389,10 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`use\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link ContactPointUseEnum }
    */
   public setUse(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -4372,6 +4423,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`rank\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setRankElement(element: PositiveIntType | undefined): this {
     if (isDefined<PositiveIntType>(element)) {
@@ -4403,7 +4456,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`rank\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setRank(value: fhirPositiveInt | undefined): this {
     if (isDefined<fhirPositiveInt>(value)) {
@@ -4434,6 +4487,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`period\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setPeriod(value: Period | undefined): this {
     if (isDefined<Period>(value)) {
@@ -4564,7 +4618,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
  * - **Comment:** The context of use may frequently define what kind of quantity this is and therefore what kind of units can be used. The context of use may also restrict the values for the comparator.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Duration](http://hl7.org/fhir/StructureDefinition/Duration)
  */
 /* istanbul ignore next */ export class Duration extends DataType implements IDataType {
@@ -4579,6 +4633,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    * @param sourceJson - JSON representing FHIR \`Duration\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to Duration
    * @returns Duration data model or undefined for \`Duration\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Duration | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -4737,6 +4792,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`value\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setValueElement(element: DecimalType | undefined): this {
     if (isDefined<DecimalType>(element)) {
@@ -4768,7 +4825,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`value\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setValue(value: fhirDecimal | undefined): this {
     if (isDefined<fhirDecimal>(value)) {
@@ -4799,6 +4856,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`comparator\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setComparatorElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -4830,7 +4889,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`comparator\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setComparator(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -4861,6 +4920,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`unit\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUnitElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -4892,7 +4953,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`unit\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUnit(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -4923,6 +4984,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`system\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSystemElement(element: UriType | undefined): this {
     if (isDefined<UriType>(element)) {
@@ -4954,7 +5017,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`system\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSystem(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -4985,6 +5048,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`code\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCodeElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -5016,7 +5081,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`code\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCode(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -5145,7 +5210,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
  * - **Definition:** Optional Extension Element - found in all resources.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Extension](http://hl7.org/fhir/StructureDefinition/Extension)
  */
 /* istanbul ignore next */ export class Extension extends CoreExtension {
@@ -6271,7 +6336,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
  * - **Comment:** The elements of the Signature Resource are for ease of access of these elements. For digital signatures (Xml DigSig, JWS), the non-repudiation proof comes from the Signature  validation, which includes validation of the referenced objects (e.g. Resources) (a.k.a., Content) in the XML-Signature Detached form.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Signature](http://hl7.org/fhir/StructureDefinition/Signature)
  */
 /* istanbul ignore next */ export class Signature extends DataType implements IDataType {
@@ -6304,6 +6369,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    * @param sourceJson - JSON representing FHIR \`Signature\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to Signature
    * @returns Signature data model or undefined for \`Signature\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Signature | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -6548,6 +6615,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`type_\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setType(value: Coding[]): this {
     assertIsDefinedList<Coding>(value, \`Signature.type is required\`);
@@ -6562,6 +6630,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addType(value: Coding | undefined): this {
     if (isDefined<Coding>(value)) {
@@ -6601,6 +6670,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`when\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setWhenElement(element: InstantType): this {
     assertIsDefined<InstantType>(element, \`Signature.when is required\`);
@@ -6633,7 +6704,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`when\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setWhen(value: fhirInstant): this {
     assertIsDefined<fhirInstant>(value, \`Signature.when is required\`);
@@ -6663,6 +6734,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`who\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('Signature.who', [
     'Practitioner',
@@ -6705,6 +6777,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`onBehalfOf\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('Signature.onBehalfOf', [
     'Practitioner',
@@ -6748,6 +6821,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`targetFormat\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTargetFormatElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -6779,7 +6854,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`targetFormat\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTargetFormat(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -6810,6 +6885,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`sigFormat\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSigFormatElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -6841,7 +6918,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`sigFormat\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setSigFormat(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -6872,6 +6949,8 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param element - the \`data\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDataElement(element: Base64BinaryType | undefined): this {
     if (isDefined<Base64BinaryType>(element)) {
@@ -6903,7 +6982,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
    *
    * @param value - the \`data\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setData(value: fhirBase64Binary | undefined): this {
     if (isDefined<fhirBase64Binary>(value)) {
@@ -6991,7 +7070,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -7060,7 +7139,7 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
  * - **Comment:** Describes the occurrence of an event that may occur multiple times. Timing schedules are used for specifying when events are expected or requested to occur, and may also be used to represent the summary of a past or ongoing event.  For simplicity, the definitions of Timing components are expressed as \\'future\\' events, but such components can also be used to describe historic or ongoing events. A Timing schedule can be a list of events and/or criteria for when the event happens, which can be expressed in a structured form and/or as a code. When both event and a repeating specification are provided, the list of events should be understood as an interpretation of the information in the repeat structure.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Timing](http://hl7.org/fhir/StructureDefinition/Timing)
  */
 export class Timing extends BackboneType implements IBackboneType {
@@ -7075,6 +7154,7 @@ export class Timing extends BackboneType implements IBackboneType {
    * @param sourceJson - JSON representing FHIR \`Timing\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to Timing
    * @returns Timing data model or undefined for \`Timing\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Timing | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -7189,6 +7269,8 @@ export class Timing extends BackboneType implements IBackboneType {
    *
    * @param element - the \`event\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setEventElement(element: DateTimeType[] | undefined): this {
     if (isDefinedList<DateTimeType>(element)) {
@@ -7206,6 +7288,8 @@ export class Timing extends BackboneType implements IBackboneType {
    *
    * @param element - the \`event\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addEventElement(element: DateTimeType | undefined): this {
     if (isDefined<DateTimeType>(element)) {
@@ -7245,7 +7329,7 @@ export class Timing extends BackboneType implements IBackboneType {
    *
    * @param value - the \`event\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setEvent(value: fhirDateTime[] | undefined): this {
     if (isDefinedList<fhirDateTime>(value)) {
@@ -7267,6 +7351,7 @@ export class Timing extends BackboneType implements IBackboneType {
    *
    * @param value - the \`event\` value
    * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addEvent(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
@@ -7306,6 +7391,7 @@ export class Timing extends BackboneType implements IBackboneType {
    *
    * @param value - the \`repeat\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setRepeat(value: TimingRepeatComponent | undefined): this {
     if (isDefined<TimingRepeatComponent>(value)) {
@@ -7337,6 +7423,7 @@ export class Timing extends BackboneType implements IBackboneType {
    *
    * @param value - the \`code\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setCode(value: CodeableConcept | undefined): this {
     if (isDefined<CodeableConcept>(value)) {
@@ -7450,7 +7537,7 @@ export class Timing extends BackboneType implements IBackboneType {
  * - **Definition:** A set of rules that describe when the event is scheduled.
  * - **Requirements:** Many timing schedules are determined by regular repetitions.
  *
- * @category DataModel: ComplexType
+ * @category Data Models: ComplexType
  * @see [FHIR Timing](http://hl7.org/fhir/StructureDefinition/Timing)
  */
 export class TimingRepeatComponent extends DataType implements IDataType {
@@ -7466,6 +7553,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR \`TimingRepeatComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to TimingRepeatComponent
    * @returns TimingRepeatComponent data model or undefined for \`TimingRepeatComponent\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TimingRepeatComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -7843,6 +7931,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    * - **Cardinality:** 0..*
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   private dayOfWeek?: EnumCodeType[] | undefined;
 
@@ -7907,6 +7997,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`bounds\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Timing.repeat.bounds[x]')
   public setBounds(value: IDataType | undefined): this {
@@ -8009,6 +8100,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`count\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCountElement(element: PositiveIntType | undefined): this {
     if (isDefined<PositiveIntType>(element)) {
@@ -8040,7 +8133,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`count\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCount(value: fhirPositiveInt | undefined): this {
     if (isDefined<fhirPositiveInt>(value)) {
@@ -8071,6 +8164,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`countMax\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCountMaxElement(element: PositiveIntType | undefined): this {
     if (isDefined<PositiveIntType>(element)) {
@@ -8102,7 +8197,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`countMax\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCountMax(value: fhirPositiveInt | undefined): this {
     if (isDefined<fhirPositiveInt>(value)) {
@@ -8133,6 +8228,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`duration\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDurationElement(element: DecimalType | undefined): this {
     if (isDefined<DecimalType>(element)) {
@@ -8164,7 +8261,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`duration\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDuration(value: fhirDecimal | undefined): this {
     if (isDefined<fhirDecimal>(value)) {
@@ -8195,6 +8292,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`durationMax\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDurationMaxElement(element: DecimalType | undefined): this {
     if (isDefined<DecimalType>(element)) {
@@ -8226,7 +8325,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`durationMax\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDurationMax(value: fhirDecimal | undefined): this {
     if (isDefined<fhirDecimal>(value)) {
@@ -8257,6 +8356,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`durationUnit\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDurationUnitElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -8288,7 +8389,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`durationUnit\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDurationUnit(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -8319,6 +8420,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`frequency\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setFrequencyElement(element: PositiveIntType | undefined): this {
     if (isDefined<PositiveIntType>(element)) {
@@ -8350,7 +8453,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`frequency\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setFrequency(value: fhirPositiveInt | undefined): this {
     if (isDefined<fhirPositiveInt>(value)) {
@@ -8381,6 +8484,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`frequencyMax\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setFrequencyMaxElement(element: PositiveIntType | undefined): this {
     if (isDefined<PositiveIntType>(element)) {
@@ -8412,7 +8517,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`frequencyMax\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setFrequencyMax(value: fhirPositiveInt | undefined): this {
     if (isDefined<fhirPositiveInt>(value)) {
@@ -8443,6 +8548,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`period\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPeriodElement(element: DecimalType | undefined): this {
     if (isDefined<DecimalType>(element)) {
@@ -8474,7 +8581,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`period\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPeriod(value: fhirDecimal | undefined): this {
     if (isDefined<fhirDecimal>(value)) {
@@ -8505,6 +8612,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`periodMax\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPeriodMaxElement(element: DecimalType | undefined): this {
     if (isDefined<DecimalType>(element)) {
@@ -8536,7 +8645,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`periodMax\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPeriodMax(value: fhirDecimal | undefined): this {
     if (isDefined<fhirDecimal>(value)) {
@@ -8567,6 +8676,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`periodUnit\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPeriodUnitElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -8598,7 +8709,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`periodUnit\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPeriodUnit(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -8619,6 +8730,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
 
   /**
    * @returns the \`dayOfWeek\` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public getDayOfWeekEnumType(): EnumCodeType[] {
     return this.dayOfWeek ?? ([] as EnumCodeType[]);
@@ -8629,6 +8742,10 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param enumType - the \`dayOfWeek\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public setDayOfWeekEnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
@@ -8646,6 +8763,9 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param enumType - the \`dayOfWeek\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public addDayOfWeekEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -8666,6 +8786,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
 
   /**
    * @returns the \`dayOfWeek\` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public getDayOfWeekElement(): CodeType[] {
     if (this.dayOfWeek === undefined) {
@@ -8679,6 +8801,10 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`dayOfWeek\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public setDayOfWeekElement(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -8700,6 +8826,10 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`dayOfWeek\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public addDayOfWeekElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -8720,6 +8850,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
 
   /**
    * @returns the \`dayOfWeek\` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public getDayOfWeek(): fhirCode[] {
     if (this.dayOfWeek === undefined) {
@@ -8737,7 +8869,10 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`dayOfWeek\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public setDayOfWeek(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -8758,6 +8893,10 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`dayOfWeek\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public addDayOfWeek(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -8796,6 +8935,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`timeOfDay\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTimeOfDayElement(element: TimeType[] | undefined): this {
     if (isDefinedList<TimeType>(element)) {
@@ -8813,6 +8954,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`timeOfDay\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addTimeOfDayElement(element: TimeType | undefined): this {
     if (isDefined<TimeType>(element)) {
@@ -8852,7 +8995,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`timeOfDay\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTimeOfDay(value: fhirTime[] | undefined): this {
     if (isDefinedList<fhirTime>(value)) {
@@ -8874,6 +9017,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`timeOfDay\` value
    * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addTimeOfDay(value: fhirTime | undefined): this {
     if (isDefined<fhirTime>(value)) {
@@ -8913,6 +9057,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`when\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setWhenElement(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -8930,6 +9076,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`when\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addWhenElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -8969,7 +9117,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`when\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setWhen(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -8991,6 +9139,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`when\` value
    * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addWhen(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -9030,6 +9179,8 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param element - the \`offset\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setOffsetElement(element: UnsignedIntType | undefined): this {
     if (isDefined<UnsignedIntType>(element)) {
@@ -9061,7 +9212,7 @@ export class TimingRepeatComponent extends DataType implements IDataType {
    *
    * @param value - the \`offset\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setOffset(value: fhirUnsignedInt | undefined): this {
     if (isDefined<fhirUnsignedInt>(value)) {
@@ -9378,7 +9529,7 @@ import { SearchEntryModeEnum } from '../code-systems/SearchEntryModeEnum';
  * - **Definition:** A container for a collection of resources.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR Bundle](http://hl7.org/fhir/StructureDefinition/Bundle)
  */
 export class Bundle extends Resource implements IResource {
@@ -9401,6 +9552,8 @@ export class Bundle extends Resource implements IResource {
    * @param sourceJson - JSON representing FHIR \`Bundle\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to Bundle
    * @returns Bundle data model or undefined for \`Bundle\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Bundle | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -9412,6 +9565,7 @@ export class Bundle extends Resource implements IResource {
     const instance = new Bundle();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.verifyResourceType(classJsonObj, 'Bundle');
     fhirParser.processResourceJson(instance, classJsonObj);
 
     let fieldName = '';
@@ -9538,6 +9692,8 @@ export class Bundle extends Resource implements IResource {
    * - **Cardinality:** 1..1
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   private type_: EnumCodeType | null;
 
@@ -9630,6 +9786,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`identifier\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setIdentifier(value: Identifier | undefined): this {
     if (isDefined<Identifier>(value)) {
@@ -9651,6 +9808,8 @@ export class Bundle extends Resource implements IResource {
 
   /**
    * @returns the \`type_\` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   public getTypeEnumType(): EnumCodeType | null {
     return this.type_;
@@ -9661,6 +9820,10 @@ export class Bundle extends Resource implements IResource {
    *
    * @param enumType - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   public setTypeEnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, \`Bundle.type is required\`);
@@ -9679,6 +9842,8 @@ export class Bundle extends Resource implements IResource {
 
   /**
    * @returns the \`type_\` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   public getTypeElement(): CodeType | null {
     if (this.type_ === null) {
@@ -9692,6 +9857,10 @@ export class Bundle extends Resource implements IResource {
    *
    * @param element - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   public setTypeElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, \`Bundle.type is required\`);
@@ -9710,6 +9879,8 @@ export class Bundle extends Resource implements IResource {
 
   /**
    * @returns the \`type_\` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   public getType(): fhirCode | null {
     if (this.type_ === null) {
@@ -9723,6 +9894,10 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link BundleTypeEnum }
    */
   public setType(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, \`Bundle.type is required\`);
@@ -9750,6 +9925,8 @@ export class Bundle extends Resource implements IResource {
    *
    * @param element - the \`timestamp\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTimestampElement(element: InstantType | undefined): this {
     if (isDefined<InstantType>(element)) {
@@ -9781,7 +9958,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`timestamp\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTimestamp(value: fhirInstant | undefined): this {
     if (isDefined<fhirInstant>(value)) {
@@ -9812,6 +9989,8 @@ export class Bundle extends Resource implements IResource {
    *
    * @param element - the \`total\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTotalElement(element: UnsignedIntType | undefined): this {
     if (isDefined<UnsignedIntType>(element)) {
@@ -9843,7 +10022,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`total\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setTotal(value: fhirUnsignedInt | undefined): this {
     if (isDefined<fhirUnsignedInt>(value)) {
@@ -9874,6 +10053,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`link\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setLink(value: BundleLinkComponent[] | undefined): this {
     if (isDefinedList<BundleLinkComponent>(value)) {
@@ -9891,6 +10071,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`link\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addLink(value: BundleLinkComponent | undefined): this {
     if (isDefined<BundleLinkComponent>(value)) {
@@ -9930,6 +10111,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`entry\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setEntry(value: BundleEntryComponent[] | undefined): this {
     if (isDefinedList<BundleEntryComponent>(value)) {
@@ -9947,6 +10129,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`entry\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addEntry(value: BundleEntryComponent | undefined): this {
     if (isDefined<BundleEntryComponent>(value)) {
@@ -9986,6 +10169,7 @@ export class Bundle extends Resource implements IResource {
    *
    * @param value - the \`signature\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setSignature(value: Signature | undefined): this {
     if (isDefined<Signature>(value)) {
@@ -10061,7 +10245,7 @@ export class Bundle extends Resource implements IResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -10120,7 +10304,7 @@ export class Bundle extends Resource implements IResource {
  * - **Definition:** A series of links that provide context to this bundle.
  * - **Comment:** Both Bundle.link and Bundle.entry.link are defined to support providing additional context when Bundles are used (e.g. [HATEOAS](http://en.wikipedia.org/wiki/HATEOAS)).  Bundle.entry.link corresponds to links found in the HTTP header if the resource in the entry was [read](https://hl7.org/fhir/http.html#read) directly. This specification defines some specific uses of Bundle.link for [searching](https://hl7.org/fhir/search.html#conformance) and [paging](https://hl7.org/fhir/http.html#paging), but no specific uses for Bundle.entry.link, and no defined function in a transaction - the meaning is implementation specific.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR Bundle](http://hl7.org/fhir/StructureDefinition/Bundle)
  */
 export class BundleLinkComponent extends BackboneElement implements IBackboneElement {
@@ -10152,6 +10336,8 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
    * @param sourceJson - JSON representing FHIR \`BundleLinkComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to BundleLinkComponent
    * @returns BundleLinkComponent data model or undefined for \`BundleLinkComponent\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BundleLinkComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -10252,6 +10438,8 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
    *
    * @param element - the \`relation\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setRelationElement(element: StringType): this {
     assertIsDefined<StringType>(element, \`Bundle.link.relation is required\`);
@@ -10284,7 +10472,7 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
    *
    * @param value - the \`relation\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setRelation(value: fhirString): this {
     assertIsDefined<fhirString>(value, \`Bundle.link.relation is required\`);
@@ -10312,6 +10500,8 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
    *
    * @param element - the \`url\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrlElement(element: UriType): this {
     assertIsDefined<UriType>(element, \`Bundle.link.url is required\`);
@@ -10344,7 +10534,7 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
    *
    * @param value - the \`url\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrl(value: fhirUri): this {
     assertIsDefined<fhirUri>(value, \`Bundle.link.url is required\`);
@@ -10404,7 +10594,7 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -10444,7 +10634,7 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
  * - **Short:** Entry in the bundle - will have a resource or information
  * - **Definition:** An entry in a bundle resource - will either contain a resource or information about a resource (transactions and history only).
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR Bundle](http://hl7.org/fhir/StructureDefinition/Bundle)
  */
 export class BundleEntryComponent extends BackboneElement implements IBackboneElement {
@@ -10459,6 +10649,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    * @param sourceJson - JSON representing FHIR \`BundleEntryComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to BundleEntryComponent
    * @returns BundleEntryComponent data model or undefined for \`BundleEntryComponent\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BundleEntryComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -10632,6 +10823,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`link\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setLink(value: BundleLinkComponent[] | undefined): this {
     if (isDefinedList<BundleLinkComponent>(value)) {
@@ -10649,6 +10841,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`link\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addLink(value: BundleLinkComponent | undefined): this {
     if (isDefined<BundleLinkComponent>(value)) {
@@ -10688,6 +10881,8 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param element - the \`fullUrl\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setFullUrlElement(element: UriType | undefined): this {
     if (isDefined<UriType>(element)) {
@@ -10719,7 +10914,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`fullUrl\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setFullUrl(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -10750,6 +10945,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`resource\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid resource type
    */
   public setResource(value: IResource | undefined): this {
     if (isDefined<IResource>(value)) {
@@ -10781,6 +10977,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`search\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setSearch(value: BundleEntrySearchComponent | undefined): this {
     if (isDefined<BundleEntrySearchComponent>(value)) {
@@ -10812,6 +11009,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`request\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setRequest(value: BundleEntryRequestComponent | undefined): this {
     if (isDefined<BundleEntryRequestComponent>(value)) {
@@ -10843,6 +11041,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
    *
    * @param value - the \`response\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setResponse(value: BundleEntryResponseComponent | undefined): this {
     if (isDefined<BundleEntryResponseComponent>(value)) {
@@ -10960,7 +11159,7 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
  * - **Short:** Search related information
  * - **Definition:** Information about the search process that lead to the creation of this entry.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR Bundle](http://hl7.org/fhir/StructureDefinition/Bundle)
  */
 export class BundleEntrySearchComponent extends BackboneElement implements IBackboneElement {
@@ -10976,6 +11175,7 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR \`BundleEntrySearchComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to BundleEntrySearchComponent
    * @returns BundleEntrySearchComponent data model or undefined for \`BundleEntrySearchComponent\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BundleEntrySearchComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -11034,6 +11234,8 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    * - **Cardinality:** 0..1
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   private mode?: EnumCodeType | undefined;
 
@@ -11056,6 +11258,8 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
 
   /**
    * @returns the \`mode\` property value as a EnumCodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   public getModeEnumType(): EnumCodeType | undefined {
     return this.mode;
@@ -11066,6 +11270,10 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    *
    * @param enumType - the \`mode\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code values
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   public setModeEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -11087,6 +11295,8 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
 
   /**
    * @returns the \`mode\` property value as a CodeType if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   public getModeElement(): CodeType | undefined {
     if (this.mode === undefined) {
@@ -11100,6 +11310,10 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    *
    * @param element - the \`mode\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   public setModeElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -11121,6 +11335,8 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
 
   /**
    * @returns the \`mode\` property value as a fhirCode if defined; else undefined
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   public getMode(): fhirCode | undefined {
     if (this.mode === undefined) {
@@ -11134,6 +11350,10 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    *
    * @param value - the \`mode\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link SearchEntryModeEnum }
    */
   public setMode(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -11164,6 +11384,8 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    *
    * @param element - the \`score\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setScoreElement(element: DecimalType | undefined): this {
     if (isDefined<DecimalType>(element)) {
@@ -11195,7 +11417,7 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
    *
    * @param value - the \`score\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setScore(value: fhirDecimal | undefined): this {
     if (isDefined<fhirDecimal>(value)) {
@@ -11287,7 +11509,7 @@ export class BundleEntrySearchComponent extends BackboneElement implements IBack
  * - **Short:** Additional execution information (transaction/batch/history)
  * - **Definition:** Additional information about how this entry should be processed as part of a transaction or batch.  For history, it shows how the entry was processed to create the version contained in the entry.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR Bundle](http://hl7.org/fhir/StructureDefinition/Bundle)
  */
 export class BundleEntryRequestComponent extends BackboneElement implements IBackboneElement {
@@ -11319,6 +11541,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR \`BundleEntryRequestComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to BundleEntryRequestComponent
    * @returns BundleEntryRequestComponent data model or undefined for \`BundleEntryRequestComponent\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BundleEntryRequestComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -11431,6 +11655,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    * - **Cardinality:** 1..1
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   private method: EnumCodeType | null;
 
@@ -11509,6 +11735,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
 
   /**
    * @returns the \`method\` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   public getMethodEnumType(): EnumCodeType | null {
     return this.method;
@@ -11519,6 +11747,10 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param enumType - the \`method\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   public setMethodEnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, \`Bundle.entry.request.method is required\`);
@@ -11537,6 +11769,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
 
   /**
    * @returns the \`method\` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   public getMethodElement(): CodeType | null {
     if (this.method === null) {
@@ -11550,6 +11784,10 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param element - the \`method\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   public setMethodElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, \`Bundle.entry.request.method is required\`);
@@ -11568,6 +11806,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
 
   /**
    * @returns the \`method\` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   public getMethod(): fhirCode | null {
     if (this.method === null) {
@@ -11581,6 +11821,10 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param value - the \`method\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link HttpVerbEnum }
    */
   public setMethod(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, \`Bundle.entry.request.method is required\`);
@@ -11608,6 +11852,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param element - the \`url\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrlElement(element: UriType): this {
     assertIsDefined<UriType>(element, \`Bundle.entry.request.url is required\`);
@@ -11640,7 +11886,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param value - the \`url\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrl(value: fhirUri): this {
     assertIsDefined<fhirUri>(value, \`Bundle.entry.request.url is required\`);
@@ -11668,6 +11914,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param element - the \`ifNoneMatch\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfNoneMatchElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -11699,7 +11947,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param value - the \`ifNoneMatch\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfNoneMatch(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -11730,6 +11978,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param element - the \`ifModifiedSince\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfModifiedSinceElement(element: InstantType | undefined): this {
     if (isDefined<InstantType>(element)) {
@@ -11761,7 +12011,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param value - the \`ifModifiedSince\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfModifiedSince(value: fhirInstant | undefined): this {
     if (isDefined<fhirInstant>(value)) {
@@ -11792,6 +12042,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param element - the \`ifMatch\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfMatchElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -11823,7 +12075,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param value - the \`ifMatch\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfMatch(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -11854,6 +12106,8 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param element - the \`ifNoneExist\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfNoneExistElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -11885,7 +12139,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
    *
    * @param value - the \`ifNoneExist\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setIfNoneExist(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -11956,7 +12210,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -12012,7 +12266,7 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
  * - **Short:** Results of execution (transaction/batch/history)
  * - **Definition:** Indicates the results of processing the corresponding \\'request\\' entry in the batch or transaction being responded to or what the results of an operation where when returning history.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR Bundle](http://hl7.org/fhir/StructureDefinition/Bundle)
  */
 export class BundleEntryResponseComponent extends BackboneElement implements IBackboneElement {
@@ -12035,6 +12289,8 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR \`BundleEntryResponseComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to BundleEntryResponseComponent
    * @returns BundleEntryResponseComponent data model or undefined for \`BundleEntryResponseComponent\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BundleEntryResponseComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -12199,6 +12455,8 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param element - the \`status\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setStatusElement(element: StringType): this {
     assertIsDefined<StringType>(element, \`Bundle.entry.response.status is required\`);
@@ -12231,7 +12489,7 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param value - the \`status\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setStatus(value: fhirString): this {
     assertIsDefined<fhirString>(value, \`Bundle.entry.response.status is required\`);
@@ -12259,6 +12517,8 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param element - the \`location\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setLocationElement(element: UriType | undefined): this {
     if (isDefined<UriType>(element)) {
@@ -12290,7 +12550,7 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param value - the \`location\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setLocation(value: fhirUri | undefined): this {
     if (isDefined<fhirUri>(value)) {
@@ -12321,6 +12581,8 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param element - the \`etag\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setEtagElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -12352,7 +12614,7 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param value - the \`etag\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setEtag(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -12383,6 +12645,8 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param element - the \`lastModified\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setLastModifiedElement(element: InstantType | undefined): this {
     if (isDefined<InstantType>(element)) {
@@ -12414,7 +12678,7 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param value - the \`lastModified\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setLastModified(value: fhirInstant | undefined): this {
     if (isDefined<fhirInstant>(value)) {
@@ -12445,6 +12709,7 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
    *
    * @param value - the \`outcome\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid resource type
    */
   public setOutcome(value: IResource | undefined): this {
     if (isDefined<IResource>(value)) {
@@ -12514,7 +12779,7 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -12676,7 +12941,7 @@ import { PARSABLE_RESOURCE_MAP } from './parsable-resource-map';
  * - **Definition:** A specific set of Roles/Locations/specialties/services that a practitioner may perform at an organization for a period of time.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR PractitionerRole](http://hl7.org/fhir/StructureDefinition/PractitionerRole)
  */
 export class PractitionerRole extends DomainResource implements IDomainResource {
@@ -12691,6 +12956,8 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR \`PractitionerRole\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to PractitionerRole
    * @returns PractitionerRole data model or undefined for \`PractitionerRole\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): PractitionerRole | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -12702,6 +12969,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
     const instance = new PractitionerRole();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.verifyResourceType(classJsonObj, 'PractitionerRole');
     fhirParser.processDomainResourceJson(instance, classJsonObj);
 
     let fieldName = '';
@@ -13105,6 +13373,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`identifier\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setIdentifier(value: Identifier[] | undefined): this {
     if (isDefinedList<Identifier>(value)) {
@@ -13122,6 +13391,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`identifier\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addIdentifier(value: Identifier | undefined): this {
     if (isDefined<Identifier>(value)) {
@@ -13161,6 +13431,8 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param element - the \`active\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setActiveElement(element: BooleanType | undefined): this {
     if (isDefined<BooleanType>(element)) {
@@ -13192,7 +13464,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`active\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setActive(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {
@@ -13223,6 +13495,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`period\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setPeriod(value: Period | undefined): this {
     if (isDefined<Period>(value)) {
@@ -13256,6 +13529,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`practitioner\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.practitioner', [
     'Practitioner',
@@ -13291,6 +13565,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`organization\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.organization', [
     'Organization',
@@ -13324,6 +13599,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`code\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setCode(value: CodeableConcept[] | undefined): this {
     if (isDefinedList<CodeableConcept>(value)) {
@@ -13341,6 +13617,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`code\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addCode(value: CodeableConcept | undefined): this {
     if (isDefined<CodeableConcept>(value)) {
@@ -13380,6 +13657,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`specialty\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setSpecialty(value: CodeableConcept[] | undefined): this {
     if (isDefinedList<CodeableConcept>(value)) {
@@ -13397,6 +13675,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`specialty\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addSpecialty(value: CodeableConcept | undefined): this {
     if (isDefined<CodeableConcept>(value)) {
@@ -13438,6 +13717,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`location\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.location', [
     'Location',
@@ -13459,6 +13739,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`location\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.location', [
     'Location',
@@ -13502,6 +13783,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`healthcareService\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.healthcareService', [
     'HealthcareService',
@@ -13523,6 +13805,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`healthcareService\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.healthcareService', [
     'HealthcareService',
@@ -13564,6 +13847,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`telecom\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setTelecom(value: ContactPoint[] | undefined): this {
     if (isDefinedList<ContactPoint>(value)) {
@@ -13581,6 +13865,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`telecom\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addTelecom(value: ContactPoint | undefined): this {
     if (isDefined<ContactPoint>(value)) {
@@ -13620,6 +13905,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`availableTime\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setAvailableTime(value: PractitionerRoleAvailableTimeComponent[] | undefined): this {
     if (isDefinedList<PractitionerRoleAvailableTimeComponent>(value)) {
@@ -13637,6 +13923,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`availableTime\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addAvailableTime(value: PractitionerRoleAvailableTimeComponent | undefined): this {
     if (isDefined<PractitionerRoleAvailableTimeComponent>(value)) {
@@ -13676,6 +13963,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`notAvailable\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setNotAvailable(value: PractitionerRoleNotAvailableComponent[] | undefined): this {
     if (isDefinedList<PractitionerRoleNotAvailableComponent>(value)) {
@@ -13693,6 +13981,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`notAvailable\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addNotAvailable(value: PractitionerRoleNotAvailableComponent | undefined): this {
     if (isDefined<PractitionerRoleNotAvailableComponent>(value)) {
@@ -13732,6 +14021,8 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param element - the \`availabilityExceptions\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAvailabilityExceptionsElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -13763,7 +14054,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`availabilityExceptions\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAvailabilityExceptions(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -13796,6 +14087,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`endpoint\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.endpoint', [
     'Endpoint',
@@ -13817,6 +14109,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    *
    * @param value - the \`endpoint\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('PractitionerRole.endpoint', [
     'Endpoint',
@@ -14001,7 +14294,7 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
  * - **Definition:** A collection of times the practitioner is available or performing this role at the location and/or healthcareservice.
  * - **Comment:** More detailed availability information may be provided in associated Schedule/Slot resources.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR PractitionerRole](http://hl7.org/fhir/StructureDefinition/PractitionerRole)
  */
 export class PractitionerRoleAvailableTimeComponent extends BackboneElement implements IBackboneElement {
@@ -14017,6 +14310,7 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR \`PractitionerRoleAvailableTimeComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to PractitionerRoleAvailableTimeComponent
    * @returns PractitionerRoleAvailableTimeComponent data model or undefined for \`PractitionerRoleAvailableTimeComponent\`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PractitionerRoleAvailableTimeComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -14101,6 +14395,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    * - **Cardinality:** 0..*
    * - **isModifier:** false
    * - **isSummary:** false
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   private daysOfWeek?: EnumCodeType[] | undefined;
 
@@ -14152,6 +14448,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
 
   /**
    * @returns the \`daysOfWeek\` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public getDaysOfWeekEnumType(): EnumCodeType[] {
     return this.daysOfWeek ?? ([] as EnumCodeType[]);
@@ -14162,6 +14460,10 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param enumType - the \`daysOfWeek\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public setDaysOfWeekEnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
@@ -14179,6 +14481,9 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param enumType - the \`daysOfWeek\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public addDaysOfWeekEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -14199,6 +14504,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
 
   /**
    * @returns the \`daysOfWeek\` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public getDaysOfWeekElement(): CodeType[] {
     if (this.daysOfWeek === undefined) {
@@ -14212,6 +14519,10 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param element - the \`daysOfWeek\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public setDaysOfWeekElement(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -14233,6 +14544,10 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param element - the \`daysOfWeek\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public addDaysOfWeekElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -14253,6 +14568,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
 
   /**
    * @returns the \`daysOfWeek\` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public getDaysOfWeek(): fhirCode[] {
     if (this.daysOfWeek === undefined) {
@@ -14270,7 +14587,10 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param value - the \`daysOfWeek\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public setDaysOfWeek(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -14291,6 +14611,10 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param value - the \`daysOfWeek\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link DaysOfWeekEnum }
    */
   public addDaysOfWeek(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -14329,6 +14653,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param element - the \`allDay\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAllDayElement(element: BooleanType | undefined): this {
     if (isDefined<BooleanType>(element)) {
@@ -14360,7 +14686,7 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param value - the \`allDay\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAllDay(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {
@@ -14391,6 +14717,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param element - the \`availableStartTime\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAvailableStartTimeElement(element: TimeType | undefined): this {
     if (isDefined<TimeType>(element)) {
@@ -14422,7 +14750,7 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param value - the \`availableStartTime\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAvailableStartTime(value: fhirTime | undefined): this {
     if (isDefined<fhirTime>(value)) {
@@ -14453,6 +14781,8 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param element - the \`availableEndTime\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAvailableEndTimeElement(element: TimeType | undefined): this {
     if (isDefined<TimeType>(element)) {
@@ -14484,7 +14814,7 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
    *
    * @param value - the \`availableEndTime\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setAvailableEndTime(value: fhirTime | undefined): this {
     if (isDefined<fhirTime>(value)) {
@@ -14588,7 +14918,7 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
  * - **Short:** Not available during this time due to provided reason
  * - **Definition:** The practitioner is not available or performing this role during this period of time due to the provided reason.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR PractitionerRole](http://hl7.org/fhir/StructureDefinition/PractitionerRole)
  */
 export class PractitionerRoleNotAvailableComponent extends BackboneElement implements IBackboneElement {
@@ -14611,6 +14941,8 @@ export class PractitionerRoleNotAvailableComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR \`PractitionerRoleNotAvailableComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to PractitionerRoleNotAvailableComponent
    * @returns PractitionerRoleNotAvailableComponent data model or undefined for \`PractitionerRoleNotAvailableComponent\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PractitionerRoleNotAvailableComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -14704,6 +15036,8 @@ export class PractitionerRoleNotAvailableComponent extends BackboneElement imple
    *
    * @param element - the \`description\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDescriptionElement(element: StringType): this {
     assertIsDefined<StringType>(element, \`PractitionerRole.notAvailable.description is required\`);
@@ -14736,7 +15070,7 @@ export class PractitionerRoleNotAvailableComponent extends BackboneElement imple
    *
    * @param value - the \`description\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDescription(value: fhirString): this {
     assertIsDefined<fhirString>(value, \`PractitionerRole.notAvailable.description is required\`);
@@ -14764,6 +15098,7 @@ export class PractitionerRoleNotAvailableComponent extends BackboneElement imple
    *
    * @param value - the \`during\` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setDuring(value: Period | undefined): this {
     if (isDefined<Period>(value)) {
@@ -14827,7 +15162,7 @@ export class PractitionerRoleNotAvailableComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -14989,7 +15324,7 @@ import { SearchParamTypeEnum } from '../code-systems/SearchParamTypeEnum';
  * - **Comment:** In FHIR, search is not performed directly on a resource (by XML or JSON path), but on a named parameter that maps into the resource content.
  * - **FHIR Version:** 4.0.1
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR SearchParameter](http://hl7.org/fhir/StructureDefinition/SearchParameter)
  */
 export class SearchParameter extends DomainResource implements IDomainResource {
@@ -15066,6 +15401,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR \`SearchParameter\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to SearchParameter
    * @returns SearchParameter data model or undefined for \`SearchParameter\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SearchParameter | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -15077,6 +15414,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     const instance = new SearchParameter();
 
     const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.verifyResourceType(classJsonObj, 'SearchParameter');
     fhirParser.processDomainResourceJson(instance, classJsonObj);
 
     let fieldName = '';
@@ -15514,6 +15852,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * - **isModifier:** true
    * - **isModifierReason:** This is labeled as &quot;Is Modifier&quot; because applications should not use a retired {{title}} without due consideration
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   private status: EnumCodeType | null;
 
@@ -15674,6 +16014,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * - **Cardinality:** 1..*
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   private base: EnumCodeType[] | null;
 
@@ -15695,6 +16037,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * - **Cardinality:** 1..1
    * - **isModifier:** false
    * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   private type_: EnumCodeType | null;
 
@@ -15753,6 +16097,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * - **Cardinality:** 0..*
    * - **isModifier:** false
    * - **isSummary:** false
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   private target?: EnumCodeType[] | undefined;
 
@@ -15803,6 +16149,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * - **Cardinality:** 0..*
    * - **isModifier:** false
    * - **isSummary:** false
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   private comparator?: EnumCodeType[] | undefined;
 
@@ -15824,6 +16172,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    * - **Cardinality:** 0..*
    * - **isModifier:** false
    * - **isSummary:** false
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   private modifier?: EnumCodeType[] | undefined;
 
@@ -15870,6 +16220,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`url\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrlElement(element: UriType): this {
     assertIsDefined<UriType>(element, \`SearchParameter.url is required\`);
@@ -15902,7 +16254,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`url\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setUrl(value: fhirUri): this {
     assertIsDefined<fhirUri>(value, \`SearchParameter.url is required\`);
@@ -15930,6 +16282,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`version\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setVersionElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -15961,7 +16315,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`version\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setVersion(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -15992,6 +16346,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`name\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setNameElement(element: StringType): this {
     assertIsDefined<StringType>(element, \`SearchParameter.name is required\`);
@@ -16024,7 +16380,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`name\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setName(value: fhirString): this {
     assertIsDefined<fhirString>(value, \`SearchParameter.name is required\`);
@@ -16052,6 +16408,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`derivedFrom\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDerivedFromElement(element: CanonicalType | undefined): this {
     if (isDefined<CanonicalType>(element)) {
@@ -16083,7 +16441,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`derivedFrom\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDerivedFrom(value: fhirCanonical | undefined): this {
     if (isDefined<fhirCanonical>(value)) {
@@ -16104,6 +16462,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`status\` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   public getStatusEnumType(): EnumCodeType | null {
     return this.status;
@@ -16114,6 +16474,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`status\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   public setStatusEnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, \`SearchParameter.status is required\`);
@@ -16132,6 +16496,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`status\` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   public getStatusElement(): CodeType | null {
     if (this.status === null) {
@@ -16145,6 +16511,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`status\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   public setStatusElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, \`SearchParameter.status is required\`);
@@ -16163,6 +16533,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`status\` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   public getStatus(): fhirCode | null {
     if (this.status === null) {
@@ -16176,6 +16548,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`status\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
   public setStatus(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, \`SearchParameter.status is required\`);
@@ -16203,6 +16579,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`experimental\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setExperimentalElement(element: BooleanType | undefined): this {
     if (isDefined<BooleanType>(element)) {
@@ -16234,7 +16612,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`experimental\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setExperimental(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {
@@ -16265,6 +16643,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`date\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDateElement(element: DateTimeType | undefined): this {
     if (isDefined<DateTimeType>(element)) {
@@ -16296,7 +16676,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`date\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDate(value: fhirDateTime | undefined): this {
     if (isDefined<fhirDateTime>(value)) {
@@ -16327,6 +16707,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`publisher\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPublisherElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -16358,7 +16740,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`publisher\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPublisher(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -16389,6 +16771,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`contact\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setContact(value: ContactDetail[] | undefined): this {
     if (isDefinedList<ContactDetail>(value)) {
@@ -16406,6 +16789,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`contact\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addContact(value: ContactDetail | undefined): this {
     if (isDefined<ContactDetail>(value)) {
@@ -16445,6 +16829,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`description\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDescriptionElement(element: MarkdownType): this {
     assertIsDefined<MarkdownType>(element, \`SearchParameter.description is required\`);
@@ -16477,7 +16863,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`description\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDescription(value: fhirMarkdown): this {
     assertIsDefined<fhirMarkdown>(value, \`SearchParameter.description is required\`);
@@ -16505,6 +16891,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`useContext\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setUseContext(value: UsageContext[] | undefined): this {
     if (isDefinedList<UsageContext>(value)) {
@@ -16522,6 +16909,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`useContext\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addUseContext(value: UsageContext | undefined): this {
     if (isDefined<UsageContext>(value)) {
@@ -16561,6 +16949,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`jurisdiction\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setJurisdiction(value: CodeableConcept[] | undefined): this {
     if (isDefinedList<CodeableConcept>(value)) {
@@ -16578,6 +16967,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`jurisdiction\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addJurisdiction(value: CodeableConcept | undefined): this {
     if (isDefined<CodeableConcept>(value)) {
@@ -16617,6 +17007,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`purpose\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPurposeElement(element: MarkdownType | undefined): this {
     if (isDefined<MarkdownType>(element)) {
@@ -16648,7 +17040,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`purpose\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setPurpose(value: fhirMarkdown | undefined): this {
     if (isDefined<fhirMarkdown>(value)) {
@@ -16679,6 +17071,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`code\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCodeElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, \`SearchParameter.code is required\`);
@@ -16711,7 +17105,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`code\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setCode(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, \`SearchParameter.code is required\`);
@@ -16729,6 +17123,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`base\` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public getBaseEnumType(): EnumCodeType[] {
     return this.base ?? ([] as EnumCodeType[]);
@@ -16739,6 +17135,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`base\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public setBaseEnumType(enumType: EnumCodeType[]): this {
     assertIsDefinedList<EnumCodeType>(enumType, \`SearchParameter.base is required\`);
@@ -16753,6 +17153,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`base\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public addBaseEnumType(enumType: EnumCodeType): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -16773,6 +17177,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`base\` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public getBaseElement(): CodeType[] {
     if (this.base === null) {
@@ -16786,6 +17192,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`base\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public setBaseElement(element: CodeType[]): this {
     assertIsDefinedList<CodeType>(element, \`SearchParameter.base is required\`);
@@ -16804,6 +17214,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`base\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public addBaseElement(element: CodeType): this {
     if (isDefined<CodeType>(element)) {
@@ -16824,6 +17238,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`base\` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public getBase(): fhirCode[] {
     if (this.base === null) {
@@ -16841,7 +17257,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`base\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public setBase(value: fhirCode[]): this {
     assertIsDefinedList<fhirCode>(value, \`SearchParameter.base is required\`);
@@ -16859,6 +17278,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`base\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public addBase(value: fhirCode): this {
     if (isDefined<fhirCode>(value)) {
@@ -16887,6 +17310,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`type_\` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   public getTypeEnumType(): EnumCodeType | null {
     return this.type_;
@@ -16897,6 +17322,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   public setTypeEnumType(enumType: EnumCodeType): this {
     assertIsDefined<EnumCodeType>(enumType, \`SearchParameter.type is required\`);
@@ -16915,6 +17344,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`type_\` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   public getTypeElement(): CodeType | null {
     if (this.type_ === null) {
@@ -16928,6 +17359,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   public setTypeElement(element: CodeType): this {
     assertIsDefined<CodeType>(element, \`SearchParameter.type is required\`);
@@ -16946,6 +17381,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`type_\` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   public getType(): fhirCode | null {
     if (this.type_ === null) {
@@ -16959,6 +17396,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`type_\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link SearchParamTypeEnum }
    */
   public setType(value: fhirCode): this {
     assertIsDefined<fhirCode>(value, \`SearchParameter.type is required\`);
@@ -16986,6 +17427,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`expression\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setExpressionElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -17017,7 +17460,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`expression\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setExpression(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -17048,6 +17491,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`xpath\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setXpathElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -17079,7 +17524,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`xpath\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setXpath(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -17110,6 +17555,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`xpathUsage\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setXpathUsageElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -17141,7 +17588,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`xpathUsage\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setXpathUsage(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -17162,6 +17609,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`target\` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public getTargetEnumType(): EnumCodeType[] {
     return this.target ?? ([] as EnumCodeType[]);
@@ -17172,6 +17621,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`target\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public setTargetEnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
@@ -17189,6 +17642,9 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`target\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public addTargetEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -17209,6 +17665,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`target\` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public getTargetElement(): CodeType[] {
     if (this.target === undefined) {
@@ -17222,6 +17680,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`target\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public setTargetElement(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -17243,6 +17705,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`target\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public addTargetElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -17263,6 +17729,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`target\` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public getTarget(): fhirCode[] {
     if (this.target === undefined) {
@@ -17280,7 +17748,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`target\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public setTarget(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -17301,6 +17772,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`target\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
   public addTarget(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -17339,6 +17814,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`multipleOr\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setMultipleOrElement(element: BooleanType | undefined): this {
     if (isDefined<BooleanType>(element)) {
@@ -17370,7 +17847,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`multipleOr\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setMultipleOr(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {
@@ -17401,6 +17878,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`multipleAnd\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setMultipleAndElement(element: BooleanType | undefined): this {
     if (isDefined<BooleanType>(element)) {
@@ -17432,7 +17911,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`multipleAnd\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setMultipleAnd(value: fhirBoolean | undefined): this {
     if (isDefined<fhirBoolean>(value)) {
@@ -17453,6 +17932,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`comparator\` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public getComparatorEnumType(): EnumCodeType[] {
     return this.comparator ?? ([] as EnumCodeType[]);
@@ -17463,6 +17944,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`comparator\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public setComparatorEnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
@@ -17480,6 +17965,9 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`comparator\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public addComparatorEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -17500,6 +17988,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`comparator\` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public getComparatorElement(): CodeType[] {
     if (this.comparator === undefined) {
@@ -17513,6 +18003,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`comparator\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public setComparatorElement(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -17534,6 +18028,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`comparator\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public addComparatorElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -17554,6 +18052,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`comparator\` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public getComparator(): fhirCode[] {
     if (this.comparator === undefined) {
@@ -17571,7 +18071,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`comparator\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public setComparator(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -17592,6 +18095,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`comparator\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link SearchComparatorEnum }
    */
   public addComparator(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -17620,6 +18127,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`modifier\` property value as a EnumCodeType array
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public getModifierEnumType(): EnumCodeType[] {
     return this.modifier ?? ([] as EnumCodeType[]);
@@ -17630,6 +18139,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`modifier\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public setModifierEnumType(enumType: EnumCodeType[] | undefined): this {
     if (isDefinedList<EnumCodeType>(enumType)) {
@@ -17647,6 +18160,9 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param enumType - the \`modifier\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public addModifierEnumType(enumType: EnumCodeType | undefined): this {
     if (isDefined<EnumCodeType>(enumType)) {
@@ -17667,6 +18183,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`modifier\` property value as a CodeType array
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public getModifierElement(): CodeType[] {
     if (this.modifier === undefined) {
@@ -17680,6 +18198,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`modifier\` array value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public setModifierElement(element: CodeType[] | undefined): this {
     if (isDefinedList<CodeType>(element)) {
@@ -17701,6 +18223,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`modifier\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public addModifierElement(element: CodeType | undefined): this {
     if (isDefined<CodeType>(element)) {
@@ -17721,6 +18247,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the \`modifier\` property value as a fhirCode array
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public getModifier(): fhirCode[] {
     if (this.modifier === undefined) {
@@ -17738,7 +18266,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`modifier\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public setModifier(value: fhirCode[] | undefined): this {
     if (isDefinedList<fhirCode>(value)) {
@@ -17759,6 +18290,10 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`modifier\` value
    * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link SearchModifierCodeEnum }
    */
   public addModifier(value: fhirCode | undefined): this {
     if (isDefined<fhirCode>(value)) {
@@ -17797,6 +18332,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`chain\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setChainElement(element: StringType[] | undefined): this {
     if (isDefinedList<StringType>(element)) {
@@ -17814,6 +18351,8 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param element - the \`chain\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addChainElement(element: StringType | undefined): this {
     if (isDefined<StringType>(element)) {
@@ -17853,7 +18392,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`chain\` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setChain(value: fhirString[] | undefined): this {
     if (isDefinedList<fhirString>(value)) {
@@ -17875,6 +18414,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`chain\` value
    * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public addChain(value: fhirString | undefined): this {
     if (isDefined<fhirString>(value)) {
@@ -17914,6 +18454,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`component\` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public setComponent(value: SearchParameterComponentComponent[] | undefined): this {
     if (isDefinedList<SearchParameterComponentComponent>(value)) {
@@ -17931,6 +18472,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
    *
    * @param value - the \`component\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
    */
   public addComponent(value: SearchParameterComponentComponent | undefined): this {
     if (isDefined<SearchParameterComponentComponent>(value)) {
@@ -18059,7 +18601,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
@@ -18210,7 +18752,7 @@ export class SearchParameter extends DomainResource implements IDomainResource {
  * - **Short:** For Composite resources to define the parts
  * - **Definition:** Used to define the parts of a composite search parameter.
  *
- * @category DataModel: Resource
+ * @category Data Models: Resource
  * @see [FHIR SearchParameter](http://hl7.org/fhir/StructureDefinition/SearchParameter)
  */
 export class SearchParameterComponentComponent extends BackboneElement implements IBackboneElement {
@@ -18242,6 +18784,8 @@ export class SearchParameterComponentComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR \`SearchParameterComponentComponent\`
    * @param optSourceField - Optional data source field (e.g. \`<complexTypeName>.<complexTypeFieldName>\`); defaults to SearchParameterComponentComponent
    * @returns SearchParameterComponentComponent data model or undefined for \`SearchParameterComponentComponent\`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SearchParameterComponentComponent | undefined {
     if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
@@ -18346,6 +18890,8 @@ export class SearchParameterComponentComponent extends BackboneElement implement
    *
    * @param element - the \`definition\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDefinitionElement(element: CanonicalType): this {
     assertIsDefined<CanonicalType>(element, \`SearchParameter.component.definition is required\`);
@@ -18378,7 +18924,7 @@ export class SearchParameterComponentComponent extends BackboneElement implement
    *
    * @param value - the \`definition\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setDefinition(value: fhirCanonical): this {
     assertIsDefined<fhirCanonical>(value, \`SearchParameter.component.definition is required\`);
@@ -18406,6 +18952,8 @@ export class SearchParameterComponentComponent extends BackboneElement implement
    *
    * @param element - the \`expression\` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setExpressionElement(element: StringType): this {
     assertIsDefined<StringType>(element, \`SearchParameter.component.expression is required\`);
@@ -18438,7 +18986,7 @@ export class SearchParameterComponentComponent extends BackboneElement implement
    *
    * @param value - the \`expression\` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setExpression(value: fhirString): this {
     assertIsDefined<fhirString>(value, \`SearchParameter.component.expression is required\`);
@@ -18498,7 +19046,7 @@ export class SearchParameterComponentComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {FhirError} if the instance is missing required properties
+   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
     // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!

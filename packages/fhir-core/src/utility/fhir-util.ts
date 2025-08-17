@@ -71,7 +71,7 @@ export function isElementEmpty(...elements: (IBase | IBase[] | undefined | null)
  * Validate the provided url. The url must be a non-blank valid fhirUri.
  *
  * @param url - url to test
- * @throws AssertionError for invalid url
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
  *
  * @category Utilities
  */

@@ -41,7 +41,7 @@ import { IExtension, IPrimitiveType } from '../../base-models/library-interfaces
  * **From [XHTML Content -> Value Domain](https://hl7.org/fhir/R5/narrative.html#xhtml):** _No extensions are possible, and the id property becomes an xml:id on the root element which is an xhtml div_
  * The `xhtml` StructureDefinition specifies that `xhtml.extension` has 0..0 cardinality.
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR xhtml](http://hl7.org/fhir/StructureDefinition/xhtml)
  */
 export class XhtmlType extends PrimitiveType<fhirXhtml> implements IPrimitiveType<fhirXhtml> {
@@ -50,7 +50,7 @@ export class XhtmlType extends PrimitiveType<fhirXhtml> implements IPrimitiveTyp
 
   /**
    * @param value - the value of the primitive `fhirXhtml`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirXhtml) {
     super();

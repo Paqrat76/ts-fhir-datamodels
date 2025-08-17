@@ -25,6 +25,7 @@ import {
   CodeType,
   DecimalType,
   EnumCodeType,
+  IBackboneElement,
   InvalidCodeError,
   InvalidTypeError,
   PrimitiveTypeError,
@@ -53,8 +54,8 @@ describe('BundleEntrySearchComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new BundleEntrySearchComponent();
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -85,8 +86,8 @@ describe('BundleEntrySearchComponent', () => {
 
       let testInstance: BundleEntrySearchComponent = testModel.copy();
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -115,8 +116,8 @@ describe('BundleEntrySearchComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -145,8 +146,8 @@ describe('BundleEntrySearchComponent', () => {
       testInstance.setModeEnumType(VALID_SEARCH_MODE_INCLUDE_ENUMCODE);
       testInstance.setScoreElement(TestData.VALID_DECIMAL_TYPE);
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -173,8 +174,8 @@ describe('BundleEntrySearchComponent', () => {
       testInstance.setModeElement(VALID_SEARCH_MODE_OUTCOME_ENUMCODE as CodeType);
       testInstance.setScoreElement(TestData.VALID_DECIMAL_TYPE_2);
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -201,8 +202,8 @@ describe('BundleEntrySearchComponent', () => {
       testInstance.setMode(SearchEntryModeEnum.MATCH.code);
       testInstance.setScore(TestData.VALID_DECIMAL_3);
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -229,8 +230,8 @@ describe('BundleEntrySearchComponent', () => {
       testInstance.setModeEnumType(TestData.UNDEFINED_VALUE);
       testInstance.setScoreElement(TestData.UNDEFINED_VALUE);
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -332,8 +333,8 @@ describe('BundleEntrySearchComponent', () => {
       testInstance.setModeEnumType(altModeEnumType);
       testInstance.setScoreElement(TestData.VALID_DECIMAL_TYPE);
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',
@@ -370,8 +371,8 @@ describe('BundleEntrySearchComponent', () => {
     it('should return parsed Bundle for valid json', () => {
       const testInstance = BundleEntrySearchComponent.parse(VALID_JSON);
 
-      expectBackboneElementBase<BundleEntrySearchComponent>(
-        BundleEntrySearchComponent,
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
         testInstance,
         'BundleEntrySearchComponent',
         'Bundle.entry.search',

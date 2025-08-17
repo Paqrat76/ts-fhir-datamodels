@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** Systems are not required to have markdown support, so the text should be readable without markdown processing. The markdown syntax is GFM - see https://github.github.com/gfm/
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR markdown](http://hl7.org/fhir/StructureDefinition/markdown)
  */
 export class MarkdownType extends PrimitiveType<fhirMarkdown> implements IPrimitiveType<fhirMarkdown> {
   /**
    * @param value - the value of the primitive `fhirMarkdown`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirMarkdown) {
     super();

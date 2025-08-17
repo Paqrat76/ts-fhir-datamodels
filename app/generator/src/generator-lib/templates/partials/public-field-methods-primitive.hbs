@@ -12,6 +12,8 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}} | undefined): this {
     if (isDefined<{{edHbs.type.code}}>(element)) {
@@ -43,7 +45,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}} | undefined): this {
     if (isDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {
@@ -75,6 +77,8 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}): this {
     assertIsDefined<{{edHbs.type.code}}>(element, `{{edHbs.path}} is required`);
@@ -107,7 +111,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}): this {
     assertIsDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value, `{{edHbs.path}} is required`);
@@ -136,6 +140,8 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}[] | undefined): this {
     if (isDefinedList<{{edHbs.type.code}}>(element)) {
@@ -153,6 +159,8 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}} | undefined): this {
     if (isDefined<{{edHbs.type.code}}>(element)) {
@@ -192,7 +200,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}[] | undefined): this {
     if (isDefinedList<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {
@@ -214,6 +222,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}} | undefined): this {
     if (isDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {
@@ -254,6 +263,8 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}[]): this {
     assertIsDefinedList<{{edHbs.type.code}}>(element, `{{edHbs.path}} is required`);
@@ -268,6 +279,8 @@
    *
    * @param element - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public add{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}): this {
     if (isDefined<{{edHbs.type.code}}>(element)) {
@@ -307,7 +320,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value array
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}[]): this {
     assertIsDefinedList<fhir{{upperFirst edHbs.type.fhirDataType}}>(value, `{{edHbs.path}} is required`);
@@ -326,6 +339,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public add{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}): this {
     if (isDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {

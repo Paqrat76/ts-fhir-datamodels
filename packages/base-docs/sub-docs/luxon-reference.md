@@ -11,7 +11,8 @@ primitive `date`, `dateTime`, and `instant` data types.
 
 The FHIR specification defines datetime primitive data types represented by strings of specific ISO 8601 variations.
 
-**NOTE:** Where a timezone offset (`+zz:zz`/`-zz:zz`) is specified, UTC (`Z`) may also be specified.
+> [!NOTE]
+> Where a timezone offset (`+zz:zz`/`-zz:zz`) is specified, UTC (`Z`) may also be specified.
 
 FHIR Primitive DateTime Formats:
 
@@ -77,6 +78,10 @@ These are available for independent datetime handling use cases.
 They have also been incorporated in the FHIR PrimitiveType `DateType` (implements `interface DateTypeImpl`),
 `DateTimeType` (implements `interface DateTimeTypeImpl`), and `InstantType` (implements`interface InstantTypeImpl`)
 implementations as convenience methods.
+
+> [!TIP]
+> Refer to the Data Models documentation for the above PrimitiveType classes and their respective interfaces for
+> additional information.
 
 The `DateTimeUtil.getDateTimeObject(...)` and `DateTimeUtil.getDateTimeObjectAsUTC(...)` creation methods return a
 valid Luxon DataTime object that allows full access to the Luxon DataTime APIs for virtually any kind of datetime

@@ -225,7 +225,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    *
    * @param url - the url that identifies a specific Extension
    * @returns `true` if an Extension has the provided url; false otherwise
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public hasExtension(url?: fhirUri): boolean {
     if (url) {
@@ -240,7 +240,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    *
    * @param url - the url that identifies a specific Extension
    * @returns the Extension having the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public getExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
@@ -276,7 +276,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    * Removes the Extension having the provided url from the `extension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public removeExtension(url: fhirUri): void {
     validateUrl(url);
@@ -333,7 +333,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    *
    * @param url - the url that identifies a specific Extension
    * @returns `true` if an Extension has the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public hasModifierExtension(url?: fhirUri): boolean {
     if (url) {
@@ -348,7 +348,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    *
    * @param url - the url that identifies a specific Extension
    * @returns the Extension having the provided url
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public getModifierExtensionByUrl(url: fhirUri): IExtension | undefined {
     validateUrl(url);
@@ -384,7 +384,7 @@ export abstract class DomainResource extends Resource implements IDomainResource
    * Removes the Extension having the provided url from the `modifierExtension` property array.
    *
    * @param url - the url that identifies a specific Extension to remove
-   * @throws AssertionError for invalid url
+   * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid url
    */
   public removeModifierExtension(url: fhirUri): void {
     validateUrl(url);

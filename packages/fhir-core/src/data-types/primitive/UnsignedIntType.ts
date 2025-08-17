@@ -37,13 +37,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Definition:** An integer with a value that is not negative (e.g. >= 0)
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR unsignedInt](http://hl7.org/fhir/StructureDefinition/unsignedInt)
  */
 export class UnsignedIntType extends PrimitiveType<fhirUnsignedInt> implements IPrimitiveType<fhirUnsignedInt> {
   /**
    * @param value - the value of the primitive `fhirUnsignedInt`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirUnsignedInt) {
     super();

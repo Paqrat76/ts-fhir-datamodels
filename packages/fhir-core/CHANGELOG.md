@@ -19,23 +19,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [0.6.2] - 2025-08-??
+## [0.6.2] - 2025-08-17
 
 ### Added
+
+- `JsonError` replacing `TypeError` in all uses of JSON
 
 ### Changed
 
 - Updated README documentation
 - Updated dependencies
 - `public abstract dataTypeName(): string;` to `DataType` and `IDataType`; Updated all data type classes to implement this method
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
+- Minor updates to selected JSDoc including Typedoc categories
+- Updated unit tests as needed; Cleaned up test-data.ts and test-utils.ts
 
 
 ## [0.6.1] - 2025-07-29

@@ -25,7 +25,7 @@ export default tsEslint.config(
   jsdocLint.configs['flat/recommended'],
   // https://eslint.org/docs/latest/use/configure/ignore
   // Default patterns include ["**/node_modules/", ".git/"]
-  // Ignore the project 'coverage', 'dist', and docs directories. Also ignore all files beginning with '.'.
+  // Ignore the project 'coverage', 'dist', and docs directories. Also, ignore all files beginning with '.'.
   // Finally, ignore all project and root level JavaScript files used for configurations.
   globalIgnores([
     '**/temp/**',
@@ -39,8 +39,7 @@ export default tsEslint.config(
     '**/jest.config.mjs',
     '**/test-cache/**',
     '**/test-out/**',
-    // TODO: Remove global ignore below when functional test issues are resolved
-    'app/generator-datamodel-ftest/src/__test__/**/*.*',
+    'app/generator-datamodel-ftest/test/**/*.*',
   ]),
   {
     name: 'base',
@@ -90,7 +89,7 @@ export default tsEslint.config(
         },
       ],
       'jsdoc/no-undefined-types': [
-        'error',
+        'warn',
         {
           definedTypes: ['void'], // override of 'plugin:jsdoc/recommended'
         },

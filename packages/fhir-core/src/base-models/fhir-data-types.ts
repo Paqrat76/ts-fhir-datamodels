@@ -33,7 +33,7 @@ import { upperFirst } from '../utility/common-util';
  *
  * NOTE: This set of data types is a subset of DATA_TYPES.
  *
- * @category Base Models
+ * @internal
  * @see [Open Type Element](https://hl7.org/fhir/datatypes.html#open)
  */
 export const OPEN_DATA_TYPES = [
@@ -101,13 +101,15 @@ export const OPEN_DATA_TYPES = [
 /**
  * FHIR open data types key names (i.e., valueString, valuePeriod, etc.)
  *
- * @category Base Models
+ * @internal
  * @see [Open Type Element](https://hl7.org/fhir/R5/datatypes.html#open)
  */
 export const OPEN_DATA_TYPE_KEY_NAMES = OPEN_DATA_TYPES.map((odt) => `value${upperFirst(odt)}`);
 
 /**
  * Non-open data types that are valid data types
+ *
+ * @internal
  */
 const NON_OPEN_DATA_TYPES = [
   'MonetaryComponent',
@@ -119,6 +121,8 @@ const NON_OPEN_DATA_TYPES = [
 
 /**
  * Non-open data types that are valid data types representing structural data types
+ *
+ * @internal
  */
 const SPECIAL_DATA_TYPES = ['Element', 'ElementDefinition', 'BackboneElement', 'BackboneType', 'Resource'] as const;
 
@@ -129,6 +133,8 @@ const SPECIAL_DATA_TYPES = ['Element', 'ElementDefinition', 'BackboneElement', '
  * FHIR R4 - These types are still undergoing development and review by the appropriate Workgroups.
  * At this time, these are considered only as a draft design not suitable for production implementation.
  * They are included here because certain resources use these data types.
+ *
+ * @internal
  */
 const UNDER_DEVELOPMENT_DATA_TYPES = [
   'MarketingStatus', // R4, R4B, R5, R6 / Resources: MedicinalProductPackaged
@@ -144,7 +150,7 @@ const UNDER_DEVELOPMENT_DATA_TYPES = [
  * @remarks
  * All defined FHIR data types for complex and primitive data types.
  *
- * @category Base Models
+ * @internal
  * @see [DataTypes](https://hl7.org/fhir/datatypes.html)
  */
 export const DATA_TYPES = [
@@ -157,7 +163,7 @@ export const DATA_TYPES = [
 /**
  * FHIR data types key names (i.e., valueString, valuePeriod, etc.)
  *
- * @category Base Models
+ * @internal
  * @see [Datatypes](https://hl7.org/fhir/datatypes.html)
  */
 export const DATA_TYPE_KEY_NAMES = DATA_TYPES.map((dt) => `value${upperFirst(dt)}`);
@@ -168,7 +174,7 @@ export const DATA_TYPE_KEY_NAMES = DATA_TYPES.map((dt) => `value${upperFirst(dt)
  * @remarks
  * Type definition based on DATA_TYPES array.
  *
- * @category Base Models
+ * @internal
  */
 export type FhirDataType = (typeof DATA_TYPES)[number];
 
@@ -176,7 +182,7 @@ export type FhirDataType = (typeof DATA_TYPES)[number];
  * A constant that holds the mappings of FHIR data model types.
  * This object maps specific FHIR data type names to their corresponding FHIR data model representations.
  *
- * @category Base Models
+ * @internal
  */
 export const DATA_TYPE_MAPPINGS: ReadonlyMap<FhirDataType, string> = getDataTypeMappings();
 
@@ -186,6 +192,8 @@ export const DATA_TYPE_MAPPINGS: ReadonlyMap<FhirDataType, string> = getDataType
  *
  * @returns {Map<FhirDataType, string>} A map where each key is a data type and the value
  * is its corresponding transformed representation.
+ *
+ * @internal
  */
 function getDataTypeMappings(): ReadonlyMap<FhirDataType, string> {
   const map = new Map<FhirDataType, string>();

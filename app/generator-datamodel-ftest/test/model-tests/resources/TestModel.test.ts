@@ -21,7 +21,7 @@
  *
  */
 
-import { EnumCodeType, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
+import { EnumCodeType, FhirError, IDomainResource, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
 import { ConsentStateCodesEnum } from '../../../src/code-systems/ConsentStateCodesEnum';
 import { ContributorTypeEnum } from '../../../src/code-systems/ContributorTypeEnum';
 import { Reference } from '../../../src/complex-types/complex-datatypes';
@@ -142,7 +142,7 @@ describe('TestModel', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new TestModel();
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
@@ -158,7 +158,7 @@ describe('TestModel', () => {
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual([] as TestModelPrimitiveComponent[]);
       expect(testInstance.hasComplex()).toBe(false);
-      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent(null, null, null, null));
+      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent(null, null, null));
     });
 
     it('should properly copy()', () => {
@@ -173,7 +173,7 @@ describe('TestModel', () => {
 
       let testInstance: TestModel = testModel.copy();
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedDomainResourceProperties(testInstance, 1);
@@ -206,7 +206,7 @@ describe('TestModel', () => {
 
       testInstance = testModel.copy();
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
@@ -222,7 +222,7 @@ describe('TestModel', () => {
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual([] as TestModelPrimitiveComponent[]);
       expect(testInstance.hasComplex()).toBe(false);
-      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent(null, null, null, null));
+      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent(null, null, null));
     });
 
     it('should be properly reset by modifying/adding all properties', () => {
@@ -235,7 +235,7 @@ describe('TestModel', () => {
       testInstance.setPrimitive([testTestModelPrimitiveComponent]);
       testInstance.setComplex(testTestModelComplexComponent);
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedDomainResourceProperties(testInstance, 1);
@@ -266,7 +266,7 @@ describe('TestModel', () => {
       testInstance.addPrimitive(testTestModelPrimitiveComponent_2);
       testInstance.setComplex(testTestModelComplexComponent_2);
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetDomainResourceProperties(testInstance);
@@ -297,7 +297,7 @@ describe('TestModel', () => {
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
       testInstance.setComplex(TestData.UNDEFINED_VALUE);
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
@@ -313,7 +313,7 @@ describe('TestModel', () => {
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual([] as TestModelPrimitiveComponent[]);
       expect(testInstance.hasComplex()).toBe(false);
-      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent(null, null, null, null));
+      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent(null, null, null));
     });
   });
 
@@ -460,6 +460,9 @@ describe('TestModel', () => {
         },
       },
     };
+    const INVALID_JSON = {
+      bogusField: 'bogus value',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModel();
@@ -471,13 +474,13 @@ describe('TestModel', () => {
       testInstance.setPrimitive([testTestModelPrimitiveComponent]);
       testInstance.setComplex(testTestModelComplexComponent);
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
     it('should return undefined when deserialize with no json', () => {
-      let testInstance: TestModel | undefined = undefined;
+      let testInstance: TestModel | undefined;
       testInstance = TestModel.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -488,10 +491,18 @@ describe('TestModel', () => {
       expect(testInstance).toBeUndefined();
     });
 
+    it('should throw FhirError from parse() when JSON is missing required properties', () => {
+      const t = () => {
+        TestModel.parse(INVALID_JSON);
+      };
+      expect(t).toThrow(FhirError);
+      expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
+    });
+
     it('should return parsed TestModel for valid json', () => {
       const testInstance: TestModel | undefined = TestModel.parse(VALID_JSON);
 
-      expectDomainResourceBase<TestModel>(TestModel, testInstance, 'TestModel');
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance?.isEmpty()).toBe(false);
       expect(testInstance?.toJSON()).toEqual(VALID_JSON);
       expectInitializedDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
@@ -530,6 +541,7 @@ describe('TestModel', () => {
     it('resource01: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModel();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setResource01(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -539,6 +551,7 @@ describe('TestModel', () => {
     it('primitive: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModel();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -547,6 +560,7 @@ describe('TestModel', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addPrimitive(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -557,7 +571,8 @@ describe('TestModel', () => {
 
     it('complex: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModel();
-      let t = () => {
+      const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setComplex(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);

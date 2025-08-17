@@ -104,7 +104,7 @@ describe('XhtmlType', () => {
     expect(testXhtmlType.getExtension()).toEqual([] as Extension[]);
   });
 
-  it('should throw TypeError when attempting to setExtension()', () => {
+  it('should throw JsonError when attempting to setExtension()', () => {
     const testXhtmlType = new XhtmlType(VALID_XHTML);
     const t = () => {
       testXhtmlType.setExtension([testExtension]);
@@ -113,7 +113,7 @@ describe('XhtmlType', () => {
     expect(t).toThrow(`According to the FHIR specification, Extensions are not permitted on the xhtml type`);
   });
 
-  it('should throw TypeError when attempting to addExtension()', () => {
+  it('should throw JsonError when attempting to addExtension()', () => {
     const testXhtmlType = new XhtmlType(VALID_XHTML);
     const t = () => {
       testXhtmlType.addExtension(testExtension);

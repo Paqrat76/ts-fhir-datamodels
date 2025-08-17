@@ -186,7 +186,7 @@ describe('DecimalType', () => {
     expect(t).toThrow('Invalid value for DecimalType');
   });
 
-  it('should throw TypeError when parseToPrimitive() with a NaN', () => {
+  it('should throw JsonError when parseToPrimitive() with a NaN', () => {
     const testDecimalType = new DecimalType();
     const t = () => {
       testDecimalType.parseToPrimitive('not_a_number');

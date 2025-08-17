@@ -39,7 +39,7 @@ import { isDefined } from './type-guards';
  *
  * @see [Luxon](https://moment.github.io/luxon/#/)
  * @interface
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  */
 export interface DateTypeImpl {
   /**
@@ -50,7 +50,7 @@ export interface DateTypeImpl {
    *
    * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
    * @returns an instance of a DateTime object
-   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   * @throws {@link InvalidDateTimeError} if the instantiated DataTime object is invalid
    *
    * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
    */
@@ -62,7 +62,7 @@ export interface DateTypeImpl {
    * Uses DateTime.fromISO() static method to create a DateTime object.
    *
    * @returns an instance of a DateTime object having the UTC time zone
-   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   * @throws {@link InvalidDateTimeError} if the instantiated DataTime object is invalid
    */
   getValueAsDateTimeUTC: () => DateTime | undefined;
   /**
@@ -70,7 +70,7 @@ export interface DateTypeImpl {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns this
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    */
   setValueAsYear: (dt: DateTime | undefined) => this;
   /**
@@ -78,7 +78,7 @@ export interface DateTypeImpl {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns this
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    */
   setValueAsYearMonth: (dt: DateTime | undefined) => this;
   /**
@@ -86,7 +86,7 @@ export interface DateTypeImpl {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns this
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    */
   setValueAsDateOnly: (dt: DateTime | undefined) => this;
 }
@@ -96,7 +96,7 @@ export interface DateTypeImpl {
  *
  * @see [Luxon](https://moment.github.io/luxon/#/)
  * @interface
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  */
 export interface DateTimeTypeImpl extends DateTypeImpl {
   /**
@@ -105,7 +105,7 @@ export interface DateTimeTypeImpl extends DateTypeImpl {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns this
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    */
   setValueAsDateTime: (dt: DateTime | undefined) => this;
   /**
@@ -114,7 +114,7 @@ export interface DateTimeTypeImpl extends DateTypeImpl {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns this
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    */
   setValueAsInstant: (dt: DateTime | undefined) => this;
 }
@@ -124,7 +124,7 @@ export interface DateTimeTypeImpl extends DateTypeImpl {
  *
  * @see [Luxon](https://moment.github.io/luxon/#/)
  * @interface
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  */
 export interface InstantTypeImpl {
   /**
@@ -135,7 +135,7 @@ export interface InstantTypeImpl {
    *
    * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
    * @returns an instance of a DateTime object
-   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   * @throws {@link InvalidDateTimeError} if the instantiated DataTime object is invalid
    *
    * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
    */
@@ -147,7 +147,7 @@ export interface InstantTypeImpl {
    * Uses DateTime.fromISO() static method to create a DateTime object.
    *
    * @returns an instance of a DateTime object having the UTC time zone
-   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   * @throws {@link InvalidDateTimeError} if the instantiated DataTime object is invalid
    */
   getValueAsDateTimeUTC: () => DateTime | undefined;
   /**
@@ -156,7 +156,7 @@ export interface InstantTypeImpl {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns this
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    */
   setValueAsInstant: (dt: DateTime | undefined) => this;
 }
@@ -189,7 +189,7 @@ export namespace DateTimeUtil {
      * Use this zone if no offset is specified in the input string itself. Will also convert the time to this zone.
      * Defaults to `'local'`.
      *
-     * @see [Zone](https://moment.github.io/luxon/api-docs/index.html#zone
+     * @see [Zone](https://moment.github.io/luxon/api-docs/index.html#zone)
      */
     zone?: string | Zone;
     /**
@@ -225,7 +225,7 @@ export namespace DateTimeUtil {
    * @param value - string that represents an ISO 8601 value used to instantiate a DataTime object
    * @param opts - Optional DateTime options object to affect the creation of the DateTime instance
    * @returns an instance of a DateTime object
-   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   * @throws {@link InvalidDateTimeError} if the instantiated DataTime object is invalid
    *
    * @category Utilities: DateTime
    * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
@@ -257,7 +257,7 @@ export namespace DateTimeUtil {
    *
    * @param value - string that represents an ISO 8601 value used to instantiate a DataTime object
    * @returns an instance of a DateTime object having the UTC time zone
-   * @throws InvalidDateTimeError if the instantiated DataTime object is invalid
+   * @throws {@link InvalidDateTimeError} if the instantiated DataTime object is invalid
    *
    * @category Utilities: DateTime
    * @see [Luxon DateTime.fromISO()](https://moment.github.io/luxon/api-docs/index.html#datetimefromiso)
@@ -281,7 +281,7 @@ export namespace DateTimeUtil {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns the FHIR primitive date/dateTime value as 'YYYY'
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    *
    * @category Utilities: DateTime
    */
@@ -295,7 +295,7 @@ export namespace DateTimeUtil {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns the FHIR primitive date/dateTime value as 'YYYY-MM'
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    *
    * @category Utilities: DateTime
    */
@@ -309,7 +309,7 @@ export namespace DateTimeUtil {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns the FHIR primitive date/dateTime value as 'YYYY-MM-DD'
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    *
    * @category Utilities: DateTime
    */
@@ -326,7 +326,7 @@ export namespace DateTimeUtil {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns the FHIR primitive date/dateTime value as an ISO datetime string
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    *
    * @category Utilities: DateTime
    */
@@ -343,7 +343,7 @@ export namespace DateTimeUtil {
    *
    * @param dt - DateTime object from which to obtain a string value
    * @returns the FHIR primitive date/dateTime value as an ISO datetime string
-   * @throws InvalidDateTimeError for an invalid dt argument
+   * @throws {@link InvalidDateTimeError} for an invalid dt argument
    *
    * @category Utilities: DateTime
    */
@@ -359,7 +359,7 @@ export namespace DateTimeUtil {
  * Verifies the provided dt argument is a valid DateTime object
  *
  * @param dt - expected DateTime object
- * @throws InvalidDateTimeError if not a valid DateTime object
+ * @throws {@link InvalidDateTimeError} if not a valid DateTime object
  */
 function verifyDateTime(dt: unknown): void {
   if (dt === undefined) {

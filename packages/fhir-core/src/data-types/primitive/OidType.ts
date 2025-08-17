@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** RFC 3001. See also ISO/IEC 8824:1990
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR oid](http://hl7.org/fhir/StructureDefinition/oid)
  */
 export class OidType extends PrimitiveType<fhirOid> implements IPrimitiveType<fhirOid> {
   /**
    * @param value - the value of the primitive `fhirOid`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirOid) {
     super();

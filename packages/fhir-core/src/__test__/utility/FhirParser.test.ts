@@ -59,6 +59,7 @@ import { UrlType } from '../../data-types/primitive/UrlType';
 import { UuidType } from '../../data-types/primitive/UuidType';
 import { XhtmlType } from '../../data-types/primitive/XhtmlType';
 import { FhirError } from '../../errors/FhirError';
+import { JsonError } from '../../errors/JsonError';
 import {
   IBackboneElement,
   IBackboneType,
@@ -229,7 +230,7 @@ describe('FhirParser', () => {
         expect(instance.toJSON()).toEqual(VALID_JSON);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const INVALID_JSON = {
           id: 123,
         };
@@ -237,7 +238,7 @@ describe('FhirParser', () => {
         const t = () => {
           fhirParser.processElementJson(instance, INVALID_JSON);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`MockElement.id is not a string.`);
       });
     });
@@ -285,7 +286,7 @@ describe('FhirParser', () => {
         expect(instance.toJSON()).toEqual(VALID_JSON);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const INVALID_JSON = {
           id: 123,
         };
@@ -293,7 +294,7 @@ describe('FhirParser', () => {
         const t = () => {
           fhirParser.processBackboneElementJson(instance, INVALID_JSON);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`MockBackboneElement.id is not a string.`);
       });
     });
@@ -341,7 +342,7 @@ describe('FhirParser', () => {
         expect(instance.toJSON()).toEqual(VALID_JSON);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const INVALID_JSON = {
           id: 123,
         };
@@ -349,8 +350,41 @@ describe('FhirParser', () => {
         const t = () => {
           fhirParser.processBackboneTypeJson(instance, INVALID_JSON);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`MockBackboneType.id is not a string.`);
+      });
+    });
+
+    describe('verifyResourceType', () => {
+      const JSON_OBJECT = {
+        resourceType: 'MockResource',
+        id: 'idR123',
+      };
+      const INVALID_JSON_OBJECT = {
+        bogusJson: true,
+      };
+
+      it('should not throw FhirError for valid resourceType', () => {
+        const t = () => {
+          fhirParser.verifyResourceType(JSON_OBJECT, 'MockResource');
+        };
+        expect(t).not.toThrow(FhirError);
+      });
+
+      it('should throw FhirError for invalid resourceType', () => {
+        const t = () => {
+          fhirParser.verifyResourceType(JSON_OBJECT, 'Basic');
+        };
+        expect(t).toThrow(FhirError);
+        expect(t).toThrow(`Invalid FHIR JSON: Provided JSON 'resourceType' value ('MockResource') must be 'Basic'`);
+      });
+
+      it('should throw FhirError for missing resourceType', () => {
+        const t = () => {
+          fhirParser.verifyResourceType(INVALID_JSON_OBJECT, 'MockResource');
+        };
+        expect(t).toThrow(FhirError);
+        expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
       });
     });
 
@@ -407,7 +441,7 @@ describe('FhirParser', () => {
         expect(instance.toJSON()).toEqual(VALID_JSON);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const INVALID_JSON = {
           resourceType: 'MockResource',
           id: 12345,
@@ -416,7 +450,7 @@ describe('FhirParser', () => {
         const t = () => {
           fhirParser.processResourceJson(instance, INVALID_JSON);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`MockResource.id is not a string.`);
       });
     });
@@ -497,7 +531,7 @@ describe('FhirParser', () => {
         expect(instance.toJSON()).toEqual(VALID_JSON);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const INVALID_JSON = {
           resourceType: 'MockTask',
           id: 12345,
@@ -506,7 +540,7 @@ describe('FhirParser', () => {
         const t = () => {
           fhirParser.processDomainResourceJson(instance, INVALID_JSON);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`MockTask.id is not a string.`);
       });
     });
@@ -848,11 +882,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseBase64BinaryType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for Base64BinaryType is not a string`);
       });
 
@@ -918,11 +952,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseBooleanType(INVALID_BOOLEAN);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for BooleanType is not a boolean`);
       });
     });
@@ -984,11 +1018,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseCanonicalType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for CanonicalType is not a string`);
       });
 
@@ -1058,11 +1092,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseCodeType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for CodeType is not a string`);
       });
 
@@ -1132,11 +1166,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseDateTimeType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for DateTimeType is not a string`);
       });
 
@@ -1206,11 +1240,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseDateType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for DateType is not a string`);
       });
 
@@ -1277,11 +1311,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseDecimalType('abc');
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for DecimalType is not a number`);
       });
 
@@ -1351,11 +1385,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseIdType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for IdType is not a string`);
       });
 
@@ -1425,11 +1459,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseInstantType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for InstantType is not a string`);
       });
 
@@ -1498,11 +1532,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseInteger64Type(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for Integer64Type is not a string`);
       });
 
@@ -1569,11 +1603,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseIntegerType('abc');
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for IntegerType is not a number`);
       });
 
@@ -1643,11 +1677,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseMarkdownType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for MarkdownType is not a string`);
       });
 
@@ -1717,11 +1751,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseOidType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for OidType is not a string`);
       });
 
@@ -1788,11 +1822,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parsePositiveIntType('abc');
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for PositiveIntType is not a number`);
       });
 
@@ -1862,11 +1896,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseStringType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for StringType is not a string`);
       });
 
@@ -1936,11 +1970,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseTimeType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for TimeType is not a string`);
       });
 
@@ -2007,11 +2041,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseUnsignedIntType('abc');
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for UnsignedIntType is not a number`);
       });
 
@@ -2081,11 +2115,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseUriType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for UriType is not a string`);
       });
 
@@ -2155,11 +2189,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseUrlType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for UrlType is not a string`);
       });
 
@@ -2229,11 +2263,11 @@ describe('FhirParser', () => {
         expect(testType?.getExtension()).toStrictEqual([EXPECTED_EXTENSION_COMPLEX]);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseUuidType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for UuidType is not a string`);
       });
 
@@ -2272,15 +2306,15 @@ describe('FhirParser', () => {
         expect(testType?.hasExtension()).toBe(false);
       });
 
-      it('should throw TypeError for invalid json type', () => {
+      it('should throw JsonError for invalid json type', () => {
         const t = () => {
           fhirParser.parseXhtmlType(123);
         };
-        expect(t).toThrow(TypeError);
+        expect(t).toThrow(JsonError);
         expect(t).toThrow(`json argument for XhtmlType is not a string`);
       });
 
-      it('should throw TypeError for adding an extension', () => {
+      it('should throw JsonError for adding an extension', () => {
         const t = () => {
           fhirParser.parseXhtmlType(VALID_XHTML, SIBLING_ELEMENT_SIMPLE);
         };

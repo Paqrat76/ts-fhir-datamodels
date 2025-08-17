@@ -38,13 +38,13 @@ import { IPrimitiveType } from '../../base-models/library-interfaces';
  * - **Comment:** Do not use an IEEE type floating point type, instead use something that works like a true decimal, with inbuilt precision (e.g. Java BigInteger)
  * - **FHIR Version:** 4.0.1; Normative since 4.0.0
  *
- * @category Datatypes: Primitive
+ * @category Data Models: PrimitiveType
  * @see [FHIR decimal](http://hl7.org/fhir/StructureDefinition/decimal)
  */
 export class DecimalType extends PrimitiveType<fhirDecimal> implements IPrimitiveType<fhirDecimal> {
   /**
    * @param value - the value of the primitive `fhirDecimal`
-   * @throws PrimitiveTypeError for invalid value
+   * @throws {@link PrimitiveTypeError} for invalid value
    */
   constructor(value?: fhirDecimal) {
     super();

@@ -154,7 +154,7 @@ export function getChoiceDatatypeDefsForField(
  * @param sourceField - source field name
  * @param choiceDataTypes - array of FhirDataType values for supported polymorphic data types
  * @returns ChoiceDataTypesMeta decorator
- * @throws AssertionError for invalid uses (Decorator)
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid uses (Decorator)
  *
  * @see {@link ChoiceDataTypes}
  * @see {@link ChoiceDatatypeDef}
@@ -199,8 +199,8 @@ export function ChoiceDataTypesMeta(sourceField: string, choiceDataTypes: FhirDa
  *
  * @param sourceField - source field name
  * @returns ChoiceDataTypes decorator
- * @throws AssertionError for invalid uses (Decorator)
- * @throws InvalidTypeError for actual choice data type does not agree with the specified choiceDataTypes (Decorator)
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid uses (Decorator)
+ * @throws {@link InvalidTypeError} for actual choice data type does not agree with the specified choiceDataTypes (Decorator)
  *
  * @see {@link ChoiceDataTypesMeta}
  * @category Decorators
@@ -287,8 +287,8 @@ export function OpenDataTypesMeta(sourceField: string) {
  * @param referenceTargets - string array of target references.
  *                           An empty array is allowed and represents "Any" resource.
  * @returns ReferenceTargets decorator
- * @throws AssertionError for invalid uses
- * @throws InvalidTypeError for an actual reference type do not agree with the specified ReferenceTargets
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid uses
+ * @throws {@link InvalidTypeError} for an actual reference type do not agree with the specified ReferenceTargets
  *
  * @category Decorators
  */
@@ -319,17 +319,19 @@ export function ReferenceTargets(sourceField: string, referenceTargets: string[]
 
       if (Array.isArray(args[0])) {
         args[0].forEach((argItem, idx) => {
-          assert(
-            FhirTypeGuard(argItem, Reference),
-            `ReferenceTargets decorator on ${methodName} (${sourceField}) expects argument[${String(idx)}] to be type of 'Reference'`,
-          );
+          if (!FhirTypeGuard(argItem, Reference)) {
+            throw new InvalidTypeError(
+              `ReferenceTargets decorator on ${methodName} (${sourceField}) expects argument[${String(idx)}] to be type of 'Reference'`,
+            );
+          }
           validateReferenceArg(referenceTargets, argItem, isAnyResource, sourceField, methodName, idx);
         });
       } else {
-        assert(
-          FhirTypeGuard(args[0], Reference),
-          `ReferenceTargets decorator on ${methodName} (${sourceField}) expects a single argument to be type of 'Reference | undefined | null'`,
-        );
+        if (!FhirTypeGuard(args[0], Reference)) {
+          throw new InvalidTypeError(
+            `ReferenceTargets decorator on ${methodName} (${sourceField}) expects a single argument to be type of 'Reference | undefined | null'`,
+          );
+        }
         validateReferenceArg(referenceTargets, args[0], isAnyResource, sourceField, methodName);
       }
 
@@ -349,7 +351,7 @@ export function ReferenceTargets(sourceField: string, referenceTargets: string[]
  * @param sourceField - source field name
  * @param methodName - Decorated method's name
  * @param arrayIndex - Argument for Reference[] index value; undefined for non-array
- * @throws InvalidTypeError if Reference.reference exists with an invalid value
+ * @throws {@link InvalidTypeError} if Reference.reference exists with an invalid value
  */
 function validateReferenceArg(
   referenceTargets: string[],

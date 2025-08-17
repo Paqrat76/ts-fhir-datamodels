@@ -14,6 +14,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
@@ -50,6 +51,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` object value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
@@ -83,6 +85,7 @@
    *
    * @param value - the `{{edHbs.fieldName}}` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
@@ -104,6 +107,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
@@ -148,6 +152,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` array value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
@@ -166,6 +171,7 @@
    *
    * @param value - the `{{edHbs.fieldIdentifierName}}` value
    * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',

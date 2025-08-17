@@ -51,11 +51,9 @@ import {
   VALID_NARRATIVE_2,
 } from './ftest-mocks';
 
-export function expectResourceBase<T extends IResource>(
-  testModel: T,
-  testInstance: IResource,
-  modelName: string,
-): void {
+/* eslint-disable jsdoc/require-jsdoc */
+
+export function expectResourceBase(testModel: IResource, testInstance: IResource, modelName: string): void {
   expect(testInstance).toBeDefined();
   expect(testInstance).toBeInstanceOf(testModel);
   expect(testInstance).toBeInstanceOf(Resource);
@@ -65,8 +63,8 @@ export function expectResourceBase<T extends IResource>(
   expect(testInstance.fhirType()).toStrictEqual(modelName);
 }
 
-export function expectDomainResourceBase<T extends IDomainResource>(
-  testModel: T,
+export function expectDomainResourceBase(
+  testModel: IDomainResource,
   testInstance: IDomainResource,
   modelName: string,
 ): void {
@@ -80,8 +78,8 @@ export function expectDomainResourceBase<T extends IDomainResource>(
   expect(testInstance.fhirType()).toStrictEqual(modelName);
 }
 
-export function expectBackboneElementBase<T extends IBackboneElement>(
-  testModel: T,
+export function expectBackboneElementBase(
+  testModel: IBackboneElement,
   testInstance: IBackboneElement,
   modelName: string,
   fhirType: string,
@@ -95,8 +93,8 @@ export function expectBackboneElementBase<T extends IBackboneElement>(
   expect(testInstance.fhirType()).toStrictEqual(fhirType);
 }
 
-export function expectBackboneTypeBase<T extends IBackboneType>(
-  testModel: T,
+export function expectBackboneTypeBase(
+  testModel: IBackboneType,
   testInstance: IBackboneType,
   modelName: string,
   fhirType: string,
@@ -110,8 +108,8 @@ export function expectBackboneTypeBase<T extends IBackboneType>(
   expect(testInstance.fhirType()).toStrictEqual(fhirType);
 }
 
-export function expectElementBase<T extends IElement>(
-  testModel: T,
+export function expectElementBase(
+  testModel: IElement,
   testInstance: IDataType,
   modelName: string,
   fhirType: string,
@@ -438,3 +436,5 @@ export function expectResetBackboneTypeProperties(testInstance: IBackboneType): 
   expect(testInstance.hasModifierExtension()).toBe(true);
   expect(testInstance.getModifierExtension()).toEqual([VALID_MODIFIER_EXTENSION_2]);
 }
+
+/* eslint-enable jsdoc/require-jsdoc */

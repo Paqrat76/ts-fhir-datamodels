@@ -215,7 +215,7 @@ export abstract class Resource extends Base implements IResource {
    *
    * @param value - the `id` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setId(value: fhirId | undefined): this {
     this.id =
@@ -298,7 +298,7 @@ export abstract class Resource extends Base implements IResource {
    *
    * @param value - the `implicitRules` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setImplicitRules(value: fhirUri | undefined): this {
     this.implicitRules =
@@ -354,7 +354,7 @@ export abstract class Resource extends Base implements IResource {
    *
    * @param value - the `language` value
    * @returns this
-   * @throws PrimitiveTypeError for invalid primitive types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setLanguage(value: fhirCode | undefined): this {
     this.language =
@@ -441,7 +441,7 @@ export abstract class Resource extends Base implements IResource {
  *
  * @param classInstance - class instance to evaluate
  * @param errorMessage - optional error message to override the default
- * @throws InvalidTypeError when ResourceType assertion is false
+ * @throws {@link InvalidTypeError} when ResourceType assertion is false
  *
  * @category Type Guards/Assertions
  */
@@ -462,7 +462,7 @@ export function assertFhirResourceType(
  * @param resource - FHIR Resource to transform
  * @param propName - the property name for the provided FHIR complex DataType
  * @param jsonObj - JSON.Object to which to add the transformed FHIR complex DataType
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
@@ -488,7 +488,7 @@ export function setFhirResourceJson(resource: IResource, propName: string, jsonO
  * @param resources - array of FHIR Resources to transform (can be empty array)
  * @param propName - the property name for the provided FHIR complex DataTypes
  * @param jsonObj - JSON.Object to which to add the transformed FHIR complex DataTypes
- * @throws AssertionError for invalid parameters
+ * @throws [AssertionError](https://nodejs.org/docs/latest-v22.x/api/assert.html#class-assertassertionerror) for invalid parameters
  *
  * @category Utilities: JSON
  */
