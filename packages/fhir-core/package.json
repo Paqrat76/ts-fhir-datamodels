@@ -1,28 +1,41 @@
 {
   "name": "@paq-ts-fhir/fhir-core",
-  "version": "0.6.2",
-  "description": "FHIR core package required by generated FHIR data model packages",
+  "version": "0.7.0",
+  "description": "FHIR core package required by generated FHIR data model packages in @paq-ts-fhir",
+  "keywords": [
+    "node",
+    "typescript",
+    "FHIR",
+    "models",
+    "data models",
+    "fhir-core"
+  ],
+  "author": "Joe Paquette <paqrat76@gmail.com>",
   "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/fhir-core/README.md",
   "bugs": {
     "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
     "email": "paqrat76@gmail.com"
   },
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
-    "dist/**",
-    "!dist/__test__/**"
+    "lib/**",
+    "CHANGELOG.md",
+    "!lib/__test__/**"
   ],
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage docs",
+    "clean": "rm -rf tsconfig.tsbuildinfo lib coverage docs",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
+    "prebuild": "rm -rf tsconfig.tsbuildinfo lib",
     "build": "tsc",
     "test": "jest",
+    "precoverage": "rm -rf coverage",
     "coverage": "jest --coverage",
     "jest:clear": "jest --clearCache",
-    "typedoc": "typedoc ./src/index.ts"
+    "pretypedoc:core": "rm -rf docs",
+    "typedoc:core": "typedoc ./src/index.ts"
   },
   "dependencies": {
     "luxon": "^3.7.1",

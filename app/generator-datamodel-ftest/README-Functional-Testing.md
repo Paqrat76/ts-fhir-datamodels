@@ -8,7 +8,7 @@ Code patterns were defined and applied to the various Handlebars templates used 
 Testing these code patterns is necessary to ensure generated code works as expected.
 To test all of these code patterns, we created two custom FHIR `StructureDefinition`s to define custom FHIR
 resources that contain all the possible patterns.
-These two two custom FHIR `StructureDefinition`s will be consumed by the `generator` to generate their associated
+These two custom FHIR `StructureDefinition`s will be consumed by the `generator` to generate their associated
 data models (`TestModel` and `SimplePersonModel`).
 These custom generated data models are only used to perform a comprehensive set of functional tests to verify the
 patterns used to create the data models result is correct code.

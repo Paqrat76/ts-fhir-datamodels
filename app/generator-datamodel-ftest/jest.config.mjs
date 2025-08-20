@@ -19,7 +19,7 @@ export default {
   testPathIgnorePatterns: ['/node_modules/'],
   testMatch: ['<rootDir>/test/**/*.test.ts'],
   roots: ['<rootDir>', '<rootDir>/src', '<rootDir>/test'],
-  coveragePathIgnorePatterns: ['/node_modules/', '/test/', '/dist/', '/scripts/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/test/', '/lib/', '/scripts/'],
   collectCoverageFrom: [
     '<rootDir>/src/resources/Bundle.ts',
     '<rootDir>/src/resources/SimplePersonModel.ts',
@@ -30,7 +30,7 @@ export default {
     '!<rootDir>/src/index.ts',
     '!<rootDir>/scripts/**',
     '!<rootDir>/test/**',
-    '!<rootDir>/dist/**',
+    '!<rootDir>/lib/**',
   ],
   coverageThreshold: {
     global: {

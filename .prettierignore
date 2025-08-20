@@ -1,6 +1,6 @@
 CHANGELOG.md
 coverage/
-dist/
+lib/
 node_modules/
 merged-docs/
 docs/

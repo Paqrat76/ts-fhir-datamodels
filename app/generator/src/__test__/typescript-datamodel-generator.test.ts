@@ -35,7 +35,7 @@ describe('src/typescript-datamodel-generator', () => {
         release: 'R4',
         pkgName: 'hl7.fhir.r4.core',
         pkgVersion: '4.0.1',
-        baseOutputPath: 'packages/r4-datamodels/src',
+        baseOutputPath: 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -142,6 +142,7 @@ describe('src/typescript-datamodel-generator', () => {
         release: 'R4B',
         pkgName: 'hl7.fhir.r4b.core',
         pkgVersion: '4.3.0',
+        baseOutputPath: 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -248,6 +249,7 @@ describe('src/typescript-datamodel-generator', () => {
         release: 'R5',
         pkgName: 'hl7.fhir.r5.core',
         pkgVersion: '5.0.0',
+        baseOutputPath: 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -342,29 +344,30 @@ describe('src/typescript-datamodel-generator', () => {
     });
   });
 
-  describe('TypescriptDataModelGenerator using full FHIR cache for debugging', () => {
-    it.skip('should be defined and properly initialized for DEBUGGING', async () => {
-      const fhirPackage: FhirPackage = getFhirPackage('R4');
-      const tsDataModelGenerator = new TypescriptDataModelGenerator(fhirPackage);
-      expect(tsDataModelGenerator).toBeDefined();
-
-      await tsDataModelGenerator.initialize();
-      // Add conditional breakpoints in TypescriptDataModelGenerator code as needed
-
-      // const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
-      // expect(resources).toBeDefined();
-      //
-      // const filteredResources = resources.filter((sd) => {
-      //   return sd.snapshot.element.some((ed) => {
-      //     if (ed.max && ed.max !== '1' && ed.type && ed.type.length > 0) {
-      //       return ed.type.some((t) => t.code === 'code');
-      //     }
-      //   });
-      // });
-      // expect(filteredResources).toBeDefined();
-
-      // const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
-      // expect(complexTypes).toBeDefined();
-    });
-  });
+  // Uncomment the following tests to debug the TypescriptDataModelGenerator with full FHIR cache
+  // describe('TypescriptDataModelGenerator using full FHIR cache for debugging', () => {
+  //   it.skip('should be defined and properly initialized for DEBUGGING', async () => {
+  //     const fhirPackage: FhirPackage = getFhirPackage('R4');
+  //     const tsDataModelGenerator = new TypescriptDataModelGenerator(fhirPackage);
+  //     expect(tsDataModelGenerator).toBeDefined();
+  //
+  //     await tsDataModelGenerator.initialize();
+  //     // Add conditional breakpoints in TypescriptDataModelGenerator code as needed
+  //
+  //     const resources: StructureDefinition[] = tsDataModelGenerator.getResources();
+  //     expect(resources).toBeDefined();
+  //
+  //     const filteredResources = resources.filter((sd) => {
+  //       return sd.snapshot.element.some((ed) => {
+  //         if (ed.max && ed.max !== '1' && ed.type && ed.type.length > 0) {
+  //           return ed.type.some((t) => t.code === 'code');
+  //         }
+  //       });
+  //     });
+  //     expect(filteredResources).toBeDefined();
+  //
+  //     const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
+  //     expect(complexTypes).toBeDefined();
+  //   });
+  // });
 });

@@ -25,12 +25,12 @@ export default tsEslint.config(
   jsdocLint.configs['flat/recommended'],
   // https://eslint.org/docs/latest/use/configure/ignore
   // Default patterns include ["**/node_modules/", ".git/"]
-  // Ignore the project 'coverage', 'dist', and docs directories. Also, ignore all files beginning with '.'.
+  // Ignore the project 'coverage', 'lib', and docs directories. Also, ignore all files beginning with '.'.
   // Finally, ignore all project and root level JavaScript files used for configurations.
   globalIgnores([
     '**/temp/**',
     '**/coverage/**',
-    '**/dist/**',
+    '**/lib/**',
     '**/merged-docs/**',
     '**/docs/**',
     '**/.*',

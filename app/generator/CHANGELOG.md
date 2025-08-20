@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-08-20]
+
+### Changed
+
+- Changed compilation output from `dist` to `lib`
+- Helper function `getFhirPackage()` by adding optional argument `baseOutputPath` used to override the default output
+  path `src` for the generated content in the FHIR release specific packages.
+- Updated tests as needed
+
+### Removed
+
+- Unnecessary `version` property from this "private" `package.json`
+
+
 ## [0.14.1] - 2025-08-17
 
 ### Changed

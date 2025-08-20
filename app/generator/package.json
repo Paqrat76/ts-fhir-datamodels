@@ -1,11 +1,10 @@
 {
   "name": "generator",
   "private": true,
-  "version": "0.14.1",
   "description": "Code generator for TypeScript classes representing FHIR data models for FHIR resources and complex data types",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo dist coverage sushi/output src/__test__/test-out",
+    "clean": "rm -rf tsconfig.tsbuildinfo lib coverage sushi/output src/__test__/test-out",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "test": "jest",
