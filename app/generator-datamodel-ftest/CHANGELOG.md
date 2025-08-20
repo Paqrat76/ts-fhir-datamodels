@@ -19,6 +19,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-08-20]
+
+### Changed
+
+- Changed compilation output from `dist` to `lib`
+- Updated dependency
+- Updated `scripts` in `package.json`
+
+### Removed
+
+- Unnecessary `version` property from this "private" `package.json`
+
+
 ## [0.4.1] - 2025-08-17
 
 ### Added

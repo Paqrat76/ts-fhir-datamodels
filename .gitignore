@@ -48,7 +48,7 @@ node_modules/
 # ---------------------------------------
 
 # TypeScript
-dist
+lib
 
 # JetBrains
 .idea
@@ -60,3 +60,6 @@ docs
 # Test output
 **/__test__/**/test-out/
 **/temp/
+
+# NPM
+.npmrc

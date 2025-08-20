@@ -24,7 +24,7 @@
     "declarationMap": true,
     "newLine": "lf",
     "noEmitOnError": false,
-    "outDir": "./dist",
+    "outDir": "./lib",
     "sourceMap": true,
 
     "allowJs": false,

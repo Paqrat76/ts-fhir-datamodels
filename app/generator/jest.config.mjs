@@ -19,7 +19,7 @@ export default {
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/**/index.ts',
     '!<rootDir>/src/__test__/**',
-    '!<rootDir>/dist/**',
+    '!<rootDir>/lib/**',
   ],
   coverageThreshold: {
     global: {

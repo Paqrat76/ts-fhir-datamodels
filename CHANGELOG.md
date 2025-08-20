@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-08-20]
+
+### Changed
+
+- Globally changed compilation output from `dist` to `lib`
+- Updated dependencies
+- Streamlined NPM `scripts` im `package.json
+- Updated the mono-repo's README.md file
+
+### Removed
+
+- Unnecessary `version` property from this "private" `package.json`
+
+
 ## [0.16.0] - 2025-08-17
 
 ### Added

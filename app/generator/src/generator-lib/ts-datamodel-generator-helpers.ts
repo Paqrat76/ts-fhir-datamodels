@@ -136,7 +136,7 @@ export interface GeneratedComplexTypeContent extends GeneratedContent {
    */
   fhirCoreImports: Set<string>;
   /**
-   * An list of strings that represents dynamically generated import statements.
+   * A list of strings that represents dynamically generated import statements.
    * This variable is typically used to store and manage imported module references or paths
    * that are programmatically created during runtime or build processes.
    */
@@ -170,18 +170,23 @@ export function generatorLogger(level: string, message: string): void {
 /**
  * Retrieves the FHIR package configuration for a specific FHIR release.
  *
+ * @privateRemarks
+ * Because this script is intended to be called from each data model package's `package.json`, the `baseOutputPath`
+ * defaults to the `src` directory relative to the package's root directory.
+ *
  * @param {FhirRelease} fhirRelease - The FHIR release version (e.g., 'R4', 'R4B', 'R5').
+ * @param {string} baseOutputPath - Optional override of the default base output path for the specified FHIR release.
  * @returns {FhirPackage} The configuration object for the specified FHIR release, including package name, version, and paths.
  * @throws {Error} If an invalid FHIR release is provided.
  */
-export function getFhirPackage(fhirRelease: FhirRelease): FhirPackage {
+export function getFhirPackage(fhirRelease: FhirRelease, baseOutputPath?: string): FhirPackage {
   switch (fhirRelease) {
     case 'R4':
       return {
         release: fhirRelease,
         pkgName: 'hl7.fhir.r4.core',
         pkgVersion: '4.0.1',
-        baseOutputPath: 'packages/r4-datamodels/src',
+        baseOutputPath: baseOutputPath ?? 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -190,7 +195,7 @@ export function getFhirPackage(fhirRelease: FhirRelease): FhirPackage {
         release: fhirRelease,
         pkgName: 'hl7.fhir.r4b.core',
         pkgVersion: '4.3.0',
-        // TODO: add baseOutputPath
+        baseOutputPath: baseOutputPath ?? 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -199,7 +204,7 @@ export function getFhirPackage(fhirRelease: FhirRelease): FhirPackage {
         release: fhirRelease,
         pkgName: 'hl7.fhir.r5.core',
         pkgVersion: '5.0.0',
-        // TODO: add baseOutputPath
+        baseOutputPath: baseOutputPath ?? 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;

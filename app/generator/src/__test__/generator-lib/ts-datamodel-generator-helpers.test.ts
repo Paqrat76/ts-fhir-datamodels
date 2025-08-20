@@ -58,7 +58,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
         release: 'R4',
         pkgName: 'hl7.fhir.r4.core',
         pkgVersion: '4.0.1',
-        baseOutputPath: 'packages/r4-datamodels/src',
+        baseOutputPath: 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -71,7 +71,7 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
         release: 'R4B',
         pkgName: 'hl7.fhir.r4b.core',
         pkgVersion: '4.3.0',
-        // TODO: add baseOutputPath
+        baseOutputPath: 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
@@ -84,11 +84,24 @@ describe('src/generator-lib/ts-datamodel-generator-helpers', () => {
         release: 'R5',
         pkgName: 'hl7.fhir.r5.core',
         pkgVersion: '5.0.0',
-        // TODO: add baseOutputPath
+        baseOutputPath: 'src',
         pkgLoaderCacheRootPath: os.homedir(),
         isFunctionalTest: false,
       } as FhirPackage;
       const fhirPackage = getFhirPackage('R5');
+      expect(fhirPackage).toEqual(expected);
+    });
+
+    it('should return the correct FhirPackage for FHIR R4 with baseOutputPath override', () => {
+      const expected = {
+        release: 'R4',
+        pkgName: 'hl7.fhir.r4.core',
+        pkgVersion: '4.0.1',
+        baseOutputPath: 'packages/test-r4/src',
+        pkgLoaderCacheRootPath: os.homedir(),
+        isFunctionalTest: false,
+      } as FhirPackage;
+      const fhirPackage = getFhirPackage('R4', 'packages/test-r4/src');
       expect(fhirPackage).toEqual(expected);
     });
 
