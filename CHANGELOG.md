@@ -19,6 +19,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-08-21]
+
+### Added
+
+- `docs-site` directory to host the generated user documentation for each data model package for publication to GitHub Pages
+
+### Changed
+
+- Updated approach using Typedoc to generate user documentation for each data model package
+
+
 ## [2025-08-20]
 
 ### Changed

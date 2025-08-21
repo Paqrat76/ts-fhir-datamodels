@@ -1,0 +1,4 @@
+{
+  "name": "@paq-ts-fhir/base-docs",
+  "description": "Pseudo-package to support Typedoc publication of shared base documentation."
+}

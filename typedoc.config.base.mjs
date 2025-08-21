@@ -19,7 +19,6 @@ const config = {
     '*',
   ],
   sort: ['static-first', 'visibility'],
-  plugin: ['typedoc-plugin-zod'],
 };
 
 export default config;

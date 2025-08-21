@@ -1,4 +1,4 @@
-# FHIR R4 Data Models
+# FHIR R4 Data Model Library
 
 The TypeScript data models in this package were generated for all FHIR R4 resources and complex types.
 TypeScript classes were generated for each [FHIR R4 resource](https://hl7.org/fhir/R4/resourcelist.html) and

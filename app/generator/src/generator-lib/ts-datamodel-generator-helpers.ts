@@ -286,7 +286,7 @@ export function generateModuleContent(moduleName: string): string[] {
   );
   moduleContent.push(' *');
   if (moduleName === 'index.ts') {
-    moduleContent.push(' * @module Data Models Index');
+    moduleContent.push(' * @module Library Index');
   } else {
     moduleContent.push(' * @packageDocumentation');
   }

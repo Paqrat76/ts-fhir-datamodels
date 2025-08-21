@@ -2,14 +2,20 @@ import { OptionDefaults } from 'typedoc';
 
 /** @type {Partial<import('typedoc').TypeDocOptions>} */
 const config = {
-  name: 'ts-fhir-datamodels',
-  entryPoints: ['packages/*'],
+  name: 'Data Model Libraries',
+  entryPoints: ['packages/base-docs', 'packages/r4-datamodels'],
   entryPointStrategy: 'packages',
   packageOptions: {
     entryPoints: ['src/index.ts'],
   },
-  out: 'merged-docs',
+  navigation: {
+    includeCategories: true,
+  },
+  includeVersion: true,
+  cleanOutputDir: true,
+  out: 'docs-site',
   sort: ['source-order'],
+  plugin: ['typedoc-plugin-zod'],
 };
 
 export default config;

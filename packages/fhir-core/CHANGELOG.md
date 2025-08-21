@@ -19,6 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.8.0] - 2025-08-21
+
+### Removed
+
+- Support for Typedoc; No longer needed
+- "Usage Notes" section from README.md; Added to "User Guide" in data model packages
+
+
 ## [0.7.0] - 2025-08-20
 
 ### Added

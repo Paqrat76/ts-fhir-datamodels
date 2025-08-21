@@ -81,34 +81,30 @@ The projects contain the generated data models for all FHIR release-specific res
 "pseudo-enum" classes for a related set of FHIR `CodeSystem`s.
 These packages are published to NPM as public libraries.
 
-## Development Plan
+## Project Maintenance Overview
 
-This project will be constructed in the following phases:
+Because the FHIR data models are created from a code generator, the only time these projects will need to be re-generated
+is to fix bugs or add new features.
+These generated data models are dependent on the FHIR Core library (i.e., `@paq-ts-fhir/fhir-core`) and the generator
+project (i.e., `generator`) used to generate them.
 
-1. (**Completed**) Creation and initialization of the project and GitHub repository as a mono-repository
-   - Initial creation of the `fhir-core` package by migrating it from GitHub [typescript-hapi-models-poc](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/src/fhir-core)
-2. (**Completed**) Creation of the data model generator
-   - Create generator module
-   - Create stub package for `r4-datamodels`
-   - Complete generator module that can generate all code (CodeSystem pseudo-enum classes, complex type data models,
-     resource data models) for FHIR R4
-     - all generated code passes linting without errors or warnings
-     - Typedoc does not report any errors or warnings for generated content
-3. (**Completed**) Add comprehensive testing for generator
-   - Unit tests for generator components with coverage exceeding 90%
-   - Functional tests for generated content. This will be achieved using custom FHIR artifacts (StructureDefinitions and
-     CodeSystems) used to generate content that covers all possible template combinations (refer to `typescript-hapi-models-poc`
-     [src/test-models](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/src/test-models) and
-     [test/test-models](https://github.com/Paqrat76/typescript-hapi-models-poc/tree/main/test/test-models)).
-4. (**Completed**) Cleanup the `fhir-core` package. The goal is to trim down the project to only include the primitive data type
-   implementations, base models, dependent complex type models, utilities, errors, etc. Ensure unit test coverage
-   exceeds 90%.
-5. (**Completed**) Fill out project documentation for all aspects of this mono-repository
-6. (**Completed**) Finalize component documentation (using [Typedoc](https://typedoc.org/)) for each package
-7. (**Work-in-Progress**) Prepare the project for publication to NPM for fhir-core and r4-datamodels
-8. Add the `r4b-datamodels` and `r5-datamodels` packages.
-   Add a document in dev-docs that describes in detail the process of adding new data model packages.
-   The `r6-datamodels`package will be added when FHIR R6 is released.
-9. In each of the data model packages, implement the publication process to the NPM repository to make these libraries
-   available for use by FHIR developers.
-   Implement the publication of the data model documentation for consumers of these packages.
+Bugs in the FHIR Core library can typically be resolved by making the fix and releasing a new version of the
+`@paq-ts-fhir/fhir-core` package with an updated patch-level version number.
+This does not require a new release of the generated data models because the generated data model packages depend on
+the `@paq-ts-fhir/fhir-core` package using a patch-level dependency (e.g., `~1.2.3`).
+
+Bugs in the generated data model code will require a fix within the `generator` project resulting in changes to the
+generated data model code.
+To fix these bugs, the `generator` project will need to be updated to fix the bug in the generated code and then the
+generated data models will need to be regenerated.
+This will requires a new release of the generated data model projects.
+As long as these changes are backwards compatible, the new release of the generated data models will update the data
+models projects version number to a new minor-level version number.
+The above process can also be used to add new non-breaking features to the generated data models.
+
+While this should never happen, any bug fix or the addition of a new feature that causes a breaking change to the
+generated data models will require a new release of the generated data model projects.
+These new releases will require a new major-level version number change.
+
+Any changes to data model packages requiring a new minor-level or major-level version number change will also require
+an update to the generated documentation site.

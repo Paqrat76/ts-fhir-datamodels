@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/fhir-core",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "FHIR core package required by generated FHIR data model packages in @paq-ts-fhir",
   "keywords": [
     "node",
@@ -25,17 +25,15 @@
     "!lib/__test__/**"
   ],
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo lib coverage docs",
+    "clean": "rm -rf tsconfig.tsbuildinfo lib coverage",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "prebuild": "rm -rf tsconfig.tsbuildinfo lib",
+    "prebuild": "npm run clean",
     "build": "tsc",
     "test": "jest",
     "precoverage": "rm -rf coverage",
     "coverage": "jest --coverage",
-    "jest:clear": "jest --clearCache",
-    "pretypedoc:core": "rm -rf docs",
-    "typedoc:core": "typedoc ./src/index.ts"
+    "jest:clear": "jest --clearCache"
   },
   "dependencies": {
     "luxon": "^3.7.1",

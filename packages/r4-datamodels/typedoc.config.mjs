@@ -4,7 +4,7 @@ import { OptionDefaults } from 'typedoc';
 const config = {
   extends: '../../typedoc.config.base.mjs',
   name: '@paq-ts-fhir/r4-datamodels',
-  projectDocuments: ['../base-docs/*.md']
+  html: '../docs-site/r4-datamodels',
 };
 
 export default config;
