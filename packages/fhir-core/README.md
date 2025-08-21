@@ -2,9 +2,10 @@
 
 This `@paq-ts-fhir/fhir-core` package is a TypeScript library providing common base data models, primitive FHIR data
 types, custom errors, and various utilities required by the FHIR release-specific generated data model packages.
-
 This package is the sole dependency of the FHIR release-specific generated data model packages.
-It is not designed or intended for general use in any other context.
+
+> [!IMPORTANT]
+> The FHIR Core library is not designed or intended for general use in any other context.
 
 ## Background
 
