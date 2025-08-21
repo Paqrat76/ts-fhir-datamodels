@@ -27,7 +27,7 @@
     "prelint": "npm run build --workspace=packages/fhir-core",
     "lint": "eslint --ext ts --ignore-pattern './packages/r*-datamodels/' --ignore-pattern './app/generator-datamodel-ftest/' .",
     "lint:fix": "npm run lint -- --fix",
-    "lint:docs": "markdownlint '**/*.md' -i '**/node_modules/**' -i '**/CHANGELOG.md'",
+    "lint:docs": "markdownlint '**/*.md' -i '**/node_modules/**' -i '**/CHANGELOG.md' -i '**/changelog-hist/**'",
     "pretest": "npm run build --workspace=packages/fhir-core",
     "test": "npm run test --workspaces --if-present",
     "precoverage": "npm run build --workspace=packages/fhir-core",
