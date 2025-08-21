@@ -53,10 +53,6 @@ lib
 # JetBrains
 .idea
 
-# TypeDoc
-merged-docs
-docs
-
 # Test output
 **/__test__/**/test-out/
 **/temp/

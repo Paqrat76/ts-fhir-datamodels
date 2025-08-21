@@ -35,7 +35,7 @@
     "jest:clear": "jest --clearCache",
     "pregenerate": "npm run build --workspace=packages/fhir-core",
     "generate": "npm run generate --workspaces --if-present",
-    "typedoc": "npm run typedoc --workspaces --if-present",
+    "typedoc": "typedoc",
     "lint:R4": "echo 'Please be patient!!' && eslint --ext ts --report-unused-disable-directives-severity off ./packages/r4-datamodels/src",
     "prepare": "husky"
   },

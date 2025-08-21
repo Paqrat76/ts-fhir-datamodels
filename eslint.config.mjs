@@ -33,6 +33,7 @@ export default tsEslint.config(
     '**/lib/**',
     '**/merged-docs/**',
     '**/docs/**',
+    '**/docs-site/**',
     '**/.*',
     '**/*.[m|c]js',
     'jest.config.base.mjs',

@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/r4-datamodels",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Generated FHIR R4 data model package",
   "keywords": [
     "node",
@@ -23,17 +23,15 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "clean": "rm -rf tsconfig.tsbuildinfo lib docs src/*",
+    "clean": "rm -rf tsconfig.tsbuildinfo lib",
     "pregenerate": "npm run clean",
     "generate": "ts-node ../../app/generator/scripts/generate-fhir-datamodels.ts R4",
     "postgenerate": "npm run compile",
-    "precompile": "rm -rf tsconfig.tsbuildinfo lib",
-    "compile": "tsc",
-    "pretypedoc": "rm -rf docs",
-    "typedoc": "typedoc ./src/index.ts"
+    "precompile": "npm run clean",
+    "compile": "tsc"
   },
   "dependencies": {
-    "@paq-ts-fhir/fhir-core": "^0.7.0"
+    "@paq-ts-fhir/fhir-core": "~0.8.0"
   },
   "engines": {
     "node": ">=22.11",

@@ -19,6 +19,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.5.0] - 2025-08-21
+
+### Added
+
+- Generated data models for FHIR R4 under `src` directory
+
+### Changed
+
+- Updated dependency
+- Updated Typedoc configuration to publish docs to GitHub Pages
+
+### Removed
+
+- Package-level Typedoc scripts from `package.json`
+
+
 ## [0.4.0] - 2025-08-20
 
 ### Added
