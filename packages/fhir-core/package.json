@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/fhir-core",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "FHIR core package required by generated FHIR data model packages in @paq-ts-fhir",
   "keywords": [
     "node",
