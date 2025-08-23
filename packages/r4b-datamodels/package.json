@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/r4b-datamodels",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generated FHIR R4B data model package",
   "keywords": [
     "node",
@@ -31,7 +31,7 @@
     "compile": "tsc"
   },
   "dependencies": {
-    "@paq-ts-fhir/fhir-core": "~1.0.0-rc.1"
+    "@paq-ts-fhir/fhir-core": "~1.0.0"
   },
   "engines": {
     "node": ">=22.11",
