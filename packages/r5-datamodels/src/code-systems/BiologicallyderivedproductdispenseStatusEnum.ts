@@ -1,0 +1,168 @@
+/*
+ * Copyright (c) 2025. Joe Paquette
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+/**
+ * This file is generated from a FHIR CodeSystem definition.
+ * DO NOT make any modifications!
+ *
+ * BiologicallyderivedproductdispenseStatusEnum Module
+ *
+ * CodeSystem.url: http://hl7.org/fhir/biologicallyderivedproductdispense-status
+ * CodeSystem.name: BiologicallyderivedproductdispenseStatus
+ * CodeSystem.description: BiologicallyDerivedProductDispense Status Codes
+ * CodeSystem.version: 5.0.0
+ * CodeSystem.caseSensitive: true
+ *
+ * For questions, suggestions, or bugs, please open an issue at [GitHub ts-fhir-datamodels/issues](https://github.com/Paqrat76/ts-fhir-datamodels/issues).
+ *
+ * @packageDocumentation
+ */
+
+import {
+  fhirCode,
+  FhirCodeDefinition,
+  IFhirCodeDefinition,
+  IFhirCodeEnum,
+  InvalidCodeError,
+} from '@paq-ts-fhir/fhir-core';
+
+/**
+ * FHIR CodeSystem: BiologicallyderivedproductdispenseStatusEnum
+ *
+ * @remarks
+ * This class is a "pseudo-enumeration" of code values having FHIR code properties.
+ *
+ * @category CodeSystems
+ * @see [FHIR CodeSystem BiologicallyderivedproductdispenseStatus](http://hl7.org/fhir/biologicallyderivedproductdispense-status)
+ */
+export class BiologicallyderivedproductdispenseStatusEnum implements IFhirCodeEnum {
+  public static readonly PREPARATION = new FhirCodeDefinition(
+    'PREPARATION',
+    'preparation',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Preparation',
+    'The dispense process has started but not yet completed.',
+  );
+  public static readonly IN_PROGRESS = new FhirCodeDefinition(
+    'IN_PROGRESS',
+    'in-progress',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'In Progress',
+    'The dispense process is in progress.',
+  );
+  public static readonly ALLOCATED = new FhirCodeDefinition(
+    'ALLOCATED',
+    'allocated',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Allocated',
+    'The requested product has been allocated and is ready for transport.',
+  );
+  public static readonly ISSUED = new FhirCodeDefinition(
+    'ISSUED',
+    'issued',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Issued',
+    'The dispensed product has been picked up.',
+  );
+  public static readonly UNFULFILLED = new FhirCodeDefinition(
+    'UNFULFILLED',
+    'unfulfilled',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Unfulfilled',
+    'The dispense could not be completed.',
+  );
+  public static readonly RETURNED = new FhirCodeDefinition(
+    'RETURNED',
+    'returned',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Returned',
+    'The dispensed product was returned.',
+  );
+  public static readonly ENTERED_IN_ERROR = new FhirCodeDefinition(
+    'ENTERED_IN_ERROR',
+    'entered-in-error',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Entered in Error',
+    'The dispense was entered in error and therefore nullified.',
+  );
+  public static readonly UNKNOWN = new FhirCodeDefinition(
+    'UNKNOWN',
+    'unknown',
+    'http://hl7.org/fhir/biologicallyderivedproductdispense-status',
+    'Unknown',
+    'The authoring system does not know which of the status values applies for this dispense. Note: this concept is not to be used for other - one of the listed statuses is presumed to apply, it\'s just not known which one.',
+  );
+
+  // NULL added to help check for non-existent value
+  public static readonly NULL = new FhirCodeDefinition('NULL', `null`);
+
+  /**
+   * @returns an IFhirCodeDefinition[] containing the enumeration of code system code definitions
+   */
+  values(): IFhirCodeDefinition[] {
+    return [
+      BiologicallyderivedproductdispenseStatusEnum.PREPARATION,
+      BiologicallyderivedproductdispenseStatusEnum.IN_PROGRESS,
+      BiologicallyderivedproductdispenseStatusEnum.ALLOCATED,
+      BiologicallyderivedproductdispenseStatusEnum.ISSUED,
+      BiologicallyderivedproductdispenseStatusEnum.UNFULFILLED,
+      BiologicallyderivedproductdispenseStatusEnum.RETURNED,
+      BiologicallyderivedproductdispenseStatusEnum.ENTERED_IN_ERROR,
+      BiologicallyderivedproductdispenseStatusEnum.UNKNOWN,
+      BiologicallyderivedproductdispenseStatusEnum.NULL
+    ];
+  }
+
+  /**
+   * Converts a given FHIR code into its corresponding FHIR code definition.
+   *
+   * @param {fhirCode | undefined} code - The FHIR code to be converted. If undefined, an error will be thrown.
+   * @returns {IFhirCodeDefinition} The FHIR code definition corresponding to the provided code.
+   * @throws {@link InvalidCodeError} for undefined or invalid code value
+   */
+  fromCode(code: fhirCode | undefined): IFhirCodeDefinition {
+    if (code === undefined) {
+      throw new InvalidCodeError(`The provided 'code' value is undefined`);
+    } else if (BiologicallyderivedproductdispenseStatusEnum.PREPARATION.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.PREPARATION;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.IN_PROGRESS.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.IN_PROGRESS;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.ALLOCATED.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.ALLOCATED;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.ISSUED.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.ISSUED;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.UNFULFILLED.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.UNFULFILLED;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.RETURNED.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.RETURNED;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.ENTERED_IN_ERROR.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.ENTERED_IN_ERROR;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.UNKNOWN.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.UNKNOWN;
+    } else if (BiologicallyderivedproductdispenseStatusEnum.NULL.code === code) {
+      return BiologicallyderivedproductdispenseStatusEnum.NULL;
+    } else {
+      throw new InvalidCodeError(`Unknown BiologicallyderivedproductdispenseStatusEnum 'code' value '${code}'`);
+    }
+  }
+}

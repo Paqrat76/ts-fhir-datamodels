@@ -19,6 +19,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-08-23]
+
+### Fixed
+
+- `fixFhirHyperLinks()` function to handle HTML anchor "href" values in addition to Markdown hyperlinks
+- The population of `HbsCodeSystemConcept.display` value by adding `fixDescriptiveString(concept.display)`
+  and fixed the HBS template to NOT HTML-escape the value
+- The issue with missing import for MonetaryComponent complex type
+- The issue with 'instance' being used both as a resource field name and a variable name
+
+
 ## [2025-08-21]
 
 - Initial release

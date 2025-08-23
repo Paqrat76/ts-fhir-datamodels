@@ -787,7 +787,7 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private instance?: Reference[] | undefined;
+  private instance_?: Reference[] | undefined;
 
   /**
    * ChargeItemDefinition.applicability Element
@@ -2228,14 +2228,14 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
   }
 
   /**
-   * @returns the `instance` property value as a Reference array
+   * @returns the `instance_` property value as a Reference array
    */
   public getInstance(): Reference[] {
-    return this.instance ?? ([] as Reference[]);
+    return this.instance_ ?? ([] as Reference[]);
   }
 
   /**
-   * Assigns the provided Reference array value to the `instance` property.
+   * Assigns the provided Reference array value to the `instance_` property.
    *
    * @decorator `@ReferenceTargets('ChargeItemDefinition.instance', ['Medication','Substance','Device',])`
    *
@@ -2253,19 +2253,19 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
   public setInstance(value: Reference[] | undefined): this {
     if (isDefinedList<Reference>(value)) {
       // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-      this.instance = value;
+      this.instance_ = value;
     } else {
-      this.instance = undefined;
+      this.instance_ = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided Reference value to the `instance` array property.
+   * Add the provided Reference value to the `instance_` array property.
    *
    * @decorator `@ReferenceTargets('ChargeItemDefinition.instance', ['Medication','Substance','Device',])`
    *
-   * @param value - the `instance` value
+   * @param value - the `instance_` value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
@@ -2280,24 +2280,24 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
     if (isDefined<Reference>(value)) {
       // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
       this.initInstance();
-      this.instance?.push(value);
+      this.instance_?.push(value);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstance(): boolean {
-    return isDefinedList<Reference>(this.instance) && this.instance.some((item: Reference) => !item.isEmpty());
+    return isDefinedList<Reference>(this.instance_) && this.instance_.some((item: Reference) => !item.isEmpty());
   }
 
   /**
-   * Initialize the `instance` property
+   * Initialize the `instance_` property
    */
   private initInstance(): void {
     if (!this.hasInstance()) {
-      this.instance = [] as Reference[];
+      this.instance_ = [] as Reference[];
     }
   }
 
@@ -2451,7 +2451,7 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
       this.lastReviewDate,
       this.effectivePeriod,
       this.code,
-      this.instance,
+      this.instance_,
       this.applicability,
       this.propertyGroup,
     );
@@ -2503,8 +2503,8 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
     dest.lastReviewDate = this.lastReviewDate?.copy();
     dest.effectivePeriod = this.effectivePeriod?.copy();
     dest.code = this.code?.copy();
-    const instanceList = copyListValues<Reference>(this.instance);
-    dest.instance = instanceList.length === 0 ? undefined : instanceList;
+    const instanceList = copyListValues<Reference>(this.instance_);
+    dest.instance_ = instanceList.length === 0 ? undefined : instanceList;
     const applicabilityList = copyListValues<ChargeItemDefinitionApplicabilityComponent>(this.applicability);
     dest.applicability = applicabilityList.length === 0 ? undefined : applicabilityList;
     const propertyGroupList = copyListValues<ChargeItemDefinitionPropertyGroupComponent>(this.propertyGroup);

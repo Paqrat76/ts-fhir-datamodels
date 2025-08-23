@@ -2000,12 +2000,12 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
  * @see [FHIR AdverseEvent](http://hl7.org/fhir/StructureDefinition/AdverseEvent)
  */
 export class AdverseEventSuspectEntityComponent extends BackboneElement implements IBackboneElement {
-  constructor(instance: Reference | null = null) {
+  constructor(instance_: Reference | null = null) {
     super();
 
-    this.instance = null;
-    if (isDefined<Reference>(instance)) {
-      this.setInstance(instance);
+    this.instance_ = null;
+    if (isDefined<Reference>(instance_)) {
+      this.setInstance(instance_);
     }
   }
 
@@ -2092,7 +2092,7 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private instance: Reference | null;
+  private instance_: Reference | null;
 
   /**
    * AdverseEvent.suspectEntity.causality Element
@@ -2111,18 +2111,18 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `instance` property value as a Reference object if defined; else null
+   * @returns the `instance_` property value as a Reference object if defined; else null
    */
   public getInstance(): Reference | null {
-    return this.instance;
+    return this.instance_;
   }
 
   /**
-   * Assigns the provided Instance object value to the `instance` property.
+   * Assigns the provided Instance object value to the `instance_` property.
    *
    * @decorator `@ReferenceTargets('AdverseEvent.suspectEntity.instance', ['Immunization','Procedure','Substance','Medication','MedicationAdministration','MedicationStatement','Device',])`
    *
-   * @param value - the `instance` object value
+   * @param value - the `instance_` object value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data type or reference value
    */
@@ -2144,15 +2144,15 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
   public setInstance(value: Reference): this {
     assertIsDefined<Reference>(value, `AdverseEvent.suspectEntity.instance is required`);
     // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.instance = value;
+    this.instance_ = value;
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstance(): boolean {
-    return isDefined<Reference>(this.instance) && !this.instance.isEmpty();
+    return isDefined<Reference>(this.instance_) && !this.instance_.isEmpty();
   }
 
   /**
@@ -2227,7 +2227,7 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
    */
   public override isEmpty(): boolean {
     return super.isEmpty() && isElementEmpty(
-      this.instance,
+      this.instance_,
       this.causality,
     );
   }
@@ -2251,7 +2251,7 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
    */
   protected override copyValues(dest: AdverseEventSuspectEntityComponent): void {
     super.copyValues(dest);
-    dest.instance = this.instance ? this.instance.copy() : null;
+    dest.instance_ = this.instance_ ? this.instance_.copy() : null;
     const causalityList = copyListValues<AdverseEventSuspectEntityCausalityComponent>(this.causality);
     dest.causality = causalityList.length === 0 ? undefined : causalityList;
   }

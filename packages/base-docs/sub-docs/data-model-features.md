@@ -45,8 +45,8 @@ See [FHIR Validation](../UserGuide.md#fhir-validation) for more information.
 That said, the data models are designed to provide basic data validation as follows:
 
 - **Cardinality:** Cardinality is handled by the "getters" for a supported data type of the data element.
-  - Data elements having a cardinality of `0..1` or `1..1` have "get" methods that allow only a single value.
-  - Data elements having a cardinality of `0..*` or `1..*` have "get" methods that require an array of values and "add"
+  - Data elements having a cardinality of `0..1` or `1..1` have "set" methods that allow only a single value.
+  - Data elements having a cardinality of `0..*` or `1..*` have "set" methods that require an array of values and "add"
     methods that allow only a single value.
 - **Required Data Elements:** All "required" data elements (`max` cardinality >= 1) are validated to ensure they are present.
   This is achieved during serialization (instance `toJSON()` method) and deserialization (static `parse()` method).
@@ -54,7 +54,7 @@ That said, the data models are designed to provide basic data validation as foll
   See [Required vs. Optional Fields](#required-vs-optional-fields) below for more information.
 - **Data Type Usage:** All data elements are validated to ensure the correct data type is provided.
   All "get" and "add" methods are type-safe and will throw an error (`InvalidTypeError` or `PrimitiveTypeError`)
-  if the data element is not of the correct type or correct value.
+  if the data element is not of the correct type or correct primitive value.
   - **Primitives:** Ultimately, all data is expressed as [FHIR Primitive Types](https://hl7.org/fhir/datatypes.html#primitive).
     Primitive types are defined as TypeScript types (e.g., `fhirBase64Binary`, `fhirBoolean`, etc.) and are implemented
     using the [Zod](https://zod.dev/) library.
@@ -125,7 +125,7 @@ Refer to the [Luxon DateTime Reference](luxon-reference.md) for more information
 FHIR resources can be defined wth [`Choice`](https://hl7.org/fhir/formats.html#choice)
 and [`Open`](https://hl7.org/fhir/datatypes.html#open) data types.
 Because the FHIR `ElementDefinition` defines the allowed data types for both "choice" and "open" data types the same way,
-the data model is always generated using the "choice" decorators (`@OpenDataTypesMeta`/`@ChoiceDataTypes`) to
+the data model is always generated using the "choice" decorators (`@ChoiceDataTypesMeta`/`@ChoiceDataTypes`) to
 define/validate the allowed data types.
 These decorators throw an `InvalidTypeError` if the "getter" method is provided a data type that is not allowed.
 
@@ -199,7 +199,7 @@ The following `Error` types are expected to be thrown by the generated data mode
 
 - `AssertionError` - Error thrown when an assertion fails.
   Assertions are used to validate the internal data model state.
-  An `AssertionError` probably indicates a bug in the data model code.
+  An `AssertionError` probably indicates either an unexpected data element or a bug in the data model code.
 
 The following custom errors (extends [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error))
 are expected to be thrown by the generated data models:

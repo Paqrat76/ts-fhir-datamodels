@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/r4-datamodels",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Generated FHIR R4 data model package",
   "keywords": [
     "node",

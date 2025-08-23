@@ -98,6 +98,12 @@ describe('src/generator-lib/templates/utils-hbs', () => {
           expectedString: `Encounter (e.g. admission, billing, discharge ...)`,
         },
         {
+          unicodeTag: `APOSTROPHE_HEX`,
+          // eslint-disable-next-line no-useless-escape
+          testString: `AMD\&#x27;s plpa_map.c License`,
+          expectedString: `AMD's plpa_map.c License`,
+        },
+        {
           unicodeTag: `RIGHT_SINGLE_QUOTATION_MARK`,
           testString: `The nucleotide sequence will be always entered in the 5’-3’ direction.`,
           expectedString: `The nucleotide sequence will be always entered in the 5'-3' direction.`,
@@ -197,17 +203,50 @@ describe('src/generator-lib/templates/utils-hbs', () => {
 
     describe('fixFhirHyperLinks', () => {
       it('Should return original string where it does not contain any FHIR hyperlinks', () => {
-        const testString = 'This is a test string';
-        const fixedString = fixFhirHyperLinks(testString);
+        let testString = 'This is a test string';
+        let fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(testString);
+
+        // Examples from FHIR R4 that should not be fixed
+        testString = `See also the extension (http://hl7.org/fhir/StructureDefinition/elementdefinition-question)[extension-elementdefinition-question.html].`;
+        fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(testString);
+
+        testString = `See  [DICOM PS3.3 C.12.1](http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.12.html#sect_C.12.1).`;
+        fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(testString);
+
+        testString = `A nominal state-transition diagram can be found in the [[event.html#statemachine | Event pattern]] documentation Unknown does not represent "other"`;
+        fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(testString);
+
+        testString = `By convention, the home page is called index.html.`;
+        fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(testString);
+
+        testString = `See http://build.fhir.org/http.html for list of server interactions.`;
+        fixedString = fixFhirHyperLinks(testString);
         expect(fixedString).toStrictEqual(testString);
       });
 
       it('Should return fixed string where it contains a single FHIR hyperlink', () => {
-        const testString =
-          'This is a test string with a FHIR hyperlink: [Simple FHIRPath Profile](fhirpath.html#simple)';
-        const fixedString = fixFhirHyperLinks(testString);
+        let testString =
+          'This is a test string with a Markdown FHIR hyperlink: [Simple FHIRPath Profile](fhirpath.html#simple)';
+        let fixedString = fixFhirHyperLinks(testString);
         expect(fixedString).toStrictEqual(
-          'This is a test string with a FHIR hyperlink: [Simple FHIRPath Profile](https://hl7.org/fhir/fhirpath.html#simple)',
+          'This is a test string with a Markdown FHIR hyperlink: [Simple FHIRPath Profile](https://hl7.org/fhir/fhirpath.html#simple)',
+        );
+
+        testString = `For more information, see &lt;a href=&quot;elementdefinition-definitions.html#ElementDefinition.type.code&quot;&gt;ElementDefinition.type.code&lt;/a&gt;.`;
+        fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(
+          `For more information, see [ElementDefinition.type.code](https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.type.code).`,
+        );
+
+        testString = `For more information, see <a href="elementdefinition-definitions.html#ElementDefinition.type.code">ElementDefinition.type.code</a>.`;
+        fixedString = fixFhirHyperLinks(testString);
+        expect(fixedString).toStrictEqual(
+          `For more information, see [ElementDefinition.type.code](https://hl7.org/fhir/elementdefinition-definitions.html#ElementDefinition.type.code).`,
         );
       });
 
