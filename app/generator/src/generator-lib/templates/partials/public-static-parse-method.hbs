@@ -132,7 +132,7 @@
 {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
-    const {{this.fieldName}}: IDataType | undefined = fhirParser.parsePolymorphicDataType(
+    const {{this.fieldIdentifierName}}: IDataType | undefined = fhirParser.parsePolymorphicDataType(
       classJsonObj,
       sourceField,
       fieldName,
@@ -144,16 +144,16 @@
 {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
-    const {{this.fieldName}}: IDataType | undefined = fhirParser.parsePolymorphicDataType(
+    const {{this.fieldIdentifierName}}: IDataType | undefined = fhirParser.parsePolymorphicDataType(
       classJsonObj,
       sourceField,
       fieldName,
       classMetadata,
     );
-    if ({{this.fieldName}} === undefined) {
+    if ({{this.fieldIdentifierName}} === undefined) {
       missingReqdProperties.push(sourceField);
     } else {
-      instance.set{{upperFirst this.fieldName}}({{this.fieldName}});
+      instance.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
 
 {{/if}}
@@ -435,8 +435,8 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      const {{this.fieldName}}: IResource | undefined = fhirParser.parseInlineResource(classJsonObj[fieldName], sourceField);
-      instance.set{{upperFirst this.fieldName}}({{this.fieldName}});
+      const {{this.fieldIdentifierName}}: IResource | undefined = fhirParser.parseInlineResource(classJsonObj[fieldName], sourceField);
+      instance.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
 
 {{/if}}

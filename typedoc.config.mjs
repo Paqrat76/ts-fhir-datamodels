@@ -3,7 +3,7 @@ import { OptionDefaults } from 'typedoc';
 /** @type {Partial<import('typedoc').TypeDocOptions>} */
 const config = {
   name: 'Data Model Libraries',
-  entryPoints: ['packages/base-docs', 'packages/r4-datamodels'],
+  entryPoints: ['packages/base-docs', 'packages/r4-datamodels', 'packages/r4b-datamodels', 'packages/r5-datamodels'],
   entryPointStrategy: 'packages',
   packageOptions: {
     entryPoints: ['src/index.ts'],

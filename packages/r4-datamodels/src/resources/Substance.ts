@@ -329,7 +329,7 @@ export class Substance extends DomainResource implements IDomainResource {
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private instance?: SubstanceInstanceComponent[] | undefined;
+  private instance_?: SubstanceInstanceComponent[] | undefined;
 
   /**
    * Substance.ingredient Element
@@ -673,16 +673,16 @@ export class Substance extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `instance` property value as a SubstanceInstanceComponent array
+   * @returns the `instance_` property value as a SubstanceInstanceComponent array
    */
   public getInstance(): SubstanceInstanceComponent[] {
-    return this.instance ?? ([] as SubstanceInstanceComponent[]);
+    return this.instance_ ?? ([] as SubstanceInstanceComponent[]);
   }
 
   /**
-   * Assigns the provided SubstanceInstanceComponent array value to the `instance` property.
+   * Assigns the provided SubstanceInstanceComponent array value to the `instance_` property.
    *
-   * @param value - the `instance` array value
+   * @param value - the `instance_` array value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
@@ -690,17 +690,17 @@ export class Substance extends DomainResource implements IDomainResource {
     if (isDefinedList<SubstanceInstanceComponent>(value)) {
       const optErrMsg = `Invalid Substance.instance; Provided value array has an element that is not an instance of SubstanceInstanceComponent.`;
       assertFhirTypeList<SubstanceInstanceComponent>(value, SubstanceInstanceComponent, optErrMsg);
-      this.instance = value;
+      this.instance_ = value;
     } else {
-      this.instance = undefined;
+      this.instance_ = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided SubstanceInstanceComponent value to the `instance` array property.
+   * Add the provided SubstanceInstanceComponent value to the `instance_` array property.
    *
-   * @param value - the `instance` value
+   * @param value - the `instance_` value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
@@ -709,24 +709,24 @@ export class Substance extends DomainResource implements IDomainResource {
       const optErrMsg = `Invalid Substance.instance; Provided element is not an instance of SubstanceInstanceComponent.`;
       assertFhirType<SubstanceInstanceComponent>(value, SubstanceInstanceComponent, optErrMsg);
       this.initInstance();
-      this.instance?.push(value);
+      this.instance_?.push(value);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstance(): boolean {
-    return isDefinedList<SubstanceInstanceComponent>(this.instance) && this.instance.some((item: SubstanceInstanceComponent) => !item.isEmpty());
+    return isDefinedList<SubstanceInstanceComponent>(this.instance_) && this.instance_.some((item: SubstanceInstanceComponent) => !item.isEmpty());
   }
 
   /**
-   * Initialize the `instance` property
+   * Initialize the `instance_` property
    */
   private initInstance(): void {
     if(!this.hasInstance()) {
-      this.instance = [] as SubstanceInstanceComponent[];
+      this.instance_ = [] as SubstanceInstanceComponent[];
     }
   }
 
@@ -807,7 +807,7 @@ export class Substance extends DomainResource implements IDomainResource {
       this.category,
       this.code,
       this.description,
-      this.instance,
+      this.instance_,
       this.ingredient,
     );
   }
@@ -838,8 +838,8 @@ export class Substance extends DomainResource implements IDomainResource {
     dest.category = categoryList.length === 0 ? undefined : categoryList;
     dest.code = this.code ? this.code.copy() : null;
     dest.description = this.description?.copy();
-    const instanceList = copyListValues<SubstanceInstanceComponent>(this.instance);
-    dest.instance = instanceList.length === 0 ? undefined : instanceList;
+    const instanceList = copyListValues<SubstanceInstanceComponent>(this.instance_);
+    dest.instance_ = instanceList.length === 0 ? undefined : instanceList;
     const ingredientList = copyListValues<SubstanceIngredientComponent>(this.ingredient);
     dest.ingredient = ingredientList.length === 0 ? undefined : ingredientList;
   }

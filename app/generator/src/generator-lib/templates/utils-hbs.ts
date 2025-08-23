@@ -912,7 +912,7 @@ function getGeneratedImports(componentProperties: HbsElementComponent): string[]
       });
     }
 
-    if ((ed.isComplexType || ed.isReferenceType) && !ed.type.code.endsWith('Component')) {
+    if ((ed.isComplexType || ed.isReferenceType) && !ed.isBackboneType) {
       //importsSet.add(`import { ${ed.type.code} } from '../complex-types/${ed.type.code}'`);
       importsSet.add(ed.type.code);
     }
@@ -1074,6 +1074,10 @@ const UnicodeSubstitutions = {
   EM_DASH: { unicodeRegex: /\u2014/g, replacement: `-` },
   HORIZONTAL_BAR: { unicodeRegex: /\u2015/g, replacement: `-` },
   DOUBLE_VERTICAL_LINE: { unicodeRegex: /\u2016/g, replacement: `||` },
+  APOSTROPHE: { unicodeRegex: /\u0027/g, replacement: `'` },
+  APOSTROPHE_HEX: { unicodeRegex: /&#x27;/g, replacement: `'` },
+  APOSTROPHE_DECIMAL: { unicodeRegex: /&#39;/g, replacement: `'` },
+  APOSTROPHE_ENTITY: { unicodeRegex: /&apos;/g, replacement: `'` },
   LEFT_SINGLE_QUOTATION_MARK: { unicodeRegex: /\u2018/g, replacement: `'` },
   RIGHT_SINGLE_QUOTATION_MARK: { unicodeRegex: /\u2019/g, replacement: `'` },
   SINGLE_HIGH_REVERSED9_QUOTATION_MARK: { unicodeRegex: /\u201A/g, replacement: `'` },
@@ -1137,7 +1141,8 @@ const UnicodeSubstitutions = {
  * A constant array containing all reserved keywords in TypeScript.
  *
  * @remarks
- * These keywords have a predefined meaning in TypeScript and cannot be used as identifiers such as variable names, function names, or any other custom identifiers.
+ * These keywords have a predefined meaning in TypeScript and cannot be used as identifiers such as variable names,
+ * function names, or any other custom identifiers.
  * Attempting to use these words as identifiers will result in a syntax error.
  *
  * The list includes:
@@ -1188,6 +1193,7 @@ const TS_RESERVED_WORDS = [
   'import',
   'in',
   'infer',
+  'instance', // Not a TS reserved word, but conflicts with the field name of 'instance' and its use as a variable
   'instanceof',
   'interface',
   'is',
@@ -1313,8 +1319,24 @@ export function stripLineBreaks(str: string | undefined | null): string {
 export function fixFhirHyperLinks(str: string): string {
   // NOTE: TypeDocs will issue a `[warning]` for hyperlink strings containing invalid content.
   //       If this occurs, we might need to update the allowable characters (`[...]`) below to include new characters
-  const regex = /([-A-Za-z0-9]+\.html[-#A-Za-z0-9.]*\))/gi;
-  return str.replace(regex, `https://hl7.org/fhir/$1`);
+
+  // From FHIR R4B - HTML anchor links are sometimes used rather than Markdown links
+  // - `For more information, see &lt;a href=&quot;elementdefinition-definitions.html#ElementDefinition.type.code&quot;&gt;ElementDefinition.type.code&lt;/a&gt;.`
+  // - `For more information, see <a href="elementdefinition-definitions.html#ElementDefinition.type.code">ElementDefinition.type.code</a>.`
+  let tempStr = str.slice();
+  if (str.includes(`a href=`)) {
+    let anchorStr = str.slice();
+    if (str.includes(`&quot;`)) {
+      // Replace HTML entities with their corresponding characters
+      anchorStr = str.replaceAll(`&quot;`, `"`).replaceAll(`&lt;`, `<`).replaceAll(`&gt;`, `>`);
+    }
+    const regexAnchor = /<a.*?href="(.*?)".*?>(.*?)<\/a>/gi;
+    tempStr = anchorStr.replace(regexAnchor, `[$2]($1)`);
+  }
+
+  // NOTE: Regex ends with `\)` to catch closing parentheses in a Markdown link
+  const regexMarkdown = /([-A-Za-z0-9]+\.html[-#A-Za-z0-9.]*\))/gi;
+  return tempStr.replace(regexMarkdown, `https://hl7.org/fhir/$1`);
 }
 
 /**
@@ -1563,6 +1585,15 @@ export function getFieldNames(
   }
   if (element.path === 'ExplanationOfBenefit.addItem') {
     fieldIdentifierName = `addItem_`;
+  }
+  if (element.path === 'ConditionDefinition.hasSeverity') {
+    fieldIdentifierName = `hasSeverity_`;
+  }
+  if (element.path === 'ConditionDefinition.hasBodySite') {
+    fieldIdentifierName = `hasBodySite_`;
+  }
+  if (element.path === 'ConditionDefinition.hasStage') {
+    fieldIdentifierName = `hasStage_`;
   }
 
   return { fieldName, fieldIdentifierName };

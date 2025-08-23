@@ -2,12 +2,11 @@ CHANGELOG.md
 coverage/
 lib/
 node_modules/
-merged-docs/
-docs/
+docs-site/
 ftest-cache/
 utest-cache/
 *.hbs
-app/generator-datamodel-ftest/src/generated
-packages/r4-datamodels/
-packages/r4b-datamodels/
-packages/r5-datamodels/
+app/generator-datamodel-ftest/src/
+packages/r4-datamodels/src/
+packages/r4b-datamodels/src/
+packages/r5-datamodels/src/

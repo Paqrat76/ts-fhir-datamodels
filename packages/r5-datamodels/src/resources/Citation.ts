@@ -1,0 +1,12488 @@
+/*
+ * Copyright (c) 2025. Joe Paquette
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+/**
+ * This file is generated from a FHIR StructureDefinition.
+ * DO NOT make any modifications!
+ *
+ * Citation Module
+ *
+ * StructureDefinition.url: http://hl7.org/fhir/StructureDefinition/Citation
+ * StructureDefinition.name: Citation
+ * StructureDefinition.description: The Citation Resource enables reference to any knowledge artifact for purposes of identification and attribution. The Citation Resource supports existing reference structures and developing publication practices such as versioning, expressing complex contributorship roles, and referencing computable resources.
+ * StructureDefinition.fhirVersion: 5.0.0
+ *
+ * For questions, suggestions, or bugs, please open an issue at [GitHub ts-fhir-datamodels/issues](https://github.com/Paqrat76/ts-fhir-datamodels/issues).
+ *
+ * @packageDocumentation
+ */
+
+import { strict as assert } from 'node:assert';
+import {
+  BackboneElement,
+  BooleanType,
+  CanonicalType,
+  ChoiceDataTypes,
+  ChoiceDataTypesMeta,
+  CodeType,
+  DateTimeType,
+  DateType,
+  DomainResource,
+  EnumCodeType,
+  FhirError,
+  FhirParser,
+  IBackboneElement,
+  IDataType,
+  IDomainResource,
+  INSTANCE_EMPTY_ERROR_MSG,
+  InvalidTypeError,
+  JSON,
+  MarkdownType,
+  PositiveIntType,
+  PrimitiveType,
+  REQUIRED_PROPERTIES_DO_NOT_EXIST,
+  REQUIRED_PROPERTIES_REQD_IN_JSON,
+  ReferenceTargets,
+  StringType,
+  UriType,
+  assertEnumCodeType,
+  assertFhirType,
+  assertFhirTypeList,
+  assertIsDefined,
+  constructorCodeValueAsEnumCodeType,
+  copyListValues,
+  fhirBoolean,
+  fhirBooleanSchema,
+  fhirCanonical,
+  fhirCanonicalSchema,
+  fhirCode,
+  fhirCodeSchema,
+  fhirDate,
+  fhirDateSchema,
+  fhirDateTime,
+  fhirDateTimeSchema,
+  fhirMarkdown,
+  fhirMarkdownSchema,
+  fhirPositiveInt,
+  fhirPositiveIntSchema,
+  fhirString,
+  fhirStringSchema,
+  fhirUri,
+  fhirUriSchema,
+  getPrimitiveTypeJson,
+  isDefined,
+  isDefinedList,
+  isElementEmpty,
+  isEmpty,
+  parseFhirPrimitiveData,
+  setFhirBackboneElementJson,
+  setFhirBackboneElementListJson,
+  setFhirComplexJson,
+  setFhirComplexListJson,
+  setFhirPrimitiveJson,
+  setPolymorphicValueJson,
+} from '@paq-ts-fhir/fhir-core';
+import { Annotation, Attachment, CodeableConcept, Coding, ContactDetail, Identifier, PARSABLE_DATATYPE_MAP, Period, Reference, RelatedArtifact, UsageContext } from '../complex-types/complex-datatypes';
+import { PARSABLE_RESOURCE_MAP } from './parsable-resource-map';
+import { PublicationStatusEnum } from '../code-systems/PublicationStatusEnum';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Symbol.metadata polyfill secret sauce for decorator metadata
+(Symbol.metadata as any) ??= Symbol('Symbol.metadata');
+
+/**
+ * Citation Class
+ *
+ * @remarks
+ * The Citation Resource enables reference to any knowledge artifact for purposes of identification and attribution. The Citation Resource supports existing reference structures and developing publication practices such as versioning, expressing complex contributorship roles, and referencing computable resources.
+ *
+ * **FHIR Specification**
+ * - **Short:** A description of identification, location, or contributorship of a publication (article or artifact)
+ * - **Definition:** The Citation Resource enables reference to any knowledge artifact for purposes of identification and attribution. The Citation Resource supports existing reference structures and developing publication practices such as versioning, expressing complex contributorship roles, and referencing computable resources.
+ * - **FHIR Version:** 5.0.0
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class Citation extends DomainResource implements IDomainResource {
+  constructor(status: EnumCodeType | CodeType | fhirCode | null = null) {
+    super();
+
+    this.publicationStatusEnum = new PublicationStatusEnum();
+
+    this.status = constructorCodeValueAsEnumCodeType<PublicationStatusEnum>(
+      status,
+      PublicationStatusEnum,
+      this.publicationStatusEnum,
+      'Citation.status',
+    );
+  }
+
+  /**
+   * Parse the provided `Citation` JSON to instantiate the Citation data model.
+   *
+   * @param sourceJson - JSON representing FHIR `Citation`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Citation
+   * @returns Citation data model or undefined for `Citation`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static override parse(sourceJson: JSON.Value, optSourceField?: string): Citation | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'Citation';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new Citation();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.verifyResourceType(classJsonObj, 'Citation');
+    fhirParser.processDomainResourceJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
+
+    const classMetadata: DecoratorMetadataObject | null = Citation[Symbol.metadata];
+    const errorMessage = `DecoratorMetadataObject does not exist for Citation`;
+    assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'url';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
+      instance.setUrlElement(datatype);
+    }
+
+    fieldName = 'identifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addIdentifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'version';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setVersionElement(datatype);
+    }
+
+    fieldName = 'versionAlgorithm[x]';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const versionAlgorithm: IDataType | undefined = fhirParser.parsePolymorphicDataType(
+      classJsonObj,
+      sourceField,
+      fieldName,
+      classMetadata,
+    );
+    instance.setVersionAlgorithm(versionAlgorithm);
+
+    fieldName = 'name';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setNameElement(datatype);
+    }
+
+    fieldName = 'title';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setTitleElement(datatype);
+    }
+
+    fieldName = 'status';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setStatusElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'experimental';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'boolean';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
+      instance.setExperimentalElement(datatype);
+    }
+
+    fieldName = 'date';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
+      instance.setDateElement(datatype);
+    }
+
+    fieldName = 'publisher';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setPublisherElement(datatype);
+    }
+
+    fieldName = 'contact';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addContact(datatype);
+        }
+      });
+    }
+
+    fieldName = 'description';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      instance.setDescriptionElement(datatype);
+    }
+
+    fieldName = 'useContext';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addUseContext(datatype);
+        }
+      });
+    }
+
+    fieldName = 'jurisdiction';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addJurisdiction(datatype);
+        }
+      });
+    }
+
+    fieldName = 'purpose';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      instance.setPurposeElement(datatype);
+    }
+
+    fieldName = 'copyright';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      instance.setCopyrightElement(datatype);
+    }
+
+    fieldName = 'copyrightLabel';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setCopyrightLabelElement(datatype);
+    }
+
+    fieldName = 'approvalDate';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateType | undefined = fhirParser.parseDateType(dtJson, dtSiblingJson);
+      instance.setApprovalDateElement(datatype);
+    }
+
+    fieldName = 'lastReviewDate';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateType | undefined = fhirParser.parseDateType(dtJson, dtSiblingJson);
+      instance.setLastReviewDateElement(datatype);
+    }
+
+    fieldName = 'effectivePeriod';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setEffectivePeriod(datatype);
+    }
+
+    fieldName = 'author';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addAuthor(datatype);
+        }
+      });
+    }
+
+    fieldName = 'editor';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addEditor(datatype);
+        }
+      });
+    }
+
+    fieldName = 'reviewer';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addReviewer(datatype);
+        }
+      });
+    }
+
+    fieldName = 'endorser';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addEndorser(datatype);
+        }
+      });
+    }
+
+    fieldName = 'summary';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationSummaryComponent | undefined = CitationSummaryComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addSummary(component);
+        }
+      });
+    }
+
+    fieldName = 'classification';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationClassificationComponent | undefined = CitationClassificationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addClassification(component);
+        }
+      });
+    }
+
+    fieldName = 'note';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Annotation | undefined = Annotation.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addNote(datatype);
+        }
+      });
+    }
+
+    fieldName = 'currentState';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addCurrentState(datatype);
+        }
+      });
+    }
+
+    fieldName = 'statusDate';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationStatusDateComponent | undefined = CitationStatusDateComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addStatusDate(component);
+        }
+      });
+    }
+
+    fieldName = 'relatedArtifact';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: RelatedArtifact | undefined = RelatedArtifact.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addRelatedArtifact(datatype);
+        }
+      });
+    }
+
+    fieldName = 'citedArtifact';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const component: CitationCitedArtifactComponent | undefined = CitationCitedArtifactComponent.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setCitedArtifact(component);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.url Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Canonical identifier for this citation record, represented as a globally unique URI
+   * - **Definition:** An absolute URI that is used to identify this citation record when it is referenced in a specification, model, design or an instance; also called its canonical identifier. This SHOULD be globally unique and SHOULD be a literal address at which an authoritative instance of this summary is (or will be) published. This URL can be the target of a canonical reference. It SHALL remain the same when the summary is stored on different servers.
+   * - **Comment:** In some cases, the resource can no longer be found at the stated url, but the url itself cannot change. Implementations can use the meta.source element to indicate where the current master source of the resource can be found.
+   * - **Requirements:** Allows the citation record to be referenced by a single globally unique identifier.
+   * - **FHIR Type:** `uri`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private url?: UriType | undefined;
+
+  /**
+   * Citation.identifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Identifier for the citation record itself
+   * - **Definition:** A formal identifier that is used to identify this citation record when it is represented in other formats, or referenced in a specification, model, design or an instance.
+   * - **Comment:** Use this element if you need to identify the citation record independently from identifying the cited artifact.
+   * - **Requirements:** Allows externally provided and/or usable identifiers to be associated with this citation record.
+   * - **FHIR Type:** `Identifier`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private identifier?: Identifier[] | undefined;
+
+  /**
+   * Citation.version Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Business version of the citation record
+   * - **Definition:** The identifier that is used to identify this version of the citation record when it is referenced in a specification, model, design or instance. This is an arbitrary value managed by the citation record author and is not expected to be globally unique. For example, it might be a timestamp (e.g. yyyymmdd) if a managed version is not available. There is also no expectation that versions can be placed in a lexicographical sequence.
+   * - **Comment:** There may be different citation record instances that have the same identifier but different versions. The version can be appended to the url in a reference to allow a reference to a particular business version of the citation record with the format [url]|[version]. The version SHOULD NOT contain a \'#\' - see [Business Version](https://hl7.org/fhir/resource.html#bv-format).
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private version?: StringType | undefined;
+
+  /**
+   * Citation.versionAlgorithm[x] Element
+   *
+   * @decorator `@ChoiceDataTypesMeta('Citation.versionAlgorithm[x]', ['string','Coding',]`
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** How to compare versions
+   * - **Definition:** Indicates the mechanism used to compare versions to determine which is more current.
+   * - **Comment:** If set as a string, this is a FHIRPath expression that has two additional context variables passed in - %version1 and %version2 and will return a negative number if version1 is newer, a positive number if version2 is newer, and a 0 if the version ordering can\'t successfully be determined.
+   * - **FHIR Types:**
+   *     'string',
+   *     'Coding',
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  @ChoiceDataTypesMeta('Citation.versionAlgorithm[x]',[
+    'string',
+    'Coding',
+  ])
+  private versionAlgorithm?: IDataType | undefined;
+
+  /**
+   * Citation.name Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Name for this citation record (computer friendly)
+   * - **Definition:** A natural language name identifying the citation record. This name should be usable as an identifier for the module by machine processing applications such as code generation.
+   * - **Comment:** The name is not expected to be globally unique. The name should be a simple alphanumeric type name to ensure that it is machine-processing friendly.
+   * - **Requirements:** Support human navigation and code generation.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private name?: StringType | undefined;
+
+  /**
+   * Citation.title Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Name for this citation record (human friendly)
+   * - **Definition:** A short, descriptive, user-friendly title for the citation record.
+   * - **Comment:** This name does not need to be machine-processing friendly and may contain punctuation, white-space, etc. Use this element if you have a need for naming the citation record for human use, such as a display name for the citation record that is used when selecting citations from a list.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private title?: StringType | undefined;
+
+  /**
+   * FHIR CodeSystem: PublicationStatus
+   *
+   * @see {@link PublicationStatusEnum }
+   */
+  private readonly publicationStatusEnum: PublicationStatusEnum;
+
+  /**
+   * Citation.status Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** draft | active | retired | unknown
+   * - **Definition:** The status of this summary. Enables tracking the life-cycle of the content.
+   * - **Comment:** Allows filtering of summaries that are appropriate for use versus not. Use "active" when the citation record is the version for others to actively use, "draft" while you are developing the content, and "retired" when this record should no longer be used for any purpose. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **Requirements:** Allows filtering of citation records that are appropriate for use versus not.
+   * - **FHIR Type:** `code`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** true
+   * - **isModifierReason:** This is labeled as &quot;Is Modifier&quot; because applications should not use a retired {{title}} without due consideration
+   * - **isSummary:** true
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  private status: EnumCodeType | null;
+
+  /**
+   * Citation.experimental Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** For testing purposes, not real usage
+   * - **Definition:** A Boolean value to indicate that this citation record is authored for testing purposes (or education/evaluation/marketing) and is not intended to be used for genuine usage.
+   * - **Comment:** Allows filtering of citation records that are appropriate for use versus not.
+   * - **Requirements:** Enables experimental content to be developed following the same lifecycle that would be used for a production-level citation record.
+   * - **FHIR Type:** `boolean`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private experimental?: BooleanType | undefined;
+
+  /**
+   * Citation.date Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Date last changed
+   * - **Definition:** The date (and optionally time) when the citation record was last significantly changed. The date must change when the business version changes and it must change if the status code changes. In addition, it should change when the substantive content of the citation record changes.
+   * - **Comment:** The date is often not tracked until the resource is published, but may be present on draft content. Note that this is not the same as the resource last-modified-date, since the resource may be a secondary representation of the citation record. Additional specific dates may be added as extensions or be found by consulting Provenances associated with past versions of the resource. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **FHIR Type:** `dateTime`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private date?: DateTimeType | undefined;
+
+  /**
+   * Citation.publisher Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The publisher of the citation record, not the publisher of the article or artifact being cited
+   * - **Definition:** The name of the organization or individual that published the citation record.
+   * - **Comment:** Usually an organization but may be an individual. The publisher (or steward) of the citation record is the organization or individual primarily responsible for the maintenance and upkeep of the citation record. This is not necessarily the same individual or organization that developed and initially authored the content. The publisher is the primary point of contact for questions or issues with the citation record. This item SHOULD be populated unless the information is available from context.
+   * - **Requirements:** Helps establish the "authority/credibility" of the citation record. May also allow for contact.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private publisher?: StringType | undefined;
+
+  /**
+   * Citation.contact Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Contact details for the publisher of the citation record
+   * - **Definition:** Contact details to assist a user in finding and communicating with the publisher.
+   * - **Comment:** May be a web site, an email address, a telephone number, etc. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **FHIR Type:** `ContactDetail`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private contact?: ContactDetail[] | undefined;
+
+  /**
+   * Citation.description Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Natural language description of the citation
+   * - **Definition:** A free text natural language description of the citation from a consumer\'s perspective.
+   * - **Comment:** This description can be used to capture details such as comments about misuse, instructions for clinical use and interpretation, literature references, examples from the paper world, etc. It is not a rendering of the citation as conveyed in the \'text\' field of the resource itself. This item SHOULD be populated unless the information is available from context (e.g. the language of the citation is presumed to be the predominant language in the place the citation was created).
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private description?: MarkdownType | undefined;
+
+  /**
+   * Citation.useContext Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The context that the citation record content is intended to support
+   * - **Definition:** The content was developed with a focus and intent of supporting the contexts that are listed. These contexts may be general categories (gender, age, ...) or may be references to specific programs (insurance plans, studies, ...) and may be used to assist with indexing and searching for appropriate citation record instances.
+   * - **Comment:** When multiple useContexts are specified, there is no expectation that all or any of the contexts apply.
+   * - **Requirements:** Assist in searching for appropriate content.
+   * - **FHIR Type:** `UsageContext`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private useContext?: UsageContext[] | undefined;
+
+  /**
+   * Citation.jurisdiction Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Intended jurisdiction for citation record (if applicable)
+   * - **Definition:** A legal or geographic region in which the citation record is intended to be used.
+   * - **Comment:** It may be possible for the citation record to be used in jurisdictions other than those for which it was originally designed or intended. DEPRECATION NOTE: For consistency, implementations are encouraged to migrate to using the new \'jurisdiction\' code in the useContext element.  (I.e. useContext.code indicating http://terminology.hl7.org/CodeSystem/usage-context-type#jurisdiction and useContext.valueCodeableConcept indicating the jurisdiction.)
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private jurisdiction?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.purpose Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Why this citation is defined
+   * - **Definition:** Explanation of why this citation is needed and why it has been designed as it has.
+   * - **Comment:** This element does not describe the usage of the citation. Instead, it provides traceability of \'\'why\'\' the resource is either needed or \'\'why\'\' it is defined as it is.  This may be used to point to source materials or specifications that drove the structure of this citation.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private purpose?: MarkdownType | undefined;
+
+  /**
+   * Citation.copyright Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Use and/or publishing restrictions for the citation record, not for the cited artifact
+   * - **Definition:** Use and/or publishing restrictions for the citation record, not for the cited artifact.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private copyright?: MarkdownType | undefined;
+
+  /**
+   * Citation.copyrightLabel Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Copyright holder and year(s) for the ciation record, not for the cited artifact
+   * - **Definition:** A short string (<50 characters), suitable for inclusion in a page footer that identifies the copyright holder, effective period, and optionally whether rights are resctricted. (e.g. \'All rights reserved\', \'Some rights reserved\').
+   * - **Comment:** The (c) symbol should NOT be included in this string. It will be added by software when rendering the notation. Full details about licensing, restrictions, warrantees, etc. goes in the more general \'copyright\' element.
+   * - **Requirements:** Defines the content expected to be rendered in all representations of the artifact.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private copyrightLabel?: StringType | undefined;
+
+  /**
+   * Citation.approvalDate Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** When the citation record was approved by publisher
+   * - **Definition:** The date on which the resource content was approved by the publisher. Approval happens once when the content is officially approved for usage.
+   * - **Comment:** The \'date\' element may be more recent than the approval date because of minor changes or editorial corrections. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **FHIR Type:** `date`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private approvalDate?: DateType | undefined;
+
+  /**
+   * Citation.lastReviewDate Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** When the citation record was last reviewed by the publisher
+   * - **Definition:** The date on which the resource content was last reviewed. Review happens periodically after approval but does not change the original approval date.
+   * - **Comment:** If specified, this date follows the original approval date. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **Requirements:** Gives a sense of how "current" the content is.  Resources that have not been reviewed in a long time may have a risk of being less appropriate/relevant.
+   * - **FHIR Type:** `date`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private lastReviewDate?: DateType | undefined;
+
+  /**
+   * Citation.effectivePeriod Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** When the citation record is expected to be used
+   * - **Definition:** The period during which the citation record content was or is planned to be in active use.
+   * - **Comment:** The effective period for a citation record determines when the content is applicable for usage and is independent of publication and review dates. For example, a citation intended to be used for the year 2016 might be published in 2015. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **Requirements:** Allows establishing a transition before a resource comes into effect and also allows for a sunsetting process when new versions of the citation record are or are expected to be used instead.
+   * - **FHIR Type:** `Period`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private effectivePeriod?: Period | undefined;
+
+  /**
+   * Citation.author Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Who authored the citation record
+   * - **Definition:** Who authored or created the citation record.
+   * - **Comment:** The Citation.author element is structured to support a name (with a string datatype) and contact point information for the author/creator, and is not structured to support unique identifiers for the author. If detailed contributorship data is needed for the authorship of the citation record, then one can create a Citation Resource for the Citation Resource.
+   * - **FHIR Type:** `ContactDetail`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private author?: ContactDetail[] | undefined;
+
+  /**
+   * Citation.editor Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Who edited the citation record
+   * - **Definition:** Who edited or revised the citation record.
+   * - **Comment:** The Citation.editor element is structured to support a name (with a string datatype) and contact point information for the editor, and is not structured to support unique identifiers for the editor. If detailed contributorship data is needed for the editing of the citation record, then one can create a Citation Resource for the Citation Resource.
+   * - **FHIR Type:** `ContactDetail`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private editor?: ContactDetail[] | undefined;
+
+  /**
+   * Citation.reviewer Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Who reviewed the citation record
+   * - **Definition:** Who reviewed the citation record.
+   * - **Comment:** The Citation.reviewer element is structured to support a name (with a string datatype) and contact point information for the reviewer, and is not structured to support unique identifiers for the reviewer. If detailed contributorship data is needed for the review of the citation record, then one can create a Citation Resource for the Citation Resource. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **FHIR Type:** `ContactDetail`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private reviewer?: ContactDetail[] | undefined;
+
+  /**
+   * Citation.endorser Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Who endorsed the citation record
+   * - **Definition:** Who endorsed the citation record.
+   * - **Comment:** The Citation.endorser element is structured to support a name (with a string datatype) and contact point information for the endorser, and is not structured to support unique identifiers for the endorser. If detailed contributorship data is needed for the endorsement of the citation record, then one can create a Citation Resource for the Citation Resource. See guidance around (not) making local changes to elements [here](https://hl7.org/fhir/canonicalresource.html#localization).
+   * - **FHIR Type:** `ContactDetail`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private endorser?: ContactDetail[] | undefined;
+
+  /**
+   * Citation.summary Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** A human-readable display of key concepts to represent the citation
+   * - **Definition:** A human-readable display of key concepts to represent the citation.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private summary?: CitationSummaryComponent[] | undefined;
+
+  /**
+   * Citation.classification Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The assignment to an organizing scheme
+   * - **Definition:** The assignment to an organizing scheme.
+   * - **Comment:** Use this element if you need to classify the citation record independently from classifying the cited artifact.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private classification?: CitationClassificationComponent[] | undefined;
+
+  /**
+   * Citation.note Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used for general notes and annotations not coded elsewhere
+   * - **Definition:** Used for general notes and annotations not coded elsewhere.
+   * - **FHIR Type:** `Annotation`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private note?: Annotation[] | undefined;
+
+  /**
+   * Citation.currentState Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The status of the citation record
+   * - **Definition:** The status of the citation record.
+   * - **Comment:** Use this if needed for reporting the state or status of the citation record, NOT FOR reporting the state or status of the cited article.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private currentState?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.statusDate Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** An effective date or period for a status of the citation record
+   * - **Definition:** The state or status of the citation record paired with an effective date or period for that state.
+   * - **Comment:** Use this if needed for reporting the state or status of the citation record, NOT FOR reporting the state or status of the cited article.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private statusDate?: CitationStatusDateComponent[] | undefined;
+
+  /**
+   * Citation.relatedArtifact Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Artifact related to the citation record
+   * - **Definition:** Artifact related to the citation record.
+   * - **Comment:** Use this if needed for reporting artifacts related to the citation record, NOT FOR reporting artifacts related to the cited article. For example, one may use this element to report the data source for generation of the Citation Resource instance if it was automatically generated, such as conversion from a citation repository.
+   * - **FHIR Type:** `RelatedArtifact`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private relatedArtifact?: RelatedArtifact[] | undefined;
+
+  /**
+   * Citation.citedArtifact Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The article or artifact being described
+   * - **Definition:** The article or artifact being described.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private citedArtifact?: CitationCitedArtifactComponent | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `url` property value as a UriType object if defined; else an empty UriType object
+   */
+  public getUrlElement(): UriType {
+    return this.url ?? new UriType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `url` property.
+   *
+   * @param element - the `url` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setUrlElement(element: UriType | undefined): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid Citation.url; Provided element is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.url = element;
+    } else {
+      this.url = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `url` property exists and has a value; `false` otherwise
+   */
+  public hasUrlElement(): boolean {
+    return isDefined<UriType>(this.url) && !this.url.isEmpty();
+  }
+
+  /**
+   * @returns the `url` property value as a fhirUri if defined; else undefined
+   */
+  public getUrl(): fhirUri | undefined {
+    return this.url?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `url` property.
+   *
+   * @param value - the `url` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setUrl(value: fhirUri | undefined): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid Citation.url (${String(value)})`;
+      this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.url = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `url` property exists and has a value; `false` otherwise
+   */
+  public hasUrl(): boolean {
+    return this.hasUrlElement();
+  }
+
+  /**
+   * @returns the `identifier` property value as a Identifier array
+   */
+  public getIdentifier(): Identifier[] {
+    return this.identifier ?? ([] as Identifier[]);
+  }
+
+  /**
+   * Assigns the provided Identifier array value to the `identifier` property.
+   *
+   * @param value - the `identifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setIdentifier(value: Identifier[] | undefined): this {
+    if (isDefinedList<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.identifier; Provided value array has an element that is not an instance of Identifier.`;
+      assertFhirTypeList<Identifier>(value, Identifier, optErrMsg);
+      this.identifier = value;
+    } else {
+      this.identifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Identifier value to the `identifier` array property.
+   *
+   * @param value - the `identifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addIdentifier(value: Identifier | undefined): this {
+    if (isDefined<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.identifier; Provided element is not an instance of Identifier.`;
+      assertFhirType<Identifier>(value, Identifier, optErrMsg);
+      this.initIdentifier();
+      this.identifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `identifier` property exists and has a value; `false` otherwise
+   */
+  public hasIdentifier(): boolean {
+    return isDefinedList<Identifier>(this.identifier) && this.identifier.some((item: Identifier) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `identifier` property
+   */
+  private initIdentifier(): void {
+    if(!this.hasIdentifier()) {
+      this.identifier = [] as Identifier[];
+    }
+  }
+
+  /**
+   * @returns the `version` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getVersionElement(): StringType {
+    return this.version ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `version` property.
+   *
+   * @param element - the `version` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setVersionElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.version; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.version = element;
+    } else {
+      this.version = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `version` property exists and has a value; `false` otherwise
+   */
+  public hasVersionElement(): boolean {
+    return isDefined<StringType>(this.version) && !this.version.isEmpty();
+  }
+
+  /**
+   * @returns the `version` property value as a fhirString if defined; else undefined
+   */
+  public getVersion(): fhirString | undefined {
+    return this.version?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `version` property.
+   *
+   * @param value - the `version` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setVersion(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.version (${String(value)})`;
+      this.version = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.version = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `version` property exists and has a value; `false` otherwise
+   */
+  public hasVersion(): boolean {
+    return this.hasVersionElement();
+  }
+
+  /**
+   * @returns the `versionAlgorithm` property value as a DataType object if defined; else undefined
+   */
+  public getVersionAlgorithm(): IDataType | undefined {
+    return this.versionAlgorithm;
+  }
+
+  /**
+   * Assigns the provided DataType object value to the `versionAlgorithm` property.
+   *
+   * @decorator `@ChoiceDataTypes('Citation.versionAlgorithm[x]')`
+   *
+   * @param value - the `versionAlgorithm` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  @ChoiceDataTypes('Citation.versionAlgorithm[x]')
+  public setVersionAlgorithm(value: IDataType | undefined): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.versionAlgorithm = value;
+    } else {
+      this.versionAlgorithm = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `versionAlgorithm` property exists and has a value; `false` otherwise
+   */
+  public hasVersionAlgorithm(): boolean {
+    return isDefined<IDataType>(this.versionAlgorithm) && !this.versionAlgorithm.isEmpty();
+  }
+
+  // *** NOTE ***
+  // Following choice datatype-specific "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
+
+  /**
+   * @returns the `versionAlgorithm` property value as a StringType object if defined; else undefined
+   */
+  public getVersionAlgorithmStringType(): StringType | undefined {
+    if (!isDefined<IDataType | undefined>(this.versionAlgorithm)) {
+      return undefined;
+    }
+    if (!(this.versionAlgorithm instanceof StringType)) {
+      throw new InvalidTypeError(
+        `DataType mismatch for Citation.versionAlgorithm[x]: Expected StringType but encountered ${this.versionAlgorithm.fhirType()}`,
+      );
+    }
+    return this.versionAlgorithm;
+  }
+
+  /**
+   * @returns `true` if the `versionAlgorithm` property exists as a StringType and has a value; `false` otherwise
+   */
+  public hasVersionAlgorithmStringType(): boolean {
+    return this.hasVersionAlgorithm() && this.versionAlgorithm instanceof StringType;
+  }
+
+  /**
+   * @returns the `versionAlgorithm` property value as a Coding object if defined; else undefined
+   */
+  public getVersionAlgorithmCoding(): Coding | undefined {
+    if (!isDefined<IDataType | undefined>(this.versionAlgorithm)) {
+      return undefined;
+    }
+    if (!(this.versionAlgorithm instanceof Coding)) {
+      throw new InvalidTypeError(
+        `DataType mismatch for Citation.versionAlgorithm[x]: Expected Coding but encountered ${this.versionAlgorithm.fhirType()}`,
+      );
+    }
+    return this.versionAlgorithm;
+  }
+
+  /**
+   * @returns `true` if the `versionAlgorithm` property exists as a Coding and has a value; `false` otherwise
+   */
+  public hasVersionAlgorithmCoding(): boolean {
+    return this.hasVersionAlgorithm() && this.versionAlgorithm instanceof Coding;
+  }
+
+  // End of choice datatype-specific "get"/"has" methods
+
+  /**
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `name` property.
+   *
+   * @param element - the `name` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setNameElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.name; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `name` property exists and has a value; `false` otherwise
+   */
+  public hasNameElement(): boolean {
+    return isDefined<StringType>(this.name) && !this.name.isEmpty();
+  }
+
+  /**
+   * @returns the `name` property value as a fhirString if defined; else undefined
+   */
+  public getName(): fhirString | undefined {
+    return this.name?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `name` property.
+   *
+   * @param value - the `name` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setName(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `name` property exists and has a value; `false` otherwise
+   */
+  public hasName(): boolean {
+    return this.hasNameElement();
+  }
+
+  /**
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `title` property.
+   *
+   * @param element - the `title` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTitleElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.title; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `title` property exists and has a value; `false` otherwise
+   */
+  public hasTitleElement(): boolean {
+    return isDefined<StringType>(this.title) && !this.title.isEmpty();
+  }
+
+  /**
+   * @returns the `title` property value as a fhirString if defined; else undefined
+   */
+  public getTitle(): fhirString | undefined {
+    return this.title?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `title` property.
+   *
+   * @param value - the `title` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTitle(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `title` property exists and has a value; `false` otherwise
+   */
+  public hasTitle(): boolean {
+    return this.hasTitleElement();
+  }
+
+  /**
+   * @returns the `status` property value as a EnumCodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  public getStatusEnumType(): EnumCodeType | null {
+    return this.status;
+  }
+
+  /**
+   * Assigns the provided EnumCodeType value to the `status` property.
+   *
+   * @param enumType - the `status` value
+   * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  public setStatusEnumType(enumType: EnumCodeType): this {
+    assertIsDefined<EnumCodeType>(enumType, `Citation.status is required`);
+    const errMsgPrefix = `Invalid Citation.status`;
+    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+    this.status = enumType;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `status` property exists and has a value; `false` otherwise
+   */
+  public hasStatusEnumType(): boolean {
+    return isDefined<EnumCodeType>(this.status) && !this.status.isEmpty() && this.status.fhirCodeEnumeration.length > 0;
+  }
+
+  /**
+   * @returns the `status` property value as a CodeType if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  public getStatusElement(): CodeType | null {
+    if (this.status === null) {
+      return null;
+    }
+    return this.status as CodeType;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `status` property.
+   *
+   * @param element - the `status` value
+   * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link InvalidTypeError} for invalid data types
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  public setStatusElement(element: CodeType): this {
+    assertIsDefined<CodeType>(element, `Citation.status is required`);
+    const optErrMsg = `Invalid Citation.status; Provided value is not an instance of CodeType.`;
+    assertFhirType<CodeType>(element, CodeType, optErrMsg);
+    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `status` property exists and has a value; `false` otherwise
+   */
+  public hasStatusElement(): boolean {
+    return this.hasStatusEnumType();
+  }
+
+  /**
+   * @returns the `status` property value as a fhirCode if defined; else null
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  public getStatus(): fhirCode | null {
+    if (this.status === null) {
+      return null;
+    }
+    return this.status.fhirCode.code;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `status` property.
+   *
+   * @param value - the `status` value
+   * @returns this
+   * @throws {@link InvalidCodeError} for invalid code value
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   *
+   * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
+   */
+  public setStatus(value: fhirCode): this {
+    assertIsDefined<fhirCode>(value, `Citation.status is required`);
+    const optErrMsg = `Invalid Citation.status (${String(value)})`;
+    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `status` property exists and has a value; `false` otherwise
+   */
+  public hasStatus(): boolean {
+    return this.hasStatusEnumType();
+  }
+
+  /**
+   * @returns the `experimental` property value as a BooleanType object if defined; else an empty BooleanType object
+   */
+  public getExperimentalElement(): BooleanType {
+    return this.experimental ?? new BooleanType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `experimental` property.
+   *
+   * @param element - the `experimental` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setExperimentalElement(element: BooleanType | undefined): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Citation.experimental; Provided element is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.experimental = element;
+    } else {
+      this.experimental = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `experimental` property exists and has a value; `false` otherwise
+   */
+  public hasExperimentalElement(): boolean {
+    return isDefined<BooleanType>(this.experimental) && !this.experimental.isEmpty();
+  }
+
+  /**
+   * @returns the `experimental` property value as a fhirBoolean if defined; else undefined
+   */
+  public getExperimental(): fhirBoolean | undefined {
+    return this.experimental?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `experimental` property.
+   *
+   * @param value - the `experimental` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setExperimental(value: fhirBoolean | undefined): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Citation.experimental (${String(value)})`;
+      this.experimental = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.experimental = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `experimental` property exists and has a value; `false` otherwise
+   */
+  public hasExperimental(): boolean {
+    return this.hasExperimentalElement();
+  }
+
+  /**
+   * @returns the `date` property value as a DateTimeType object if defined; else an empty DateTimeType object
+   */
+  public getDateElement(): DateTimeType {
+    return this.date ?? new DateTimeType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `date` property.
+   *
+   * @param element - the `date` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDateElement(element: DateTimeType | undefined): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid Citation.date; Provided element is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.date = element;
+    } else {
+      this.date = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `date` property exists and has a value; `false` otherwise
+   */
+  public hasDateElement(): boolean {
+    return isDefined<DateTimeType>(this.date) && !this.date.isEmpty();
+  }
+
+  /**
+   * @returns the `date` property value as a fhirDateTime if defined; else undefined
+   */
+  public getDate(): fhirDateTime | undefined {
+    return this.date?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `date` property.
+   *
+   * @param value - the `date` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDate(value: fhirDateTime | undefined): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid Citation.date (${String(value)})`;
+      this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.date = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `date` property exists and has a value; `false` otherwise
+   */
+  public hasDate(): boolean {
+    return this.hasDateElement();
+  }
+
+  /**
+   * @returns the `publisher` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getPublisherElement(): StringType {
+    return this.publisher ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `publisher` property.
+   *
+   * @param element - the `publisher` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublisherElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.publisher; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.publisher = element;
+    } else {
+      this.publisher = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publisher` property exists and has a value; `false` otherwise
+   */
+  public hasPublisherElement(): boolean {
+    return isDefined<StringType>(this.publisher) && !this.publisher.isEmpty();
+  }
+
+  /**
+   * @returns the `publisher` property value as a fhirString if defined; else undefined
+   */
+  public getPublisher(): fhirString | undefined {
+    return this.publisher?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `publisher` property.
+   *
+   * @param value - the `publisher` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublisher(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.publisher (${String(value)})`;
+      this.publisher = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.publisher = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publisher` property exists and has a value; `false` otherwise
+   */
+  public hasPublisher(): boolean {
+    return this.hasPublisherElement();
+  }
+
+  /**
+   * @returns the `contact` property value as a ContactDetail array
+   */
+  public getContact(): ContactDetail[] {
+    return this.contact ?? ([] as ContactDetail[]);
+  }
+
+  /**
+   * Assigns the provided ContactDetail array value to the `contact` property.
+   *
+   * @param value - the `contact` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setContact(value: ContactDetail[] | undefined): this {
+    if (isDefinedList<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.contact; Provided value array has an element that is not an instance of ContactDetail.`;
+      assertFhirTypeList<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.contact = value;
+    } else {
+      this.contact = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided ContactDetail value to the `contact` array property.
+   *
+   * @param value - the `contact` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addContact(value: ContactDetail | undefined): this {
+    if (isDefined<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.contact; Provided element is not an instance of ContactDetail.`;
+      assertFhirType<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.initContact();
+      this.contact?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `contact` property exists and has a value; `false` otherwise
+   */
+  public hasContact(): boolean {
+    return isDefinedList<ContactDetail>(this.contact) && this.contact.some((item: ContactDetail) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `contact` property
+   */
+  private initContact(): void {
+    if(!this.hasContact()) {
+      this.contact = [] as ContactDetail[];
+    }
+  }
+
+  /**
+   * @returns the `description` property value as a MarkdownType object if defined; else an empty MarkdownType object
+   */
+  public getDescriptionElement(): MarkdownType {
+    return this.description ?? new MarkdownType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `description` property.
+   *
+   * @param element - the `description` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDescriptionElement(element: MarkdownType | undefined): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.description; Provided element is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.description = element;
+    } else {
+      this.description = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `description` property exists and has a value; `false` otherwise
+   */
+  public hasDescriptionElement(): boolean {
+    return isDefined<MarkdownType>(this.description) && !this.description.isEmpty();
+  }
+
+  /**
+   * @returns the `description` property value as a fhirMarkdown if defined; else undefined
+   */
+  public getDescription(): fhirMarkdown | undefined {
+    return this.description?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `description` property.
+   *
+   * @param value - the `description` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDescription(value: fhirMarkdown | undefined): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.description (${String(value)})`;
+      this.description = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.description = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `description` property exists and has a value; `false` otherwise
+   */
+  public hasDescription(): boolean {
+    return this.hasDescriptionElement();
+  }
+
+  /**
+   * @returns the `useContext` property value as a UsageContext array
+   */
+  public getUseContext(): UsageContext[] {
+    return this.useContext ?? ([] as UsageContext[]);
+  }
+
+  /**
+   * Assigns the provided UsageContext array value to the `useContext` property.
+   *
+   * @param value - the `useContext` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setUseContext(value: UsageContext[] | undefined): this {
+    if (isDefinedList<UsageContext>(value)) {
+      const optErrMsg = `Invalid Citation.useContext; Provided value array has an element that is not an instance of UsageContext.`;
+      assertFhirTypeList<UsageContext>(value, UsageContext, optErrMsg);
+      this.useContext = value;
+    } else {
+      this.useContext = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided UsageContext value to the `useContext` array property.
+   *
+   * @param value - the `useContext` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addUseContext(value: UsageContext | undefined): this {
+    if (isDefined<UsageContext>(value)) {
+      const optErrMsg = `Invalid Citation.useContext; Provided element is not an instance of UsageContext.`;
+      assertFhirType<UsageContext>(value, UsageContext, optErrMsg);
+      this.initUseContext();
+      this.useContext?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `useContext` property exists and has a value; `false` otherwise
+   */
+  public hasUseContext(): boolean {
+    return isDefinedList<UsageContext>(this.useContext) && this.useContext.some((item: UsageContext) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `useContext` property
+   */
+  private initUseContext(): void {
+    if(!this.hasUseContext()) {
+      this.useContext = [] as UsageContext[];
+    }
+  }
+
+  /**
+   * @returns the `jurisdiction` property value as a CodeableConcept array
+   */
+  public getJurisdiction(): CodeableConcept[] {
+    return this.jurisdiction ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `jurisdiction` property.
+   *
+   * @param value - the `jurisdiction` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setJurisdiction(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.jurisdiction; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.jurisdiction = value;
+    } else {
+      this.jurisdiction = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `jurisdiction` array property.
+   *
+   * @param value - the `jurisdiction` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addJurisdiction(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.jurisdiction; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initJurisdiction();
+      this.jurisdiction?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `jurisdiction` property exists and has a value; `false` otherwise
+   */
+  public hasJurisdiction(): boolean {
+    return isDefinedList<CodeableConcept>(this.jurisdiction) && this.jurisdiction.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `jurisdiction` property
+   */
+  private initJurisdiction(): void {
+    if(!this.hasJurisdiction()) {
+      this.jurisdiction = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `purpose` property value as a MarkdownType object if defined; else an empty MarkdownType object
+   */
+  public getPurposeElement(): MarkdownType {
+    return this.purpose ?? new MarkdownType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `purpose` property.
+   *
+   * @param element - the `purpose` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPurposeElement(element: MarkdownType | undefined): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.purpose; Provided element is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.purpose = element;
+    } else {
+      this.purpose = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `purpose` property exists and has a value; `false` otherwise
+   */
+  public hasPurposeElement(): boolean {
+    return isDefined<MarkdownType>(this.purpose) && !this.purpose.isEmpty();
+  }
+
+  /**
+   * @returns the `purpose` property value as a fhirMarkdown if defined; else undefined
+   */
+  public getPurpose(): fhirMarkdown | undefined {
+    return this.purpose?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `purpose` property.
+   *
+   * @param value - the `purpose` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPurpose(value: fhirMarkdown | undefined): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.purpose (${String(value)})`;
+      this.purpose = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.purpose = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `purpose` property exists and has a value; `false` otherwise
+   */
+  public hasPurpose(): boolean {
+    return this.hasPurposeElement();
+  }
+
+  /**
+   * @returns the `copyright` property value as a MarkdownType object if defined; else an empty MarkdownType object
+   */
+  public getCopyrightElement(): MarkdownType {
+    return this.copyright ?? new MarkdownType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `copyright` property.
+   *
+   * @param element - the `copyright` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyrightElement(element: MarkdownType | undefined): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.copyright; Provided element is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.copyright = element;
+    } else {
+      this.copyright = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyright` property exists and has a value; `false` otherwise
+   */
+  public hasCopyrightElement(): boolean {
+    return isDefined<MarkdownType>(this.copyright) && !this.copyright.isEmpty();
+  }
+
+  /**
+   * @returns the `copyright` property value as a fhirMarkdown if defined; else undefined
+   */
+  public getCopyright(): fhirMarkdown | undefined {
+    return this.copyright?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `copyright` property.
+   *
+   * @param value - the `copyright` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyright(value: fhirMarkdown | undefined): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.copyright (${String(value)})`;
+      this.copyright = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.copyright = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyright` property exists and has a value; `false` otherwise
+   */
+  public hasCopyright(): boolean {
+    return this.hasCopyrightElement();
+  }
+
+  /**
+   * @returns the `copyrightLabel` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getCopyrightLabelElement(): StringType {
+    return this.copyrightLabel ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `copyrightLabel` property.
+   *
+   * @param element - the `copyrightLabel` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyrightLabelElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.copyrightLabel; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.copyrightLabel = element;
+    } else {
+      this.copyrightLabel = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyrightLabel` property exists and has a value; `false` otherwise
+   */
+  public hasCopyrightLabelElement(): boolean {
+    return isDefined<StringType>(this.copyrightLabel) && !this.copyrightLabel.isEmpty();
+  }
+
+  /**
+   * @returns the `copyrightLabel` property value as a fhirString if defined; else undefined
+   */
+  public getCopyrightLabel(): fhirString | undefined {
+    return this.copyrightLabel?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `copyrightLabel` property.
+   *
+   * @param value - the `copyrightLabel` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyrightLabel(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.copyrightLabel (${String(value)})`;
+      this.copyrightLabel = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.copyrightLabel = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyrightLabel` property exists and has a value; `false` otherwise
+   */
+  public hasCopyrightLabel(): boolean {
+    return this.hasCopyrightLabelElement();
+  }
+
+  /**
+   * @returns the `approvalDate` property value as a DateType object if defined; else an empty DateType object
+   */
+  public getApprovalDateElement(): DateType {
+    return this.approvalDate ?? new DateType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `approvalDate` property.
+   *
+   * @param element - the `approvalDate` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setApprovalDateElement(element: DateType | undefined): this {
+    if (isDefined<DateType>(element)) {
+      const optErrMsg = `Invalid Citation.approvalDate; Provided element is not an instance of DateType.`;
+      assertFhirType<DateType>(element, DateType, optErrMsg);
+      this.approvalDate = element;
+    } else {
+      this.approvalDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `approvalDate` property exists and has a value; `false` otherwise
+   */
+  public hasApprovalDateElement(): boolean {
+    return isDefined<DateType>(this.approvalDate) && !this.approvalDate.isEmpty();
+  }
+
+  /**
+   * @returns the `approvalDate` property value as a fhirDate if defined; else undefined
+   */
+  public getApprovalDate(): fhirDate | undefined {
+    return this.approvalDate?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `approvalDate` property.
+   *
+   * @param value - the `approvalDate` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setApprovalDate(value: fhirDate | undefined): this {
+    if (isDefined<fhirDate>(value)) {
+      const optErrMsg = `Invalid Citation.approvalDate (${String(value)})`;
+      this.approvalDate = new DateType(parseFhirPrimitiveData(value, fhirDateSchema, optErrMsg));
+    } else {
+      this.approvalDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `approvalDate` property exists and has a value; `false` otherwise
+   */
+  public hasApprovalDate(): boolean {
+    return this.hasApprovalDateElement();
+  }
+
+  /**
+   * @returns the `lastReviewDate` property value as a DateType object if defined; else an empty DateType object
+   */
+  public getLastReviewDateElement(): DateType {
+    return this.lastReviewDate ?? new DateType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `lastReviewDate` property.
+   *
+   * @param element - the `lastReviewDate` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLastReviewDateElement(element: DateType | undefined): this {
+    if (isDefined<DateType>(element)) {
+      const optErrMsg = `Invalid Citation.lastReviewDate; Provided element is not an instance of DateType.`;
+      assertFhirType<DateType>(element, DateType, optErrMsg);
+      this.lastReviewDate = element;
+    } else {
+      this.lastReviewDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `lastReviewDate` property exists and has a value; `false` otherwise
+   */
+  public hasLastReviewDateElement(): boolean {
+    return isDefined<DateType>(this.lastReviewDate) && !this.lastReviewDate.isEmpty();
+  }
+
+  /**
+   * @returns the `lastReviewDate` property value as a fhirDate if defined; else undefined
+   */
+  public getLastReviewDate(): fhirDate | undefined {
+    return this.lastReviewDate?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `lastReviewDate` property.
+   *
+   * @param value - the `lastReviewDate` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLastReviewDate(value: fhirDate | undefined): this {
+    if (isDefined<fhirDate>(value)) {
+      const optErrMsg = `Invalid Citation.lastReviewDate (${String(value)})`;
+      this.lastReviewDate = new DateType(parseFhirPrimitiveData(value, fhirDateSchema, optErrMsg));
+    } else {
+      this.lastReviewDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `lastReviewDate` property exists and has a value; `false` otherwise
+   */
+  public hasLastReviewDate(): boolean {
+    return this.hasLastReviewDateElement();
+  }
+
+  /**
+   * @returns the `effectivePeriod` property value as a Period object if defined; else an empty Period object
+   */
+  public getEffectivePeriod(): Period {
+    return this.effectivePeriod ?? new Period();
+  }
+
+  /**
+   * Assigns the provided EffectivePeriod object value to the `effectivePeriod` property.
+   *
+   * @param value - the `effectivePeriod` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setEffectivePeriod(value: Period | undefined): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid Citation.effectivePeriod; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.effectivePeriod = value;
+    } else {
+      this.effectivePeriod = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `effectivePeriod` property exists and has a value; `false` otherwise
+   */
+  public hasEffectivePeriod(): boolean {
+    return isDefined<Period>(this.effectivePeriod) && !this.effectivePeriod.isEmpty();
+  }
+
+  /**
+   * @returns the `author` property value as a ContactDetail array
+   */
+  public getAuthor(): ContactDetail[] {
+    return this.author ?? ([] as ContactDetail[]);
+  }
+
+  /**
+   * Assigns the provided ContactDetail array value to the `author` property.
+   *
+   * @param value - the `author` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setAuthor(value: ContactDetail[] | undefined): this {
+    if (isDefinedList<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.author; Provided value array has an element that is not an instance of ContactDetail.`;
+      assertFhirTypeList<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.author = value;
+    } else {
+      this.author = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided ContactDetail value to the `author` array property.
+   *
+   * @param value - the `author` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addAuthor(value: ContactDetail | undefined): this {
+    if (isDefined<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.author; Provided element is not an instance of ContactDetail.`;
+      assertFhirType<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.initAuthor();
+      this.author?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `author` property exists and has a value; `false` otherwise
+   */
+  public hasAuthor(): boolean {
+    return isDefinedList<ContactDetail>(this.author) && this.author.some((item: ContactDetail) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `author` property
+   */
+  private initAuthor(): void {
+    if(!this.hasAuthor()) {
+      this.author = [] as ContactDetail[];
+    }
+  }
+
+  /**
+   * @returns the `editor` property value as a ContactDetail array
+   */
+  public getEditor(): ContactDetail[] {
+    return this.editor ?? ([] as ContactDetail[]);
+  }
+
+  /**
+   * Assigns the provided ContactDetail array value to the `editor` property.
+   *
+   * @param value - the `editor` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setEditor(value: ContactDetail[] | undefined): this {
+    if (isDefinedList<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.editor; Provided value array has an element that is not an instance of ContactDetail.`;
+      assertFhirTypeList<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.editor = value;
+    } else {
+      this.editor = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided ContactDetail value to the `editor` array property.
+   *
+   * @param value - the `editor` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addEditor(value: ContactDetail | undefined): this {
+    if (isDefined<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.editor; Provided element is not an instance of ContactDetail.`;
+      assertFhirType<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.initEditor();
+      this.editor?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `editor` property exists and has a value; `false` otherwise
+   */
+  public hasEditor(): boolean {
+    return isDefinedList<ContactDetail>(this.editor) && this.editor.some((item: ContactDetail) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `editor` property
+   */
+  private initEditor(): void {
+    if(!this.hasEditor()) {
+      this.editor = [] as ContactDetail[];
+    }
+  }
+
+  /**
+   * @returns the `reviewer` property value as a ContactDetail array
+   */
+  public getReviewer(): ContactDetail[] {
+    return this.reviewer ?? ([] as ContactDetail[]);
+  }
+
+  /**
+   * Assigns the provided ContactDetail array value to the `reviewer` property.
+   *
+   * @param value - the `reviewer` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setReviewer(value: ContactDetail[] | undefined): this {
+    if (isDefinedList<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.reviewer; Provided value array has an element that is not an instance of ContactDetail.`;
+      assertFhirTypeList<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.reviewer = value;
+    } else {
+      this.reviewer = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided ContactDetail value to the `reviewer` array property.
+   *
+   * @param value - the `reviewer` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addReviewer(value: ContactDetail | undefined): this {
+    if (isDefined<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.reviewer; Provided element is not an instance of ContactDetail.`;
+      assertFhirType<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.initReviewer();
+      this.reviewer?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `reviewer` property exists and has a value; `false` otherwise
+   */
+  public hasReviewer(): boolean {
+    return isDefinedList<ContactDetail>(this.reviewer) && this.reviewer.some((item: ContactDetail) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `reviewer` property
+   */
+  private initReviewer(): void {
+    if(!this.hasReviewer()) {
+      this.reviewer = [] as ContactDetail[];
+    }
+  }
+
+  /**
+   * @returns the `endorser` property value as a ContactDetail array
+   */
+  public getEndorser(): ContactDetail[] {
+    return this.endorser ?? ([] as ContactDetail[]);
+  }
+
+  /**
+   * Assigns the provided ContactDetail array value to the `endorser` property.
+   *
+   * @param value - the `endorser` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setEndorser(value: ContactDetail[] | undefined): this {
+    if (isDefinedList<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.endorser; Provided value array has an element that is not an instance of ContactDetail.`;
+      assertFhirTypeList<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.endorser = value;
+    } else {
+      this.endorser = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided ContactDetail value to the `endorser` array property.
+   *
+   * @param value - the `endorser` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addEndorser(value: ContactDetail | undefined): this {
+    if (isDefined<ContactDetail>(value)) {
+      const optErrMsg = `Invalid Citation.endorser; Provided element is not an instance of ContactDetail.`;
+      assertFhirType<ContactDetail>(value, ContactDetail, optErrMsg);
+      this.initEndorser();
+      this.endorser?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `endorser` property exists and has a value; `false` otherwise
+   */
+  public hasEndorser(): boolean {
+    return isDefinedList<ContactDetail>(this.endorser) && this.endorser.some((item: ContactDetail) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `endorser` property
+   */
+  private initEndorser(): void {
+    if(!this.hasEndorser()) {
+      this.endorser = [] as ContactDetail[];
+    }
+  }
+
+  /**
+   * @returns the `summary` property value as a CitationSummaryComponent array
+   */
+  public getSummary(): CitationSummaryComponent[] {
+    return this.summary ?? ([] as CitationSummaryComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationSummaryComponent array value to the `summary` property.
+   *
+   * @param value - the `summary` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setSummary(value: CitationSummaryComponent[] | undefined): this {
+    if (isDefinedList<CitationSummaryComponent>(value)) {
+      const optErrMsg = `Invalid Citation.summary; Provided value array has an element that is not an instance of CitationSummaryComponent.`;
+      assertFhirTypeList<CitationSummaryComponent>(value, CitationSummaryComponent, optErrMsg);
+      this.summary = value;
+    } else {
+      this.summary = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationSummaryComponent value to the `summary` array property.
+   *
+   * @param value - the `summary` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addSummary(value: CitationSummaryComponent | undefined): this {
+    if (isDefined<CitationSummaryComponent>(value)) {
+      const optErrMsg = `Invalid Citation.summary; Provided element is not an instance of CitationSummaryComponent.`;
+      assertFhirType<CitationSummaryComponent>(value, CitationSummaryComponent, optErrMsg);
+      this.initSummary();
+      this.summary?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `summary` property exists and has a value; `false` otherwise
+   */
+  public hasSummary(): boolean {
+    return isDefinedList<CitationSummaryComponent>(this.summary) && this.summary.some((item: CitationSummaryComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `summary` property
+   */
+  private initSummary(): void {
+    if(!this.hasSummary()) {
+      this.summary = [] as CitationSummaryComponent[];
+    }
+  }
+
+  /**
+   * @returns the `classification` property value as a CitationClassificationComponent array
+   */
+  public getClassification(): CitationClassificationComponent[] {
+    return this.classification ?? ([] as CitationClassificationComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationClassificationComponent array value to the `classification` property.
+   *
+   * @param value - the `classification` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setClassification(value: CitationClassificationComponent[] | undefined): this {
+    if (isDefinedList<CitationClassificationComponent>(value)) {
+      const optErrMsg = `Invalid Citation.classification; Provided value array has an element that is not an instance of CitationClassificationComponent.`;
+      assertFhirTypeList<CitationClassificationComponent>(value, CitationClassificationComponent, optErrMsg);
+      this.classification = value;
+    } else {
+      this.classification = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationClassificationComponent value to the `classification` array property.
+   *
+   * @param value - the `classification` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addClassification(value: CitationClassificationComponent | undefined): this {
+    if (isDefined<CitationClassificationComponent>(value)) {
+      const optErrMsg = `Invalid Citation.classification; Provided element is not an instance of CitationClassificationComponent.`;
+      assertFhirType<CitationClassificationComponent>(value, CitationClassificationComponent, optErrMsg);
+      this.initClassification();
+      this.classification?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `classification` property exists and has a value; `false` otherwise
+   */
+  public hasClassification(): boolean {
+    return isDefinedList<CitationClassificationComponent>(this.classification) && this.classification.some((item: CitationClassificationComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `classification` property
+   */
+  private initClassification(): void {
+    if(!this.hasClassification()) {
+      this.classification = [] as CitationClassificationComponent[];
+    }
+  }
+
+  /**
+   * @returns the `note` property value as a Annotation array
+   */
+  public getNote(): Annotation[] {
+    return this.note ?? ([] as Annotation[]);
+  }
+
+  /**
+   * Assigns the provided Annotation array value to the `note` property.
+   *
+   * @param value - the `note` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setNote(value: Annotation[] | undefined): this {
+    if (isDefinedList<Annotation>(value)) {
+      const optErrMsg = `Invalid Citation.note; Provided value array has an element that is not an instance of Annotation.`;
+      assertFhirTypeList<Annotation>(value, Annotation, optErrMsg);
+      this.note = value;
+    } else {
+      this.note = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Annotation value to the `note` array property.
+   *
+   * @param value - the `note` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addNote(value: Annotation | undefined): this {
+    if (isDefined<Annotation>(value)) {
+      const optErrMsg = `Invalid Citation.note; Provided element is not an instance of Annotation.`;
+      assertFhirType<Annotation>(value, Annotation, optErrMsg);
+      this.initNote();
+      this.note?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `note` property exists and has a value; `false` otherwise
+   */
+  public hasNote(): boolean {
+    return isDefinedList<Annotation>(this.note) && this.note.some((item: Annotation) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `note` property
+   */
+  private initNote(): void {
+    if(!this.hasNote()) {
+      this.note = [] as Annotation[];
+    }
+  }
+
+  /**
+   * @returns the `currentState` property value as a CodeableConcept array
+   */
+  public getCurrentState(): CodeableConcept[] {
+    return this.currentState ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `currentState` property.
+   *
+   * @param value - the `currentState` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setCurrentState(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.currentState; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.currentState = value;
+    } else {
+      this.currentState = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `currentState` array property.
+   *
+   * @param value - the `currentState` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addCurrentState(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.currentState; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initCurrentState();
+      this.currentState?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `currentState` property exists and has a value; `false` otherwise
+   */
+  public hasCurrentState(): boolean {
+    return isDefinedList<CodeableConcept>(this.currentState) && this.currentState.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `currentState` property
+   */
+  private initCurrentState(): void {
+    if(!this.hasCurrentState()) {
+      this.currentState = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `statusDate` property value as a CitationStatusDateComponent array
+   */
+  public getStatusDate(): CitationStatusDateComponent[] {
+    return this.statusDate ?? ([] as CitationStatusDateComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationStatusDateComponent array value to the `statusDate` property.
+   *
+   * @param value - the `statusDate` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setStatusDate(value: CitationStatusDateComponent[] | undefined): this {
+    if (isDefinedList<CitationStatusDateComponent>(value)) {
+      const optErrMsg = `Invalid Citation.statusDate; Provided value array has an element that is not an instance of CitationStatusDateComponent.`;
+      assertFhirTypeList<CitationStatusDateComponent>(value, CitationStatusDateComponent, optErrMsg);
+      this.statusDate = value;
+    } else {
+      this.statusDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationStatusDateComponent value to the `statusDate` array property.
+   *
+   * @param value - the `statusDate` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addStatusDate(value: CitationStatusDateComponent | undefined): this {
+    if (isDefined<CitationStatusDateComponent>(value)) {
+      const optErrMsg = `Invalid Citation.statusDate; Provided element is not an instance of CitationStatusDateComponent.`;
+      assertFhirType<CitationStatusDateComponent>(value, CitationStatusDateComponent, optErrMsg);
+      this.initStatusDate();
+      this.statusDate?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `statusDate` property exists and has a value; `false` otherwise
+   */
+  public hasStatusDate(): boolean {
+    return isDefinedList<CitationStatusDateComponent>(this.statusDate) && this.statusDate.some((item: CitationStatusDateComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `statusDate` property
+   */
+  private initStatusDate(): void {
+    if(!this.hasStatusDate()) {
+      this.statusDate = [] as CitationStatusDateComponent[];
+    }
+  }
+
+  /**
+   * @returns the `relatedArtifact` property value as a RelatedArtifact array
+   */
+  public getRelatedArtifact(): RelatedArtifact[] {
+    return this.relatedArtifact ?? ([] as RelatedArtifact[]);
+  }
+
+  /**
+   * Assigns the provided RelatedArtifact array value to the `relatedArtifact` property.
+   *
+   * @param value - the `relatedArtifact` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setRelatedArtifact(value: RelatedArtifact[] | undefined): this {
+    if (isDefinedList<RelatedArtifact>(value)) {
+      const optErrMsg = `Invalid Citation.relatedArtifact; Provided value array has an element that is not an instance of RelatedArtifact.`;
+      assertFhirTypeList<RelatedArtifact>(value, RelatedArtifact, optErrMsg);
+      this.relatedArtifact = value;
+    } else {
+      this.relatedArtifact = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided RelatedArtifact value to the `relatedArtifact` array property.
+   *
+   * @param value - the `relatedArtifact` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addRelatedArtifact(value: RelatedArtifact | undefined): this {
+    if (isDefined<RelatedArtifact>(value)) {
+      const optErrMsg = `Invalid Citation.relatedArtifact; Provided element is not an instance of RelatedArtifact.`;
+      assertFhirType<RelatedArtifact>(value, RelatedArtifact, optErrMsg);
+      this.initRelatedArtifact();
+      this.relatedArtifact?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `relatedArtifact` property exists and has a value; `false` otherwise
+   */
+  public hasRelatedArtifact(): boolean {
+    return isDefinedList<RelatedArtifact>(this.relatedArtifact) && this.relatedArtifact.some((item: RelatedArtifact) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `relatedArtifact` property
+   */
+  private initRelatedArtifact(): void {
+    if(!this.hasRelatedArtifact()) {
+      this.relatedArtifact = [] as RelatedArtifact[];
+    }
+  }
+
+  /**
+   * @returns the `citedArtifact` property value as a CitationCitedArtifactComponent object if defined; else an empty CitationCitedArtifactComponent object
+   */
+  public getCitedArtifact(): CitationCitedArtifactComponent {
+    return this.citedArtifact ?? new CitationCitedArtifactComponent();
+  }
+
+  /**
+   * Assigns the provided CitedArtifact object value to the `citedArtifact` property.
+   *
+   * @param value - the `citedArtifact` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setCitedArtifact(value: CitationCitedArtifactComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact; Provided element is not an instance of CitationCitedArtifactComponent.`;
+      assertFhirType<CitationCitedArtifactComponent>(value, CitationCitedArtifactComponent, optErrMsg);
+      this.citedArtifact = value;
+    } else {
+      this.citedArtifact = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `citedArtifact` property exists and has a value; `false` otherwise
+   */
+  public hasCitedArtifact(): boolean {
+    return isDefined<CitationCitedArtifactComponent>(this.citedArtifact) && !this.citedArtifact.isEmpty();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.url,
+      this.identifier,
+      this.version,
+      this.versionAlgorithm,
+      this.name,
+      this.title,
+      this.status,
+      this.experimental,
+      this.date,
+      this.publisher,
+      this.contact,
+      this.description,
+      this.useContext,
+      this.jurisdiction,
+      this.purpose,
+      this.copyright,
+      this.copyrightLabel,
+      this.approvalDate,
+      this.lastReviewDate,
+      this.effectivePeriod,
+      this.author,
+      this.editor,
+      this.reviewer,
+      this.endorser,
+      this.summary,
+      this.classification,
+      this.note,
+      this.currentState,
+      this.statusDate,
+      this.relatedArtifact,
+      this.citedArtifact,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): Citation {
+    const dest = new Citation();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: Citation): void {
+    super.copyValues(dest);
+    dest.url = this.url?.copy();
+    const identifierList = copyListValues<Identifier>(this.identifier);
+    dest.identifier = identifierList.length === 0 ? undefined : identifierList;
+    dest.version = this.version?.copy();
+    dest.versionAlgorithm = this.versionAlgorithm?.copy() as IDataType;
+    dest.name = this.name?.copy();
+    dest.title = this.title?.copy();
+    dest.status = this.status ? this.status.copy() : null;
+    dest.experimental = this.experimental?.copy();
+    dest.date = this.date?.copy();
+    dest.publisher = this.publisher?.copy();
+    const contactList = copyListValues<ContactDetail>(this.contact);
+    dest.contact = contactList.length === 0 ? undefined : contactList;
+    dest.description = this.description?.copy();
+    const useContextList = copyListValues<UsageContext>(this.useContext);
+    dest.useContext = useContextList.length === 0 ? undefined : useContextList;
+    const jurisdictionList = copyListValues<CodeableConcept>(this.jurisdiction);
+    dest.jurisdiction = jurisdictionList.length === 0 ? undefined : jurisdictionList;
+    dest.purpose = this.purpose?.copy();
+    dest.copyright = this.copyright?.copy();
+    dest.copyrightLabel = this.copyrightLabel?.copy();
+    dest.approvalDate = this.approvalDate?.copy();
+    dest.lastReviewDate = this.lastReviewDate?.copy();
+    dest.effectivePeriod = this.effectivePeriod?.copy();
+    const authorList = copyListValues<ContactDetail>(this.author);
+    dest.author = authorList.length === 0 ? undefined : authorList;
+    const editorList = copyListValues<ContactDetail>(this.editor);
+    dest.editor = editorList.length === 0 ? undefined : editorList;
+    const reviewerList = copyListValues<ContactDetail>(this.reviewer);
+    dest.reviewer = reviewerList.length === 0 ? undefined : reviewerList;
+    const endorserList = copyListValues<ContactDetail>(this.endorser);
+    dest.endorser = endorserList.length === 0 ? undefined : endorserList;
+    const summaryList = copyListValues<CitationSummaryComponent>(this.summary);
+    dest.summary = summaryList.length === 0 ? undefined : summaryList;
+    const classificationList = copyListValues<CitationClassificationComponent>(this.classification);
+    dest.classification = classificationList.length === 0 ? undefined : classificationList;
+    const noteList = copyListValues<Annotation>(this.note);
+    dest.note = noteList.length === 0 ? undefined : noteList;
+    const currentStateList = copyListValues<CodeableConcept>(this.currentState);
+    dest.currentState = currentStateList.length === 0 ? undefined : currentStateList;
+    const statusDateList = copyListValues<CitationStatusDateComponent>(this.statusDate);
+    dest.statusDate = statusDateList.length === 0 ? undefined : statusDateList;
+    const relatedArtifactList = copyListValues<RelatedArtifact>(this.relatedArtifact);
+    dest.relatedArtifact = relatedArtifactList.length === 0 ? undefined : relatedArtifactList;
+    dest.citedArtifact = this.citedArtifact?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasUrlElement()) {
+      setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
+    }
+
+    if (this.hasIdentifier()) {
+      setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
+    }
+
+    if (this.hasVersionElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getVersionElement(), 'version', jsonObj);
+    }
+
+    if (this.hasVersionAlgorithm()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setPolymorphicValueJson(this.getVersionAlgorithm()!, 'versionAlgorithm', jsonObj);
+    }
+
+    if (this.hasNameElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
+    }
+
+    if (this.hasTitleElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
+    }
+
+    if (this.hasStatusElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.status`);
+    }
+
+    if (this.hasExperimentalElement()) {
+      setFhirPrimitiveJson<fhirBoolean>(this.getExperimentalElement(), 'experimental', jsonObj);
+    }
+
+    if (this.hasDateElement()) {
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement(), 'date', jsonObj);
+    }
+
+    if (this.hasPublisherElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getPublisherElement(), 'publisher', jsonObj);
+    }
+
+    if (this.hasContact()) {
+      setFhirComplexListJson(this.getContact(), 'contact', jsonObj);
+    }
+
+    if (this.hasDescriptionElement()) {
+      setFhirPrimitiveJson<fhirMarkdown>(this.getDescriptionElement(), 'description', jsonObj);
+    }
+
+    if (this.hasUseContext()) {
+      setFhirComplexListJson(this.getUseContext(), 'useContext', jsonObj);
+    }
+
+    if (this.hasJurisdiction()) {
+      setFhirComplexListJson(this.getJurisdiction(), 'jurisdiction', jsonObj);
+    }
+
+    if (this.hasPurposeElement()) {
+      setFhirPrimitiveJson<fhirMarkdown>(this.getPurposeElement(), 'purpose', jsonObj);
+    }
+
+    if (this.hasCopyrightElement()) {
+      setFhirPrimitiveJson<fhirMarkdown>(this.getCopyrightElement(), 'copyright', jsonObj);
+    }
+
+    if (this.hasCopyrightLabelElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getCopyrightLabelElement(), 'copyrightLabel', jsonObj);
+    }
+
+    if (this.hasApprovalDateElement()) {
+      setFhirPrimitiveJson<fhirDate>(this.getApprovalDateElement(), 'approvalDate', jsonObj);
+    }
+
+    if (this.hasLastReviewDateElement()) {
+      setFhirPrimitiveJson<fhirDate>(this.getLastReviewDateElement(), 'lastReviewDate', jsonObj);
+    }
+
+    if (this.hasEffectivePeriod()) {
+      setFhirComplexJson(this.getEffectivePeriod(), 'effectivePeriod', jsonObj);
+    }
+
+    if (this.hasAuthor()) {
+      setFhirComplexListJson(this.getAuthor(), 'author', jsonObj);
+    }
+
+    if (this.hasEditor()) {
+      setFhirComplexListJson(this.getEditor(), 'editor', jsonObj);
+    }
+
+    if (this.hasReviewer()) {
+      setFhirComplexListJson(this.getReviewer(), 'reviewer', jsonObj);
+    }
+
+    if (this.hasEndorser()) {
+      setFhirComplexListJson(this.getEndorser(), 'endorser', jsonObj);
+    }
+
+    if (this.hasSummary()) {
+      setFhirBackboneElementListJson(this.getSummary(), 'summary', jsonObj);
+    }
+
+    if (this.hasClassification()) {
+      setFhirBackboneElementListJson(this.getClassification(), 'classification', jsonObj);
+    }
+
+    if (this.hasNote()) {
+      setFhirComplexListJson(this.getNote(), 'note', jsonObj);
+    }
+
+    if (this.hasCurrentState()) {
+      setFhirComplexListJson(this.getCurrentState(), 'currentState', jsonObj);
+    }
+
+    if (this.hasStatusDate()) {
+      setFhirBackboneElementListJson(this.getStatusDate(), 'statusDate', jsonObj);
+    }
+
+    if (this.hasRelatedArtifact()) {
+      setFhirComplexListJson(this.getRelatedArtifact(), 'relatedArtifact', jsonObj);
+    }
+
+    if (this.hasCitedArtifact()) {
+      setFhirBackboneElementJson(this.getCitedArtifact(), 'citedArtifact', jsonObj);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+
+/**
+ * CitationSummaryComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** A human-readable display of key concepts to represent the citation
+ * - **Definition:** A human-readable display of key concepts to represent the citation.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationSummaryComponent extends BackboneElement implements IBackboneElement {
+  constructor(text: MarkdownType | fhirMarkdown | null = null) {
+    super();
+
+    this.text = null;
+    if (isDefined<MarkdownType | fhirMarkdown>(text)) {
+      if (text instanceof PrimitiveType) {
+        this.setTextElement(text);
+      } else {
+        this.setText(text);
+      }
+    }
+  }
+
+  /**
+   * Parse the provided `CitationSummaryComponent` JSON to instantiate the CitationSummaryComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationSummaryComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationSummaryComponent
+   * @returns CitationSummaryComponent data model or undefined for `CitationSummaryComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationSummaryComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationSummaryComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationSummaryComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'style';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setStyle(datatype);
+    }
+
+    fieldName = 'text';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setTextElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.summary.style Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Format for display of the citation summary
+   * - **Definition:** Format for display of the citation summary.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private style?: CodeableConcept | undefined;
+
+  /**
+   * Citation.summary.text Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The human-readable display of the citation summary
+   * - **Definition:** The human-readable display of the citation summary.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private text: MarkdownType | null;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `style` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getStyle(): CodeableConcept {
+    return this.style ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Style object value to the `style` property.
+   *
+   * @param value - the `style` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setStyle(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.summary.style; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.style = value;
+    } else {
+      this.style = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `style` property exists and has a value; `false` otherwise
+   */
+  public hasStyle(): boolean {
+    return isDefined<CodeableConcept>(this.style) && !this.style.isEmpty();
+  }
+
+  /**
+   * @returns the `text` property value as a MarkdownType object if defined; else null
+   */
+  public getTextElement(): MarkdownType | null {
+    return this.text;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `text` property.
+   *
+   * @param element - the `text` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTextElement(element: MarkdownType): this {
+    assertIsDefined<MarkdownType>(element, `Citation.summary.text is required`);
+    const optErrMsg = `Invalid Citation.summary.text; Provided value is not an instance of MarkdownType.`;
+    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+    this.text = element;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `text` property exists and has a value; `false` otherwise
+   */
+  public hasTextElement(): boolean {
+    return isDefined<MarkdownType>(this.text) && !this.text.isEmpty();
+  }
+
+  /**
+   * @returns the `text` property value as a fhirMarkdown if defined; else null
+   */
+  public getText(): fhirMarkdown | null {
+    if (this.text?.getValue() === undefined) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.text.getValue()!;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `text` property.
+   *
+   * @param value - the `text` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setText(value: fhirMarkdown): this {
+    assertIsDefined<fhirMarkdown>(value, `Citation.summary.text is required`);
+    const optErrMsg = `Invalid Citation.summary.text (${String(value)})`;
+    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `text` property exists and has a value; `false` otherwise
+   */
+  public hasText(): boolean {
+    return this.hasTextElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.summary';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.style,
+      this.text,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationSummaryComponent {
+    const dest = new CitationSummaryComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationSummaryComponent): void {
+    super.copyValues(dest);
+    dest.style = this.style?.copy();
+    dest.text = this.text ? this.text.copy() : null;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasStyle()) {
+      setFhirComplexJson(this.getStyle(), 'style', jsonObj);
+    }
+
+    if (this.hasTextElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.summary.text`);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationClassificationComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The assignment to an organizing scheme
+ * - **Definition:** The assignment to an organizing scheme.
+ * - **Comment:** Use this element if you need to classify the citation record independently from classifying the cited artifact.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationClassificationComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationClassificationComponent` JSON to instantiate the CitationClassificationComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationClassificationComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationClassificationComponent
+   * @returns CitationClassificationComponent data model or undefined for `CitationClassificationComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationClassificationComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationClassificationComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationClassificationComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setType(datatype);
+    }
+
+    fieldName = 'classifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addClassifier(datatype);
+        }
+      });
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.classification.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The kind of classifier (e.g. publication type, keyword)
+   * - **Definition:** The kind of classifier (e.g. publication type, keyword).
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept | undefined;
+
+  /**
+   * Citation.classification.classifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The specific classification value
+   * - **Definition:** The specific classification value.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private classifier?: CodeableConcept[] | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Type object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.classification.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `classifier` property value as a CodeableConcept array
+   */
+  public getClassifier(): CodeableConcept[] {
+    return this.classifier ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `classifier` property.
+   *
+   * @param value - the `classifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setClassifier(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.classification.classifier; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.classifier = value;
+    } else {
+      this.classifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `classifier` array property.
+   *
+   * @param value - the `classifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addClassifier(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.classification.classifier; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initClassifier();
+      this.classifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `classifier` property exists and has a value; `false` otherwise
+   */
+  public hasClassifier(): boolean {
+    return isDefinedList<CodeableConcept>(this.classifier) && this.classifier.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `classifier` property
+   */
+  private initClassifier(): void {
+    if(!this.hasClassifier()) {
+      this.classifier = [] as CodeableConcept[];
+    }
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.classification';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.classifier,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationClassificationComponent {
+    const dest = new CitationClassificationComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationClassificationComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_?.copy();
+    const classifierList = copyListValues<CodeableConcept>(this.classifier);
+    dest.classifier = classifierList.length === 0 ? undefined : classifierList;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasType()) {
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasClassifier()) {
+      setFhirComplexListJson(this.getClassifier(), 'classifier', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationStatusDateComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** An effective date or period for a status of the citation record
+ * - **Definition:** The state or status of the citation record paired with an effective date or period for that state.
+ * - **Comment:** Use this if needed for reporting the state or status of the citation record, NOT FOR reporting the state or status of the cited article.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationStatusDateComponent extends BackboneElement implements IBackboneElement {
+  constructor(activity: CodeableConcept | null = null, period: Period | null = null) {
+    super();
+
+    this.activity = null;
+    if (isDefined<CodeableConcept>(activity)) {
+      this.setActivity(activity);
+    }
+
+    this.period = null;
+    if (isDefined<Period>(period)) {
+      this.setPeriod(period);
+    }
+  }
+
+  /**
+   * Parse the provided `CitationStatusDateComponent` JSON to instantiate the CitationStatusDateComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationStatusDateComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationStatusDateComponent
+   * @returns CitationStatusDateComponent data model or undefined for `CitationStatusDateComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationStatusDateComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationStatusDateComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationStatusDateComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'activity';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setActivity(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'actual';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'boolean';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
+      instance.setActualElement(datatype);
+    }
+
+    fieldName = 'period';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setPeriod(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.statusDate.activity Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Classification of the status
+   * - **Definition:** The state or status of the citation record (that will be paired with the period).
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private activity: CodeableConcept | null;
+
+  /**
+   * Citation.statusDate.actual Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Either occurred or expected
+   * - **Definition:** Whether the status date is actual (has occurred) or expected (estimated or anticipated).
+   * - **FHIR Type:** `boolean`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private actual?: BooleanType | undefined;
+
+  /**
+   * Citation.statusDate.period Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** When the status started and/or ended
+   * - **Definition:** When the status started and/or ended.
+   * - **Comment:** For an instance, place the same value in both start and end elements.
+   * - **FHIR Type:** `Period`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private period: Period | null;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `activity` property value as a CodeableConcept object if defined; else null
+   */
+  public getActivity(): CodeableConcept | null {
+    return this.activity;
+  }
+
+  /**
+   * Assigns the provided CodeableConcept object value to the `activity` property.
+   *
+   * @param value - the `activity` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setActivity(value: CodeableConcept): this {
+    assertIsDefined<CodeableConcept>(value, `Citation.statusDate.activity is required`);
+    const optErrMsg = `Invalid Citation.statusDate.activity; Provided element is not an instance of CodeableConcept.`;
+    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+    this.activity = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `activity` property exists and has a value; `false` otherwise
+   */
+  public hasActivity(): boolean {
+    return isDefined<CodeableConcept>(this.activity) && !this.activity.isEmpty();
+  }
+
+  /**
+   * @returns the `actual` property value as a BooleanType object if defined; else an empty BooleanType object
+   */
+  public getActualElement(): BooleanType {
+    return this.actual ?? new BooleanType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `actual` property.
+   *
+   * @param element - the `actual` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setActualElement(element: BooleanType | undefined): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Citation.statusDate.actual; Provided element is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.actual = element;
+    } else {
+      this.actual = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `actual` property exists and has a value; `false` otherwise
+   */
+  public hasActualElement(): boolean {
+    return isDefined<BooleanType>(this.actual) && !this.actual.isEmpty();
+  }
+
+  /**
+   * @returns the `actual` property value as a fhirBoolean if defined; else undefined
+   */
+  public getActual(): fhirBoolean | undefined {
+    return this.actual?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `actual` property.
+   *
+   * @param value - the `actual` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setActual(value: fhirBoolean | undefined): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Citation.statusDate.actual (${String(value)})`;
+      this.actual = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.actual = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `actual` property exists and has a value; `false` otherwise
+   */
+  public hasActual(): boolean {
+    return this.hasActualElement();
+  }
+
+  /**
+   * @returns the `period` property value as a Period object if defined; else null
+   */
+  public getPeriod(): Period | null {
+    return this.period;
+  }
+
+  /**
+   * Assigns the provided Period object value to the `period` property.
+   *
+   * @param value - the `period` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setPeriod(value: Period): this {
+    assertIsDefined<Period>(value, `Citation.statusDate.period is required`);
+    const optErrMsg = `Invalid Citation.statusDate.period; Provided element is not an instance of Period.`;
+    assertFhirType<Period>(value, Period, optErrMsg);
+    this.period = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `period` property exists and has a value; `false` otherwise
+   */
+  public hasPeriod(): boolean {
+    return isDefined<Period>(this.period) && !this.period.isEmpty();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.statusDate';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.activity,
+      this.actual,
+      this.period,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationStatusDateComponent {
+    const dest = new CitationStatusDateComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationStatusDateComponent): void {
+    super.copyValues(dest);
+    dest.activity = this.activity ? this.activity.copy() : null;
+    dest.actual = this.actual?.copy();
+    dest.period = this.period ? this.period.copy() : null;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasActivity()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.getActivity()!, 'activity', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.statusDate.activity`);
+    }
+
+    if (this.hasActualElement()) {
+      setFhirPrimitiveJson<fhirBoolean>(this.getActualElement(), 'actual', jsonObj);
+    }
+
+    if (this.hasPeriod()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.statusDate.period`);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The article or artifact being described
+ * - **Definition:** The article or artifact being described.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactComponent` JSON to instantiate the CitationCitedArtifactComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactComponent
+   * @returns CitationCitedArtifactComponent data model or undefined for `CitationCitedArtifactComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    fieldName = 'identifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addIdentifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'relatedIdentifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addRelatedIdentifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'dateAccessed';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
+      instance.setDateAccessedElement(datatype);
+    }
+
+    fieldName = 'version';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const component: CitationCitedArtifactVersionComponent | undefined = CitationCitedArtifactVersionComponent.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setVersion(component);
+    }
+
+    fieldName = 'currentState';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addCurrentState(datatype);
+        }
+      });
+    }
+
+    fieldName = 'statusDate';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactStatusDateComponent | undefined = CitationCitedArtifactStatusDateComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addStatusDate(component);
+        }
+      });
+    }
+
+    fieldName = 'title';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactTitleComponent | undefined = CitationCitedArtifactTitleComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addTitle(component);
+        }
+      });
+    }
+
+    fieldName = 'abstract';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactAbstractComponent | undefined = CitationCitedArtifactAbstractComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addAbstract(component);
+        }
+      });
+    }
+
+    fieldName = 'part';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const component: CitationCitedArtifactPartComponent | undefined = CitationCitedArtifactPartComponent.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setPart(component);
+    }
+
+    fieldName = 'relatesTo';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactRelatesToComponent | undefined = CitationCitedArtifactRelatesToComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addRelatesTo(component);
+        }
+      });
+    }
+
+    fieldName = 'publicationForm';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactPublicationFormComponent | undefined = CitationCitedArtifactPublicationFormComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addPublicationForm(component);
+        }
+      });
+    }
+
+    fieldName = 'webLocation';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactWebLocationComponent | undefined = CitationCitedArtifactWebLocationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addWebLocation(component);
+        }
+      });
+    }
+
+    fieldName = 'classification';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactClassificationComponent | undefined = CitationCitedArtifactClassificationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addClassification(component);
+        }
+      });
+    }
+
+    fieldName = 'contributorship';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const component: CitationCitedArtifactContributorshipComponent | undefined = CitationCitedArtifactContributorshipComponent.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setContributorship(component);
+    }
+
+    fieldName = 'note';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Annotation | undefined = Annotation.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addNote(datatype);
+        }
+      });
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.identifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Unique identifier. May include DOI, PMID, PMCID, etc
+   * - **Definition:** A formal identifier that is used to identify the cited artifact when it is represented in other formats, or referenced in a specification, model, design or an instance.
+   * - **Comment:** This element will contain unique identifiers that support de-duplication of citations. Commonly used identifiers for study citations include digital object identifier (DOI), PubMed ID (PMID), and PubMed Central ID (PMCID). To maintain interoperability, the suggested identifier.system values to use for these 3 identifiers are: DOI = "https://doi.org" PMID = "https://pubmed.ncbi.nlm.nih.gov" PMCID = "https://www.ncbi.nlm.nih.gov/pmc/"
+   * - **Requirements:** Allows externally provided and/or usable identifiers to be associated with the cited artifact.
+   * - **FHIR Type:** `Identifier`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private identifier?: Identifier[] | undefined;
+
+  /**
+   * Citation.citedArtifact.relatedIdentifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Identifier not unique to the cited artifact. May include trial registry identifiers
+   * - **Definition:** A formal identifier that is used to identify things closely related to the cited artifact.
+   * - **Comment:** May include trial registry identifiers, e.g. NCT04372602 from clinicaltrials.gov. This related identifier would not be used as unique identifier for the cited artifact itself. Multiple published articles (each with their own unique identifier) may relate to the same study record in a research registry. Commonly used related identifiers for study registries include ClinicalTrials.gov identifier (NCTId) and PROSPERO identifier (used for registration of systematic reviews). To maintain interoperability, the suggested identifier.system values to use for these 2 identifiers are: ClinicalTrials.gov = "https://clinicaltrials.gov" PROSPERO = "https://www.crd.york.ac.uk/prospero/"
+   * - **Requirements:** Allows externally provided and/or usable identifiers to be associated with this the cited artifact.
+   * - **FHIR Type:** `Identifier`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private relatedIdentifier?: Identifier[] | undefined;
+
+  /**
+   * Citation.citedArtifact.dateAccessed Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** When the cited artifact was accessed
+   * - **Definition:** When the cited artifact was accessed.
+   * - **Comment:** Use this element when citing an artifact from a potentially unstable source, such as a webpage, to note the date (and time) the source was accessed.
+   * - **FHIR Type:** `dateTime`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** true
+   */
+  private dateAccessed?: DateTimeType | undefined;
+
+  /**
+   * Citation.citedArtifact.version Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The defined version of the cited artifact
+   * - **Definition:** The defined version of the cited artifact.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private version?: CitationCitedArtifactVersionComponent | undefined;
+
+  /**
+   * Citation.citedArtifact.currentState Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The status of the cited artifact
+   * - **Definition:** The status of the cited artifact.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private currentState?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.statusDate Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** An effective date or period for a status of the cited artifact
+   * - **Definition:** An effective date or period, historical or future, actual or expected, for a status of the cited artifact.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private statusDate?: CitationCitedArtifactStatusDateComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.title Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The title details of the article or artifact
+   * - **Definition:** The title details of the article or artifact.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private title?: CitationCitedArtifactTitleComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.abstract Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Summary of the article or artifact
+   * - **Definition:** The abstract may be used to convey article-contained abstracts, externally-created abstracts, or other descriptive summaries.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private abstract_?: CitationCitedArtifactAbstractComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.part Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The component of the article or artifact
+   * - **Definition:** The component of the article or artifact.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private part?: CitationCitedArtifactPartComponent | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The artifact related to the cited artifact
+   * - **Definition:** The artifact related to the cited artifact.
+   * - **Comment:** The citedArtifact.relatesTo element uses a BackboneElement instead of the RelatedArtifact Datatype to enable use of an extended value set for the required code for the type of relationship.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private relatesTo?: CitationCitedArtifactRelatesToComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** If multiple, used to represent alternative forms of the article that are not separate citations
+   * - **Definition:** If multiple, used to represent alternative forms of the article that are not separate citations.
+   * - **Comment:** A common use is a journal article with a publication date and pagination for a print version and a different publication date for the online version of the same article.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private publicationForm?: CitationCitedArtifactPublicationFormComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.webLocation Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used for any URL for the article or artifact cited
+   * - **Definition:** Used for any URL for the article or artifact cited.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private webLocation?: CitationCitedArtifactWebLocationComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.classification Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The assignment to an organizing scheme
+   * - **Definition:** The assignment to an organizing scheme.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private classification?: CitationCitedArtifactClassificationComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Attribution of authors and other contributors
+   * - **Definition:** This element is used to list authors and other contributors, their contact information, specific contributions, and summary statements.
+   * - **Requirements:** Need to support individualized and collective attribution of authorship and contributorship to people and groups.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private contributorship?: CitationCitedArtifactContributorshipComponent | undefined;
+
+  /**
+   * Citation.citedArtifact.note Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Any additional information or content for the article or artifact
+   * - **Definition:** Any additional information or content for the article or artifact.
+   * - **FHIR Type:** `Annotation`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private note?: Annotation[] | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `identifier` property value as a Identifier array
+   */
+  public getIdentifier(): Identifier[] {
+    return this.identifier ?? ([] as Identifier[]);
+  }
+
+  /**
+   * Assigns the provided Identifier array value to the `identifier` property.
+   *
+   * @param value - the `identifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setIdentifier(value: Identifier[] | undefined): this {
+    if (isDefinedList<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.identifier; Provided value array has an element that is not an instance of Identifier.`;
+      assertFhirTypeList<Identifier>(value, Identifier, optErrMsg);
+      this.identifier = value;
+    } else {
+      this.identifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Identifier value to the `identifier` array property.
+   *
+   * @param value - the `identifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addIdentifier(value: Identifier | undefined): this {
+    if (isDefined<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.identifier; Provided element is not an instance of Identifier.`;
+      assertFhirType<Identifier>(value, Identifier, optErrMsg);
+      this.initIdentifier();
+      this.identifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `identifier` property exists and has a value; `false` otherwise
+   */
+  public hasIdentifier(): boolean {
+    return isDefinedList<Identifier>(this.identifier) && this.identifier.some((item: Identifier) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `identifier` property
+   */
+  private initIdentifier(): void {
+    if(!this.hasIdentifier()) {
+      this.identifier = [] as Identifier[];
+    }
+  }
+
+  /**
+   * @returns the `relatedIdentifier` property value as a Identifier array
+   */
+  public getRelatedIdentifier(): Identifier[] {
+    return this.relatedIdentifier ?? ([] as Identifier[]);
+  }
+
+  /**
+   * Assigns the provided Identifier array value to the `relatedIdentifier` property.
+   *
+   * @param value - the `relatedIdentifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setRelatedIdentifier(value: Identifier[] | undefined): this {
+    if (isDefinedList<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatedIdentifier; Provided value array has an element that is not an instance of Identifier.`;
+      assertFhirTypeList<Identifier>(value, Identifier, optErrMsg);
+      this.relatedIdentifier = value;
+    } else {
+      this.relatedIdentifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Identifier value to the `relatedIdentifier` array property.
+   *
+   * @param value - the `relatedIdentifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addRelatedIdentifier(value: Identifier | undefined): this {
+    if (isDefined<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatedIdentifier; Provided element is not an instance of Identifier.`;
+      assertFhirType<Identifier>(value, Identifier, optErrMsg);
+      this.initRelatedIdentifier();
+      this.relatedIdentifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `relatedIdentifier` property exists and has a value; `false` otherwise
+   */
+  public hasRelatedIdentifier(): boolean {
+    return isDefinedList<Identifier>(this.relatedIdentifier) && this.relatedIdentifier.some((item: Identifier) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `relatedIdentifier` property
+   */
+  private initRelatedIdentifier(): void {
+    if(!this.hasRelatedIdentifier()) {
+      this.relatedIdentifier = [] as Identifier[];
+    }
+  }
+
+  /**
+   * @returns the `dateAccessed` property value as a DateTimeType object if defined; else an empty DateTimeType object
+   */
+  public getDateAccessedElement(): DateTimeType {
+    return this.dateAccessed ?? new DateTimeType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `dateAccessed` property.
+   *
+   * @param element - the `dateAccessed` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDateAccessedElement(element: DateTimeType | undefined): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.dateAccessed; Provided element is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.dateAccessed = element;
+    } else {
+      this.dateAccessed = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `dateAccessed` property exists and has a value; `false` otherwise
+   */
+  public hasDateAccessedElement(): boolean {
+    return isDefined<DateTimeType>(this.dateAccessed) && !this.dateAccessed.isEmpty();
+  }
+
+  /**
+   * @returns the `dateAccessed` property value as a fhirDateTime if defined; else undefined
+   */
+  public getDateAccessed(): fhirDateTime | undefined {
+    return this.dateAccessed?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `dateAccessed` property.
+   *
+   * @param value - the `dateAccessed` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDateAccessed(value: fhirDateTime | undefined): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.dateAccessed (${String(value)})`;
+      this.dateAccessed = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.dateAccessed = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `dateAccessed` property exists and has a value; `false` otherwise
+   */
+  public hasDateAccessed(): boolean {
+    return this.hasDateAccessedElement();
+  }
+
+  /**
+   * @returns the `version` property value as a CitationCitedArtifactVersionComponent object if defined; else an empty CitationCitedArtifactVersionComponent object
+   */
+  public getVersion(): CitationCitedArtifactVersionComponent {
+    return this.version ?? new CitationCitedArtifactVersionComponent();
+  }
+
+  /**
+   * Assigns the provided Version object value to the `version` property.
+   *
+   * @param value - the `version` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setVersion(value: CitationCitedArtifactVersionComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactVersionComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.version; Provided element is not an instance of CitationCitedArtifactVersionComponent.`;
+      assertFhirType<CitationCitedArtifactVersionComponent>(value, CitationCitedArtifactVersionComponent, optErrMsg);
+      this.version = value;
+    } else {
+      this.version = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `version` property exists and has a value; `false` otherwise
+   */
+  public hasVersion(): boolean {
+    return isDefined<CitationCitedArtifactVersionComponent>(this.version) && !this.version.isEmpty();
+  }
+
+  /**
+   * @returns the `currentState` property value as a CodeableConcept array
+   */
+  public getCurrentState(): CodeableConcept[] {
+    return this.currentState ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `currentState` property.
+   *
+   * @param value - the `currentState` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setCurrentState(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.currentState; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.currentState = value;
+    } else {
+      this.currentState = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `currentState` array property.
+   *
+   * @param value - the `currentState` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addCurrentState(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.currentState; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initCurrentState();
+      this.currentState?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `currentState` property exists and has a value; `false` otherwise
+   */
+  public hasCurrentState(): boolean {
+    return isDefinedList<CodeableConcept>(this.currentState) && this.currentState.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `currentState` property
+   */
+  private initCurrentState(): void {
+    if(!this.hasCurrentState()) {
+      this.currentState = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `statusDate` property value as a CitationCitedArtifactStatusDateComponent array
+   */
+  public getStatusDate(): CitationCitedArtifactStatusDateComponent[] {
+    return this.statusDate ?? ([] as CitationCitedArtifactStatusDateComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactStatusDateComponent array value to the `statusDate` property.
+   *
+   * @param value - the `statusDate` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setStatusDate(value: CitationCitedArtifactStatusDateComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactStatusDateComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.statusDate; Provided value array has an element that is not an instance of CitationCitedArtifactStatusDateComponent.`;
+      assertFhirTypeList<CitationCitedArtifactStatusDateComponent>(value, CitationCitedArtifactStatusDateComponent, optErrMsg);
+      this.statusDate = value;
+    } else {
+      this.statusDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactStatusDateComponent value to the `statusDate` array property.
+   *
+   * @param value - the `statusDate` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addStatusDate(value: CitationCitedArtifactStatusDateComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactStatusDateComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.statusDate; Provided element is not an instance of CitationCitedArtifactStatusDateComponent.`;
+      assertFhirType<CitationCitedArtifactStatusDateComponent>(value, CitationCitedArtifactStatusDateComponent, optErrMsg);
+      this.initStatusDate();
+      this.statusDate?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `statusDate` property exists and has a value; `false` otherwise
+   */
+  public hasStatusDate(): boolean {
+    return isDefinedList<CitationCitedArtifactStatusDateComponent>(this.statusDate) && this.statusDate.some((item: CitationCitedArtifactStatusDateComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `statusDate` property
+   */
+  private initStatusDate(): void {
+    if(!this.hasStatusDate()) {
+      this.statusDate = [] as CitationCitedArtifactStatusDateComponent[];
+    }
+  }
+
+  /**
+   * @returns the `title` property value as a CitationCitedArtifactTitleComponent array
+   */
+  public getTitle(): CitationCitedArtifactTitleComponent[] {
+    return this.title ?? ([] as CitationCitedArtifactTitleComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactTitleComponent array value to the `title` property.
+   *
+   * @param value - the `title` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setTitle(value: CitationCitedArtifactTitleComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactTitleComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title; Provided value array has an element that is not an instance of CitationCitedArtifactTitleComponent.`;
+      assertFhirTypeList<CitationCitedArtifactTitleComponent>(value, CitationCitedArtifactTitleComponent, optErrMsg);
+      this.title = value;
+    } else {
+      this.title = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactTitleComponent value to the `title` array property.
+   *
+   * @param value - the `title` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addTitle(value: CitationCitedArtifactTitleComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactTitleComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title; Provided element is not an instance of CitationCitedArtifactTitleComponent.`;
+      assertFhirType<CitationCitedArtifactTitleComponent>(value, CitationCitedArtifactTitleComponent, optErrMsg);
+      this.initTitle();
+      this.title?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `title` property exists and has a value; `false` otherwise
+   */
+  public hasTitle(): boolean {
+    return isDefinedList<CitationCitedArtifactTitleComponent>(this.title) && this.title.some((item: CitationCitedArtifactTitleComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `title` property
+   */
+  private initTitle(): void {
+    if(!this.hasTitle()) {
+      this.title = [] as CitationCitedArtifactTitleComponent[];
+    }
+  }
+
+  /**
+   * @returns the `abstract_` property value as a CitationCitedArtifactAbstractComponent array
+   */
+  public getAbstract(): CitationCitedArtifactAbstractComponent[] {
+    return this.abstract_ ?? ([] as CitationCitedArtifactAbstractComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactAbstractComponent array value to the `abstract_` property.
+   *
+   * @param value - the `abstract_` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setAbstract(value: CitationCitedArtifactAbstractComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactAbstractComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract; Provided value array has an element that is not an instance of CitationCitedArtifactAbstractComponent.`;
+      assertFhirTypeList<CitationCitedArtifactAbstractComponent>(value, CitationCitedArtifactAbstractComponent, optErrMsg);
+      this.abstract_ = value;
+    } else {
+      this.abstract_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactAbstractComponent value to the `abstract_` array property.
+   *
+   * @param value - the `abstract_` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addAbstract(value: CitationCitedArtifactAbstractComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactAbstractComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract; Provided element is not an instance of CitationCitedArtifactAbstractComponent.`;
+      assertFhirType<CitationCitedArtifactAbstractComponent>(value, CitationCitedArtifactAbstractComponent, optErrMsg);
+      this.initAbstract();
+      this.abstract_?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `abstract_` property exists and has a value; `false` otherwise
+   */
+  public hasAbstract(): boolean {
+    return isDefinedList<CitationCitedArtifactAbstractComponent>(this.abstract_) && this.abstract_.some((item: CitationCitedArtifactAbstractComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `abstract_` property
+   */
+  private initAbstract(): void {
+    if(!this.hasAbstract()) {
+      this.abstract_ = [] as CitationCitedArtifactAbstractComponent[];
+    }
+  }
+
+  /**
+   * @returns the `part` property value as a CitationCitedArtifactPartComponent object if defined; else an empty CitationCitedArtifactPartComponent object
+   */
+  public getPart(): CitationCitedArtifactPartComponent {
+    return this.part ?? new CitationCitedArtifactPartComponent();
+  }
+
+  /**
+   * Assigns the provided Part object value to the `part` property.
+   *
+   * @param value - the `part` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setPart(value: CitationCitedArtifactPartComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactPartComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.part; Provided element is not an instance of CitationCitedArtifactPartComponent.`;
+      assertFhirType<CitationCitedArtifactPartComponent>(value, CitationCitedArtifactPartComponent, optErrMsg);
+      this.part = value;
+    } else {
+      this.part = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `part` property exists and has a value; `false` otherwise
+   */
+  public hasPart(): boolean {
+    return isDefined<CitationCitedArtifactPartComponent>(this.part) && !this.part.isEmpty();
+  }
+
+  /**
+   * @returns the `relatesTo` property value as a CitationCitedArtifactRelatesToComponent array
+   */
+  public getRelatesTo(): CitationCitedArtifactRelatesToComponent[] {
+    return this.relatesTo ?? ([] as CitationCitedArtifactRelatesToComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactRelatesToComponent array value to the `relatesTo` property.
+   *
+   * @param value - the `relatesTo` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setRelatesTo(value: CitationCitedArtifactRelatesToComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactRelatesToComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo; Provided value array has an element that is not an instance of CitationCitedArtifactRelatesToComponent.`;
+      assertFhirTypeList<CitationCitedArtifactRelatesToComponent>(value, CitationCitedArtifactRelatesToComponent, optErrMsg);
+      this.relatesTo = value;
+    } else {
+      this.relatesTo = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactRelatesToComponent value to the `relatesTo` array property.
+   *
+   * @param value - the `relatesTo` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addRelatesTo(value: CitationCitedArtifactRelatesToComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactRelatesToComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo; Provided element is not an instance of CitationCitedArtifactRelatesToComponent.`;
+      assertFhirType<CitationCitedArtifactRelatesToComponent>(value, CitationCitedArtifactRelatesToComponent, optErrMsg);
+      this.initRelatesTo();
+      this.relatesTo?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `relatesTo` property exists and has a value; `false` otherwise
+   */
+  public hasRelatesTo(): boolean {
+    return isDefinedList<CitationCitedArtifactRelatesToComponent>(this.relatesTo) && this.relatesTo.some((item: CitationCitedArtifactRelatesToComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `relatesTo` property
+   */
+  private initRelatesTo(): void {
+    if(!this.hasRelatesTo()) {
+      this.relatesTo = [] as CitationCitedArtifactRelatesToComponent[];
+    }
+  }
+
+  /**
+   * @returns the `publicationForm` property value as a CitationCitedArtifactPublicationFormComponent array
+   */
+  public getPublicationForm(): CitationCitedArtifactPublicationFormComponent[] {
+    return this.publicationForm ?? ([] as CitationCitedArtifactPublicationFormComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactPublicationFormComponent array value to the `publicationForm` property.
+   *
+   * @param value - the `publicationForm` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setPublicationForm(value: CitationCitedArtifactPublicationFormComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactPublicationFormComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm; Provided value array has an element that is not an instance of CitationCitedArtifactPublicationFormComponent.`;
+      assertFhirTypeList<CitationCitedArtifactPublicationFormComponent>(value, CitationCitedArtifactPublicationFormComponent, optErrMsg);
+      this.publicationForm = value;
+    } else {
+      this.publicationForm = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactPublicationFormComponent value to the `publicationForm` array property.
+   *
+   * @param value - the `publicationForm` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addPublicationForm(value: CitationCitedArtifactPublicationFormComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactPublicationFormComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm; Provided element is not an instance of CitationCitedArtifactPublicationFormComponent.`;
+      assertFhirType<CitationCitedArtifactPublicationFormComponent>(value, CitationCitedArtifactPublicationFormComponent, optErrMsg);
+      this.initPublicationForm();
+      this.publicationForm?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publicationForm` property exists and has a value; `false` otherwise
+   */
+  public hasPublicationForm(): boolean {
+    return isDefinedList<CitationCitedArtifactPublicationFormComponent>(this.publicationForm) && this.publicationForm.some((item: CitationCitedArtifactPublicationFormComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `publicationForm` property
+   */
+  private initPublicationForm(): void {
+    if(!this.hasPublicationForm()) {
+      this.publicationForm = [] as CitationCitedArtifactPublicationFormComponent[];
+    }
+  }
+
+  /**
+   * @returns the `webLocation` property value as a CitationCitedArtifactWebLocationComponent array
+   */
+  public getWebLocation(): CitationCitedArtifactWebLocationComponent[] {
+    return this.webLocation ?? ([] as CitationCitedArtifactWebLocationComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactWebLocationComponent array value to the `webLocation` property.
+   *
+   * @param value - the `webLocation` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setWebLocation(value: CitationCitedArtifactWebLocationComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactWebLocationComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.webLocation; Provided value array has an element that is not an instance of CitationCitedArtifactWebLocationComponent.`;
+      assertFhirTypeList<CitationCitedArtifactWebLocationComponent>(value, CitationCitedArtifactWebLocationComponent, optErrMsg);
+      this.webLocation = value;
+    } else {
+      this.webLocation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactWebLocationComponent value to the `webLocation` array property.
+   *
+   * @param value - the `webLocation` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addWebLocation(value: CitationCitedArtifactWebLocationComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactWebLocationComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.webLocation; Provided element is not an instance of CitationCitedArtifactWebLocationComponent.`;
+      assertFhirType<CitationCitedArtifactWebLocationComponent>(value, CitationCitedArtifactWebLocationComponent, optErrMsg);
+      this.initWebLocation();
+      this.webLocation?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `webLocation` property exists and has a value; `false` otherwise
+   */
+  public hasWebLocation(): boolean {
+    return isDefinedList<CitationCitedArtifactWebLocationComponent>(this.webLocation) && this.webLocation.some((item: CitationCitedArtifactWebLocationComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `webLocation` property
+   */
+  private initWebLocation(): void {
+    if(!this.hasWebLocation()) {
+      this.webLocation = [] as CitationCitedArtifactWebLocationComponent[];
+    }
+  }
+
+  /**
+   * @returns the `classification` property value as a CitationCitedArtifactClassificationComponent array
+   */
+  public getClassification(): CitationCitedArtifactClassificationComponent[] {
+    return this.classification ?? ([] as CitationCitedArtifactClassificationComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactClassificationComponent array value to the `classification` property.
+   *
+   * @param value - the `classification` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setClassification(value: CitationCitedArtifactClassificationComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactClassificationComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.classification; Provided value array has an element that is not an instance of CitationCitedArtifactClassificationComponent.`;
+      assertFhirTypeList<CitationCitedArtifactClassificationComponent>(value, CitationCitedArtifactClassificationComponent, optErrMsg);
+      this.classification = value;
+    } else {
+      this.classification = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactClassificationComponent value to the `classification` array property.
+   *
+   * @param value - the `classification` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addClassification(value: CitationCitedArtifactClassificationComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactClassificationComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.classification; Provided element is not an instance of CitationCitedArtifactClassificationComponent.`;
+      assertFhirType<CitationCitedArtifactClassificationComponent>(value, CitationCitedArtifactClassificationComponent, optErrMsg);
+      this.initClassification();
+      this.classification?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `classification` property exists and has a value; `false` otherwise
+   */
+  public hasClassification(): boolean {
+    return isDefinedList<CitationCitedArtifactClassificationComponent>(this.classification) && this.classification.some((item: CitationCitedArtifactClassificationComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `classification` property
+   */
+  private initClassification(): void {
+    if(!this.hasClassification()) {
+      this.classification = [] as CitationCitedArtifactClassificationComponent[];
+    }
+  }
+
+  /**
+   * @returns the `contributorship` property value as a CitationCitedArtifactContributorshipComponent object if defined; else an empty CitationCitedArtifactContributorshipComponent object
+   */
+  public getContributorship(): CitationCitedArtifactContributorshipComponent {
+    return this.contributorship ?? new CitationCitedArtifactContributorshipComponent();
+  }
+
+  /**
+   * Assigns the provided Contributorship object value to the `contributorship` property.
+   *
+   * @param value - the `contributorship` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setContributorship(value: CitationCitedArtifactContributorshipComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactContributorshipComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship; Provided element is not an instance of CitationCitedArtifactContributorshipComponent.`;
+      assertFhirType<CitationCitedArtifactContributorshipComponent>(value, CitationCitedArtifactContributorshipComponent, optErrMsg);
+      this.contributorship = value;
+    } else {
+      this.contributorship = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `contributorship` property exists and has a value; `false` otherwise
+   */
+  public hasContributorship(): boolean {
+    return isDefined<CitationCitedArtifactContributorshipComponent>(this.contributorship) && !this.contributorship.isEmpty();
+  }
+
+  /**
+   * @returns the `note` property value as a Annotation array
+   */
+  public getNote(): Annotation[] {
+    return this.note ?? ([] as Annotation[]);
+  }
+
+  /**
+   * Assigns the provided Annotation array value to the `note` property.
+   *
+   * @param value - the `note` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setNote(value: Annotation[] | undefined): this {
+    if (isDefinedList<Annotation>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.note; Provided value array has an element that is not an instance of Annotation.`;
+      assertFhirTypeList<Annotation>(value, Annotation, optErrMsg);
+      this.note = value;
+    } else {
+      this.note = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Annotation value to the `note` array property.
+   *
+   * @param value - the `note` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addNote(value: Annotation | undefined): this {
+    if (isDefined<Annotation>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.note; Provided element is not an instance of Annotation.`;
+      assertFhirType<Annotation>(value, Annotation, optErrMsg);
+      this.initNote();
+      this.note?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `note` property exists and has a value; `false` otherwise
+   */
+  public hasNote(): boolean {
+    return isDefinedList<Annotation>(this.note) && this.note.some((item: Annotation) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `note` property
+   */
+  private initNote(): void {
+    if(!this.hasNote()) {
+      this.note = [] as Annotation[];
+    }
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.identifier,
+      this.relatedIdentifier,
+      this.dateAccessed,
+      this.version,
+      this.currentState,
+      this.statusDate,
+      this.title,
+      this.abstract_,
+      this.part,
+      this.relatesTo,
+      this.publicationForm,
+      this.webLocation,
+      this.classification,
+      this.contributorship,
+      this.note,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactComponent {
+    const dest = new CitationCitedArtifactComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactComponent): void {
+    super.copyValues(dest);
+    const identifierList = copyListValues<Identifier>(this.identifier);
+    dest.identifier = identifierList.length === 0 ? undefined : identifierList;
+    const relatedIdentifierList = copyListValues<Identifier>(this.relatedIdentifier);
+    dest.relatedIdentifier = relatedIdentifierList.length === 0 ? undefined : relatedIdentifierList;
+    dest.dateAccessed = this.dateAccessed?.copy();
+    dest.version = this.version?.copy();
+    const currentStateList = copyListValues<CodeableConcept>(this.currentState);
+    dest.currentState = currentStateList.length === 0 ? undefined : currentStateList;
+    const statusDateList = copyListValues<CitationCitedArtifactStatusDateComponent>(this.statusDate);
+    dest.statusDate = statusDateList.length === 0 ? undefined : statusDateList;
+    const titleList = copyListValues<CitationCitedArtifactTitleComponent>(this.title);
+    dest.title = titleList.length === 0 ? undefined : titleList;
+    const abstractList = copyListValues<CitationCitedArtifactAbstractComponent>(this.abstract_);
+    dest.abstract_ = abstractList.length === 0 ? undefined : abstractList;
+    dest.part = this.part?.copy();
+    const relatesToList = copyListValues<CitationCitedArtifactRelatesToComponent>(this.relatesTo);
+    dest.relatesTo = relatesToList.length === 0 ? undefined : relatesToList;
+    const publicationFormList = copyListValues<CitationCitedArtifactPublicationFormComponent>(this.publicationForm);
+    dest.publicationForm = publicationFormList.length === 0 ? undefined : publicationFormList;
+    const webLocationList = copyListValues<CitationCitedArtifactWebLocationComponent>(this.webLocation);
+    dest.webLocation = webLocationList.length === 0 ? undefined : webLocationList;
+    const classificationList = copyListValues<CitationCitedArtifactClassificationComponent>(this.classification);
+    dest.classification = classificationList.length === 0 ? undefined : classificationList;
+    dest.contributorship = this.contributorship?.copy();
+    const noteList = copyListValues<Annotation>(this.note);
+    dest.note = noteList.length === 0 ? undefined : noteList;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasIdentifier()) {
+      setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
+    }
+
+    if (this.hasRelatedIdentifier()) {
+      setFhirComplexListJson(this.getRelatedIdentifier(), 'relatedIdentifier', jsonObj);
+    }
+
+    if (this.hasDateAccessedElement()) {
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateAccessedElement(), 'dateAccessed', jsonObj);
+    }
+
+    if (this.hasVersion()) {
+      setFhirBackboneElementJson(this.getVersion(), 'version', jsonObj);
+    }
+
+    if (this.hasCurrentState()) {
+      setFhirComplexListJson(this.getCurrentState(), 'currentState', jsonObj);
+    }
+
+    if (this.hasStatusDate()) {
+      setFhirBackboneElementListJson(this.getStatusDate(), 'statusDate', jsonObj);
+    }
+
+    if (this.hasTitle()) {
+      setFhirBackboneElementListJson(this.getTitle(), 'title', jsonObj);
+    }
+
+    if (this.hasAbstract()) {
+      setFhirBackboneElementListJson(this.getAbstract(), 'abstract', jsonObj);
+    }
+
+    if (this.hasPart()) {
+      setFhirBackboneElementJson(this.getPart(), 'part', jsonObj);
+    }
+
+    if (this.hasRelatesTo()) {
+      setFhirBackboneElementListJson(this.getRelatesTo(), 'relatesTo', jsonObj);
+    }
+
+    if (this.hasPublicationForm()) {
+      setFhirBackboneElementListJson(this.getPublicationForm(), 'publicationForm', jsonObj);
+    }
+
+    if (this.hasWebLocation()) {
+      setFhirBackboneElementListJson(this.getWebLocation(), 'webLocation', jsonObj);
+    }
+
+    if (this.hasClassification()) {
+      setFhirBackboneElementListJson(this.getClassification(), 'classification', jsonObj);
+    }
+
+    if (this.hasContributorship()) {
+      setFhirBackboneElementJson(this.getContributorship(), 'contributorship', jsonObj);
+    }
+
+    if (this.hasNote()) {
+      setFhirComplexListJson(this.getNote(), 'note', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactVersionComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The defined version of the cited artifact
+ * - **Definition:** The defined version of the cited artifact.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactVersionComponent extends BackboneElement implements IBackboneElement {
+  constructor(value: StringType | fhirString | null = null) {
+    super();
+
+    this.value = null;
+    if (isDefined<StringType | fhirString>(value)) {
+      if (value instanceof PrimitiveType) {
+        this.setValueElement(value);
+      } else {
+        this.setValue(value);
+      }
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactVersionComponent` JSON to instantiate the CitationCitedArtifactVersionComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactVersionComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactVersionComponent
+   * @returns CitationCitedArtifactVersionComponent data model or undefined for `CitationCitedArtifactVersionComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactVersionComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactVersionComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactVersionComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'value';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setValueElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'baseCitation';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setBaseCitation(datatype);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.version.value Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The version number or other version identifier
+   * - **Definition:** The version number or other version identifier.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private value: StringType | null;
+
+  /**
+   * Citation.citedArtifact.version.baseCitation Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Citation for the main version of the cited artifact
+   * - **Definition:** Citation for the main version of the cited artifact.
+   * - **Comment:** When referencing a baseCitation, one may inherit any data from the referenced Citation Resource and consider any data in the current Citation Resource as superceding to be version-specific.
+   * - **FHIR Type:** `Reference`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/Citation',
+   *     ]
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private baseCitation?: Reference | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `value` property value as a StringType object if defined; else null
+   */
+  public getValueElement(): StringType | null {
+    return this.value;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `value` property.
+   *
+   * @param element - the `value` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setValueElement(element: StringType): this {
+    assertIsDefined<StringType>(element, `Citation.citedArtifact.version.value is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.version.value; Provided value is not an instance of StringType.`;
+    assertFhirType<StringType>(element, StringType, optErrMsg);
+    this.value = element;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `value` property exists and has a value; `false` otherwise
+   */
+  public hasValueElement(): boolean {
+    return isDefined<StringType>(this.value) && !this.value.isEmpty();
+  }
+
+  /**
+   * @returns the `value` property value as a fhirString if defined; else null
+   */
+  public getValue(): fhirString | null {
+    if (this.value?.getValue() === undefined) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.value.getValue()!;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `value` property.
+   *
+   * @param value - the `value` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setValue(value: fhirString): this {
+    assertIsDefined<fhirString>(value, `Citation.citedArtifact.version.value is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.version.value (${String(value)})`;
+    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `value` property exists and has a value; `false` otherwise
+   */
+  public hasValue(): boolean {
+    return this.hasValueElement();
+  }
+
+  /**
+   * @returns the `baseCitation` property value as a Reference object; else an empty Reference object
+   */
+  public getBaseCitation(): Reference {
+    return this.baseCitation ?? new Reference();
+  }
+
+  /**
+   * Assigns the provided BaseCitation object value to the `baseCitation` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.version.baseCitation', ['Citation',])`
+   *
+   * @param value - the `baseCitation` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.version.baseCitation', [
+    'Citation',
+  ])
+  public setBaseCitation(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.baseCitation = value;
+    } else {
+      this.baseCitation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `baseCitation` property exists and has a value; `false` otherwise
+   */
+  public hasBaseCitation(): boolean {
+    return isDefined<Reference>(this.baseCitation) && !this.baseCitation.isEmpty();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.version';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.value,
+      this.baseCitation,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactVersionComponent {
+    const dest = new CitationCitedArtifactVersionComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactVersionComponent): void {
+    super.copyValues(dest);
+    dest.value = this.value ? this.value.copy() : null;
+    dest.baseCitation = this.baseCitation?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasValueElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.version.value`);
+    }
+
+    if (this.hasBaseCitation()) {
+      setFhirComplexJson(this.getBaseCitation(), 'baseCitation', jsonObj);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactStatusDateComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** An effective date or period for a status of the cited artifact
+ * - **Definition:** An effective date or period, historical or future, actual or expected, for a status of the cited artifact.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactStatusDateComponent extends BackboneElement implements IBackboneElement {
+  constructor(activity: CodeableConcept | null = null, period: Period | null = null) {
+    super();
+
+    this.activity = null;
+    if (isDefined<CodeableConcept>(activity)) {
+      this.setActivity(activity);
+    }
+
+    this.period = null;
+    if (isDefined<Period>(period)) {
+      this.setPeriod(period);
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactStatusDateComponent` JSON to instantiate the CitationCitedArtifactStatusDateComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactStatusDateComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactStatusDateComponent
+   * @returns CitationCitedArtifactStatusDateComponent data model or undefined for `CitationCitedArtifactStatusDateComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactStatusDateComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactStatusDateComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactStatusDateComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'activity';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setActivity(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'actual';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'boolean';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
+      instance.setActualElement(datatype);
+    }
+
+    fieldName = 'period';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setPeriod(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.statusDate.activity Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Classification of the status
+   * - **Definition:** A definition of the status associated with a date or period.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private activity: CodeableConcept | null;
+
+  /**
+   * Citation.citedArtifact.statusDate.actual Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Either occurred or expected
+   * - **Definition:** Either occurred or expected.
+   * - **FHIR Type:** `boolean`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private actual?: BooleanType | undefined;
+
+  /**
+   * Citation.citedArtifact.statusDate.period Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** When the status started and/or ended
+   * - **Definition:** When the status started and/or ended.
+   * - **Comment:** For an instance, place the same value in both start and end elements.
+   * - **FHIR Type:** `Period`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private period: Period | null;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `activity` property value as a CodeableConcept object if defined; else null
+   */
+  public getActivity(): CodeableConcept | null {
+    return this.activity;
+  }
+
+  /**
+   * Assigns the provided CodeableConcept object value to the `activity` property.
+   *
+   * @param value - the `activity` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setActivity(value: CodeableConcept): this {
+    assertIsDefined<CodeableConcept>(value, `Citation.citedArtifact.statusDate.activity is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.statusDate.activity; Provided element is not an instance of CodeableConcept.`;
+    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+    this.activity = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `activity` property exists and has a value; `false` otherwise
+   */
+  public hasActivity(): boolean {
+    return isDefined<CodeableConcept>(this.activity) && !this.activity.isEmpty();
+  }
+
+  /**
+   * @returns the `actual` property value as a BooleanType object if defined; else an empty BooleanType object
+   */
+  public getActualElement(): BooleanType {
+    return this.actual ?? new BooleanType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `actual` property.
+   *
+   * @param element - the `actual` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setActualElement(element: BooleanType | undefined): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.statusDate.actual; Provided element is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.actual = element;
+    } else {
+      this.actual = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `actual` property exists and has a value; `false` otherwise
+   */
+  public hasActualElement(): boolean {
+    return isDefined<BooleanType>(this.actual) && !this.actual.isEmpty();
+  }
+
+  /**
+   * @returns the `actual` property value as a fhirBoolean if defined; else undefined
+   */
+  public getActual(): fhirBoolean | undefined {
+    return this.actual?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `actual` property.
+   *
+   * @param value - the `actual` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setActual(value: fhirBoolean | undefined): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.statusDate.actual (${String(value)})`;
+      this.actual = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.actual = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `actual` property exists and has a value; `false` otherwise
+   */
+  public hasActual(): boolean {
+    return this.hasActualElement();
+  }
+
+  /**
+   * @returns the `period` property value as a Period object if defined; else null
+   */
+  public getPeriod(): Period | null {
+    return this.period;
+  }
+
+  /**
+   * Assigns the provided Period object value to the `period` property.
+   *
+   * @param value - the `period` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setPeriod(value: Period): this {
+    assertIsDefined<Period>(value, `Citation.citedArtifact.statusDate.period is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.statusDate.period; Provided element is not an instance of Period.`;
+    assertFhirType<Period>(value, Period, optErrMsg);
+    this.period = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `period` property exists and has a value; `false` otherwise
+   */
+  public hasPeriod(): boolean {
+    return isDefined<Period>(this.period) && !this.period.isEmpty();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.statusDate';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.activity,
+      this.actual,
+      this.period,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactStatusDateComponent {
+    const dest = new CitationCitedArtifactStatusDateComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactStatusDateComponent): void {
+    super.copyValues(dest);
+    dest.activity = this.activity ? this.activity.copy() : null;
+    dest.actual = this.actual?.copy();
+    dest.period = this.period ? this.period.copy() : null;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasActivity()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.getActivity()!, 'activity', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.statusDate.activity`);
+    }
+
+    if (this.hasActualElement()) {
+      setFhirPrimitiveJson<fhirBoolean>(this.getActualElement(), 'actual', jsonObj);
+    }
+
+    if (this.hasPeriod()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.statusDate.period`);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactTitleComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The title details of the article or artifact
+ * - **Definition:** The title details of the article or artifact.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactTitleComponent extends BackboneElement implements IBackboneElement {
+  constructor(text: MarkdownType | fhirMarkdown | null = null) {
+    super();
+
+    this.text = null;
+    if (isDefined<MarkdownType | fhirMarkdown>(text)) {
+      if (text instanceof PrimitiveType) {
+        this.setTextElement(text);
+      } else {
+        this.setText(text);
+      }
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactTitleComponent` JSON to instantiate the CitationCitedArtifactTitleComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactTitleComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactTitleComponent
+   * @returns CitationCitedArtifactTitleComponent data model or undefined for `CitationCitedArtifactTitleComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactTitleComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactTitleComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactTitleComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addType(datatype);
+        }
+      });
+    }
+
+    fieldName = 'language';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setLanguage(datatype);
+    }
+
+    fieldName = 'text';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setTextElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.title.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The kind of title
+   * - **Definition:** Used to express the reason for or classification of the title.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.title.language Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used to express the specific language
+   * - **Definition:** Used to express the specific language of the title.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private language?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.title.text Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The title of the article or artifact
+   * - **Definition:** The title of the article or artifact.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private text: MarkdownType | null;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept array
+   */
+  public getType(): CodeableConcept[] {
+    return this.type_ ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `type_` property.
+   *
+   * @param value - the `type_` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title.type; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `type_` array property.
+   *
+   * @param value - the `type_` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initType();
+      this.type_?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefinedList<CodeableConcept>(this.type_) && this.type_.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `type_` property
+   */
+  private initType(): void {
+    if(!this.hasType()) {
+      this.type_ = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `language` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getLanguage(): CodeableConcept {
+    return this.language ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Language object value to the `language` property.
+   *
+   * @param value - the `language` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setLanguage(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title.language; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.language = value;
+    } else {
+      this.language = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `language` property exists and has a value; `false` otherwise
+   */
+  public hasLanguage(): boolean {
+    return isDefined<CodeableConcept>(this.language) && !this.language.isEmpty();
+  }
+
+  /**
+   * @returns the `text` property value as a MarkdownType object if defined; else null
+   */
+  public getTextElement(): MarkdownType | null {
+    return this.text;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `text` property.
+   *
+   * @param element - the `text` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTextElement(element: MarkdownType): this {
+    assertIsDefined<MarkdownType>(element, `Citation.citedArtifact.title.text is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.title.text; Provided value is not an instance of MarkdownType.`;
+    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+    this.text = element;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `text` property exists and has a value; `false` otherwise
+   */
+  public hasTextElement(): boolean {
+    return isDefined<MarkdownType>(this.text) && !this.text.isEmpty();
+  }
+
+  /**
+   * @returns the `text` property value as a fhirMarkdown if defined; else null
+   */
+  public getText(): fhirMarkdown | null {
+    if (this.text?.getValue() === undefined) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.text.getValue()!;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `text` property.
+   *
+   * @param value - the `text` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setText(value: fhirMarkdown): this {
+    assertIsDefined<fhirMarkdown>(value, `Citation.citedArtifact.title.text is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.title.text (${String(value)})`;
+    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `text` property exists and has a value; `false` otherwise
+   */
+  public hasText(): boolean {
+    return this.hasTextElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.title';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.language,
+      this.text,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactTitleComponent {
+    const dest = new CitationCitedArtifactTitleComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactTitleComponent): void {
+    super.copyValues(dest);
+    const typeList = copyListValues<CodeableConcept>(this.type_);
+    dest.type_ = typeList.length === 0 ? undefined : typeList;
+    dest.language = this.language?.copy();
+    dest.text = this.text ? this.text.copy() : null;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasType()) {
+      setFhirComplexListJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasLanguage()) {
+      setFhirComplexJson(this.getLanguage(), 'language', jsonObj);
+    }
+
+    if (this.hasTextElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.title.text`);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactAbstractComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** Summary of the article or artifact
+ * - **Definition:** The abstract may be used to convey article-contained abstracts, externally-created abstracts, or other descriptive summaries.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactAbstractComponent extends BackboneElement implements IBackboneElement {
+  constructor(text: MarkdownType | fhirMarkdown | null = null) {
+    super();
+
+    this.text = null;
+    if (isDefined<MarkdownType | fhirMarkdown>(text)) {
+      if (text instanceof PrimitiveType) {
+        this.setTextElement(text);
+      } else {
+        this.setText(text);
+      }
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactAbstractComponent` JSON to instantiate the CitationCitedArtifactAbstractComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactAbstractComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactAbstractComponent
+   * @returns CitationCitedArtifactAbstractComponent data model or undefined for `CitationCitedArtifactAbstractComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactAbstractComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactAbstractComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactAbstractComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setType(datatype);
+    }
+
+    fieldName = 'language';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setLanguage(datatype);
+    }
+
+    fieldName = 'text';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setTextElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'copyright';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      instance.setCopyrightElement(datatype);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.abstract.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The kind of abstract
+   * - **Definition:** Used to express the reason for or classification of the abstract.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.abstract.language Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used to express the specific language
+   * - **Definition:** Used to express the specific language of the abstract.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private language?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.abstract.text Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Abstract content
+   * - **Definition:** Abstract content.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private text: MarkdownType | null;
+
+  /**
+   * Citation.citedArtifact.abstract.copyright Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Copyright notice for the abstract
+   * - **Definition:** Copyright notice for the abstract.
+   * - **Comment:** There is also a copyright element in the publicationForm element, so this copyright element is intended for copyright of the abstract.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private copyright?: MarkdownType | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Type object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `language` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getLanguage(): CodeableConcept {
+    return this.language ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Language object value to the `language` property.
+   *
+   * @param value - the `language` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setLanguage(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract.language; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.language = value;
+    } else {
+      this.language = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `language` property exists and has a value; `false` otherwise
+   */
+  public hasLanguage(): boolean {
+    return isDefined<CodeableConcept>(this.language) && !this.language.isEmpty();
+  }
+
+  /**
+   * @returns the `text` property value as a MarkdownType object if defined; else null
+   */
+  public getTextElement(): MarkdownType | null {
+    return this.text;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `text` property.
+   *
+   * @param element - the `text` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTextElement(element: MarkdownType): this {
+    assertIsDefined<MarkdownType>(element, `Citation.citedArtifact.abstract.text is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.abstract.text; Provided value is not an instance of MarkdownType.`;
+    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+    this.text = element;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `text` property exists and has a value; `false` otherwise
+   */
+  public hasTextElement(): boolean {
+    return isDefined<MarkdownType>(this.text) && !this.text.isEmpty();
+  }
+
+  /**
+   * @returns the `text` property value as a fhirMarkdown if defined; else null
+   */
+  public getText(): fhirMarkdown | null {
+    if (this.text?.getValue() === undefined) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.text.getValue()!;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `text` property.
+   *
+   * @param value - the `text` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setText(value: fhirMarkdown): this {
+    assertIsDefined<fhirMarkdown>(value, `Citation.citedArtifact.abstract.text is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.abstract.text (${String(value)})`;
+    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `text` property exists and has a value; `false` otherwise
+   */
+  public hasText(): boolean {
+    return this.hasTextElement();
+  }
+
+  /**
+   * @returns the `copyright` property value as a MarkdownType object if defined; else an empty MarkdownType object
+   */
+  public getCopyrightElement(): MarkdownType {
+    return this.copyright ?? new MarkdownType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `copyright` property.
+   *
+   * @param element - the `copyright` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyrightElement(element: MarkdownType | undefined): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract.copyright; Provided element is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.copyright = element;
+    } else {
+      this.copyright = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyright` property exists and has a value; `false` otherwise
+   */
+  public hasCopyrightElement(): boolean {
+    return isDefined<MarkdownType>(this.copyright) && !this.copyright.isEmpty();
+  }
+
+  /**
+   * @returns the `copyright` property value as a fhirMarkdown if defined; else undefined
+   */
+  public getCopyright(): fhirMarkdown | undefined {
+    return this.copyright?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `copyright` property.
+   *
+   * @param value - the `copyright` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyright(value: fhirMarkdown | undefined): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract.copyright (${String(value)})`;
+      this.copyright = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.copyright = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyright` property exists and has a value; `false` otherwise
+   */
+  public hasCopyright(): boolean {
+    return this.hasCopyrightElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.abstract';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.language,
+      this.text,
+      this.copyright,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactAbstractComponent {
+    const dest = new CitationCitedArtifactAbstractComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactAbstractComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_?.copy();
+    dest.language = this.language?.copy();
+    dest.text = this.text ? this.text.copy() : null;
+    dest.copyright = this.copyright?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasType()) {
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasLanguage()) {
+      setFhirComplexJson(this.getLanguage(), 'language', jsonObj);
+    }
+
+    if (this.hasTextElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.abstract.text`);
+    }
+
+    if (this.hasCopyrightElement()) {
+      setFhirPrimitiveJson<fhirMarkdown>(this.getCopyrightElement(), 'copyright', jsonObj);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactPartComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The component of the article or artifact
+ * - **Definition:** The component of the article or artifact.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactPartComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactPartComponent` JSON to instantiate the CitationCitedArtifactPartComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactPartComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactPartComponent
+   * @returns CitationCitedArtifactPartComponent data model or undefined for `CitationCitedArtifactPartComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactPartComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactPartComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactPartComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setType(datatype);
+    }
+
+    fieldName = 'value';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setValueElement(datatype);
+    }
+
+    fieldName = 'baseCitation';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setBaseCitation(datatype);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.part.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The kind of component
+   * - **Definition:** The kind of component.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.part.value Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The specification of the component
+   * - **Definition:** The specification of the component.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private value?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.part.baseCitation Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The citation for the full article or artifact
+   * - **Definition:** The citation for the full article or artifact.
+   * - **Comment:** When referencing a baseCitation, one may inherit any data from the referenced Citation Resource and consider any data in the current Citation Resource as superceding to be specific to the citation of the specified part. For example, the part-specific Citation may have additional contributorship data that supercedes the contributorship data for the full citation when there is a need to uniquely report the contributorship for an image or supplement associated with the fuller citation record.
+   * - **FHIR Type:** `Reference`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/Citation',
+   *     ]
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private baseCitation?: Reference | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Type object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.part.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `value` property.
+   *
+   * @param element - the `value` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setValueElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.part.value; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `value` property exists and has a value; `false` otherwise
+   */
+  public hasValueElement(): boolean {
+    return isDefined<StringType>(this.value) && !this.value.isEmpty();
+  }
+
+  /**
+   * @returns the `value` property value as a fhirString if defined; else undefined
+   */
+  public getValue(): fhirString | undefined {
+    return this.value?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `value` property.
+   *
+   * @param value - the `value` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setValue(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.part.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `value` property exists and has a value; `false` otherwise
+   */
+  public hasValue(): boolean {
+    return this.hasValueElement();
+  }
+
+  /**
+   * @returns the `baseCitation` property value as a Reference object; else an empty Reference object
+   */
+  public getBaseCitation(): Reference {
+    return this.baseCitation ?? new Reference();
+  }
+
+  /**
+   * Assigns the provided BaseCitation object value to the `baseCitation` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.part.baseCitation', ['Citation',])`
+   *
+   * @param value - the `baseCitation` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.part.baseCitation', [
+    'Citation',
+  ])
+  public setBaseCitation(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.baseCitation = value;
+    } else {
+      this.baseCitation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `baseCitation` property exists and has a value; `false` otherwise
+   */
+  public hasBaseCitation(): boolean {
+    return isDefined<Reference>(this.baseCitation) && !this.baseCitation.isEmpty();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.part';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.value,
+      this.baseCitation,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactPartComponent {
+    const dest = new CitationCitedArtifactPartComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactPartComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_?.copy();
+    dest.value = this.value?.copy();
+    dest.baseCitation = this.baseCitation?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasType()) {
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasValueElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
+    }
+
+    if (this.hasBaseCitation()) {
+      setFhirComplexJson(this.getBaseCitation(), 'baseCitation', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactRelatesToComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The artifact related to the cited artifact
+ * - **Definition:** The artifact related to the cited artifact.
+ * - **Comment:** The citedArtifact.relatesTo element uses a BackboneElement instead of the RelatedArtifact Datatype to enable use of an extended value set for the required code for the type of relationship.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactRelatesToComponent extends BackboneElement implements IBackboneElement {
+  constructor(type_: CodeType | fhirCode | null = null) {
+    super();
+
+    this.type_ = null;
+    if (isDefined<CodeType | fhirCode>(type_)) {
+      if (type_ instanceof PrimitiveType) {
+        this.setTypeElement(type_);
+      } else {
+        this.setType(type_);
+      }
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactRelatesToComponent` JSON to instantiate the CitationCitedArtifactRelatesToComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactRelatesToComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactRelatesToComponent
+   * @returns CitationCitedArtifactRelatesToComponent data model or undefined for `CitationCitedArtifactRelatesToComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactRelatesToComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactRelatesToComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactRelatesToComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setTypeElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'classifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addClassifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'label';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setLabelElement(datatype);
+    }
+
+    fieldName = 'display';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setDisplayElement(datatype);
+    }
+
+    fieldName = 'citation';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      instance.setCitationElement(datatype);
+    }
+
+    fieldName = 'document';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Attachment | undefined = Attachment.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setDocument(datatype);
+    }
+
+    fieldName = 'resource';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
+      instance.setResourceElement(datatype);
+    }
+
+    fieldName = 'resourceReference';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setResourceReference(datatype);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.relatesTo.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** documentation | justification | citation | predecessor | successor | derived-from | depends-on | composed-of | part-of | amends | amended-with | appends | appended-with | cites | cited-by | comments-on | comment-in | contains | contained-in | corrects | correction-in | replaces | replaced-with | retracts | retracted-by | signs | similar-to | supports | supported-with | transforms | transformed-into | transformed-with | documents | specification-of | created-with | cite-as | reprint | reprint-of
+   * - **Definition:** The type of relationship to the related artifact.
+   * - **FHIR Type:** `code`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_: CodeType | null;
+
+  /**
+   * Citation.citedArtifact.relatesTo.classifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Additional classifiers
+   * - **Definition:** Provides additional classifiers of the related artifact.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private classifier?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo.label Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Short label
+   * - **Definition:** A short label that can be used to reference the related artifact from elsewhere in the containing artifact, such as a footnote index.
+   * - **Comment:** Though not commonly used in citation records, this could be used for referencing other articles in the abstract or explanatory notes.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private label?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo.display Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Brief description of the related artifact
+   * - **Definition:** A brief description of the document or knowledge resource being referenced, suitable for display to a consumer.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private display?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo.citation Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Bibliographic citation for the artifact
+   * - **Definition:** A bibliographic citation for the related artifact. This text SHOULD be formatted according to an accepted citation format.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private citation?: MarkdownType | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo.document Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** What document is being referenced
+   * - **Definition:** The document being referenced, represented as an attachment. Do not use this element if using the resource element to provide the canonical to the related artifact.
+   * - **Comment:** To refer to related artifacts by URL, the FHIR Attachment Datatype includes a url element, so the path would be Citation.citedArtifact.relatesTo.document.url
+   * - **FHIR Type:** `Attachment`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private document?: Attachment | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo.resource Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** What artifact is being referenced
+   * - **Definition:** The related artifact, such as a library, value set, profile, or other knowledge resource.
+   * - **Comment:** If the type is predecessor, this is a reference to the succeeding knowledge resource. If the type is successor, this is a reference to the prior knowledge resource
+   * - **FHIR Type:** `canonical`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private resource?: CanonicalType | undefined;
+
+  /**
+   * Citation.citedArtifact.relatesTo.resourceReference Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** What artifact, if not a conformance resource
+   * - **Definition:** The related artifact, if the artifact is not a canonical resource, or a resource reference to a canonical resource.
+   * - **Comment:** If both resource and resourceReference are present, they SHOULD be consistent and reference the same resource. Although relatedArtifact is intended to support references to definitional resources, there are cases where non-definitional resources can be definitional (such as Location where the kind is mode). Related artifacts SHOULD be used to reference definitional resources, and profiles SHOULD be used to make that explicit for particular use cases.
+   * - **FHIR Type:** `Reference`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private resourceReference?: Reference | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeType object if defined; else null
+   */
+  public getTypeElement(): CodeType | null {
+    return this.type_;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `type_` property.
+   *
+   * @param element - the `type_` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTypeElement(element: CodeType): this {
+    assertIsDefined<CodeType>(element, `Citation.citedArtifact.relatesTo.type is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.type; Provided value is not an instance of CodeType.`;
+    assertFhirType<CodeType>(element, CodeType, optErrMsg);
+    this.type_ = element;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasTypeElement(): boolean {
+    return isDefined<CodeType>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `type_` property value as a fhirCode if defined; else null
+   */
+  public getType(): fhirCode | null {
+    if (this.type_?.getValue() === undefined) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.type_.getValue()!;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `type_` property.
+   *
+   * @param value - the `type_` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setType(value: fhirCode): this {
+    assertIsDefined<fhirCode>(value, `Citation.citedArtifact.relatesTo.type is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.type (${String(value)})`;
+    this.type_ = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return this.hasTypeElement();
+  }
+
+  /**
+   * @returns the `classifier` property value as a CodeableConcept array
+   */
+  public getClassifier(): CodeableConcept[] {
+    return this.classifier ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `classifier` property.
+   *
+   * @param value - the `classifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setClassifier(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.classifier; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.classifier = value;
+    } else {
+      this.classifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `classifier` array property.
+   *
+   * @param value - the `classifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addClassifier(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.classifier; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initClassifier();
+      this.classifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `classifier` property exists and has a value; `false` otherwise
+   */
+  public hasClassifier(): boolean {
+    return isDefinedList<CodeableConcept>(this.classifier) && this.classifier.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `classifier` property
+   */
+  private initClassifier(): void {
+    if(!this.hasClassifier()) {
+      this.classifier = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `label` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getLabelElement(): StringType {
+    return this.label ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `label` property.
+   *
+   * @param element - the `label` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLabelElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.label; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.label = element;
+    } else {
+      this.label = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `label` property exists and has a value; `false` otherwise
+   */
+  public hasLabelElement(): boolean {
+    return isDefined<StringType>(this.label) && !this.label.isEmpty();
+  }
+
+  /**
+   * @returns the `label` property value as a fhirString if defined; else undefined
+   */
+  public getLabel(): fhirString | undefined {
+    return this.label?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `label` property.
+   *
+   * @param value - the `label` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLabel(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.label (${String(value)})`;
+      this.label = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.label = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `label` property exists and has a value; `false` otherwise
+   */
+  public hasLabel(): boolean {
+    return this.hasLabelElement();
+  }
+
+  /**
+   * @returns the `display` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getDisplayElement(): StringType {
+    return this.display ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `display` property.
+   *
+   * @param element - the `display` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDisplayElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.display; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.display = element;
+    } else {
+      this.display = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `display` property exists and has a value; `false` otherwise
+   */
+  public hasDisplayElement(): boolean {
+    return isDefined<StringType>(this.display) && !this.display.isEmpty();
+  }
+
+  /**
+   * @returns the `display` property value as a fhirString if defined; else undefined
+   */
+  public getDisplay(): fhirString | undefined {
+    return this.display?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `display` property.
+   *
+   * @param value - the `display` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setDisplay(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.display (${String(value)})`;
+      this.display = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.display = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `display` property exists and has a value; `false` otherwise
+   */
+  public hasDisplay(): boolean {
+    return this.hasDisplayElement();
+  }
+
+  /**
+   * @returns the `citation` property value as a MarkdownType object if defined; else an empty MarkdownType object
+   */
+  public getCitationElement(): MarkdownType {
+    return this.citation ?? new MarkdownType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `citation` property.
+   *
+   * @param element - the `citation` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCitationElement(element: MarkdownType | undefined): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.citation; Provided element is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.citation = element;
+    } else {
+      this.citation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `citation` property exists and has a value; `false` otherwise
+   */
+  public hasCitationElement(): boolean {
+    return isDefined<MarkdownType>(this.citation) && !this.citation.isEmpty();
+  }
+
+  /**
+   * @returns the `citation` property value as a fhirMarkdown if defined; else undefined
+   */
+  public getCitation(): fhirMarkdown | undefined {
+    return this.citation?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `citation` property.
+   *
+   * @param value - the `citation` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCitation(value: fhirMarkdown | undefined): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.citation (${String(value)})`;
+      this.citation = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.citation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `citation` property exists and has a value; `false` otherwise
+   */
+  public hasCitation(): boolean {
+    return this.hasCitationElement();
+  }
+
+  /**
+   * @returns the `document` property value as a Attachment object if defined; else an empty Attachment object
+   */
+  public getDocument(): Attachment {
+    return this.document ?? new Attachment();
+  }
+
+  /**
+   * Assigns the provided Document object value to the `document` property.
+   *
+   * @param value - the `document` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setDocument(value: Attachment | undefined): this {
+    if (isDefined<Attachment>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.document; Provided element is not an instance of Attachment.`;
+      assertFhirType<Attachment>(value, Attachment, optErrMsg);
+      this.document = value;
+    } else {
+      this.document = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `document` property exists and has a value; `false` otherwise
+   */
+  public hasDocument(): boolean {
+    return isDefined<Attachment>(this.document) && !this.document.isEmpty();
+  }
+
+  /**
+   * @returns the `resource` property value as a CanonicalType object if defined; else an empty CanonicalType object
+   */
+  public getResourceElement(): CanonicalType {
+    return this.resource ?? new CanonicalType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `resource` property.
+   *
+   * @param element - the `resource` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setResourceElement(element: CanonicalType | undefined): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.resource; Provided element is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.resource = element;
+    } else {
+      this.resource = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `resource` property exists and has a value; `false` otherwise
+   */
+  public hasResourceElement(): boolean {
+    return isDefined<CanonicalType>(this.resource) && !this.resource.isEmpty();
+  }
+
+  /**
+   * @returns the `resource` property value as a fhirCanonical if defined; else undefined
+   */
+  public getResource(): fhirCanonical | undefined {
+    return this.resource?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `resource` property.
+   *
+   * @param value - the `resource` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setResource(value: fhirCanonical | undefined): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.resource (${String(value)})`;
+      this.resource = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.resource = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `resource` property exists and has a value; `false` otherwise
+   */
+  public hasResource(): boolean {
+    return this.hasResourceElement();
+  }
+
+  /**
+   * @returns the `resourceReference` property value as a Reference object; else an empty Reference object
+   */
+  public getResourceReference(): Reference {
+    return this.resourceReference ?? new Reference();
+  }
+
+  /**
+   * Assigns the provided ResourceReference object value to the `resourceReference` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.relatesTo.resourceReference', [])`
+   *
+   * @param value - the `resourceReference` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.relatesTo.resourceReference', [])
+  public setResourceReference(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.resourceReference = value;
+    } else {
+      this.resourceReference = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `resourceReference` property exists and has a value; `false` otherwise
+   */
+  public hasResourceReference(): boolean {
+    return isDefined<Reference>(this.resourceReference) && !this.resourceReference.isEmpty();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.relatesTo';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.classifier,
+      this.label,
+      this.display,
+      this.citation,
+      this.document,
+      this.resource,
+      this.resourceReference,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactRelatesToComponent {
+    const dest = new CitationCitedArtifactRelatesToComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactRelatesToComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_ ? this.type_.copy() : null;
+    const classifierList = copyListValues<CodeableConcept>(this.classifier);
+    dest.classifier = classifierList.length === 0 ? undefined : classifierList;
+    dest.label = this.label?.copy();
+    dest.display = this.display?.copy();
+    dest.citation = this.citation?.copy();
+    dest.document = this.document?.copy();
+    dest.resource = this.resource?.copy();
+    dest.resourceReference = this.resourceReference?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasTypeElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.relatesTo.type`);
+    }
+
+    if (this.hasClassifier()) {
+      setFhirComplexListJson(this.getClassifier(), 'classifier', jsonObj);
+    }
+
+    if (this.hasLabelElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getLabelElement(), 'label', jsonObj);
+    }
+
+    if (this.hasDisplayElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getDisplayElement(), 'display', jsonObj);
+    }
+
+    if (this.hasCitationElement()) {
+      setFhirPrimitiveJson<fhirMarkdown>(this.getCitationElement(), 'citation', jsonObj);
+    }
+
+    if (this.hasDocument()) {
+      setFhirComplexJson(this.getDocument(), 'document', jsonObj);
+    }
+
+    if (this.hasResourceElement()) {
+      setFhirPrimitiveJson<fhirCanonical>(this.getResourceElement(), 'resource', jsonObj);
+    }
+
+    if (this.hasResourceReference()) {
+      setFhirComplexJson(this.getResourceReference(), 'resourceReference', jsonObj);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactPublicationFormComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** If multiple, used to represent alternative forms of the article that are not separate citations
+ * - **Definition:** If multiple, used to represent alternative forms of the article that are not separate citations.
+ * - **Comment:** A common use is a journal article with a publication date and pagination for a print version and a different publication date for the online version of the same article.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactPublicationFormComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactPublicationFormComponent` JSON to instantiate the CitationCitedArtifactPublicationFormComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactPublicationFormComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactPublicationFormComponent
+   * @returns CitationCitedArtifactPublicationFormComponent data model or undefined for `CitationCitedArtifactPublicationFormComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactPublicationFormComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactPublicationFormComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactPublicationFormComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
+
+    fieldName = 'publishedIn';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const component: CitationCitedArtifactPublicationFormPublishedInComponent | undefined = CitationCitedArtifactPublicationFormPublishedInComponent.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setPublishedIn(component);
+    }
+
+    fieldName = 'citedMedium';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setCitedMedium(datatype);
+    }
+
+    fieldName = 'volume';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setVolumeElement(datatype);
+    }
+
+    fieldName = 'issue';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setIssueElement(datatype);
+    }
+
+    fieldName = 'articleDate';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
+      instance.setArticleDateElement(datatype);
+    }
+
+    fieldName = 'publicationDateText';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setPublicationDateTextElement(datatype);
+    }
+
+    fieldName = 'publicationDateSeason';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setPublicationDateSeasonElement(datatype);
+    }
+
+    fieldName = 'lastRevisionDate';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
+      instance.setLastRevisionDateElement(datatype);
+    }
+
+    fieldName = 'language';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addLanguage(datatype);
+        }
+      });
+    }
+
+    fieldName = 'accessionNumber';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setAccessionNumberElement(datatype);
+    }
+
+    fieldName = 'pageString';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setPageStringElement(datatype);
+    }
+
+    fieldName = 'firstPage';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setFirstPageElement(datatype);
+    }
+
+    fieldName = 'lastPage';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setLastPageElement(datatype);
+    }
+
+    fieldName = 'pageCount';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setPageCountElement(datatype);
+    }
+
+    fieldName = 'copyright';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      instance.setCopyrightElement(datatype);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.publicationForm.publishedIn Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The collection the cited article or artifact is published in
+   * - **Definition:** The collection the cited article or artifact is published in.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private publishedIn?: CitationCitedArtifactPublicationFormPublishedInComponent | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.citedMedium Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Internet or Print
+   * - **Definition:** Describes the form of the medium cited. Common codes are "Internet" or "Print". The CitedMedium value set has 6 codes. The codes internet, print, and offline-digital-storage are the common codes for a typical publication form, though internet and print are more common for study citations. Three additional codes (each appending one of the primary codes with "-without-issue" are used for situations when a study is published both within an issue (of a periodical release as commonly done for journals) AND is published separately from the issue (as commonly done with early online publication), to represent specific identification of the publication form not associated with the issue.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private citedMedium?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.volume Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Volume number of journal or other collection in which the article is published
+   * - **Definition:** Volume number of journal or other collection in which the article is published.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private volume?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.issue Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Issue, part or supplement of journal or other collection in which the article is published
+   * - **Definition:** Issue, part or supplement of journal or other collection in which the article is published.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private issue?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.articleDate Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The date the article was added to the database, or the date the article was released
+   * - **Definition:** The date the article was added to the database, or the date the article was released.
+   * - **Comment:** The articleDate is the preferred element for expressing the publication date as structured data.
+   * - **FHIR Type:** `dateTime`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private articleDate?: DateTimeType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.publicationDateText Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Text representation of the date on which the issue of the cited artifact was published
+   * - **Definition:** Text representation of the date on which the issue of the cited artifact was published.
+   * - **Comment:** The publicationDateText element is prefererntially used when a date is not represented in a form that can be handled as structured data in other elements.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private publicationDateText?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.publicationDateSeason Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Season in which the cited artifact was published
+   * - **Definition:** Spring, Summer, Fall/Autumn, Winter.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private publicationDateSeason?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.lastRevisionDate Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The date the article was last revised or updated in the database
+   * - **Definition:** The date the article was last revised or updated in the database.
+   * - **Comment:** The lastRevisionDate is used for the cited article and not the date the Citation Resource is last revised.
+   * - **FHIR Type:** `dateTime`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private lastRevisionDate?: DateTimeType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.language Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Language(s) in which this form of the article is published
+   * - **Definition:** The language or languages in which this form of the article is published.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private language?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.accessionNumber Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Entry number or identifier for inclusion in a database
+   * - **Definition:** Entry number or identifier for inclusion in a database.
+   * - **Comment:** Accession numbers may be used instead of or in addition to page numbers.  Accession numbers are functionally identifiers when coupled with the identity of the database for which they are accession numbers. Accession numbers which are used for indexing citations in a dataset of citations should NOT be entered in Citation.citedArtifact.publicationForm.accessionNumber -- this use would be a type of Citation.identifier for the citation record itself.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private accessionNumber?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.pageString Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used for full display of pagination
+   * - **Definition:** Used for full display of pagination.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private pageString?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.firstPage Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used for isolated representation of first page
+   * - **Definition:** Used for isolated representation of first page.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private firstPage?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.lastPage Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used for isolated representation of last page
+   * - **Definition:** Used for isolated representation of last page.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private lastPage?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.pageCount Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Number of pages or screens
+   * - **Definition:** Actual or approximate number of pages or screens. Distinct from reporting the page numbers.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private pageCount?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.copyright Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Copyright notice for the full article or artifact
+   * - **Definition:** Copyright notice for the full article or artifact.
+   * - **Comment:** It is possible that different publication forms have different copyright notices.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private copyright?: MarkdownType | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `publishedIn` property value as a CitationCitedArtifactPublicationFormPublishedInComponent object if defined; else an empty CitationCitedArtifactPublicationFormPublishedInComponent object
+   */
+  public getPublishedIn(): CitationCitedArtifactPublicationFormPublishedInComponent {
+    return this.publishedIn ?? new CitationCitedArtifactPublicationFormPublishedInComponent();
+  }
+
+  /**
+   * Assigns the provided PublishedIn object value to the `publishedIn` property.
+   *
+   * @param value - the `publishedIn` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setPublishedIn(value: CitationCitedArtifactPublicationFormPublishedInComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactPublicationFormPublishedInComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn; Provided element is not an instance of CitationCitedArtifactPublicationFormPublishedInComponent.`;
+      assertFhirType<CitationCitedArtifactPublicationFormPublishedInComponent>(value, CitationCitedArtifactPublicationFormPublishedInComponent, optErrMsg);
+      this.publishedIn = value;
+    } else {
+      this.publishedIn = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publishedIn` property exists and has a value; `false` otherwise
+   */
+  public hasPublishedIn(): boolean {
+    return isDefined<CitationCitedArtifactPublicationFormPublishedInComponent>(this.publishedIn) && !this.publishedIn.isEmpty();
+  }
+
+  /**
+   * @returns the `citedMedium` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getCitedMedium(): CodeableConcept {
+    return this.citedMedium ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided CitedMedium object value to the `citedMedium` property.
+   *
+   * @param value - the `citedMedium` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setCitedMedium(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.citedMedium; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.citedMedium = value;
+    } else {
+      this.citedMedium = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `citedMedium` property exists and has a value; `false` otherwise
+   */
+  public hasCitedMedium(): boolean {
+    return isDefined<CodeableConcept>(this.citedMedium) && !this.citedMedium.isEmpty();
+  }
+
+  /**
+   * @returns the `volume` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getVolumeElement(): StringType {
+    return this.volume ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `volume` property.
+   *
+   * @param element - the `volume` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setVolumeElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.volume; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.volume = element;
+    } else {
+      this.volume = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `volume` property exists and has a value; `false` otherwise
+   */
+  public hasVolumeElement(): boolean {
+    return isDefined<StringType>(this.volume) && !this.volume.isEmpty();
+  }
+
+  /**
+   * @returns the `volume` property value as a fhirString if defined; else undefined
+   */
+  public getVolume(): fhirString | undefined {
+    return this.volume?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `volume` property.
+   *
+   * @param value - the `volume` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setVolume(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.volume (${String(value)})`;
+      this.volume = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.volume = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `volume` property exists and has a value; `false` otherwise
+   */
+  public hasVolume(): boolean {
+    return this.hasVolumeElement();
+  }
+
+  /**
+   * @returns the `issue` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getIssueElement(): StringType {
+    return this.issue ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `issue` property.
+   *
+   * @param element - the `issue` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setIssueElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.issue; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.issue = element;
+    } else {
+      this.issue = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `issue` property exists and has a value; `false` otherwise
+   */
+  public hasIssueElement(): boolean {
+    return isDefined<StringType>(this.issue) && !this.issue.isEmpty();
+  }
+
+  /**
+   * @returns the `issue` property value as a fhirString if defined; else undefined
+   */
+  public getIssue(): fhirString | undefined {
+    return this.issue?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `issue` property.
+   *
+   * @param value - the `issue` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setIssue(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.issue (${String(value)})`;
+      this.issue = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.issue = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `issue` property exists and has a value; `false` otherwise
+   */
+  public hasIssue(): boolean {
+    return this.hasIssueElement();
+  }
+
+  /**
+   * @returns the `articleDate` property value as a DateTimeType object if defined; else an empty DateTimeType object
+   */
+  public getArticleDateElement(): DateTimeType {
+    return this.articleDate ?? new DateTimeType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `articleDate` property.
+   *
+   * @param element - the `articleDate` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setArticleDateElement(element: DateTimeType | undefined): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.articleDate; Provided element is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.articleDate = element;
+    } else {
+      this.articleDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `articleDate` property exists and has a value; `false` otherwise
+   */
+  public hasArticleDateElement(): boolean {
+    return isDefined<DateTimeType>(this.articleDate) && !this.articleDate.isEmpty();
+  }
+
+  /**
+   * @returns the `articleDate` property value as a fhirDateTime if defined; else undefined
+   */
+  public getArticleDate(): fhirDateTime | undefined {
+    return this.articleDate?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `articleDate` property.
+   *
+   * @param value - the `articleDate` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setArticleDate(value: fhirDateTime | undefined): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.articleDate (${String(value)})`;
+      this.articleDate = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.articleDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `articleDate` property exists and has a value; `false` otherwise
+   */
+  public hasArticleDate(): boolean {
+    return this.hasArticleDateElement();
+  }
+
+  /**
+   * @returns the `publicationDateText` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getPublicationDateTextElement(): StringType {
+    return this.publicationDateText ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `publicationDateText` property.
+   *
+   * @param element - the `publicationDateText` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublicationDateTextElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publicationDateText; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.publicationDateText = element;
+    } else {
+      this.publicationDateText = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publicationDateText` property exists and has a value; `false` otherwise
+   */
+  public hasPublicationDateTextElement(): boolean {
+    return isDefined<StringType>(this.publicationDateText) && !this.publicationDateText.isEmpty();
+  }
+
+  /**
+   * @returns the `publicationDateText` property value as a fhirString if defined; else undefined
+   */
+  public getPublicationDateText(): fhirString | undefined {
+    return this.publicationDateText?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `publicationDateText` property.
+   *
+   * @param value - the `publicationDateText` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublicationDateText(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publicationDateText (${String(value)})`;
+      this.publicationDateText = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.publicationDateText = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publicationDateText` property exists and has a value; `false` otherwise
+   */
+  public hasPublicationDateText(): boolean {
+    return this.hasPublicationDateTextElement();
+  }
+
+  /**
+   * @returns the `publicationDateSeason` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getPublicationDateSeasonElement(): StringType {
+    return this.publicationDateSeason ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `publicationDateSeason` property.
+   *
+   * @param element - the `publicationDateSeason` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublicationDateSeasonElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publicationDateSeason; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.publicationDateSeason = element;
+    } else {
+      this.publicationDateSeason = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publicationDateSeason` property exists and has a value; `false` otherwise
+   */
+  public hasPublicationDateSeasonElement(): boolean {
+    return isDefined<StringType>(this.publicationDateSeason) && !this.publicationDateSeason.isEmpty();
+  }
+
+  /**
+   * @returns the `publicationDateSeason` property value as a fhirString if defined; else undefined
+   */
+  public getPublicationDateSeason(): fhirString | undefined {
+    return this.publicationDateSeason?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `publicationDateSeason` property.
+   *
+   * @param value - the `publicationDateSeason` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublicationDateSeason(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publicationDateSeason (${String(value)})`;
+      this.publicationDateSeason = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.publicationDateSeason = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publicationDateSeason` property exists and has a value; `false` otherwise
+   */
+  public hasPublicationDateSeason(): boolean {
+    return this.hasPublicationDateSeasonElement();
+  }
+
+  /**
+   * @returns the `lastRevisionDate` property value as a DateTimeType object if defined; else an empty DateTimeType object
+   */
+  public getLastRevisionDateElement(): DateTimeType {
+    return this.lastRevisionDate ?? new DateTimeType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `lastRevisionDate` property.
+   *
+   * @param element - the `lastRevisionDate` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLastRevisionDateElement(element: DateTimeType | undefined): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.lastRevisionDate; Provided element is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.lastRevisionDate = element;
+    } else {
+      this.lastRevisionDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `lastRevisionDate` property exists and has a value; `false` otherwise
+   */
+  public hasLastRevisionDateElement(): boolean {
+    return isDefined<DateTimeType>(this.lastRevisionDate) && !this.lastRevisionDate.isEmpty();
+  }
+
+  /**
+   * @returns the `lastRevisionDate` property value as a fhirDateTime if defined; else undefined
+   */
+  public getLastRevisionDate(): fhirDateTime | undefined {
+    return this.lastRevisionDate?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `lastRevisionDate` property.
+   *
+   * @param value - the `lastRevisionDate` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLastRevisionDate(value: fhirDateTime | undefined): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.lastRevisionDate (${String(value)})`;
+      this.lastRevisionDate = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.lastRevisionDate = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `lastRevisionDate` property exists and has a value; `false` otherwise
+   */
+  public hasLastRevisionDate(): boolean {
+    return this.hasLastRevisionDateElement();
+  }
+
+  /**
+   * @returns the `language` property value as a CodeableConcept array
+   */
+  public getLanguage(): CodeableConcept[] {
+    return this.language ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `language` property.
+   *
+   * @param value - the `language` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setLanguage(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.language; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.language = value;
+    } else {
+      this.language = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `language` array property.
+   *
+   * @param value - the `language` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addLanguage(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.language; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initLanguage();
+      this.language?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `language` property exists and has a value; `false` otherwise
+   */
+  public hasLanguage(): boolean {
+    return isDefinedList<CodeableConcept>(this.language) && this.language.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `language` property
+   */
+  private initLanguage(): void {
+    if(!this.hasLanguage()) {
+      this.language = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `accessionNumber` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getAccessionNumberElement(): StringType {
+    return this.accessionNumber ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `accessionNumber` property.
+   *
+   * @param element - the `accessionNumber` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setAccessionNumberElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.accessionNumber; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.accessionNumber = element;
+    } else {
+      this.accessionNumber = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `accessionNumber` property exists and has a value; `false` otherwise
+   */
+  public hasAccessionNumberElement(): boolean {
+    return isDefined<StringType>(this.accessionNumber) && !this.accessionNumber.isEmpty();
+  }
+
+  /**
+   * @returns the `accessionNumber` property value as a fhirString if defined; else undefined
+   */
+  public getAccessionNumber(): fhirString | undefined {
+    return this.accessionNumber?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `accessionNumber` property.
+   *
+   * @param value - the `accessionNumber` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setAccessionNumber(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.accessionNumber (${String(value)})`;
+      this.accessionNumber = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.accessionNumber = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `accessionNumber` property exists and has a value; `false` otherwise
+   */
+  public hasAccessionNumber(): boolean {
+    return this.hasAccessionNumberElement();
+  }
+
+  /**
+   * @returns the `pageString` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getPageStringElement(): StringType {
+    return this.pageString ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `pageString` property.
+   *
+   * @param element - the `pageString` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPageStringElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.pageString; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.pageString = element;
+    } else {
+      this.pageString = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `pageString` property exists and has a value; `false` otherwise
+   */
+  public hasPageStringElement(): boolean {
+    return isDefined<StringType>(this.pageString) && !this.pageString.isEmpty();
+  }
+
+  /**
+   * @returns the `pageString` property value as a fhirString if defined; else undefined
+   */
+  public getPageString(): fhirString | undefined {
+    return this.pageString?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `pageString` property.
+   *
+   * @param value - the `pageString` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPageString(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.pageString (${String(value)})`;
+      this.pageString = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.pageString = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `pageString` property exists and has a value; `false` otherwise
+   */
+  public hasPageString(): boolean {
+    return this.hasPageStringElement();
+  }
+
+  /**
+   * @returns the `firstPage` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getFirstPageElement(): StringType {
+    return this.firstPage ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `firstPage` property.
+   *
+   * @param element - the `firstPage` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setFirstPageElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.firstPage; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.firstPage = element;
+    } else {
+      this.firstPage = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `firstPage` property exists and has a value; `false` otherwise
+   */
+  public hasFirstPageElement(): boolean {
+    return isDefined<StringType>(this.firstPage) && !this.firstPage.isEmpty();
+  }
+
+  /**
+   * @returns the `firstPage` property value as a fhirString if defined; else undefined
+   */
+  public getFirstPage(): fhirString | undefined {
+    return this.firstPage?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `firstPage` property.
+   *
+   * @param value - the `firstPage` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setFirstPage(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.firstPage (${String(value)})`;
+      this.firstPage = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.firstPage = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `firstPage` property exists and has a value; `false` otherwise
+   */
+  public hasFirstPage(): boolean {
+    return this.hasFirstPageElement();
+  }
+
+  /**
+   * @returns the `lastPage` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getLastPageElement(): StringType {
+    return this.lastPage ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `lastPage` property.
+   *
+   * @param element - the `lastPage` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLastPageElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.lastPage; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.lastPage = element;
+    } else {
+      this.lastPage = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `lastPage` property exists and has a value; `false` otherwise
+   */
+  public hasLastPageElement(): boolean {
+    return isDefined<StringType>(this.lastPage) && !this.lastPage.isEmpty();
+  }
+
+  /**
+   * @returns the `lastPage` property value as a fhirString if defined; else undefined
+   */
+  public getLastPage(): fhirString | undefined {
+    return this.lastPage?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `lastPage` property.
+   *
+   * @param value - the `lastPage` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setLastPage(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.lastPage (${String(value)})`;
+      this.lastPage = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.lastPage = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `lastPage` property exists and has a value; `false` otherwise
+   */
+  public hasLastPage(): boolean {
+    return this.hasLastPageElement();
+  }
+
+  /**
+   * @returns the `pageCount` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getPageCountElement(): StringType {
+    return this.pageCount ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `pageCount` property.
+   *
+   * @param element - the `pageCount` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPageCountElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.pageCount; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.pageCount = element;
+    } else {
+      this.pageCount = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `pageCount` property exists and has a value; `false` otherwise
+   */
+  public hasPageCountElement(): boolean {
+    return isDefined<StringType>(this.pageCount) && !this.pageCount.isEmpty();
+  }
+
+  /**
+   * @returns the `pageCount` property value as a fhirString if defined; else undefined
+   */
+  public getPageCount(): fhirString | undefined {
+    return this.pageCount?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `pageCount` property.
+   *
+   * @param value - the `pageCount` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPageCount(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.pageCount (${String(value)})`;
+      this.pageCount = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.pageCount = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `pageCount` property exists and has a value; `false` otherwise
+   */
+  public hasPageCount(): boolean {
+    return this.hasPageCountElement();
+  }
+
+  /**
+   * @returns the `copyright` property value as a MarkdownType object if defined; else an empty MarkdownType object
+   */
+  public getCopyrightElement(): MarkdownType {
+    return this.copyright ?? new MarkdownType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `copyright` property.
+   *
+   * @param element - the `copyright` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyrightElement(element: MarkdownType | undefined): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.copyright; Provided element is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.copyright = element;
+    } else {
+      this.copyright = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyright` property exists and has a value; `false` otherwise
+   */
+  public hasCopyrightElement(): boolean {
+    return isDefined<MarkdownType>(this.copyright) && !this.copyright.isEmpty();
+  }
+
+  /**
+   * @returns the `copyright` property value as a fhirMarkdown if defined; else undefined
+   */
+  public getCopyright(): fhirMarkdown | undefined {
+    return this.copyright?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `copyright` property.
+   *
+   * @param value - the `copyright` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCopyright(value: fhirMarkdown | undefined): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.copyright (${String(value)})`;
+      this.copyright = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.copyright = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `copyright` property exists and has a value; `false` otherwise
+   */
+  public hasCopyright(): boolean {
+    return this.hasCopyrightElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.publicationForm';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.publishedIn,
+      this.citedMedium,
+      this.volume,
+      this.issue,
+      this.articleDate,
+      this.publicationDateText,
+      this.publicationDateSeason,
+      this.lastRevisionDate,
+      this.language,
+      this.accessionNumber,
+      this.pageString,
+      this.firstPage,
+      this.lastPage,
+      this.pageCount,
+      this.copyright,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactPublicationFormComponent {
+    const dest = new CitationCitedArtifactPublicationFormComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactPublicationFormComponent): void {
+    super.copyValues(dest);
+    dest.publishedIn = this.publishedIn?.copy();
+    dest.citedMedium = this.citedMedium?.copy();
+    dest.volume = this.volume?.copy();
+    dest.issue = this.issue?.copy();
+    dest.articleDate = this.articleDate?.copy();
+    dest.publicationDateText = this.publicationDateText?.copy();
+    dest.publicationDateSeason = this.publicationDateSeason?.copy();
+    dest.lastRevisionDate = this.lastRevisionDate?.copy();
+    const languageList = copyListValues<CodeableConcept>(this.language);
+    dest.language = languageList.length === 0 ? undefined : languageList;
+    dest.accessionNumber = this.accessionNumber?.copy();
+    dest.pageString = this.pageString?.copy();
+    dest.firstPage = this.firstPage?.copy();
+    dest.lastPage = this.lastPage?.copy();
+    dest.pageCount = this.pageCount?.copy();
+    dest.copyright = this.copyright?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasPublishedIn()) {
+      setFhirBackboneElementJson(this.getPublishedIn(), 'publishedIn', jsonObj);
+    }
+
+    if (this.hasCitedMedium()) {
+      setFhirComplexJson(this.getCitedMedium(), 'citedMedium', jsonObj);
+    }
+
+    if (this.hasVolumeElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getVolumeElement(), 'volume', jsonObj);
+    }
+
+    if (this.hasIssueElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getIssueElement(), 'issue', jsonObj);
+    }
+
+    if (this.hasArticleDateElement()) {
+      setFhirPrimitiveJson<fhirDateTime>(this.getArticleDateElement(), 'articleDate', jsonObj);
+    }
+
+    if (this.hasPublicationDateTextElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getPublicationDateTextElement(), 'publicationDateText', jsonObj);
+    }
+
+    if (this.hasPublicationDateSeasonElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getPublicationDateSeasonElement(), 'publicationDateSeason', jsonObj);
+    }
+
+    if (this.hasLastRevisionDateElement()) {
+      setFhirPrimitiveJson<fhirDateTime>(this.getLastRevisionDateElement(), 'lastRevisionDate', jsonObj);
+    }
+
+    if (this.hasLanguage()) {
+      setFhirComplexListJson(this.getLanguage(), 'language', jsonObj);
+    }
+
+    if (this.hasAccessionNumberElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getAccessionNumberElement(), 'accessionNumber', jsonObj);
+    }
+
+    if (this.hasPageStringElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getPageStringElement(), 'pageString', jsonObj);
+    }
+
+    if (this.hasFirstPageElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getFirstPageElement(), 'firstPage', jsonObj);
+    }
+
+    if (this.hasLastPageElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getLastPageElement(), 'lastPage', jsonObj);
+    }
+
+    if (this.hasPageCountElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getPageCountElement(), 'pageCount', jsonObj);
+    }
+
+    if (this.hasCopyrightElement()) {
+      setFhirPrimitiveJson<fhirMarkdown>(this.getCopyrightElement(), 'copyright', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactPublicationFormPublishedInComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The collection the cited article or artifact is published in
+ * - **Definition:** The collection the cited article or artifact is published in.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactPublicationFormPublishedInComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactPublicationFormPublishedInComponent` JSON to instantiate the CitationCitedArtifactPublicationFormPublishedInComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactPublicationFormPublishedInComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactPublicationFormPublishedInComponent
+   * @returns CitationCitedArtifactPublicationFormPublishedInComponent data model or undefined for `CitationCitedArtifactPublicationFormPublishedInComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactPublicationFormPublishedInComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactPublicationFormPublishedInComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactPublicationFormPublishedInComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setType(datatype);
+    }
+
+    fieldName = 'identifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addIdentifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'title';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setTitleElement(datatype);
+    }
+
+    fieldName = 'publisher';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setPublisher(datatype);
+    }
+
+    fieldName = 'publisherLocation';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setPublisherLocationElement(datatype);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.publicationForm.publishedIn.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Kind of container (e.g. Periodical, database, or book)
+   * - **Definition:** Kind of container (e.g. Periodical, database, or book).
+   * - **Comment:** Journals and newspapers are coded as Periodical.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.publishedIn.identifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Journal identifiers include ISSN, ISO Abbreviation and NLMuniqueID; Book identifiers include ISBN
+   * - **Definition:** Journal identifiers include ISSN, ISO Abbreviation and NLMuniqueID; Book identifiers include ISBN.
+   * - **FHIR Type:** `Identifier`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private identifier?: Identifier[] | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.publishedIn.title Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Name of the database or title of the book or journal
+   * - **Definition:** Name of the database or title of the book or journal.
+   * - **Comment:** ClinicalTrials.gov is a name of a database.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private title?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.publishedIn.publisher Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Name of or resource describing the publisher
+   * - **Definition:** Name of or resource describing the publisher.
+   * - **FHIR Type:** `Reference`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/Organization',
+   *     ]
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private publisher?: Reference | undefined;
+
+  /**
+   * Citation.citedArtifact.publicationForm.publishedIn.publisherLocation Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Geographic location of the publisher
+   * - **Definition:** Geographic location of the publisher.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private publisherLocation?: StringType | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Type object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `identifier` property value as a Identifier array
+   */
+  public getIdentifier(): Identifier[] {
+    return this.identifier ?? ([] as Identifier[]);
+  }
+
+  /**
+   * Assigns the provided Identifier array value to the `identifier` property.
+   *
+   * @param value - the `identifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setIdentifier(value: Identifier[] | undefined): this {
+    if (isDefinedList<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.identifier; Provided value array has an element that is not an instance of Identifier.`;
+      assertFhirTypeList<Identifier>(value, Identifier, optErrMsg);
+      this.identifier = value;
+    } else {
+      this.identifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Identifier value to the `identifier` array property.
+   *
+   * @param value - the `identifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addIdentifier(value: Identifier | undefined): this {
+    if (isDefined<Identifier>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.identifier; Provided element is not an instance of Identifier.`;
+      assertFhirType<Identifier>(value, Identifier, optErrMsg);
+      this.initIdentifier();
+      this.identifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `identifier` property exists and has a value; `false` otherwise
+   */
+  public hasIdentifier(): boolean {
+    return isDefinedList<Identifier>(this.identifier) && this.identifier.some((item: Identifier) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `identifier` property
+   */
+  private initIdentifier(): void {
+    if(!this.hasIdentifier()) {
+      this.identifier = [] as Identifier[];
+    }
+  }
+
+  /**
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `title` property.
+   *
+   * @param element - the `title` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTitleElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.title; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `title` property exists and has a value; `false` otherwise
+   */
+  public hasTitleElement(): boolean {
+    return isDefined<StringType>(this.title) && !this.title.isEmpty();
+  }
+
+  /**
+   * @returns the `title` property value as a fhirString if defined; else undefined
+   */
+  public getTitle(): fhirString | undefined {
+    return this.title?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `title` property.
+   *
+   * @param value - the `title` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTitle(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `title` property exists and has a value; `false` otherwise
+   */
+  public hasTitle(): boolean {
+    return this.hasTitleElement();
+  }
+
+  /**
+   * @returns the `publisher` property value as a Reference object; else an empty Reference object
+   */
+  public getPublisher(): Reference {
+    return this.publisher ?? new Reference();
+  }
+
+  /**
+   * Assigns the provided Publisher object value to the `publisher` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.publicationForm.publishedIn.publisher', ['Organization',])`
+   *
+   * @param value - the `publisher` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.publicationForm.publishedIn.publisher', [
+    'Organization',
+  ])
+  public setPublisher(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.publisher = value;
+    } else {
+      this.publisher = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publisher` property exists and has a value; `false` otherwise
+   */
+  public hasPublisher(): boolean {
+    return isDefined<Reference>(this.publisher) && !this.publisher.isEmpty();
+  }
+
+  /**
+   * @returns the `publisherLocation` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getPublisherLocationElement(): StringType {
+    return this.publisherLocation ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `publisherLocation` property.
+   *
+   * @param element - the `publisherLocation` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublisherLocationElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.publisherLocation; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.publisherLocation = element;
+    } else {
+      this.publisherLocation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publisherLocation` property exists and has a value; `false` otherwise
+   */
+  public hasPublisherLocationElement(): boolean {
+    return isDefined<StringType>(this.publisherLocation) && !this.publisherLocation.isEmpty();
+  }
+
+  /**
+   * @returns the `publisherLocation` property value as a fhirString if defined; else undefined
+   */
+  public getPublisherLocation(): fhirString | undefined {
+    return this.publisherLocation?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `publisherLocation` property.
+   *
+   * @param value - the `publisherLocation` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setPublisherLocation(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.publicationForm.publishedIn.publisherLocation (${String(value)})`;
+      this.publisherLocation = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.publisherLocation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `publisherLocation` property exists and has a value; `false` otherwise
+   */
+  public hasPublisherLocation(): boolean {
+    return this.hasPublisherLocationElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.publicationForm.publishedIn';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.identifier,
+      this.title,
+      this.publisher,
+      this.publisherLocation,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactPublicationFormPublishedInComponent {
+    const dest = new CitationCitedArtifactPublicationFormPublishedInComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactPublicationFormPublishedInComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_?.copy();
+    const identifierList = copyListValues<Identifier>(this.identifier);
+    dest.identifier = identifierList.length === 0 ? undefined : identifierList;
+    dest.title = this.title?.copy();
+    dest.publisher = this.publisher?.copy();
+    dest.publisherLocation = this.publisherLocation?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasType()) {
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasIdentifier()) {
+      setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
+    }
+
+    if (this.hasTitleElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
+    }
+
+    if (this.hasPublisher()) {
+      setFhirComplexJson(this.getPublisher(), 'publisher', jsonObj);
+    }
+
+    if (this.hasPublisherLocationElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getPublisherLocationElement(), 'publisherLocation', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactWebLocationComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** Used for any URL for the article or artifact cited
+ * - **Definition:** Used for any URL for the article or artifact cited.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactWebLocationComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactWebLocationComponent` JSON to instantiate the CitationCitedArtifactWebLocationComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactWebLocationComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactWebLocationComponent
+   * @returns CitationCitedArtifactWebLocationComponent data model or undefined for `CitationCitedArtifactWebLocationComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactWebLocationComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactWebLocationComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactWebLocationComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    fieldName = 'classifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addClassifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'url';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
+      instance.setUrlElement(datatype);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.webLocation.classifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Code the reason for different URLs, e.g. abstract and full-text
+   * - **Definition:** A characterization of the object expected at the web location.
+   * - **Comment:** Categories that may be frequently used for study citations may include abstract, full-text, supplement, webpage, and doi-based.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private classifier?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.webLocation.url Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The specific URL
+   * - **Definition:** The specific URL.
+   * - **Comment:** Persistent URLs, like doi, are preferred.
+   * - **FHIR Type:** `uri`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private url?: UriType | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `classifier` property value as a CodeableConcept array
+   */
+  public getClassifier(): CodeableConcept[] {
+    return this.classifier ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `classifier` property.
+   *
+   * @param value - the `classifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setClassifier(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.webLocation.classifier; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.classifier = value;
+    } else {
+      this.classifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `classifier` array property.
+   *
+   * @param value - the `classifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addClassifier(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.webLocation.classifier; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initClassifier();
+      this.classifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `classifier` property exists and has a value; `false` otherwise
+   */
+  public hasClassifier(): boolean {
+    return isDefinedList<CodeableConcept>(this.classifier) && this.classifier.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `classifier` property
+   */
+  private initClassifier(): void {
+    if(!this.hasClassifier()) {
+      this.classifier = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `url` property value as a UriType object if defined; else an empty UriType object
+   */
+  public getUrlElement(): UriType {
+    return this.url ?? new UriType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `url` property.
+   *
+   * @param element - the `url` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setUrlElement(element: UriType | undefined): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.webLocation.url; Provided element is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.url = element;
+    } else {
+      this.url = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `url` property exists and has a value; `false` otherwise
+   */
+  public hasUrlElement(): boolean {
+    return isDefined<UriType>(this.url) && !this.url.isEmpty();
+  }
+
+  /**
+   * @returns the `url` property value as a fhirUri if defined; else undefined
+   */
+  public getUrl(): fhirUri | undefined {
+    return this.url?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `url` property.
+   *
+   * @param value - the `url` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setUrl(value: fhirUri | undefined): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.webLocation.url (${String(value)})`;
+      this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.url = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `url` property exists and has a value; `false` otherwise
+   */
+  public hasUrl(): boolean {
+    return this.hasUrlElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.webLocation';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.classifier,
+      this.url,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactWebLocationComponent {
+    const dest = new CitationCitedArtifactWebLocationComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactWebLocationComponent): void {
+    super.copyValues(dest);
+    const classifierList = copyListValues<CodeableConcept>(this.classifier);
+    dest.classifier = classifierList.length === 0 ? undefined : classifierList;
+    dest.url = this.url?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasClassifier()) {
+      setFhirComplexListJson(this.getClassifier(), 'classifier', jsonObj);
+    }
+
+    if (this.hasUrlElement()) {
+      setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactClassificationComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** The assignment to an organizing scheme
+ * - **Definition:** The assignment to an organizing scheme.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactClassificationComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactClassificationComponent` JSON to instantiate the CitationCitedArtifactClassificationComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactClassificationComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactClassificationComponent
+   * @returns CitationCitedArtifactClassificationComponent data model or undefined for `CitationCitedArtifactClassificationComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactClassificationComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactClassificationComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactClassificationComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setType(datatype);
+    }
+
+    fieldName = 'classifier';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addClassifier(datatype);
+        }
+      });
+    }
+
+    fieldName = 'artifactAssessment';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addArtifactAssessment(datatype);
+        }
+      });
+  }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.classification.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The kind of classifier (e.g. publication type, keyword)
+   * - **Definition:** The kind of classifier (e.g. publication type, keyword).
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.classification.classifier Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The specific classification value
+   * - **Definition:** The specific classification value.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private classifier?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.classification.artifactAssessment Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Complex or externally created classification
+   * - **Definition:** Complex or externally created classification.
+   * - **Comment:** Examples relevant to study citations include MeSH Headings or Keywords that contain qualifier codings or sub-classifications, and include risk of bias assessments created by persons different from the creator of the citation record.
+   * - **FHIR Type:** `Reference`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/ArtifactAssessment',
+   *     ]
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private artifactAssessment?: Reference[] | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Type object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.classification.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `classifier` property value as a CodeableConcept array
+   */
+  public getClassifier(): CodeableConcept[] {
+    return this.classifier ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `classifier` property.
+   *
+   * @param value - the `classifier` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setClassifier(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.classification.classifier; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.classifier = value;
+    } else {
+      this.classifier = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `classifier` array property.
+   *
+   * @param value - the `classifier` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addClassifier(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.classification.classifier; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initClassifier();
+      this.classifier?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `classifier` property exists and has a value; `false` otherwise
+   */
+  public hasClassifier(): boolean {
+    return isDefinedList<CodeableConcept>(this.classifier) && this.classifier.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `classifier` property
+   */
+  private initClassifier(): void {
+    if(!this.hasClassifier()) {
+      this.classifier = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `artifactAssessment` property value as a Reference array
+   */
+  public getArtifactAssessment(): Reference[] {
+    return this.artifactAssessment ?? ([] as Reference[]);
+  }
+
+  /**
+   * Assigns the provided Reference array value to the `artifactAssessment` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.classification.artifactAssessment', ['ArtifactAssessment',])`
+   *
+   * @param value - the `artifactAssessment` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.classification.artifactAssessment', [
+    'ArtifactAssessment',
+  ])
+  public setArtifactAssessment(value: Reference[] | undefined): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.artifactAssessment = value;
+    } else {
+      this.artifactAssessment = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Reference value to the `artifactAssessment` array property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.classification.artifactAssessment', ['ArtifactAssessment',])`
+   *
+   * @param value - the `artifactAssessment` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.classification.artifactAssessment', [
+    'ArtifactAssessment',
+  ])
+  public addArtifactAssessment(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.initArtifactAssessment();
+      this.artifactAssessment?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `artifactAssessment` property exists and has a value; `false` otherwise
+   */
+  public hasArtifactAssessment(): boolean {
+    return isDefinedList<Reference>(this.artifactAssessment) && this.artifactAssessment.some((item: Reference) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `artifactAssessment` property
+   */
+  private initArtifactAssessment(): void {
+    if (!this.hasArtifactAssessment()) {
+      this.artifactAssessment = [] as Reference[];
+    }
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.classification';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.classifier,
+      this.artifactAssessment,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactClassificationComponent {
+    const dest = new CitationCitedArtifactClassificationComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactClassificationComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_?.copy();
+    const classifierList = copyListValues<CodeableConcept>(this.classifier);
+    dest.classifier = classifierList.length === 0 ? undefined : classifierList;
+    const artifactAssessmentList = copyListValues<Reference>(this.artifactAssessment);
+    dest.artifactAssessment = artifactAssessmentList.length === 0 ? undefined : artifactAssessmentList;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasType()) {
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasClassifier()) {
+      setFhirComplexListJson(this.getClassifier(), 'classifier', jsonObj);
+    }
+
+    if (this.hasArtifactAssessment()) {
+      setFhirComplexListJson(this.getArtifactAssessment(), 'artifactAssessment', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactContributorshipComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** Attribution of authors and other contributors
+ * - **Definition:** This element is used to list authors and other contributors, their contact information, specific contributions, and summary statements.
+ * - **Requirements:** Need to support individualized and collective attribution of authorship and contributorship to people and groups.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactContributorshipComponent extends BackboneElement implements IBackboneElement {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor() {
+    super();
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactContributorshipComponent` JSON to instantiate the CitationCitedArtifactContributorshipComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactContributorshipComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactContributorshipComponent
+   * @returns CitationCitedArtifactContributorshipComponent data model or undefined for `CitationCitedArtifactContributorshipComponent`
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactContributorshipComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactContributorshipComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactContributorshipComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    fieldName = 'complete';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'boolean';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
+      instance.setCompleteElement(datatype);
+    }
+
+    fieldName = 'entry';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactContributorshipEntryComponent | undefined = CitationCitedArtifactContributorshipEntryComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addEntry(component);
+        }
+      });
+    }
+
+    fieldName = 'summary';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactContributorshipSummaryComponent | undefined = CitationCitedArtifactContributorshipSummaryComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addSummary(component);
+        }
+      });
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.contributorship.complete Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Indicates if the list includes all authors and/or contributors
+   * - **Definition:** Indicates if the list includes all authors and/or contributors.
+   * - **Comment:** If list is incomplete, "et al" can be appended to Contributorship.summary.value for display purposes.
+   * - **FHIR Type:** `boolean`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private complete?: BooleanType | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** An individual entity named as a contributor
+   * - **Definition:** An individual entity named as a contributor, for example in the author list or contributor list.
+   * - **Comment:** Used to report contributorship in individualized ways.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private entry?: CitationCitedArtifactContributorshipEntryComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.summary Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used to record a display of the author/contributor list without separate data element for each list member
+   * - **Definition:** Used to record a display of the author/contributor list without separate data element for each list member.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private summary?: CitationCitedArtifactContributorshipSummaryComponent[] | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `complete` property value as a BooleanType object if defined; else an empty BooleanType object
+   */
+  public getCompleteElement(): BooleanType {
+    return this.complete ?? new BooleanType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `complete` property.
+   *
+   * @param element - the `complete` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCompleteElement(element: BooleanType | undefined): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.complete; Provided element is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.complete = element;
+    } else {
+      this.complete = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `complete` property exists and has a value; `false` otherwise
+   */
+  public hasCompleteElement(): boolean {
+    return isDefined<BooleanType>(this.complete) && !this.complete.isEmpty();
+  }
+
+  /**
+   * @returns the `complete` property value as a fhirBoolean if defined; else undefined
+   */
+  public getComplete(): fhirBoolean | undefined {
+    return this.complete?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `complete` property.
+   *
+   * @param value - the `complete` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setComplete(value: fhirBoolean | undefined): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.complete (${String(value)})`;
+      this.complete = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.complete = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `complete` property exists and has a value; `false` otherwise
+   */
+  public hasComplete(): boolean {
+    return this.hasCompleteElement();
+  }
+
+  /**
+   * @returns the `entry` property value as a CitationCitedArtifactContributorshipEntryComponent array
+   */
+  public getEntry(): CitationCitedArtifactContributorshipEntryComponent[] {
+    return this.entry ?? ([] as CitationCitedArtifactContributorshipEntryComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactContributorshipEntryComponent array value to the `entry` property.
+   *
+   * @param value - the `entry` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setEntry(value: CitationCitedArtifactContributorshipEntryComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactContributorshipEntryComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry; Provided value array has an element that is not an instance of CitationCitedArtifactContributorshipEntryComponent.`;
+      assertFhirTypeList<CitationCitedArtifactContributorshipEntryComponent>(value, CitationCitedArtifactContributorshipEntryComponent, optErrMsg);
+      this.entry = value;
+    } else {
+      this.entry = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactContributorshipEntryComponent value to the `entry` array property.
+   *
+   * @param value - the `entry` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addEntry(value: CitationCitedArtifactContributorshipEntryComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactContributorshipEntryComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry; Provided element is not an instance of CitationCitedArtifactContributorshipEntryComponent.`;
+      assertFhirType<CitationCitedArtifactContributorshipEntryComponent>(value, CitationCitedArtifactContributorshipEntryComponent, optErrMsg);
+      this.initEntry();
+      this.entry?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `entry` property exists and has a value; `false` otherwise
+   */
+  public hasEntry(): boolean {
+    return isDefinedList<CitationCitedArtifactContributorshipEntryComponent>(this.entry) && this.entry.some((item: CitationCitedArtifactContributorshipEntryComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `entry` property
+   */
+  private initEntry(): void {
+    if(!this.hasEntry()) {
+      this.entry = [] as CitationCitedArtifactContributorshipEntryComponent[];
+    }
+  }
+
+  /**
+   * @returns the `summary` property value as a CitationCitedArtifactContributorshipSummaryComponent array
+   */
+  public getSummary(): CitationCitedArtifactContributorshipSummaryComponent[] {
+    return this.summary ?? ([] as CitationCitedArtifactContributorshipSummaryComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactContributorshipSummaryComponent array value to the `summary` property.
+   *
+   * @param value - the `summary` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setSummary(value: CitationCitedArtifactContributorshipSummaryComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactContributorshipSummaryComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary; Provided value array has an element that is not an instance of CitationCitedArtifactContributorshipSummaryComponent.`;
+      assertFhirTypeList<CitationCitedArtifactContributorshipSummaryComponent>(value, CitationCitedArtifactContributorshipSummaryComponent, optErrMsg);
+      this.summary = value;
+    } else {
+      this.summary = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactContributorshipSummaryComponent value to the `summary` array property.
+   *
+   * @param value - the `summary` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addSummary(value: CitationCitedArtifactContributorshipSummaryComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactContributorshipSummaryComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary; Provided element is not an instance of CitationCitedArtifactContributorshipSummaryComponent.`;
+      assertFhirType<CitationCitedArtifactContributorshipSummaryComponent>(value, CitationCitedArtifactContributorshipSummaryComponent, optErrMsg);
+      this.initSummary();
+      this.summary?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `summary` property exists and has a value; `false` otherwise
+   */
+  public hasSummary(): boolean {
+    return isDefinedList<CitationCitedArtifactContributorshipSummaryComponent>(this.summary) && this.summary.some((item: CitationCitedArtifactContributorshipSummaryComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `summary` property
+   */
+  private initSummary(): void {
+    if(!this.hasSummary()) {
+      this.summary = [] as CitationCitedArtifactContributorshipSummaryComponent[];
+    }
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.contributorship';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.complete,
+      this.entry,
+      this.summary,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactContributorshipComponent {
+    const dest = new CitationCitedArtifactContributorshipComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactContributorshipComponent): void {
+    super.copyValues(dest);
+    dest.complete = this.complete?.copy();
+    const entryList = copyListValues<CitationCitedArtifactContributorshipEntryComponent>(this.entry);
+    dest.entry = entryList.length === 0 ? undefined : entryList;
+    const summaryList = copyListValues<CitationCitedArtifactContributorshipSummaryComponent>(this.summary);
+    dest.summary = summaryList.length === 0 ? undefined : summaryList;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   */
+  public override toJSON(): JSON.Value | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    if (this.hasCompleteElement()) {
+      setFhirPrimitiveJson<fhirBoolean>(this.getCompleteElement(), 'complete', jsonObj);
+    }
+
+    if (this.hasEntry()) {
+      setFhirBackboneElementListJson(this.getEntry(), 'entry', jsonObj);
+    }
+
+    if (this.hasSummary()) {
+      setFhirBackboneElementListJson(this.getSummary(), 'summary', jsonObj);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactContributorshipEntryComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** An individual entity named as a contributor
+ * - **Definition:** An individual entity named as a contributor, for example in the author list or contributor list.
+ * - **Comment:** Used to report contributorship in individualized ways.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactContributorshipEntryComponent extends BackboneElement implements IBackboneElement {
+  constructor(contributor: Reference | null = null) {
+    super();
+
+    this.contributor = null;
+    if (isDefined<Reference>(contributor)) {
+      this.setContributor(contributor);
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactContributorshipEntryComponent` JSON to instantiate the CitationCitedArtifactContributorshipEntryComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactContributorshipEntryComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactContributorshipEntryComponent
+   * @returns CitationCitedArtifactContributorshipEntryComponent data model or undefined for `CitationCitedArtifactContributorshipEntryComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactContributorshipEntryComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactContributorshipEntryComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactContributorshipEntryComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'contributor';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setContributor(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'forenameInitials';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
+      instance.setForenameInitialsElement(datatype);
+    }
+
+    fieldName = 'affiliation';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addAffiliation(datatype);
+        }
+      });
+  }
+
+    fieldName = 'contributionType';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+        if (datatype !== undefined) {
+          instance.addContributionType(datatype);
+        }
+      });
+    }
+
+    fieldName = 'role';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setRole(datatype);
+    }
+
+    fieldName = 'contributionInstance';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+        const component: CitationCitedArtifactContributorshipEntryContributionInstanceComponent | undefined = CitationCitedArtifactContributorshipEntryContributionInstanceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+        if (component !== undefined) {
+          instance.addContributionInstance(component);
+        }
+      });
+    }
+
+    fieldName = 'correspondingContact';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'boolean';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
+      instance.setCorrespondingContactElement(datatype);
+    }
+
+    fieldName = 'rankingOrder';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    primitiveJsonType = 'number';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: PositiveIntType | undefined = fhirParser.parsePositiveIntType(dtJson, dtSiblingJson);
+      instance.setRankingOrderElement(datatype);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.contributor Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The identity of the individual contributor
+   * - **Definition:** The identity of the individual contributor.
+   * - **Comment:** If naming a contributor without additional detail or further structured data, the display element within the Reference datatype may be used for a simple string without referencing another resource.
+   * - **FHIR Type:** `Reference`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/Practitioner',
+   *       'http://hl7.org/fhir/StructureDefinition/Organization',
+   *     ]
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private contributor: Reference | null;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.forenameInitials Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** For citation styles that use initials
+   * - **Definition:** For citation styles that use initials.
+   * - **Comment:** This element is used to support a data element used for citations that is not otherwise supported fully by FHIR HumanName datatype. In some citation summary styles (e.g. Medline), authors are presented with full spelling of their last name (family name) and initials for all forenames (first names, middle names, preceding names, given names). As the FHIR HumanName Datatype does not have a specific element for forename initials and this is common in citation usage, the element is added to contributorship.entry directly.
+   * - **FHIR Type:** `string`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private forenameInitials?: StringType | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.affiliation Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Organizational affiliation
+   * - **Definition:** Organization affiliated with the contributor.
+   * - **Comment:** If naming an organization without additional detail or further structured data, the display element within the Reference datatype may be used for a simple string without referencing another resource.
+   * - **FHIR Type:** `Reference`
+   *   - _TargetProfiles_: [
+   *       'http://hl7.org/fhir/StructureDefinition/Organization',
+   *       'http://hl7.org/fhir/StructureDefinition/PractitionerRole',
+   *     ]
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private affiliation?: Reference[] | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.contributionType Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The specific contribution
+   * - **Definition:** This element identifies the specific nature of an individual\'s contribution with respect to the cited work.
+   * - **Comment:** The CreDiT taxonomy provides a way to encode contribution information. The purpose of CRediT is to provide transparency in contributions to scholarly published work, to enable improved systems of attribution, credit, and accountability.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private contributionType?: CodeableConcept[] | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.role Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The role of the contributor (e.g. author, editor, reviewer, funder)
+   * - **Definition:** The role of the contributor (e.g. author, editor, reviewer, funder).
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private role?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.contributionInstance Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Contributions with accounting for time or number
+   * - **Definition:** Contributions with accounting for time or number.
+   * - **FHIR Type:** `BackboneElement`
+   * - **Cardinality:** 0..*
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private contributionInstance?: CitationCitedArtifactContributorshipEntryContributionInstanceComponent[] | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.correspondingContact Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Whether the contributor is the corresponding contributor for the role
+   * - **Definition:** Whether the contributor is the corresponding contributor for the role.
+   * - **Comment:** If there are multiple authors and one serves as the corresponding author, then that one would have correspondingContact = true.
+   * - **FHIR Type:** `boolean`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private correspondingContact?: BooleanType | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.rankingOrder Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Ranked order of contribution
+   * - **Definition:** Provides a numerical ranking to represent the degree of contributorship relative to other contributors, such as 1 for first author and 2 for second author.
+   * - **Comment:** Used to retain order of authorship as structured data
+   * - **FHIR Type:** `positiveInt`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private rankingOrder?: PositiveIntType | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `contributor` property value as a Reference object if defined; else null
+   */
+  public getContributor(): Reference | null {
+    return this.contributor;
+  }
+
+  /**
+   * Assigns the provided Contributor object value to the `contributor` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.contributorship.entry.contributor', ['Practitioner','Organization',])`
+   *
+   * @param value - the `contributor` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.contributorship.entry.contributor', [
+    'Practitioner',
+  
+    'Organization',
+  ])
+  public setContributor(value: Reference): this {
+    assertIsDefined<Reference>(value, `Citation.citedArtifact.contributorship.entry.contributor is required`);
+    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+    this.contributor = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `contributor` property exists and has a value; `false` otherwise
+   */
+  public hasContributor(): boolean {
+    return isDefined<Reference>(this.contributor) && !this.contributor.isEmpty();
+  }
+
+  /**
+   * @returns the `forenameInitials` property value as a StringType object if defined; else an empty StringType object
+   */
+  public getForenameInitialsElement(): StringType {
+    return this.forenameInitials ?? new StringType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `forenameInitials` property.
+   *
+   * @param element - the `forenameInitials` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setForenameInitialsElement(element: StringType | undefined): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.forenameInitials; Provided element is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.forenameInitials = element;
+    } else {
+      this.forenameInitials = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `forenameInitials` property exists and has a value; `false` otherwise
+   */
+  public hasForenameInitialsElement(): boolean {
+    return isDefined<StringType>(this.forenameInitials) && !this.forenameInitials.isEmpty();
+  }
+
+  /**
+   * @returns the `forenameInitials` property value as a fhirString if defined; else undefined
+   */
+  public getForenameInitials(): fhirString | undefined {
+    return this.forenameInitials?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `forenameInitials` property.
+   *
+   * @param value - the `forenameInitials` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setForenameInitials(value: fhirString | undefined): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.forenameInitials (${String(value)})`;
+      this.forenameInitials = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.forenameInitials = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `forenameInitials` property exists and has a value; `false` otherwise
+   */
+  public hasForenameInitials(): boolean {
+    return this.hasForenameInitialsElement();
+  }
+
+  /**
+   * @returns the `affiliation` property value as a Reference array
+   */
+  public getAffiliation(): Reference[] {
+    return this.affiliation ?? ([] as Reference[]);
+  }
+
+  /**
+   * Assigns the provided Reference array value to the `affiliation` property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.contributorship.entry.affiliation', ['Organization','PractitionerRole',])`
+   *
+   * @param value - the `affiliation` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.contributorship.entry.affiliation', [
+    'Organization',
+  
+    'PractitionerRole',
+  ])
+  public setAffiliation(value: Reference[] | undefined): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.affiliation = value;
+    } else {
+      this.affiliation = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided Reference value to the `affiliation` array property.
+   *
+   * @decorator `@ReferenceTargets('Citation.citedArtifact.contributorship.entry.affiliation', ['Organization','PractitionerRole',])`
+   *
+   * @param value - the `affiliation` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data type or reference value
+   */
+  @ReferenceTargets('Citation.citedArtifact.contributorship.entry.affiliation', [
+    'Organization',
+  
+    'PractitionerRole',
+  ])
+  public addAffiliation(value: Reference | undefined): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.initAffiliation();
+      this.affiliation?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `affiliation` property exists and has a value; `false` otherwise
+   */
+  public hasAffiliation(): boolean {
+    return isDefinedList<Reference>(this.affiliation) && this.affiliation.some((item: Reference) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `affiliation` property
+   */
+  private initAffiliation(): void {
+    if (!this.hasAffiliation()) {
+      this.affiliation = [] as Reference[];
+    }
+  }
+
+  /**
+   * @returns the `contributionType` property value as a CodeableConcept array
+   */
+  public getContributionType(): CodeableConcept[] {
+    return this.contributionType ?? ([] as CodeableConcept[]);
+  }
+
+  /**
+   * Assigns the provided CodeableConcept array value to the `contributionType` property.
+   *
+   * @param value - the `contributionType` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setContributionType(value: CodeableConcept[] | undefined): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionType; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.contributionType = value;
+    } else {
+      this.contributionType = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CodeableConcept value to the `contributionType` array property.
+   *
+   * @param value - the `contributionType` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addContributionType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.initContributionType();
+      this.contributionType?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `contributionType` property exists and has a value; `false` otherwise
+   */
+  public hasContributionType(): boolean {
+    return isDefinedList<CodeableConcept>(this.contributionType) && this.contributionType.some((item: CodeableConcept) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `contributionType` property
+   */
+  private initContributionType(): void {
+    if(!this.hasContributionType()) {
+      this.contributionType = [] as CodeableConcept[];
+    }
+  }
+
+  /**
+   * @returns the `role` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getRole(): CodeableConcept {
+    return this.role ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Role object value to the `role` property.
+   *
+   * @param value - the `role` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setRole(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.role; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.role = value;
+    } else {
+      this.role = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `role` property exists and has a value; `false` otherwise
+   */
+  public hasRole(): boolean {
+    return isDefined<CodeableConcept>(this.role) && !this.role.isEmpty();
+  }
+
+  /**
+   * @returns the `contributionInstance` property value as a CitationCitedArtifactContributorshipEntryContributionInstanceComponent array
+   */
+  public getContributionInstance(): CitationCitedArtifactContributorshipEntryContributionInstanceComponent[] {
+    return this.contributionInstance ?? ([] as CitationCitedArtifactContributorshipEntryContributionInstanceComponent[]);
+  }
+
+  /**
+   * Assigns the provided CitationCitedArtifactContributorshipEntryContributionInstanceComponent array value to the `contributionInstance` property.
+   *
+   * @param value - the `contributionInstance` array value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setContributionInstance(value: CitationCitedArtifactContributorshipEntryContributionInstanceComponent[] | undefined): this {
+    if (isDefinedList<CitationCitedArtifactContributorshipEntryContributionInstanceComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance; Provided value array has an element that is not an instance of CitationCitedArtifactContributorshipEntryContributionInstanceComponent.`;
+      assertFhirTypeList<CitationCitedArtifactContributorshipEntryContributionInstanceComponent>(value, CitationCitedArtifactContributorshipEntryContributionInstanceComponent, optErrMsg);
+      this.contributionInstance = value;
+    } else {
+      this.contributionInstance = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * Add the provided CitationCitedArtifactContributorshipEntryContributionInstanceComponent value to the `contributionInstance` array property.
+   *
+   * @param value - the `contributionInstance` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public addContributionInstance(value: CitationCitedArtifactContributorshipEntryContributionInstanceComponent | undefined): this {
+    if (isDefined<CitationCitedArtifactContributorshipEntryContributionInstanceComponent>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance; Provided element is not an instance of CitationCitedArtifactContributorshipEntryContributionInstanceComponent.`;
+      assertFhirType<CitationCitedArtifactContributorshipEntryContributionInstanceComponent>(value, CitationCitedArtifactContributorshipEntryContributionInstanceComponent, optErrMsg);
+      this.initContributionInstance();
+      this.contributionInstance?.push(value);
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `contributionInstance` property exists and has a value; `false` otherwise
+   */
+  public hasContributionInstance(): boolean {
+    return isDefinedList<CitationCitedArtifactContributorshipEntryContributionInstanceComponent>(this.contributionInstance) && this.contributionInstance.some((item: CitationCitedArtifactContributorshipEntryContributionInstanceComponent) => !item.isEmpty());
+  }
+
+  /**
+   * Initialize the `contributionInstance` property
+   */
+  private initContributionInstance(): void {
+    if(!this.hasContributionInstance()) {
+      this.contributionInstance = [] as CitationCitedArtifactContributorshipEntryContributionInstanceComponent[];
+    }
+  }
+
+  /**
+   * @returns the `correspondingContact` property value as a BooleanType object if defined; else an empty BooleanType object
+   */
+  public getCorrespondingContactElement(): BooleanType {
+    return this.correspondingContact ?? new BooleanType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `correspondingContact` property.
+   *
+   * @param element - the `correspondingContact` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCorrespondingContactElement(element: BooleanType | undefined): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.correspondingContact; Provided element is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.correspondingContact = element;
+    } else {
+      this.correspondingContact = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `correspondingContact` property exists and has a value; `false` otherwise
+   */
+  public hasCorrespondingContactElement(): boolean {
+    return isDefined<BooleanType>(this.correspondingContact) && !this.correspondingContact.isEmpty();
+  }
+
+  /**
+   * @returns the `correspondingContact` property value as a fhirBoolean if defined; else undefined
+   */
+  public getCorrespondingContact(): fhirBoolean | undefined {
+    return this.correspondingContact?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `correspondingContact` property.
+   *
+   * @param value - the `correspondingContact` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setCorrespondingContact(value: fhirBoolean | undefined): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.correspondingContact (${String(value)})`;
+      this.correspondingContact = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.correspondingContact = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `correspondingContact` property exists and has a value; `false` otherwise
+   */
+  public hasCorrespondingContact(): boolean {
+    return this.hasCorrespondingContactElement();
+  }
+
+  /**
+   * @returns the `rankingOrder` property value as a PositiveIntType object if defined; else an empty PositiveIntType object
+   */
+  public getRankingOrderElement(): PositiveIntType {
+    return this.rankingOrder ?? new PositiveIntType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `rankingOrder` property.
+   *
+   * @param element - the `rankingOrder` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setRankingOrderElement(element: PositiveIntType | undefined): this {
+    if (isDefined<PositiveIntType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.rankingOrder; Provided element is not an instance of PositiveIntType.`;
+      assertFhirType<PositiveIntType>(element, PositiveIntType, optErrMsg);
+      this.rankingOrder = element;
+    } else {
+      this.rankingOrder = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `rankingOrder` property exists and has a value; `false` otherwise
+   */
+  public hasRankingOrderElement(): boolean {
+    return isDefined<PositiveIntType>(this.rankingOrder) && !this.rankingOrder.isEmpty();
+  }
+
+  /**
+   * @returns the `rankingOrder` property value as a fhirPositiveInt if defined; else undefined
+   */
+  public getRankingOrder(): fhirPositiveInt | undefined {
+    return this.rankingOrder?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `rankingOrder` property.
+   *
+   * @param value - the `rankingOrder` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setRankingOrder(value: fhirPositiveInt | undefined): this {
+    if (isDefined<fhirPositiveInt>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.rankingOrder (${String(value)})`;
+      this.rankingOrder = new PositiveIntType(parseFhirPrimitiveData(value, fhirPositiveIntSchema, optErrMsg));
+    } else {
+      this.rankingOrder = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `rankingOrder` property exists and has a value; `false` otherwise
+   */
+  public hasRankingOrder(): boolean {
+    return this.hasRankingOrderElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.contributorship.entry';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.contributor,
+      this.forenameInitials,
+      this.affiliation,
+      this.contributionType,
+      this.role,
+      this.contributionInstance,
+      this.correspondingContact,
+      this.rankingOrder,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactContributorshipEntryComponent {
+    const dest = new CitationCitedArtifactContributorshipEntryComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactContributorshipEntryComponent): void {
+    super.copyValues(dest);
+    dest.contributor = this.contributor ? this.contributor.copy() : null;
+    dest.forenameInitials = this.forenameInitials?.copy();
+    const affiliationList = copyListValues<Reference>(this.affiliation);
+    dest.affiliation = affiliationList.length === 0 ? undefined : affiliationList;
+    const contributionTypeList = copyListValues<CodeableConcept>(this.contributionType);
+    dest.contributionType = contributionTypeList.length === 0 ? undefined : contributionTypeList;
+    dest.role = this.role?.copy();
+    const contributionInstanceList = copyListValues<CitationCitedArtifactContributorshipEntryContributionInstanceComponent>(this.contributionInstance);
+    dest.contributionInstance = contributionInstanceList.length === 0 ? undefined : contributionInstanceList;
+    dest.correspondingContact = this.correspondingContact?.copy();
+    dest.rankingOrder = this.rankingOrder?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasContributor()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.getContributor()!, 'contributor', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.contributorship.entry.contributor`);
+    }
+
+    if (this.hasForenameInitialsElement()) {
+      setFhirPrimitiveJson<fhirString>(this.getForenameInitialsElement(), 'forenameInitials', jsonObj);
+    }
+
+    if (this.hasAffiliation()) {
+      setFhirComplexListJson(this.getAffiliation(), 'affiliation', jsonObj);
+    }
+
+    if (this.hasContributionType()) {
+      setFhirComplexListJson(this.getContributionType(), 'contributionType', jsonObj);
+    }
+
+    if (this.hasRole()) {
+      setFhirComplexJson(this.getRole(), 'role', jsonObj);
+    }
+
+    if (this.hasContributionInstance()) {
+      setFhirBackboneElementListJson(this.getContributionInstance(), 'contributionInstance', jsonObj);
+    }
+
+    if (this.hasCorrespondingContactElement()) {
+      setFhirPrimitiveJson<fhirBoolean>(this.getCorrespondingContactElement(), 'correspondingContact', jsonObj);
+    }
+
+    if (this.hasRankingOrderElement()) {
+      setFhirPrimitiveJson<fhirPositiveInt>(this.getRankingOrderElement(), 'rankingOrder', jsonObj);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactContributorshipEntryContributionInstanceComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** Contributions with accounting for time or number
+ * - **Definition:** Contributions with accounting for time or number.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactContributorshipEntryContributionInstanceComponent extends BackboneElement implements IBackboneElement {
+  constructor(type_: CodeableConcept | null = null) {
+    super();
+
+    this.type_ = null;
+    if (isDefined<CodeableConcept>(type_)) {
+      this.setType(type_);
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactContributorshipEntryContributionInstanceComponent` JSON to instantiate the CitationCitedArtifactContributorshipEntryContributionInstanceComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactContributorshipEntryContributionInstanceComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactContributorshipEntryContributionInstanceComponent
+   * @returns CitationCitedArtifactContributorshipEntryContributionInstanceComponent data model or undefined for `CitationCitedArtifactContributorshipEntryContributionInstanceComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactContributorshipEntryContributionInstanceComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactContributorshipEntryContributionInstanceComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactContributorshipEntryContributionInstanceComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setType(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    fieldName = 'time';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
+      instance.setTimeElement(datatype);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.contributionInstance.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The specific contribution
+   * - **Definition:** The specific contribution.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_: CodeableConcept | null;
+
+  /**
+   * Citation.citedArtifact.contributorship.entry.contributionInstance.time Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The time that the contribution was made
+   * - **Definition:** The time that the contribution was made.
+   * - **FHIR Type:** `dateTime`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private time?: DateTimeType | undefined;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   */
+  public getType(): CodeableConcept | null {
+    return this.type_;
+  }
+
+  /**
+   * Assigns the provided CodeableConcept object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept): this {
+    assertIsDefined<CodeableConcept>(value, `Citation.citedArtifact.contributorship.entry.contributionInstance.type is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance.type; Provided element is not an instance of CodeableConcept.`;
+    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+    this.type_ = value;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `time` property value as a DateTimeType object if defined; else an empty DateTimeType object
+   */
+  public getTimeElement(): DateTimeType {
+    return this.time ?? new DateTimeType();
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `time` property.
+   *
+   * @param element - the `time` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTimeElement(element: DateTimeType | undefined): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance.time; Provided element is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.time = element;
+    } else {
+      this.time = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `time` property exists and has a value; `false` otherwise
+   */
+  public hasTimeElement(): boolean {
+    return isDefined<DateTimeType>(this.time) && !this.time.isEmpty();
+  }
+
+  /**
+   * @returns the `time` property value as a fhirDateTime if defined; else undefined
+   */
+  public getTime(): fhirDateTime | undefined {
+    return this.time?.getValue();
+  }
+
+  /**
+   * Assigns the provided primitive value to the `time` property.
+   *
+   * @param value - the `time` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setTime(value: fhirDateTime | undefined): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance.time (${String(value)})`;
+      this.time = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.time = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `time` property exists and has a value; `false` otherwise
+   */
+  public hasTime(): boolean {
+    return this.hasTimeElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.contributorship.entry.contributionInstance';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.time,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactContributorshipEntryContributionInstanceComponent {
+    const dest = new CitationCitedArtifactContributorshipEntryContributionInstanceComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactContributorshipEntryContributionInstanceComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_ ? this.type_.copy() : null;
+    dest.time = this.time?.copy();
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasType()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.contributorship.entry.contributionInstance.type`);
+    }
+
+    if (this.hasTimeElement()) {
+      setFhirPrimitiveJson<fhirDateTime>(this.getTimeElement(), 'time', jsonObj);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}
+/**
+ * CitationCitedArtifactContributorshipSummaryComponent Class
+ *
+ * @remarks
+ * **FHIR Specification**
+ * - **Short:** Used to record a display of the author/contributor list without separate data element for each list member
+ * - **Definition:** Used to record a display of the author/contributor list without separate data element for each list member.
+ *
+ * @category Data Models: Resource
+ * @see [FHIR Citation](http://hl7.org/fhir/StructureDefinition/Citation)
+ */
+export class CitationCitedArtifactContributorshipSummaryComponent extends BackboneElement implements IBackboneElement {
+  constructor(value: MarkdownType | fhirMarkdown | null = null) {
+    super();
+
+    this.value = null;
+    if (isDefined<MarkdownType | fhirMarkdown>(value)) {
+      if (value instanceof PrimitiveType) {
+        this.setValueElement(value);
+      } else {
+        this.setValue(value);
+      }
+    }
+  }
+
+  /**
+   * Parse the provided `CitationCitedArtifactContributorshipSummaryComponent` JSON to instantiate the CitationCitedArtifactContributorshipSummaryComponent data model.
+   *
+   * @param sourceJson - JSON representing FHIR `CitationCitedArtifactContributorshipSummaryComponent`
+   * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactContributorshipSummaryComponent
+   * @returns CitationCitedArtifactContributorshipSummaryComponent data model or undefined for `CitationCitedArtifactContributorshipSummaryComponent`
+   * @throws {@link FhirError} if the provided JSON is missing required properties
+   * @throws {@link JsonError} if the provided JSON is not a valid JSON object
+   */
+  public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactContributorshipSummaryComponent | undefined {
+    if (!isDefined<JSON.Value>(sourceJson) || (JSON.isJsonObject(sourceJson) && isEmpty(sourceJson))) {
+      return undefined;
+    }
+
+    const optSourceValue = isDefined<string>(optSourceField) ? optSourceField : 'CitationCitedArtifactContributorshipSummaryComponent';
+    const classJsonObj: JSON.Object = JSON.asObject(sourceJson, `${optSourceValue} JSON`);
+    const instance = new CitationCitedArtifactContributorshipSummaryComponent();
+
+    const fhirParser = new FhirParser(PARSABLE_DATATYPE_MAP, PARSABLE_RESOURCE_MAP);
+    fhirParser.processBackboneElementJson(instance, classJsonObj);
+
+    let fieldName = '';
+    let sourceField = '';
+    
+
+    const missingReqdProperties: string[] = [];
+
+    fieldName = 'type';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setType(datatype);
+    }
+
+    fieldName = 'style';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setStyle(datatype);
+    }
+
+    fieldName = 'source';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    if (fieldName in classJsonObj) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
+      instance.setSource(datatype);
+    }
+
+    fieldName = 'value';
+    sourceField = `${optSourceValue}.${fieldName}`;
+    const primitiveJsonType = 'string';
+    if (fieldName in classJsonObj) {
+      const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
+      const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
+      if (datatype === undefined) {
+        missingReqdProperties.push(sourceField);
+      } else {
+        instance.setValueElement(datatype);
+      }
+    } else {
+      missingReqdProperties.push(sourceField);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
+    return instance;
+  }
+
+  /**
+   * Citation.citedArtifact.contributorship.summary.type Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Such as author list, contributorship statement, funding statement, acknowledgements statement, or conflicts of interest statement
+   * - **Definition:** Used most commonly to express an author list or a contributorship statement.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private type_?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.summary.style Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The format for the display string
+   * - **Definition:** The format for the display string, such as author last name with first letter capitalized followed by forename initials.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private style?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.summary.source Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** Used to code the producer or rule for creating the display string
+   * - **Definition:** Used to code the producer or rule for creating the display string.
+   * - **FHIR Type:** `CodeableConcept`
+   * - **Cardinality:** 0..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private source?: CodeableConcept | undefined;
+
+  /**
+   * Citation.citedArtifact.contributorship.summary.value Element
+   *
+   * @remarks
+   * **FHIR Specification**
+   * - **Short:** The display string for the author list, contributor list, or contributorship statement
+   * - **Definition:** The display string for the author list, contributor list, or contributorship statement.
+   * - **FHIR Type:** `markdown`
+   * - **Cardinality:** 1..1
+   * - **isModifier:** false
+   * - **isSummary:** false
+   */
+  private value: MarkdownType | null;
+
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Type object value to the `type_` property.
+   *
+   * @param value - the `type_` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setType(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `type_` property exists and has a value; `false` otherwise
+   */
+  public hasType(): boolean {
+    return isDefined<CodeableConcept>(this.type_) && !this.type_.isEmpty();
+  }
+
+  /**
+   * @returns the `style` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getStyle(): CodeableConcept {
+    return this.style ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Style object value to the `style` property.
+   *
+   * @param value - the `style` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setStyle(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.style; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.style = value;
+    } else {
+      this.style = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `style` property exists and has a value; `false` otherwise
+   */
+  public hasStyle(): boolean {
+    return isDefined<CodeableConcept>(this.style) && !this.style.isEmpty();
+  }
+
+  /**
+   * @returns the `source` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
+   */
+  public getSource(): CodeableConcept {
+    return this.source ?? new CodeableConcept();
+  }
+
+  /**
+   * Assigns the provided Source object value to the `source` property.
+   *
+   * @param value - the `source` object value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   */
+  public setSource(value: CodeableConcept | undefined): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.source; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.source = value;
+    } else {
+      this.source = undefined;
+    }
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `source` property exists and has a value; `false` otherwise
+   */
+  public hasSource(): boolean {
+    return isDefined<CodeableConcept>(this.source) && !this.source.isEmpty();
+  }
+
+  /**
+   * @returns the `value` property value as a MarkdownType object if defined; else null
+   */
+  public getValueElement(): MarkdownType | null {
+    return this.value;
+  }
+
+  /**
+   * Assigns the provided PrimitiveType value to the `value` property.
+   *
+   * @param element - the `value` value
+   * @returns this
+   * @throws {@link InvalidTypeError} for invalid data types
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setValueElement(element: MarkdownType): this {
+    assertIsDefined<MarkdownType>(element, `Citation.citedArtifact.contributorship.summary.value is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.value; Provided value is not an instance of MarkdownType.`;
+    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+    this.value = element;
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `value` property exists and has a value; `false` otherwise
+   */
+  public hasValueElement(): boolean {
+    return isDefined<MarkdownType>(this.value) && !this.value.isEmpty();
+  }
+
+  /**
+   * @returns the `value` property value as a fhirMarkdown if defined; else null
+   */
+  public getValue(): fhirMarkdown | null {
+    if (this.value?.getValue() === undefined) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.value.getValue()!;
+  }
+
+  /**
+   * Assigns the provided primitive value to the `value` property.
+   *
+   * @param value - the `value` value
+   * @returns this
+   * @throws {@link PrimitiveTypeError} for invalid primitive types
+   */
+  public setValue(value: fhirMarkdown): this {
+    assertIsDefined<fhirMarkdown>(value, `Citation.citedArtifact.contributorship.summary.value is required`);
+    const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.value (${String(value)})`;
+    this.value = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    return this;
+  }
+
+  /**
+   * @returns `true` if the `value` property exists and has a value; `false` otherwise
+   */
+  public hasValue(): boolean {
+    return this.hasValueElement();
+  }
+
+  /* eslint-enable @typescript-eslint/no-unnecessary-type-conversion */
+
+  /**
+   * @returns the FHIR type defined in the FHIR standard
+   */
+  public override fhirType(): string {
+    return 'Citation.citedArtifact.contributorship.summary';
+  }
+
+  /**
+   * @returns `true` if the instance is empty; `false` otherwise
+   */
+  public override isEmpty(): boolean {
+    return super.isEmpty() && isElementEmpty(
+      this.type_,
+      this.style,
+      this.source,
+      this.value,
+    );
+  }
+
+  /**
+   * Creates a copy of the current instance.
+   *
+   * @returns the a new instance copied from the current instance
+   */
+  public override copy(): CitationCitedArtifactContributorshipSummaryComponent {
+    const dest = new CitationCitedArtifactContributorshipSummaryComponent();
+    this.copyValues(dest);
+    return dest;
+  }
+
+  /**
+   * Copies the current instance's elements into the provided object.
+   *
+   * @param dest - the copied instance
+   * @protected
+   */
+  protected override copyValues(dest: CitationCitedArtifactContributorshipSummaryComponent): void {
+    super.copyValues(dest);
+    dest.type_ = this.type_?.copy();
+    dest.style = this.style?.copy();
+    dest.source = this.source?.copy();
+    dest.value = this.value ? this.value.copy() : null;
+  }
+
+  /**
+   * @returns the JSON value or undefined if the instance is empty
+   * @throws {@link FhirError} if the instance is missing required properties
+   */
+  public override toJSON(): JSON.Value | undefined {
+    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+
+    let jsonObj = super.toJSON() as JSON.Object | undefined;
+    jsonObj ??= {} as JSON.Object;
+
+    const missingReqdProperties: string[] = [];
+
+    if (this.hasType()) {
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
+    }
+
+    if (this.hasStyle()) {
+      setFhirComplexJson(this.getStyle(), 'style', jsonObj);
+    }
+
+    if (this.hasSource()) {
+      setFhirComplexJson(this.getSource(), 'source', jsonObj);
+    }
+
+    if (this.hasValueElement()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setFhirPrimitiveJson<fhirMarkdown>(this.getValueElement()!, 'value', jsonObj);
+    } else {
+      missingReqdProperties.push(`Citation.citedArtifact.contributorship.summary.value`);
+    }
+
+    if (missingReqdProperties.length > 0) {
+      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
+      throw new FhirError(errMsg);
+    }
+
+    return jsonObj;
+  }
+}

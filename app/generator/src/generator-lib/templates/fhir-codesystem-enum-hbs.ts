@@ -181,7 +181,7 @@ function flattenHbsCodeSystemConcepts(
       enum: enumStr,
       code: codeStr,
       url: codeSystemUrl,
-      display: concept.display,
+      display: fixDescriptiveString(concept.display),
       definition: fixDescriptiveString(concept.definition),
     } as HbsCodeSystemConcept;
     returnHbsCodeSystemConcepts.push(hbsCodeSystemConcept);

@@ -85,6 +85,16 @@ describe('src/generator-lib/templates/fhir-codesystem-enum-hbs', () => {
       expect(hbsCodeSystem).toMatchSnapshot();
     });
 
+    it('should return the correct HbsCodeSystem properties for CodeSystem-iana-link-relations', () => {
+      const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
+      const codeSystem = packageLoader.findResourceJSON('iana-link-relations', options) as CodeSystem;
+      const hbsCodeSystem: HbsCodeSystem = getCsHbsProperties(codeSystem, testFhirPackage);
+      expect(hbsCodeSystem).toBeDefined();
+      // This verifies that the `fixDescriptiveString()` for the HbsCodeSystemConcept.display property
+      // is working as expected.
+      expect(hbsCodeSystem).toMatchSnapshot();
+    });
+
     it('should return the correct HbsCodeSystem properties for CodeSystem-identifier-use', () => {
       const options: FindResourceInfoOptions = { type: ['CodeSystem'] };
       const codeSystem = packageLoader.findResourceJSON('identifier-use', options) as CodeSystem;

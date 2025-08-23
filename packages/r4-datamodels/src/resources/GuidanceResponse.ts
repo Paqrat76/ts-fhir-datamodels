@@ -176,16 +176,16 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
 
     fieldName = 'module[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
-    const module: IDataType | undefined = fhirParser.parsePolymorphicDataType(
+    const module_: IDataType | undefined = fhirParser.parsePolymorphicDataType(
       classJsonObj,
       sourceField,
       fieldName,
       classMetadata,
     );
-    if (module === undefined) {
+    if (module_ === undefined) {
       missingReqdProperties.push(sourceField);
     } else {
-      instance.setModule(module);
+      instance.setModule(module_);
     }
 
     fieldName = 'status';

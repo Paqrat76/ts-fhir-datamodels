@@ -1,0 +1,48 @@
+{
+  "name": "@paq-ts-fhir/r5-datamodels",
+  "version": "1.0.0",
+  "description": "Generated FHIR R5 data model package",
+  "keywords": [
+    "node",
+    "typescript",
+    "FHIR R5",
+    "models",
+    "data models"
+  ],
+  "author": "Joe Paquette <paqrat76@gmail.com>",
+  "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/r5-datamodels/README.md",
+  "bugs": {
+    "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
+    "email": "paqrat76@gmail.com"
+  },
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/**",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf tsconfig.tsbuildinfo lib",
+    "pregenerate": "npm run clean",
+    "generate": "ts-node ../../app/generator/scripts/generate-fhir-datamodels.ts R5",
+    "postgenerate": "npm run compile",
+    "precompile": "npm run clean",
+    "compile": "tsc"
+  },
+  "dependencies": {
+    "@paq-ts-fhir/fhir-core": "~1.0.0-rc.1"
+  },
+  "engines": {
+    "node": ">=22.11",
+    "npm": ">=10.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github:Paqrat76/ts-fhir-datamodels/ts-fhir-datamodels.git",
+    "directory": "packages/r5-datamodels"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -3616,7 +3616,7 @@ exports[`src/generator-lib/templates/utils-hbs getSdHbsProperties ComplexTypes H
   ],
   "fhirVersion": "4.0.1",
   "generatedImports": [
-    "import { CodeableConcept, Duration, PARSABLE_DATATYPE_MAP, Period, Range } from '../complex-types/complex-datatypes'",
+    "import { CodeableConcept, Duration, PARSABLE_DATATYPE_MAP, Period, Range, TimingRepeatComponent } from '../complex-types/complex-datatypes'",
     "import { DaysOfWeekEnum } from '../code-systems/DaysOfWeekEnum'",
     "import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map'",
   ],
@@ -3772,6 +3772,7 @@ exports[`src/generator-lib/templates/utils-hbs getSdHbsProperties ComplexTypes H
     "generatedImports": [
       "CodeableConcept",
       "PARSABLE_DATATYPE_MAP",
+      "TimingRepeatComponent",
       "import { PARSABLE_RESOURCE_MAP } from '../resources/parsable-resource-map'",
     ],
     "hasChoiceFields": false,

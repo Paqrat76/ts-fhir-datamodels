@@ -597,7 +597,7 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private instance?: ExampleScenarioInstanceComponent[] | undefined;
+  private instance_?: ExampleScenarioInstanceComponent[] | undefined;
 
   /**
    * ExampleScenario.process Element
@@ -1542,16 +1542,16 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `instance` property value as a ExampleScenarioInstanceComponent array
+   * @returns the `instance_` property value as a ExampleScenarioInstanceComponent array
    */
   public getInstance(): ExampleScenarioInstanceComponent[] {
-    return this.instance ?? ([] as ExampleScenarioInstanceComponent[]);
+    return this.instance_ ?? ([] as ExampleScenarioInstanceComponent[]);
   }
 
   /**
-   * Assigns the provided ExampleScenarioInstanceComponent array value to the `instance` property.
+   * Assigns the provided ExampleScenarioInstanceComponent array value to the `instance_` property.
    *
-   * @param value - the `instance` array value
+   * @param value - the `instance_` array value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
@@ -1559,17 +1559,17 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
     if (isDefinedList<ExampleScenarioInstanceComponent>(value)) {
       const optErrMsg = `Invalid ExampleScenario.instance; Provided value array has an element that is not an instance of ExampleScenarioInstanceComponent.`;
       assertFhirTypeList<ExampleScenarioInstanceComponent>(value, ExampleScenarioInstanceComponent, optErrMsg);
-      this.instance = value;
+      this.instance_ = value;
     } else {
-      this.instance = undefined;
+      this.instance_ = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided ExampleScenarioInstanceComponent value to the `instance` array property.
+   * Add the provided ExampleScenarioInstanceComponent value to the `instance_` array property.
    *
-   * @param value - the `instance` value
+   * @param value - the `instance_` value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
@@ -1578,24 +1578,24 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
       const optErrMsg = `Invalid ExampleScenario.instance; Provided element is not an instance of ExampleScenarioInstanceComponent.`;
       assertFhirType<ExampleScenarioInstanceComponent>(value, ExampleScenarioInstanceComponent, optErrMsg);
       this.initInstance();
-      this.instance?.push(value);
+      this.instance_?.push(value);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstance(): boolean {
-    return isDefinedList<ExampleScenarioInstanceComponent>(this.instance) && this.instance.some((item: ExampleScenarioInstanceComponent) => !item.isEmpty());
+    return isDefinedList<ExampleScenarioInstanceComponent>(this.instance_) && this.instance_.some((item: ExampleScenarioInstanceComponent) => !item.isEmpty());
   }
 
   /**
-   * Initialize the `instance` property
+   * Initialize the `instance_` property
    */
   private initInstance(): void {
     if(!this.hasInstance()) {
-      this.instance = [] as ExampleScenarioInstanceComponent[];
+      this.instance_ = [] as ExampleScenarioInstanceComponent[];
     }
   }
 
@@ -1807,7 +1807,7 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
       this.copyright,
       this.purpose,
       this.actor,
-      this.instance,
+      this.instance_,
       this.process,
       this.workflow,
     );
@@ -1851,8 +1851,8 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
     dest.purpose = this.purpose?.copy();
     const actorList = copyListValues<ExampleScenarioActorComponent>(this.actor);
     dest.actor = actorList.length === 0 ? undefined : actorList;
-    const instanceList = copyListValues<ExampleScenarioInstanceComponent>(this.instance);
-    dest.instance = instanceList.length === 0 ? undefined : instanceList;
+    const instanceList = copyListValues<ExampleScenarioInstanceComponent>(this.instance_);
+    dest.instance_ = instanceList.length === 0 ? undefined : instanceList;
     const processList = copyListValues<ExampleScenarioProcessComponent>(this.process);
     dest.process = processList.length === 0 ? undefined : processList;
     const workflowList = copyListValues<CanonicalType>(this.workflow);

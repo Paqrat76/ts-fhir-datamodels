@@ -186,7 +186,7 @@ export class SpdxLicenseEnum implements IFhirCodeEnum {
     'AMDPLPA',
     'AMDPLPA',
     'http://hl7.org/fhir/spdx-license',
-    'AMD&#x27;s plpa_map.c License',
+    'AMD\'s plpa_map.c License',
     'AMD\'s plpa_map.c License.',
   );
   public static readonly AML = new FhirCodeDefinition(
@@ -375,7 +375,7 @@ export class SpdxLicenseEnum implements IFhirCodeEnum {
     'BSD_2_CLAUSE',
     'BSD-2-Clause',
     'http://hl7.org/fhir/spdx-license',
-    'BSD 2-Clause &quot;Simplified&quot; License',
+    'BSD 2-Clause "Simplified" License',
     'BSD 2-Clause "Simplified" License.',
   );
   public static readonly BSD_3_CLAUSE_ATTRIBUTION = new FhirCodeDefinition(
@@ -424,7 +424,7 @@ export class SpdxLicenseEnum implements IFhirCodeEnum {
     'BSD_3_CLAUSE',
     'BSD-3-Clause',
     'http://hl7.org/fhir/spdx-license',
-    'BSD 3-Clause &quot;New&quot; or &quot;Revised&quot; License',
+    'BSD 3-Clause "New" or "Revised" License',
     'BSD 3-Clause "New" or "Revised" License.',
   );
   public static readonly BSD_4_CLAUSE_UC = new FhirCodeDefinition(
@@ -438,7 +438,7 @@ export class SpdxLicenseEnum implements IFhirCodeEnum {
     'BSD_4_CLAUSE',
     'BSD-4-Clause',
     'http://hl7.org/fhir/spdx-license',
-    'BSD 4-Clause &quot;Original&quot; or &quot;Old&quot; License',
+    'BSD 4-Clause "Original" or "Old" License',
     'BSD 4-Clause "Original" or "Old" License.',
   );
   public static readonly BSD_PROTECTION = new FhirCodeDefinition(
@@ -1397,21 +1397,21 @@ export class SpdxLicenseEnum implements IFhirCodeEnum {
     'LI_LI_Q_P_1_1',
     'LiLiQ-P-1.1',
     'http://hl7.org/fhir/spdx-license',
-    'Licence Libre du Québec – Permissive version 1.1',
+    'Licence Libre du Québec - Permissive version 1.1',
     'Licence Libre du Québec - Permissive version 1.1.',
   );
   public static readonly LI_LI_Q_R_1_1 = new FhirCodeDefinition(
     'LI_LI_Q_R_1_1',
     'LiLiQ-R-1.1',
     'http://hl7.org/fhir/spdx-license',
-    'Licence Libre du Québec – Réciprocité version 1.1',
+    'Licence Libre du Québec - Réciprocité version 1.1',
     'Licence Libre du Québec - Réciprocité version 1.1.',
   );
   public static readonly LI_LI_Q_RPLUS_1_1 = new FhirCodeDefinition(
     'LI_LI_Q_RPLUS_1_1',
     'LiLiQ-Rplus-1.1',
     'http://hl7.org/fhir/spdx-license',
-    'Licence Libre du Québec – Réciprocité forte version 1.1',
+    'Licence Libre du Québec - Réciprocité forte version 1.1',
     'Licence Libre du Québec - Réciprocité forte version 1.1.',
   );
   public static readonly LINUX_OPEN_IB = new FhirCodeDefinition(
@@ -1957,7 +1957,7 @@ export class SpdxLicenseEnum implements IFhirCodeEnum {
     'PDDL_1_0',
     'PDDL-1.0',
     'http://hl7.org/fhir/spdx-license',
-    'ODC Public Domain Dedication &amp; License 1.0',
+    'ODC Public Domain Dedication & License 1.0',
     'ODC Public Domain Dedication & License 1.0.',
   );
   public static readonly PHP_3_0 = new FhirCodeDefinition(

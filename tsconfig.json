@@ -1,5 +1,11 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "references": [{ "path": "./packages/fhir-core/tsconfig.json" }, { "path": "./app/generator/tsconfig.json" }]
+  "references": [
+    { "path": "./app/generator/tsconfig.json" },
+    { "path": "./packages/fhir-core/tsconfig.json" },
+    { "path": "./packages/r4-datamodels/tsconfig.json" },
+    { "path": "./packages/r4b-datamodels/tsconfig.json" },
+    { "path": "./packages/r5-datamodels/tsconfig.json" }
+  ]
 }

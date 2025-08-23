@@ -74,7 +74,7 @@ export class AddressTypeEnum implements IFhirCodeEnum {
     'BOTH',
     'both',
     'http://hl7.org/fhir/address-type',
-    'Postal &amp; Physical',
+    'Postal & Physical',
     'An address that is both physical and postal.',
   );
 

@@ -1,6 +1,7 @@
-# TypeScript FHIR Data Models
+# ts-fhir-datamodels Mono-Repository
 
-This mono-repository includes a code generator for generating TypeScript FHIR data models from FHIR artifacts.
+This mono-repository ([Paqrat76/ts-fhir-datamodels](https://github.com/Paqrat76/ts-fhir-datamodels)) includes
+a code generator for generating TypeScript FHIR data models from FHIR artifacts.
 These generated data models are intended to be used by FHIR developers in their Node.js FHIR applications.
 
 ## Background

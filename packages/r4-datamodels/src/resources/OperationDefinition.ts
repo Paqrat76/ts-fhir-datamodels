@@ -120,7 +120,7 @@ import { SearchParamTypeEnum } from '../code-systems/SearchParamTypeEnum';
  * @see [FHIR OperationDefinition](http://hl7.org/fhir/StructureDefinition/OperationDefinition)
  */
 export class OperationDefinition extends DomainResource implements IDomainResource {
-  constructor(name: StringType | fhirString | null = null, status: EnumCodeType | CodeType | fhirCode | null = null, kind: EnumCodeType | CodeType | fhirCode | null = null, code: CodeType | fhirCode | null = null, system: BooleanType | fhirBoolean | null = null, type_: BooleanType | fhirBoolean | null = null, instance: BooleanType | fhirBoolean | null = null) {
+  constructor(name: StringType | fhirString | null = null, status: EnumCodeType | CodeType | fhirCode | null = null, kind: EnumCodeType | CodeType | fhirCode | null = null, code: CodeType | fhirCode | null = null, system: BooleanType | fhirBoolean | null = null, type_: BooleanType | fhirBoolean | null = null, instance_: BooleanType | fhirBoolean | null = null) {
     super();
 
     this.publicationStatusEnum = new PublicationStatusEnum();
@@ -177,12 +177,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       }
     }
 
-    this.instance = null;
-    if (isDefined<BooleanType | fhirBoolean>(instance)) {
-      if (instance instanceof PrimitiveType) {
-        this.setInstanceElement(instance);
+    this.instance_ = null;
+    if (isDefined<BooleanType | fhirBoolean>(instance_)) {
+      if (instance_ instanceof PrimitiveType) {
+        this.setInstanceElement(instance_);
       } else {
-        this.setInstance(instance);
+        this.setInstance(instance_);
       }
     }
   }
@@ -888,7 +888,7 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * - **isModifier:** false
    * - **isSummary:** true
    */
-  private instance: BooleanType | null;
+  private instance_: BooleanType | null;
 
   /**
    * OperationDefinition.inputProfile Element
@@ -2494,16 +2494,16 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `instance` property value as a BooleanType object if defined; else null
+   * @returns the `instance_` property value as a BooleanType object if defined; else null
    */
   public getInstanceElement(): BooleanType | null {
-    return this.instance;
+    return this.instance_;
   }
 
   /**
-   * Assigns the provided PrimitiveType value to the `instance` property.
+   * Assigns the provided PrimitiveType value to the `instance_` property.
    *
-   * @param element - the `instance` value
+   * @param element - the `instance_` value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
@@ -2512,44 +2512,44 @@ export class OperationDefinition extends DomainResource implements IDomainResour
     assertIsDefined<BooleanType>(element, `OperationDefinition.instance is required`);
     const optErrMsg = `Invalid OperationDefinition.instance; Provided value is not an instance of BooleanType.`;
     assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.instance = element;
+    this.instance_ = element;
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstanceElement(): boolean {
-    return isDefined<BooleanType>(this.instance) && !this.instance.isEmpty();
+    return isDefined<BooleanType>(this.instance_) && !this.instance_.isEmpty();
   }
 
   /**
-   * @returns the `instance` property value as a fhirBoolean if defined; else null
+   * @returns the `instance_` property value as a fhirBoolean if defined; else null
    */
   public getInstance(): fhirBoolean | null {
-    if (this.instance?.getValue() === undefined) {
+    if (this.instance_?.getValue() === undefined) {
       return null;
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.instance.getValue()!;
+    return this.instance_.getValue()!;
   }
 
   /**
-   * Assigns the provided primitive value to the `instance` property.
+   * Assigns the provided primitive value to the `instance_` property.
    *
-   * @param value - the `instance` value
+   * @param value - the `instance_` value
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
   public setInstance(value: fhirBoolean): this {
     assertIsDefined<fhirBoolean>(value, `OperationDefinition.instance is required`);
     const optErrMsg = `Invalid OperationDefinition.instance (${String(value)})`;
-    this.instance = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    this.instance_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstance(): boolean {
     return this.hasInstanceElement();
@@ -2834,7 +2834,7 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       this.resource,
       this.system,
       this.type_,
-      this.instance,
+      this.instance_,
       this.inputProfile,
       this.outputProfile,
       this.parameter,
@@ -2886,7 +2886,7 @@ export class OperationDefinition extends DomainResource implements IDomainResour
     dest.resource = resourceList.length === 0 ? undefined : resourceList;
     dest.system = this.system ? this.system.copy() : null;
     dest.type_ = this.type_ ? this.type_.copy() : null;
-    dest.instance = this.instance ? this.instance.copy() : null;
+    dest.instance_ = this.instance_ ? this.instance_.copy() : null;
     dest.inputProfile = this.inputProfile?.copy();
     dest.outputProfile = this.outputProfile?.copy();
     const parameterList = copyListValues<OperationDefinitionParameterComponent>(this.parameter);

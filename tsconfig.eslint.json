@@ -8,6 +8,8 @@
     "./app/generator/**/*.ts",
     "./app/generator-datamodel-ftest/**/*.ts",
     "./packages/fhir-core/**/*.ts",
-    "./packages/r4-datamodels/**/*.ts"
+    "./packages/r4-datamodels/**/*.ts",
+    "./packages/r4b-datamodels/**/*.ts",
+    "./packages/r5-datamodels/**/*.ts"
   ]
 }

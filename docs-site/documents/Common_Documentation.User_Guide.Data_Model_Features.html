@@ -34,8 +34,8 @@ That said, the data models are designed to provide basic data validation as foll
 <ul>
 <li><strong>Cardinality:</strong> Cardinality is handled by the &quot;getters&quot; for a supported data type of the data element.
 <ul>
-<li>Data elements having a cardinality of <code>0..1</code> or <code>1..1</code> have &quot;get&quot; methods that allow only a single value.</li>
-<li>Data elements having a cardinality of <code>0..*</code> or <code>1..*</code> have &quot;get&quot; methods that require an array of values and &quot;add&quot;
+<li>Data elements having a cardinality of <code>0..1</code> or <code>1..1</code> have &quot;set&quot; methods that allow only a single value.</li>
+<li>Data elements having a cardinality of <code>0..*</code> or <code>1..*</code> have &quot;set&quot; methods that require an array of values and &quot;add&quot;
 methods that allow only a single value.</li>
 </ul>
 </li>
@@ -45,7 +45,7 @@ If a required data element is found missing during processing, a <code>FhirError
 See <a href="#required-vs-optional-fields">Required vs. Optional Fields</a> below for more information.</li>
 <li><strong>Data Type Usage:</strong> All data elements are validated to ensure the correct data type is provided.
 All &quot;get&quot; and &quot;add&quot; methods are type-safe and will throw an error (<code>InvalidTypeError</code> or <code>PrimitiveTypeError</code>)
-if the data element is not of the correct type or correct value.
+if the data element is not of the correct type or correct primitive value.
 <ul>
 <li><strong>Primitives:</strong> Ultimately, all data is expressed as <a href="https://hl7.org/fhir/datatypes.html#primitive">FHIR Primitive Types</a>.
 Primitive types are defined as TypeScript types (e.g., <code>fhirBase64Binary</code>, <code>fhirBoolean</code>, etc.) and are implemented
@@ -108,7 +108,7 @@ implementations as convenience methods.</p>
 <h2 id="choiceopen-data-types" class="tsd-anchor-link">Choice/Open Data Types<a href="#choiceopen-data-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>FHIR resources can be defined wth <a href="https://hl7.org/fhir/formats.html#choice"><code>Choice</code></a>
 and <a href="https://hl7.org/fhir/datatypes.html#open"><code>Open</code></a> data types.
 Because the FHIR <code>ElementDefinition</code> defines the allowed data types for both &quot;choice&quot; and &quot;open&quot; data types the same way,
-the data model is always generated using the &quot;choice&quot; decorators (<code>@OpenDataTypesMeta</code>/<code>@ChoiceDataTypes</code>) to
+the data model is always generated using the &quot;choice&quot; decorators (<code>@ChoiceDataTypesMeta</code>/<code>@ChoiceDataTypes</code>) to
 define/validate the allowed data types.
 These decorators throw an <code>InvalidTypeError</code> if the &quot;getter&quot; method is provided a data type that is not allowed.</p>
 <h2 id="reference-data-types" class="tsd-anchor-link">Reference Data Types<a href="#reference-data-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>The FHIR <code>Reference</code> data type can be used in both resource and complex type data models.
@@ -163,7 +163,7 @@ these FHIR data models.</p>
 <ul>
 <li><code>AssertionError</code> - Error thrown when an assertion fails.
 Assertions are used to validate the internal data model state.
-An <code>AssertionError</code> probably indicates a bug in the data model code.</li>
+An <code>AssertionError</code> probably indicates either an unexpected data element or a bug in the data model code.</li>
 </ul>
 <p>The following custom errors (extends <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"><code>Error</code></a>)
 are expected to be thrown by the generated data models:</p>

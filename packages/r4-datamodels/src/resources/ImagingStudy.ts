@@ -2491,7 +2491,7 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
    * - **isModifier:** false
    * - **isSummary:** false
    */
-  private instance?: ImagingStudySeriesInstanceComponent[] | undefined;
+  private instance_?: ImagingStudySeriesInstanceComponent[] | undefined;
 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
@@ -3097,16 +3097,16 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `instance` property value as a ImagingStudySeriesInstanceComponent array
+   * @returns the `instance_` property value as a ImagingStudySeriesInstanceComponent array
    */
   public getInstance(): ImagingStudySeriesInstanceComponent[] {
-    return this.instance ?? ([] as ImagingStudySeriesInstanceComponent[]);
+    return this.instance_ ?? ([] as ImagingStudySeriesInstanceComponent[]);
   }
 
   /**
-   * Assigns the provided ImagingStudySeriesInstanceComponent array value to the `instance` property.
+   * Assigns the provided ImagingStudySeriesInstanceComponent array value to the `instance_` property.
    *
-   * @param value - the `instance` array value
+   * @param value - the `instance_` array value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
@@ -3114,17 +3114,17 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
     if (isDefinedList<ImagingStudySeriesInstanceComponent>(value)) {
       const optErrMsg = `Invalid ImagingStudy.series.instance; Provided value array has an element that is not an instance of ImagingStudySeriesInstanceComponent.`;
       assertFhirTypeList<ImagingStudySeriesInstanceComponent>(value, ImagingStudySeriesInstanceComponent, optErrMsg);
-      this.instance = value;
+      this.instance_ = value;
     } else {
-      this.instance = undefined;
+      this.instance_ = undefined;
     }
     return this;
   }
 
   /**
-   * Add the provided ImagingStudySeriesInstanceComponent value to the `instance` array property.
+   * Add the provided ImagingStudySeriesInstanceComponent value to the `instance_` array property.
    *
-   * @param value - the `instance` value
+   * @param value - the `instance_` value
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
@@ -3133,24 +3133,24 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
       const optErrMsg = `Invalid ImagingStudy.series.instance; Provided element is not an instance of ImagingStudySeriesInstanceComponent.`;
       assertFhirType<ImagingStudySeriesInstanceComponent>(value, ImagingStudySeriesInstanceComponent, optErrMsg);
       this.initInstance();
-      this.instance?.push(value);
+      this.instance_?.push(value);
     }
     return this;
   }
 
   /**
-   * @returns `true` if the `instance` property exists and has a value; `false` otherwise
+   * @returns `true` if the `instance_` property exists and has a value; `false` otherwise
    */
   public hasInstance(): boolean {
-    return isDefinedList<ImagingStudySeriesInstanceComponent>(this.instance) && this.instance.some((item: ImagingStudySeriesInstanceComponent) => !item.isEmpty());
+    return isDefinedList<ImagingStudySeriesInstanceComponent>(this.instance_) && this.instance_.some((item: ImagingStudySeriesInstanceComponent) => !item.isEmpty());
   }
 
   /**
-   * Initialize the `instance` property
+   * Initialize the `instance_` property
    */
   private initInstance(): void {
     if(!this.hasInstance()) {
-      this.instance = [] as ImagingStudySeriesInstanceComponent[];
+      this.instance_ = [] as ImagingStudySeriesInstanceComponent[];
     }
   }
 
@@ -3179,7 +3179,7 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
       this.specimen,
       this.started,
       this.performer,
-      this.instance,
+      this.instance_,
     );
   }
 
@@ -3216,8 +3216,8 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
     dest.started = this.started?.copy();
     const performerList = copyListValues<ImagingStudySeriesPerformerComponent>(this.performer);
     dest.performer = performerList.length === 0 ? undefined : performerList;
-    const instanceList = copyListValues<ImagingStudySeriesInstanceComponent>(this.instance);
-    dest.instance = instanceList.length === 0 ? undefined : instanceList;
+    const instanceList = copyListValues<ImagingStudySeriesInstanceComponent>(this.instance_);
+    dest.instance_ = instanceList.length === 0 ? undefined : instanceList;
   }
 
   /**
