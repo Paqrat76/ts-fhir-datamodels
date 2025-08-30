@@ -19,21 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [2025-08-21/1]
-
-### Added
+## [2025-08-30]
 
 ### Changed
 
 - Updated dependency
+- Updated tests based on generator changes
+- Cleaned up all test files
 
-### Deprecated
 
-### Removed
+## [2025-08-21/1]
 
-### Fixed
+### Changed
 
-### Security
+- Updated dependency
 
 
 ## [2025-08-21]

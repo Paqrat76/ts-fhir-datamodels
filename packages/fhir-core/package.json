@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/fhir-core",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "FHIR core package required by generated FHIR data model packages in @paq-ts-fhir",
   "keywords": [
     "node",
@@ -33,11 +33,12 @@
     "test": "jest",
     "precoverage": "rm -rf coverage",
     "coverage": "jest --coverage",
+    "postcoverage": "opener ./coverage/lcov-report/index.html",
     "jest:clear": "jest --clearCache"
   },
   "dependencies": {
     "luxon": "^3.7.1",
-    "zod": "^4.0.17"
+    "zod": "^4.1.5"
   },
   "engines": {
     "node": ">=22.11",

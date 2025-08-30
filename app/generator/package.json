@@ -8,7 +8,9 @@
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "test": "jest",
+    "precoverage": "rm -rf coverage",
     "coverage": "jest --coverage",
+    "postcoverage": "opener ./coverage/lcov-report/index.html",
     "jest:clear": "jest --clearCache",
     "jest:updateSnapshot": "jest --updateSnapshot",
     "sushi": "sushi build ./sushi -s -o ./sushi/output"
