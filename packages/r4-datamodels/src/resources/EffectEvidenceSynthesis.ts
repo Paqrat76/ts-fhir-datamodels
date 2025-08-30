@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
@@ -46,23 +45,18 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -86,6 +80,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -152,7 +147,6 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
    * @param sourceJson - JSON representing FHIR `EffectEvidenceSynthesis`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EffectEvidenceSynthesis
    * @returns EffectEvidenceSynthesis data model or undefined for `EffectEvidenceSynthesis`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): EffectEvidenceSynthesis | undefined {
@@ -171,8 +165,6 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -230,12 +222,12 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'date';
@@ -452,12 +444,12 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPopulation(null);
       } else {
         instance.setPopulation(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPopulation(null);
     }
 
     fieldName = 'exposure';
@@ -466,12 +458,12 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setExposure(null);
       } else {
         instance.setExposure(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setExposure(null);
     }
 
     fieldName = 'exposureAlternative';
@@ -480,12 +472,12 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setExposureAlternative(null);
       } else {
         instance.setExposureAlternative(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setExposureAlternative(null);
     }
 
     fieldName = 'outcome';
@@ -494,12 +486,12 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOutcome(null);
       } else {
         instance.setOutcome(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOutcome(null);
     }
 
     fieldName = 'sampleSize';
@@ -549,12 +541,6 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1403,11 +1389,14 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `EffectEvidenceSynthesis.status is required`);
-    const errMsgPrefix = `Invalid EffectEvidenceSynthesis.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid EffectEvidenceSynthesis.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1440,11 +1429,14 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `EffectEvidenceSynthesis.status is required`);
-    const optErrMsg = `Invalid EffectEvidenceSynthesis.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid EffectEvidenceSynthesis.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1477,10 +1469,13 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `EffectEvidenceSynthesis.status is required`);
-    const optErrMsg = `Invalid EffectEvidenceSynthesis.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid EffectEvidenceSynthesis.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2552,10 +2547,10 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   }
 
   /**
-   * @returns the `population` property value as a Reference object if defined; else null
+   * @returns the `population` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPopulation(): Reference | null {
-    return this.population;
+  public getPopulation(): Reference {
+    return this.population ?? new Reference();
   }
 
   /**
@@ -2570,10 +2565,13 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   @ReferenceTargets('EffectEvidenceSynthesis.population', [
     'EvidenceVariable',
   ])
-  public setPopulation(value: Reference): this {
-    assertIsDefined<Reference>(value, `EffectEvidenceSynthesis.population is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.population = value;
+  public setPopulation(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.population = value;
+    } else {
+      this.population = null;
+    }
     return this;
   }
 
@@ -2585,10 +2583,10 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   }
 
   /**
-   * @returns the `exposure` property value as a Reference object if defined; else null
+   * @returns the `exposure` property value as a Reference object if defined; else an empty Reference object
    */
-  public getExposure(): Reference | null {
-    return this.exposure;
+  public getExposure(): Reference {
+    return this.exposure ?? new Reference();
   }
 
   /**
@@ -2603,10 +2601,13 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   @ReferenceTargets('EffectEvidenceSynthesis.exposure', [
     'EvidenceVariable',
   ])
-  public setExposure(value: Reference): this {
-    assertIsDefined<Reference>(value, `EffectEvidenceSynthesis.exposure is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.exposure = value;
+  public setExposure(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.exposure = value;
+    } else {
+      this.exposure = null;
+    }
     return this;
   }
 
@@ -2618,10 +2619,10 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   }
 
   /**
-   * @returns the `exposureAlternative` property value as a Reference object if defined; else null
+   * @returns the `exposureAlternative` property value as a Reference object if defined; else an empty Reference object
    */
-  public getExposureAlternative(): Reference | null {
-    return this.exposureAlternative;
+  public getExposureAlternative(): Reference {
+    return this.exposureAlternative ?? new Reference();
   }
 
   /**
@@ -2636,10 +2637,13 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   @ReferenceTargets('EffectEvidenceSynthesis.exposureAlternative', [
     'EvidenceVariable',
   ])
-  public setExposureAlternative(value: Reference): this {
-    assertIsDefined<Reference>(value, `EffectEvidenceSynthesis.exposureAlternative is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.exposureAlternative = value;
+  public setExposureAlternative(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.exposureAlternative = value;
+    } else {
+      this.exposureAlternative = null;
+    }
     return this;
   }
 
@@ -2651,10 +2655,10 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   }
 
   /**
-   * @returns the `outcome` property value as a Reference object if defined; else null
+   * @returns the `outcome` property value as a Reference object if defined; else an empty Reference object
    */
-  public getOutcome(): Reference | null {
-    return this.outcome;
+  public getOutcome(): Reference {
+    return this.outcome ?? new Reference();
   }
 
   /**
@@ -2669,10 +2673,13 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   @ReferenceTargets('EffectEvidenceSynthesis.outcome', [
     'EvidenceVariable',
   ])
-  public setOutcome(value: Reference): this {
-    assertIsDefined<Reference>(value, `EffectEvidenceSynthesis.outcome is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.outcome = value;
+  public setOutcome(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.outcome = value;
+    } else {
+      this.outcome = null;
+    }
     return this;
   }
 
@@ -2940,6 +2947,16 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.population, this.exposure, this.exposureAlternative, this.outcome, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3009,15 +3026,14 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -3043,7 +3059,7 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`EffectEvidenceSynthesis.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasDateElement()) {
@@ -3123,31 +3139,27 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
     }
 
     if (this.hasPopulation()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPopulation()!, 'population', jsonObj);
+      setFhirComplexJson(this.getPopulation(), 'population', jsonObj);
     } else {
-      missingReqdProperties.push(`EffectEvidenceSynthesis.population`);
+      jsonObj['population'] = null;
     }
 
     if (this.hasExposure()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getExposure()!, 'exposure', jsonObj);
+      setFhirComplexJson(this.getExposure(), 'exposure', jsonObj);
     } else {
-      missingReqdProperties.push(`EffectEvidenceSynthesis.exposure`);
+      jsonObj['exposure'] = null;
     }
 
     if (this.hasExposureAlternative()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getExposureAlternative()!, 'exposureAlternative', jsonObj);
+      setFhirComplexJson(this.getExposureAlternative(), 'exposureAlternative', jsonObj);
     } else {
-      missingReqdProperties.push(`EffectEvidenceSynthesis.exposureAlternative`);
+      jsonObj['exposureAlternative'] = null;
     }
 
     if (this.hasOutcome()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getOutcome()!, 'outcome', jsonObj);
+      setFhirComplexJson(this.getOutcome(), 'outcome', jsonObj);
     } else {
-      missingReqdProperties.push(`EffectEvidenceSynthesis.outcome`);
+      jsonObj['outcome'] = null;
     }
 
     if (this.hasSampleSize()) {
@@ -3164,11 +3176,6 @@ export class EffectEvidenceSynthesis extends DomainResource implements IDomainRe
 
     if (this.hasCertainty()) {
       setFhirBackboneElementListJson(this.getCertainty(), 'certainty', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3243,7 +3250,6 @@ export class EffectEvidenceSynthesisSampleSizeComponent extends BackboneElement 
       instance.setNumberOfParticipantsElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3582,7 +3588,6 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `EffectEvidenceSynthesisResultsByExposureComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EffectEvidenceSynthesisResultsByExposureComponent
    * @returns EffectEvidenceSynthesisResultsByExposureComponent data model or undefined for `EffectEvidenceSynthesisResultsByExposureComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): EffectEvidenceSynthesisResultsByExposureComponent | undefined {
@@ -3600,8 +3605,6 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'description';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3635,20 +3638,14 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRiskEvidenceSynthesis(null);
       } else {
         instance.setRiskEvidenceSynthesis(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRiskEvidenceSynthesis(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3935,10 +3932,10 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
   }
 
   /**
-   * @returns the `riskEvidenceSynthesis` property value as a Reference object if defined; else null
+   * @returns the `riskEvidenceSynthesis` property value as a Reference object if defined; else an empty Reference object
    */
-  public getRiskEvidenceSynthesis(): Reference | null {
-    return this.riskEvidenceSynthesis;
+  public getRiskEvidenceSynthesis(): Reference {
+    return this.riskEvidenceSynthesis ?? new Reference();
   }
 
   /**
@@ -3953,10 +3950,13 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
   @ReferenceTargets('EffectEvidenceSynthesis.resultsByExposure.riskEvidenceSynthesis', [
     'RiskEvidenceSynthesis',
   ])
-  public setRiskEvidenceSynthesis(value: Reference): this {
-    assertIsDefined<Reference>(value, `EffectEvidenceSynthesis.resultsByExposure.riskEvidenceSynthesis is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.riskEvidenceSynthesis = value;
+  public setRiskEvidenceSynthesis(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.riskEvidenceSynthesis = value;
+    } else {
+      this.riskEvidenceSynthesis = null;
+    }
     return this;
   }
 
@@ -3989,6 +3989,16 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.riskEvidenceSynthesis, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4015,15 +4025,14 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
@@ -4039,15 +4048,9 @@ export class EffectEvidenceSynthesisResultsByExposureComponent extends BackboneE
     }
 
     if (this.hasRiskEvidenceSynthesis()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRiskEvidenceSynthesis()!, 'riskEvidenceSynthesis', jsonObj);
+      setFhirComplexJson(this.getRiskEvidenceSynthesis(), 'riskEvidenceSynthesis', jsonObj);
     } else {
-      missingReqdProperties.push(`EffectEvidenceSynthesis.resultsByExposure.riskEvidenceSynthesis`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['riskEvidenceSynthesis'] = null;
     }
 
     return jsonObj;
@@ -4149,7 +4152,6 @@ export class EffectEvidenceSynthesisEffectEstimateComponent extends BackboneElem
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4686,7 +4688,6 @@ export class EffectEvidenceSynthesisEffectEstimatePrecisionEstimateComponent ext
       instance.setToElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5127,7 +5128,6 @@ export class EffectEvidenceSynthesisCertaintyComponent extends BackboneElement i
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5496,7 +5496,6 @@ export class EffectEvidenceSynthesisCertaintyCertaintySubcomponentComponent exte
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

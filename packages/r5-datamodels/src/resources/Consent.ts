@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,22 +45,17 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   UrlType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -80,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -130,7 +125,6 @@ export class Consent extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Consent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Consent
    * @returns Consent data model or undefined for `Consent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Consent | undefined {
@@ -149,8 +143,6 @@ export class Consent extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -172,12 +164,12 @@ export class Consent extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'category';
@@ -365,12 +357,6 @@ export class Consent extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -774,11 +760,14 @@ export class Consent extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ConsentStateCodesEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Consent.status is required`);
-    const errMsgPrefix = `Invalid Consent.status`;
-    assertEnumCodeType<ConsentStateCodesEnum>(enumType, ConsentStateCodesEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Consent.status`;
+      assertEnumCodeType<ConsentStateCodesEnum>(enumType, ConsentStateCodesEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -811,11 +800,14 @@ export class Consent extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ConsentStateCodesEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Consent.status is required`);
-    const optErrMsg = `Invalid Consent.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.consentStateCodesEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Consent.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.consentStateCodesEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -848,10 +840,13 @@ export class Consent extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ConsentStateCodesEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Consent.status is required`);
-    const optErrMsg = `Invalid Consent.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.consentStateCodesEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Consent.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.consentStateCodesEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1952,6 +1947,16 @@ export class Consent extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2004,15 +2009,14 @@ export class Consent extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2022,7 +2026,7 @@ export class Consent extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Consent.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCategory()) {
@@ -2090,11 +2094,6 @@ export class Consent extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getProvision(), 'provision', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2157,7 +2156,6 @@ export class ConsentPolicyBasisComponent extends BackboneElement implements IBac
       instance.setUrlElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2390,7 +2388,6 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `ConsentVerificationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConsentVerificationComponent
    * @returns ConsentVerificationComponent data model or undefined for `ConsentVerificationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConsentVerificationComponent | undefined {
@@ -2409,8 +2406,6 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'verified';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'boolean';
@@ -2418,12 +2413,12 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setVerified(null);
       } else {
         instance.setVerifiedElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setVerified(null);
     }
 
     fieldName = 'verificationType';
@@ -2468,12 +2463,6 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2561,10 +2550,10 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `verified` property value as a BooleanType object if defined; else null
+   * @returns the `verified` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getVerifiedElement(): BooleanType | null {
-    return this.verified;
+  public getVerifiedElement(): BooleanType {
+    return this.verified ?? new BooleanType();
   }
 
   /**
@@ -2575,11 +2564,14 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setVerifiedElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `Consent.verification.verified is required`);
-    const optErrMsg = `Invalid Consent.verification.verified; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.verified = element;
+  public setVerifiedElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Consent.verification.verified; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.verified = element;
+    } else {
+      this.verified = null;
+    }
     return this;
   }
 
@@ -2608,10 +2600,13 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setVerified(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `Consent.verification.verified is required`);
-    const optErrMsg = `Invalid Consent.verification.verified (${String(value)})`;
-    this.verified = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setVerified(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Consent.verification.verified (${String(value)})`;
+      this.verified = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.verified = null;
+    }
     return this;
   }
 
@@ -2877,6 +2872,16 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.verified, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2905,21 +2910,19 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasVerifiedElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getVerifiedElement()!, 'verified', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getVerifiedElement(), 'verified', jsonObj);
     } else {
-      missingReqdProperties.push(`Consent.verification.verified`);
+      jsonObj['verified'] = null;
     }
 
     if (this.hasVerificationType()) {
@@ -2936,11 +2939,6 @@ export class ConsentVerificationComponent extends BackboneElement implements IBa
 
     if (this.hasVerificationDate()) {
       setFhirPrimitiveListJson(this.getVerificationDateElement(), 'verificationDate', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3127,7 +3125,6 @@ export class ConsentProvisionComponent extends BackboneElement implements IBackb
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4116,7 +4113,6 @@ export class ConsentProvisionActorComponent extends BackboneElement implements I
       instance.setReference(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4342,7 +4338,6 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
    * @param sourceJson - JSON representing FHIR `ConsentProvisionDataComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConsentProvisionDataComponent
    * @returns ConsentProvisionDataComponent data model or undefined for `ConsentProvisionDataComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConsentProvisionDataComponent | undefined {
@@ -4361,8 +4356,6 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'meaning';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -4370,12 +4363,12 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMeaning(null);
       } else {
         instance.setMeaningElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMeaning(null);
     }
 
     fieldName = 'reference';
@@ -4384,20 +4377,14 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReference(null);
       } else {
         instance.setReference(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4462,11 +4449,14 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link ConsentDataMeaningEnum }
    */
-  public setMeaningEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Consent.provision.data.meaning is required`);
-    const errMsgPrefix = `Invalid Consent.provision.data.meaning`;
-    assertEnumCodeType<ConsentDataMeaningEnum>(enumType, ConsentDataMeaningEnum, errMsgPrefix);
-    this.meaning = enumType;
+  public setMeaningEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Consent.provision.data.meaning`;
+      assertEnumCodeType<ConsentDataMeaningEnum>(enumType, ConsentDataMeaningEnum, errMsgPrefix);
+      this.meaning = enumType;
+    } else {
+      this.meaning = null;
+    }
     return this;
   }
 
@@ -4499,11 +4489,14 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link ConsentDataMeaningEnum }
    */
-  public setMeaningElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Consent.provision.data.meaning is required`);
-    const optErrMsg = `Invalid Consent.provision.data.meaning; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.meaning = new EnumCodeType(element, this.consentDataMeaningEnum);
+  public setMeaningElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Consent.provision.data.meaning; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.meaning = new EnumCodeType(element, this.consentDataMeaningEnum);
+    } else {
+      this.meaning = null;
+    }
     return this;
   }
 
@@ -4536,10 +4529,13 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link ConsentDataMeaningEnum }
    */
-  public setMeaning(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Consent.provision.data.meaning is required`);
-    const optErrMsg = `Invalid Consent.provision.data.meaning (${String(value)})`;
-    this.meaning = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.consentDataMeaningEnum);
+  public setMeaning(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Consent.provision.data.meaning (${String(value)})`;
+      this.meaning = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.consentDataMeaningEnum);
+    } else {
+      this.meaning = null;
+    }
     return this;
   }
 
@@ -4551,10 +4547,10 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
   }
 
   /**
-   * @returns the `reference` property value as a Reference object if defined; else null
+   * @returns the `reference` property value as a Reference object if defined; else an empty Reference object
    */
-  public getReference(): Reference | null {
-    return this.reference;
+  public getReference(): Reference {
+    return this.reference ?? new Reference();
   }
 
   /**
@@ -4569,10 +4565,13 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
   @ReferenceTargets('Consent.provision.data.reference', [
     'Resource',
   ])
-  public setReference(value: Reference): this {
-    assertIsDefined<Reference>(value, `Consent.provision.data.reference is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -4603,6 +4602,16 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.meaning, this.reference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4627,33 +4636,26 @@ export class ConsentProvisionDataComponent extends BackboneElement implements IB
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasMeaningElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getMeaningElement()!, 'meaning', jsonObj);
     } else {
-      missingReqdProperties.push(`Consent.provision.data.meaning`);
+      jsonObj['meaning'] = null;
     }
 
     if (this.hasReference()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getReference()!, 'reference', jsonObj);
+      setFhirComplexJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`Consent.provision.data.reference`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['reference'] = null;
     }
 
     return jsonObj;

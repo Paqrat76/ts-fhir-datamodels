@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   Base64BinaryType,
@@ -51,12 +50,10 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   InstantType,
   Integer64Type,
@@ -67,8 +64,6 @@ import {
   OidType,
   PositiveIntType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   TimeType,
@@ -101,6 +96,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -161,7 +157,6 @@ export class Task extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Task`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Task
    * @returns Task data model or undefined for `Task`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Task | undefined {
@@ -180,8 +175,6 @@ export class Task extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -255,12 +248,12 @@ export class Task extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -286,12 +279,12 @@ export class Task extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'priority';
@@ -523,12 +516,6 @@ export class Task extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1471,11 +1458,14 @@ export class Task extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link TaskStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Task.status is required`);
-    const errMsgPrefix = `Invalid Task.status`;
-    assertEnumCodeType<TaskStatusEnum>(enumType, TaskStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Task.status`;
+      assertEnumCodeType<TaskStatusEnum>(enumType, TaskStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1508,11 +1498,14 @@ export class Task extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link TaskStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Task.status is required`);
-    const optErrMsg = `Invalid Task.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.taskStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Task.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.taskStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1545,10 +1538,13 @@ export class Task extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link TaskStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Task.status is required`);
-    const optErrMsg = `Invalid Task.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.taskStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Task.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.taskStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1624,10 +1620,10 @@ export class Task extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `intent` property value as a CodeType object if defined; else null
+   * @returns the `intent` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getIntentElement(): CodeType | null {
-    return this.intent;
+  public getIntentElement(): CodeType {
+    return this.intent ?? new CodeType();
   }
 
   /**
@@ -1638,11 +1634,14 @@ export class Task extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIntentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Task.intent is required`);
-    const optErrMsg = `Invalid Task.intent; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intent = element;
+  public setIntentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Task.intent; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intent = element;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1671,10 +1670,13 @@ export class Task extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIntent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Task.intent is required`);
-    const optErrMsg = `Invalid Task.intent (${String(value)})`;
-    this.intent = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setIntent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Task.intent (${String(value)})`;
+      this.intent = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -2956,6 +2958,16 @@ export class Task extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.intent, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3022,15 +3034,14 @@ export class Task extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -3060,7 +3071,7 @@ export class Task extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -3072,10 +3083,9 @@ export class Task extends DomainResource implements IDomainResource {
     }
 
     if (this.hasIntentElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getIntentElement()!, 'intent', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getIntentElement(), 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasPriorityElement()) {
@@ -3171,11 +3181,6 @@ export class Task extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getOutput(), 'output', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -3207,7 +3212,6 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
    * @param sourceJson - JSON representing FHIR `TaskPerformerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TaskPerformerComponent
    * @returns TaskPerformerComponent data model or undefined for `TaskPerformerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TaskPerformerComponent | undefined {
@@ -3225,8 +3229,6 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -3241,20 +3243,14 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3329,10 +3325,10 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -3357,10 +3353,13 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
   
     'RelatedPerson',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `Task.performer.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -3391,6 +3390,16 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3415,30 +3424,23 @@ export class TaskPerformerComponent extends BackboneElement implements IBackbone
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.performer.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;
@@ -3517,7 +3519,6 @@ export class TaskRestrictionComponent extends BackboneElement implements IBackbo
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3863,7 +3864,6 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
    * @param sourceJson - JSON representing FHIR `TaskInputComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TaskInputComponent
    * @returns TaskInputComponent data model or undefined for `TaskInputComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TaskInputComponent | undefined {
@@ -3885,20 +3885,18 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
     const errorMessage = `DecoratorMetadataObject does not exist for TaskInputComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -3910,17 +3908,11 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4069,10 +4061,10 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -4082,11 +4074,14 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Task.input.type is required`);
-    const optErrMsg = `Invalid Task.input.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Task.input.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4114,10 +4109,13 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Task.input.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Task.input.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5341,6 +5339,16 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5365,33 +5373,26 @@ export class TaskInputComponent extends BackboneElement implements IBackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.input.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.input.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -5431,7 +5432,6 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
    * @param sourceJson - JSON representing FHIR `TaskOutputComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TaskOutputComponent
    * @returns TaskOutputComponent data model or undefined for `TaskOutputComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TaskOutputComponent | undefined {
@@ -5453,20 +5453,18 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
     const errorMessage = `DecoratorMetadataObject does not exist for TaskOutputComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -5478,17 +5476,11 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5637,10 +5629,10 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -5650,11 +5642,14 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Task.output.type is required`);
-    const optErrMsg = `Invalid Task.output.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Task.output.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -5682,10 +5677,13 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Task.output.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Task.output.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -6909,6 +6907,16 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6933,33 +6941,26 @@ export class TaskOutputComponent extends BackboneElement implements IBackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.output.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Task.output.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

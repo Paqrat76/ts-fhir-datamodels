@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CanonicalType,
@@ -48,25 +47,20 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCanonical,
@@ -88,6 +82,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -156,7 +151,6 @@ export class TestReport extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `TestReport`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReport
    * @returns TestReport data model or undefined for `TestReport`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): TestReport | undefined {
@@ -175,8 +169,6 @@ export class TestReport extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -202,12 +194,12 @@ export class TestReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'testScript';
@@ -217,12 +209,12 @@ export class TestReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTestScript(null);
       } else {
         instance.setTestScriptElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTestScript(null);
     }
 
     fieldName = 'result';
@@ -232,12 +224,12 @@ export class TestReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setResult(null);
       } else {
         instance.setResultElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setResult(null);
     }
 
     fieldName = 'score';
@@ -309,12 +301,6 @@ export class TestReport extends DomainResource implements IDomainResource {
       instance.setTeardown(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -631,11 +617,14 @@ export class TestReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ReportStatusCodesEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TestReport.status is required`);
-    const errMsgPrefix = `Invalid TestReport.status`;
-    assertEnumCodeType<ReportStatusCodesEnum>(enumType, ReportStatusCodesEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TestReport.status`;
+      assertEnumCodeType<ReportStatusCodesEnum>(enumType, ReportStatusCodesEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -668,11 +657,14 @@ export class TestReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ReportStatusCodesEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TestReport.status is required`);
-    const optErrMsg = `Invalid TestReport.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.reportStatusCodesEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TestReport.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.reportStatusCodesEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -705,10 +697,13 @@ export class TestReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ReportStatusCodesEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TestReport.status is required`);
-    const optErrMsg = `Invalid TestReport.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportStatusCodesEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TestReport.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportStatusCodesEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -720,10 +715,10 @@ export class TestReport extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `testScript` property value as a CanonicalType object if defined; else null
+   * @returns the `testScript` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getTestScriptElement(): CanonicalType | null {
-    return this.testScript;
+  public getTestScriptElement(): CanonicalType {
+    return this.testScript ?? new CanonicalType();
   }
 
   /**
@@ -734,11 +729,14 @@ export class TestReport extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTestScriptElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `TestReport.testScript is required`);
-    const optErrMsg = `Invalid TestReport.testScript; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.testScript = element;
+  public setTestScriptElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid TestReport.testScript; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.testScript = element;
+    } else {
+      this.testScript = null;
+    }
     return this;
   }
 
@@ -767,10 +765,13 @@ export class TestReport extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTestScript(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `TestReport.testScript is required`);
-    const optErrMsg = `Invalid TestReport.testScript (${String(value)})`;
-    this.testScript = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setTestScript(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid TestReport.testScript (${String(value)})`;
+      this.testScript = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.testScript = null;
+    }
     return this;
   }
 
@@ -800,11 +801,14 @@ export class TestReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ReportResultCodesEnum }
    */
-  public setResultEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TestReport.result is required`);
-    const errMsgPrefix = `Invalid TestReport.result`;
-    assertEnumCodeType<ReportResultCodesEnum>(enumType, ReportResultCodesEnum, errMsgPrefix);
-    this.result = enumType;
+  public setResultEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TestReport.result`;
+      assertEnumCodeType<ReportResultCodesEnum>(enumType, ReportResultCodesEnum, errMsgPrefix);
+      this.result = enumType;
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -837,11 +841,14 @@ export class TestReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ReportResultCodesEnum }
    */
-  public setResultElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TestReport.result is required`);
-    const optErrMsg = `Invalid TestReport.result; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.result = new EnumCodeType(element, this.reportResultCodesEnum);
+  public setResultElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TestReport.result; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.result = new EnumCodeType(element, this.reportResultCodesEnum);
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -874,10 +881,13 @@ export class TestReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ReportResultCodesEnum }
    */
-  public setResult(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TestReport.result is required`);
-    const optErrMsg = `Invalid TestReport.result (${String(value)})`;
-    this.result = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportResultCodesEnum);
+  public setResult(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TestReport.result (${String(value)})`;
+      this.result = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportResultCodesEnum);
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -1290,6 +1300,16 @@ export class TestReport extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.testScript, this.result, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1326,15 +1346,14 @@ export class TestReport extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1348,21 +1367,20 @@ export class TestReport extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasTestScriptElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getTestScriptElement()!, 'testScript', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getTestScriptElement(), 'testScript', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.testScript`);
+      jsonObj['testScript'] = null;
     }
 
     if (this.hasResultElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getResultElement()!, 'result', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.result`);
+      jsonObj['result'] = null;
     }
 
     if (this.hasScoreElement()) {
@@ -1391,11 +1409,6 @@ export class TestReport extends DomainResource implements IDomainResource {
 
     if (this.hasTeardown()) {
       setFhirBackboneElementJson(this.getTeardown(), 'teardown', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1442,7 +1455,6 @@ export class TestReportParticipantComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `TestReportParticipantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportParticipantComponent
    * @returns TestReportParticipantComponent data model or undefined for `TestReportParticipantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportParticipantComponent | undefined {
@@ -1461,8 +1473,6 @@ export class TestReportParticipantComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -1470,12 +1480,12 @@ export class TestReportParticipantComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'uri';
@@ -1485,12 +1495,12 @@ export class TestReportParticipantComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUri(null);
       } else {
         instance.setUriElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUri(null);
     }
 
     fieldName = 'display';
@@ -1502,12 +1512,6 @@ export class TestReportParticipantComponent extends BackboneElement implements I
       instance.setDisplayElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1583,11 +1587,14 @@ export class TestReportParticipantComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link ReportParticipantTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TestReport.participant.type is required`);
-    const errMsgPrefix = `Invalid TestReport.participant.type`;
-    assertEnumCodeType<ReportParticipantTypeEnum>(enumType, ReportParticipantTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TestReport.participant.type`;
+      assertEnumCodeType<ReportParticipantTypeEnum>(enumType, ReportParticipantTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1620,11 +1627,14 @@ export class TestReportParticipantComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link ReportParticipantTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TestReport.participant.type is required`);
-    const optErrMsg = `Invalid TestReport.participant.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.reportParticipantTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TestReport.participant.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.reportParticipantTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1657,10 +1667,13 @@ export class TestReportParticipantComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link ReportParticipantTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TestReport.participant.type is required`);
-    const optErrMsg = `Invalid TestReport.participant.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportParticipantTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TestReport.participant.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportParticipantTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1672,10 +1685,10 @@ export class TestReportParticipantComponent extends BackboneElement implements I
   }
 
   /**
-   * @returns the `uri` property value as a UriType object if defined; else null
+   * @returns the `uri` property value as a UriType object if defined; else an empty UriType object
    */
-  public getUriElement(): UriType | null {
-    return this.uri;
+  public getUriElement(): UriType {
+    return this.uri ?? new UriType();
   }
 
   /**
@@ -1686,11 +1699,14 @@ export class TestReportParticipantComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUriElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `TestReport.participant.uri is required`);
-    const optErrMsg = `Invalid TestReport.participant.uri; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.uri = element;
+  public setUriElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid TestReport.participant.uri; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.uri = element;
+    } else {
+      this.uri = null;
+    }
     return this;
   }
 
@@ -1719,10 +1735,13 @@ export class TestReportParticipantComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUri(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `TestReport.participant.uri is required`);
-    const optErrMsg = `Invalid TestReport.participant.uri (${String(value)})`;
-    this.uri = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setUri(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid TestReport.participant.uri (${String(value)})`;
+      this.uri = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.uri = null;
+    }
     return this;
   }
 
@@ -1818,6 +1837,16 @@ export class TestReportParticipantComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.uri, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1843,37 +1872,30 @@ export class TestReportParticipantComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.participant.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasUriElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getUriElement()!, 'uri', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getUriElement(), 'uri', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.participant.uri`);
+      jsonObj['uri'] = null;
     }
 
     if (this.hasDisplayElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDisplayElement(), 'display', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1906,7 +1928,6 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `TestReportSetupComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportSetupComponent
    * @returns TestReportSetupComponent data model or undefined for `TestReportSetupComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportSetupComponent | undefined {
@@ -1924,8 +1945,6 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -1934,21 +1953,15 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestReportSetupActionComponent | undefined = TestReportSetupActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAction(null);
         } else {
           instance.addAction(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1983,11 +1996,14 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: TestReportSetupActionComponent[]): this {
-    assertIsDefinedList<TestReportSetupActionComponent>(value, `TestReport.setup.action is required`);
-    const optErrMsg = `Invalid TestReport.setup.action; Provided value array has an element that is not an instance of TestReportSetupActionComponent.`;
-    assertFhirTypeList<TestReportSetupActionComponent>(value, TestReportSetupActionComponent, optErrMsg);
-    this.action = value;
+  public setAction(value: TestReportSetupActionComponent[] | undefined | null): this {
+    if (isDefinedList<TestReportSetupActionComponent>(value)) {
+      const optErrMsg = `Invalid TestReport.setup.action; Provided value array has an element that is not an instance of TestReportSetupActionComponent.`;
+      assertFhirTypeList<TestReportSetupActionComponent>(value, TestReportSetupActionComponent, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -2043,6 +2059,16 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2067,25 +2093,19 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.setup.action`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -2148,7 +2168,6 @@ export class TestReportSetupActionComponent extends BackboneElement implements I
       instance.setAssert(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2341,7 +2360,6 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `TestReportSetupActionOperationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportSetupActionOperationComponent
    * @returns TestReportSetupActionOperationComponent data model or undefined for `TestReportSetupActionOperationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportSetupActionOperationComponent | undefined {
@@ -2360,8 +2378,6 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'result';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2369,12 +2385,12 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setResult(null);
       } else {
         instance.setResultElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setResult(null);
     }
 
     fieldName = 'message';
@@ -2395,12 +2411,6 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
       instance.setDetailElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2476,11 +2486,14 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
    *
    * @see CodeSystem Enumeration: {@link ReportActionResultCodesEnum }
    */
-  public setResultEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TestReport.setup.action.operation.result is required`);
-    const errMsgPrefix = `Invalid TestReport.setup.action.operation.result`;
-    assertEnumCodeType<ReportActionResultCodesEnum>(enumType, ReportActionResultCodesEnum, errMsgPrefix);
-    this.result = enumType;
+  public setResultEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TestReport.setup.action.operation.result`;
+      assertEnumCodeType<ReportActionResultCodesEnum>(enumType, ReportActionResultCodesEnum, errMsgPrefix);
+      this.result = enumType;
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -2513,11 +2526,14 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
    *
    * @see CodeSystem Enumeration: {@link ReportActionResultCodesEnum }
    */
-  public setResultElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TestReport.setup.action.operation.result is required`);
-    const optErrMsg = `Invalid TestReport.setup.action.operation.result; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.result = new EnumCodeType(element, this.reportActionResultCodesEnum);
+  public setResultElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TestReport.setup.action.operation.result; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.result = new EnumCodeType(element, this.reportActionResultCodesEnum);
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -2550,10 +2566,13 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
    *
    * @see CodeSystem Enumeration: {@link ReportActionResultCodesEnum }
    */
-  public setResult(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TestReport.setup.action.operation.result is required`);
-    const optErrMsg = `Invalid TestReport.setup.action.operation.result (${String(value)})`;
-    this.result = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportActionResultCodesEnum);
+  public setResult(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TestReport.setup.action.operation.result (${String(value)})`;
+      this.result = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportActionResultCodesEnum);
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -2713,6 +2732,16 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.result, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2738,21 +2767,20 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasResultElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getResultElement()!, 'result', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.setup.action.operation.result`);
+      jsonObj['result'] = null;
     }
 
     if (this.hasMessageElement()) {
@@ -2761,11 +2789,6 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
 
     if (this.hasDetailElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getDetailElement(), 'detail', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2802,7 +2825,6 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `TestReportSetupActionAssertComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportSetupActionAssertComponent
    * @returns TestReportSetupActionAssertComponent data model or undefined for `TestReportSetupActionAssertComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportSetupActionAssertComponent | undefined {
@@ -2821,8 +2843,6 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'result';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2830,12 +2850,12 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setResult(null);
       } else {
         instance.setResultElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setResult(null);
     }
 
     fieldName = 'message';
@@ -2869,12 +2889,6 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2965,11 +2979,14 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link ReportActionResultCodesEnum }
    */
-  public setResultEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TestReport.setup.action.assert.result is required`);
-    const errMsgPrefix = `Invalid TestReport.setup.action.assert.result`;
-    assertEnumCodeType<ReportActionResultCodesEnum>(enumType, ReportActionResultCodesEnum, errMsgPrefix);
-    this.result = enumType;
+  public setResultEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TestReport.setup.action.assert.result`;
+      assertEnumCodeType<ReportActionResultCodesEnum>(enumType, ReportActionResultCodesEnum, errMsgPrefix);
+      this.result = enumType;
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -3002,11 +3019,14 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link ReportActionResultCodesEnum }
    */
-  public setResultElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TestReport.setup.action.assert.result is required`);
-    const optErrMsg = `Invalid TestReport.setup.action.assert.result; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.result = new EnumCodeType(element, this.reportActionResultCodesEnum);
+  public setResultElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TestReport.setup.action.assert.result; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.result = new EnumCodeType(element, this.reportActionResultCodesEnum);
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -3039,10 +3059,13 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link ReportActionResultCodesEnum }
    */
-  public setResult(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TestReport.setup.action.assert.result is required`);
-    const optErrMsg = `Invalid TestReport.setup.action.assert.result (${String(value)})`;
-    this.result = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportActionResultCodesEnum);
+  public setResult(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TestReport.setup.action.assert.result (${String(value)})`;
+      this.result = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.reportActionResultCodesEnum);
+    } else {
+      this.result = null;
+    }
     return this;
   }
 
@@ -3261,6 +3284,16 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.result, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3288,21 +3321,20 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasResultElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getResultElement()!, 'result', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.setup.action.assert.result`);
+      jsonObj['result'] = null;
     }
 
     if (this.hasMessageElement()) {
@@ -3315,11 +3347,6 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
 
     if (this.hasRequirement()) {
       setFhirBackboneElementListJson(this.getRequirement(), 'requirement', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3380,7 +3407,6 @@ export class TestReportSetupActionAssertRequirementComponent extends BackboneEle
     );
     instance.setLink(link);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3577,7 +3603,6 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
    * @param sourceJson - JSON representing FHIR `TestReportTestComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportTestComponent
    * @returns TestReportTestComponent data model or undefined for `TestReportTestComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportTestComponent | undefined {
@@ -3595,8 +3620,6 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3624,21 +3647,15 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestReportTestActionComponent | undefined = TestReportTestActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAction(null);
         } else {
           instance.addAction(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3829,11 +3846,14 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: TestReportTestActionComponent[]): this {
-    assertIsDefinedList<TestReportTestActionComponent>(value, `TestReport.test.action is required`);
-    const optErrMsg = `Invalid TestReport.test.action; Provided value array has an element that is not an instance of TestReportTestActionComponent.`;
-    assertFhirTypeList<TestReportTestActionComponent>(value, TestReportTestActionComponent, optErrMsg);
-    this.action = value;
+  public setAction(value: TestReportTestActionComponent[] | undefined | null): this {
+    if (isDefinedList<TestReportTestActionComponent>(value)) {
+      const optErrMsg = `Invalid TestReport.test.action; Provided value array has an element that is not an instance of TestReportTestActionComponent.`;
+      assertFhirTypeList<TestReportTestActionComponent>(value, TestReportTestActionComponent, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -3891,6 +3911,16 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3917,15 +3947,14 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
@@ -3938,12 +3967,7 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.test.action`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -4006,7 +4030,6 @@ export class TestReportTestActionComponent extends BackboneElement implements IB
       instance.setAssert(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4195,7 +4218,6 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `TestReportTeardownComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportTeardownComponent
    * @returns TestReportTeardownComponent data model or undefined for `TestReportTeardownComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportTeardownComponent | undefined {
@@ -4213,8 +4235,6 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -4223,21 +4243,15 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestReportTeardownActionComponent | undefined = TestReportTeardownActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAction(null);
         } else {
           instance.addAction(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4272,11 +4286,14 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: TestReportTeardownActionComponent[]): this {
-    assertIsDefinedList<TestReportTeardownActionComponent>(value, `TestReport.teardown.action is required`);
-    const optErrMsg = `Invalid TestReport.teardown.action; Provided value array has an element that is not an instance of TestReportTeardownActionComponent.`;
-    assertFhirTypeList<TestReportTeardownActionComponent>(value, TestReportTeardownActionComponent, optErrMsg);
-    this.action = value;
+  public setAction(value: TestReportTeardownActionComponent[] | undefined | null): this {
+    if (isDefinedList<TestReportTeardownActionComponent>(value)) {
+      const optErrMsg = `Invalid TestReport.teardown.action; Provided value array has an element that is not an instance of TestReportTeardownActionComponent.`;
+      assertFhirTypeList<TestReportTeardownActionComponent>(value, TestReportTeardownActionComponent, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -4332,6 +4349,16 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4356,25 +4383,19 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.teardown.action`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -4408,7 +4429,6 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `TestReportTeardownActionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestReportTeardownActionComponent
    * @returns TestReportTeardownActionComponent data model or undefined for `TestReportTeardownActionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestReportTeardownActionComponent | undefined {
@@ -4426,28 +4446,20 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'operation';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const component: TestReportSetupActionOperationComponent | undefined = TestReportSetupActionOperationComponent.parse(classJsonObj[fieldName]!, sourceField);
       if (component === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOperation(null);
       } else {
         instance.setOperation(component);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOperation(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4468,10 +4480,10 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `operation` property value as a TestReportSetupActionOperationComponent object if defined; else null
+   * @returns the `operation` property value as a TestReportSetupActionOperationComponent object if defined; else an empty TestReportSetupActionOperationComponent object
    */
-  public getOperation(): TestReportSetupActionOperationComponent | null {
-    return this.operation;
+  public getOperation(): TestReportSetupActionOperationComponent {
+    return this.operation ?? new TestReportSetupActionOperationComponent();
   }
 
   /**
@@ -4481,11 +4493,14 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setOperation(value: TestReportSetupActionOperationComponent): this {
-    assertIsDefined<TestReportSetupActionOperationComponent>(value, `TestReport.teardown.action.operation is required`);
-    const optErrMsg = `Invalid TestReport.teardown.action.operation; Provided element is not an instance of TestReportSetupActionOperationComponent.`;
-    assertFhirType<TestReportSetupActionOperationComponent>(value, TestReportSetupActionOperationComponent, optErrMsg);
-    this.operation = value;
+  public setOperation(value: TestReportSetupActionOperationComponent | undefined | null): this {
+    if (isDefined<TestReportSetupActionOperationComponent>(value)) {
+      const optErrMsg = `Invalid TestReport.teardown.action.operation; Provided element is not an instance of TestReportSetupActionOperationComponent.`;
+      assertFhirType<TestReportSetupActionOperationComponent>(value, TestReportSetupActionOperationComponent, optErrMsg);
+      this.operation = value;
+    } else {
+      this.operation = null;
+    }
     return this;
   }
 
@@ -4515,6 +4530,16 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.operation, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4538,26 +4563,19 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasOperation()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirBackboneElementJson(this.getOperation()!, 'operation', jsonObj);
+      setFhirBackboneElementJson(this.getOperation(), 'operation', jsonObj);
     } else {
-      missingReqdProperties.push(`TestReport.teardown.action.operation`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['operation'] = null;
     }
 
     return jsonObj;

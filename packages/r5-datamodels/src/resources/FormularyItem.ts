@@ -37,14 +37,12 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   CodeType,
   DomainResource,
   EnumCodeType,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   assertEnumCodeType,
   assertFhirType,
@@ -93,7 +91,6 @@ export class FormularyItem extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `FormularyItem`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to FormularyItem
    * @returns FormularyItem data model or undefined for `FormularyItem`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): FormularyItem | undefined {
@@ -143,7 +140,6 @@ export class FormularyItem extends DomainResource implements IDomainResource {
       instance.setStatusElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

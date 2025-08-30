@@ -21,14 +21,13 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
-import { EnumCodeType, FhirError, IBackboneElement, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
+import { EnumCodeType, IBackboneElement, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
 import {
   TestModelComplexComponent,
   TestModelComplexReferenceComponent,
   TestModelComplexReferenceEnumCodeComponent,
 } from '../../../src/resources/TestModel';
-import { Address, HumanName, Period, Reference } from '../../../src/complex-types/complex-datatypes';
+import { Address, Dosage, HumanName, Period, Reference } from '../../../src/complex-types/complex-datatypes';
 import { ConsentStateCodesEnum } from '../../../src/code-systems/ConsentStateCodesEnum';
 import { ContributorTypeEnum } from '../../../src/code-systems/ContributorTypeEnum';
 import {
@@ -98,19 +97,14 @@ describe('TestModelComplexComponent', () => {
       const testInstance = new TestModelComplexComponent();
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        'The following required properties do not exist: TestModel.complex.complex11, TestModel.complex.complex1x, TestModel.complex.reference',
-      );
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasComplex01()).toBe(false);
@@ -118,11 +112,11 @@ describe('TestModelComplexComponent', () => {
       expect(testInstance.hasComplex0x()).toBe(false);
       expect(testInstance.getComplex0x()).toEqual([] as Address[]);
       expect(testInstance.hasComplex11()).toBe(false);
-      expect(testInstance.getComplex11()).toBeNull();
+      expect(testInstance.getComplex11()).toEqual(new Dosage());
       expect(testInstance.hasComplex1x()).toBe(false);
       expect(testInstance.getComplex1x()).toEqual([] as Period[]);
       expect(testInstance.hasReference()).toBe(false);
-      expect(testInstance.getReference()).toBeNull();
+      expect(testInstance.getReference()).toEqual(new TestModelComplexReferenceComponent());
     });
 
     it('should be properly instantiated with required elements', () => {
@@ -133,12 +127,13 @@ describe('TestModelComplexComponent', () => {
       );
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
@@ -168,12 +163,13 @@ describe('TestModelComplexComponent', () => {
       let testInstance: TestModelComplexComponent = testModel.copy();
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -194,44 +190,33 @@ describe('TestModelComplexComponent', () => {
 
       testModel.setComplex01(TestData.UNDEFINED_VALUE);
       testModel.setComplex0x(TestData.UNDEFINED_VALUE);
-      let t = () => {
-        testModel.setComplex11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.complex11 is required');
-      t = () => {
-        testModel.setComplex1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.complex1x is required');
-      t = () => {
-        testModel.setReference(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference is required');
+      testModel.setComplex11(TestData.UNDEFINED_VALUE);
+      testModel.setComplex1x(TestData.UNDEFINED_VALUE);
+      testModel.setReference(TestData.UNDEFINED_VALUE);
 
       testInstance = testModel.copy();
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasComplex01()).toBe(false);
       expect(testInstance.getComplex01()).toEqual(new HumanName());
       expect(testInstance.hasComplex0x()).toBe(false);
       expect(testInstance.getComplex0x()).toEqual([] as Address[]);
-      expect(testInstance.hasComplex11()).toBe(true);
-      expect(testInstance.getComplex11()).toEqual(VALID_DOSAGE);
-      expect(testInstance.hasComplex1x()).toBe(true);
-      expect(testInstance.getComplex1x()).toEqual([VALID_PERIOD]);
-      expect(testInstance.hasReference()).toBe(true);
-      expect(testInstance.getReference()).toEqual(testModelComplexReferenceComponent);
+      expect(testInstance.hasComplex11()).toBe(false);
+      expect(testInstance.getComplex11()).toEqual(new Dosage());
+      expect(testInstance.hasComplex1x()).toBe(false);
+      expect(testInstance.getComplex1x()).toEqual([] as Period[]);
+      expect(testInstance.hasReference()).toBe(false);
+      expect(testInstance.getReference()).toEqual(new TestModelComplexReferenceComponent());
     });
 
     it('should be properly reset by modifying/adding all properties', () => {
@@ -246,12 +231,13 @@ describe('TestModelComplexComponent', () => {
       testInstance.setReference(testModelComplexReferenceComponent);
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -277,12 +263,13 @@ describe('TestModelComplexComponent', () => {
       testInstance.setReference(testModelComplexReferenceComponent_2);
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetBackboneElementProperties(testInstance);
 
@@ -303,42 +290,31 @@ describe('TestModelComplexComponent', () => {
 
       testInstance.setComplex01(TestData.UNDEFINED_VALUE);
       testInstance.setComplex0x(TestData.UNDEFINED_VALUE);
-      let t = () => {
-        testInstance.setComplex11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.complex11 is required');
-      t = () => {
-        testInstance.setComplex1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.complex1x is required');
-      t = () => {
-        testInstance.setReference(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference is required');
+      testInstance.setComplex11(TestData.UNDEFINED_VALUE);
+      testInstance.setComplex1x(TestData.UNDEFINED_VALUE);
+      testInstance.setReference(TestData.UNDEFINED_VALUE);
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasComplex01()).toBe(false);
       expect(testInstance.getComplex01()).toEqual(new HumanName());
       expect(testInstance.hasComplex0x()).toBe(false);
       expect(testInstance.getComplex0x()).toEqual([] as Address[]);
-      expect(testInstance.hasComplex11()).toBe(true);
-      expect(testInstance.getComplex11()).toEqual(VALID_DOSAGE_2);
-      expect(testInstance.hasComplex1x()).toBe(true);
-      expect(testInstance.getComplex1x()).toEqual([VALID_PERIOD_2]);
-      expect(testInstance.hasReference()).toBe(true);
-      expect(testInstance.getReference()).toEqual(testModelComplexReferenceComponent_2);
+      expect(testInstance.hasComplex11()).toBe(false);
+      expect(testInstance.getComplex11()).toEqual(new Dosage());
+      expect(testInstance.hasComplex1x()).toBe(false);
+      expect(testInstance.getComplex1x()).toEqual([] as Period[]);
+      expect(testInstance.hasReference()).toBe(false);
+      expect(testInstance.getReference()).toEqual(new TestModelComplexReferenceComponent());
     });
   });
 
@@ -422,20 +398,6 @@ describe('TestModelComplexComponent', () => {
         ],
       },
     };
-    const INVALID_JSON = {
-      bogusField: 'bogus value',
-    };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new TestModelComplexComponent();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties do not exist: TestModel.complex.complex11, TestModel.complex.complex1x, TestModel.complex.reference`,
-      );
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModelComplexComponent();
@@ -449,12 +411,13 @@ describe('TestModelComplexComponent', () => {
       testInstance.setReference(testModelComplexReferenceComponent);
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedBackboneElementProperties(testInstance, 2);
 
       expect(testInstance.hasComplex01()).toBe(true);
@@ -472,7 +435,7 @@ describe('TestModelComplexComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: TestModelComplexComponent | undefined = undefined;
+      let testInstance: TestModelComplexComponent | undefined;
       testInstance = TestModelComplexComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -483,26 +446,17 @@ describe('TestModelComplexComponent', () => {
       expect(testInstance).toBeUndefined();
     });
 
-    it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        TestModelComplexComponent.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: TestModelComplexComponent.complex11, TestModelComplexComponent.complex1x, TestModelComplexComponent.reference`,
-      );
-    });
-
     it('should return parsed TestModelComplexComponent for valid json', () => {
       const testInstance: TestModelComplexComponent | undefined = TestModelComplexComponent.parse(VALID_JSON);
 
       expectBackboneElementBase(
-        TestModelComplexComponent as IBackboneElement,
+        TestModelComplexComponent as unknown as IBackboneElement,
         testInstance,
         'TestModelComplexComponent',
         'TestModel.complex',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedBackboneElementProperties(testInstance, 2);
 
@@ -522,12 +476,14 @@ describe('TestModelComplexComponent', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: allow for testing
         new TestModelComplexComponent(VALID_MOCK_COMPLEX_DATATYPE, null, null);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid TestModel.complex.complex11; Provided element is not an instance of Dosage.`);
 
       t = () => {
+        // @ts-expect-error: allow for testing
         new TestModelComplexComponent(null, [VALID_MOCK_COMPLEX_DATATYPE], null);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -536,6 +492,7 @@ describe('TestModelComplexComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: allow for testing
         new TestModelComplexComponent(null, null, VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -547,6 +504,7 @@ describe('TestModelComplexComponent', () => {
     it('complex01: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexComponent();
       let t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.setComplex01(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -556,6 +514,7 @@ describe('TestModelComplexComponent', () => {
     it('complex0x: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexComponent();
       let t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.setComplex0x([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -564,6 +523,7 @@ describe('TestModelComplexComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.addComplex0x(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -572,28 +532,18 @@ describe('TestModelComplexComponent', () => {
 
     it('complex11: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexComponent();
-      let t = () => {
+      const t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.setComplex11(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid TestModel.complex.complex11; Provided element is not an instance of Dosage.`);
-
-      t = () => {
-        testInstance.setComplex11(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.complex11 is required`);
-
-      t = () => {
-        testInstance.setComplex11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.complex11 is required`);
     });
 
     it('complex1x: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexComponent();
       let t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.setComplex1x([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -602,45 +552,23 @@ describe('TestModelComplexComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.addComplex1x(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid TestModel.complex.complex1x; Provided element is not an instance of Period.`);
-
-      t = () => {
-        testInstance.setComplex1x(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.complex1x is required`);
-
-      t = () => {
-        testInstance.setComplex1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.complex1x is required`);
     });
 
     it('reference: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexComponent();
-      let t = () => {
+      const t = () => {
+        // @ts-expect-error: allow for testing
         testInstance.setReference(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `Invalid TestModel.complex.reference; Provided element is not an instance of TestModelComplexReferenceComponent.`,
       );
-
-      t = () => {
-        testInstance.setReference(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference is required`);
-
-      t = () => {
-        testInstance.setReference(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference is required`);
     });
   });
 });

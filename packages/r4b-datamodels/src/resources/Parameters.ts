@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   Base64BinaryType,
@@ -49,11 +48,9 @@ import {
   DateTimeType,
   DateType,
   DecimalType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
-  INSTANCE_EMPTY_ERROR_MSG,
   IResource,
   IdType,
   InstantType,
@@ -64,8 +61,6 @@ import {
   OidType,
   PositiveIntType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   Resource,
   StringType,
   TimeType,
@@ -85,6 +80,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirPrimitiveJson,
@@ -124,7 +120,6 @@ export class Parameters extends Resource implements IResource {
    * @param sourceJson - JSON representing FHIR `Parameters`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Parameters
    * @returns Parameters data model or undefined for `Parameters`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Parameters | undefined {
@@ -156,7 +151,6 @@ export class Parameters extends Resource implements IResource {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -325,7 +319,6 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `ParametersParameterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ParametersParameterComponent
    * @returns ParametersParameterComponent data model or undefined for `ParametersParameterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ParametersParameterComponent | undefined {
@@ -348,8 +341,6 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
     const errorMessage = `DecoratorMetadataObject does not exist for ParametersParameterComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -357,12 +348,12 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'value[x]';
@@ -395,12 +386,6 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -569,10 +554,10 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -583,11 +568,14 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Parameters.parameter.name is required`);
-    const optErrMsg = `Invalid Parameters.parameter.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Parameters.parameter.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -616,10 +604,13 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Parameters.parameter.name is required`);
-    const optErrMsg = `Invalid Parameters.parameter.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Parameters.parameter.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1881,6 +1872,16 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1908,21 +1909,19 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`Parameters.parameter.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasValue()) {
@@ -1937,11 +1936,6 @@ export class ParametersParameterComponent extends BackboneElement implements IBa
 
     if (this.hasPart()) {
       setFhirBackboneElementListJson(this.getPart(), 'part', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

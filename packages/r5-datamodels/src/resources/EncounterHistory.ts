@@ -37,26 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -68,6 +62,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -117,7 +112,6 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `EncounterHistory`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EncounterHistory
    * @returns EncounterHistory data model or undefined for `EncounterHistory`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): EncounterHistory | undefined {
@@ -136,8 +130,6 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'encounter';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -167,12 +159,12 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'class';
@@ -181,12 +173,12 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setClass(null);
       } else {
         instance.setClass(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setClass(null);
     }
 
     fieldName = 'type';
@@ -278,12 +270,6 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -610,11 +596,14 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link EncounterStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `EncounterHistory.status is required`);
-    const errMsgPrefix = `Invalid EncounterHistory.status`;
-    assertEnumCodeType<EncounterStatusEnum>(enumType, EncounterStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid EncounterHistory.status`;
+      assertEnumCodeType<EncounterStatusEnum>(enumType, EncounterStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -647,11 +636,14 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link EncounterStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `EncounterHistory.status is required`);
-    const optErrMsg = `Invalid EncounterHistory.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.encounterStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid EncounterHistory.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.encounterStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -684,10 +676,13 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link EncounterStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `EncounterHistory.status is required`);
-    const optErrMsg = `Invalid EncounterHistory.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.encounterStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid EncounterHistory.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.encounterStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -699,10 +694,10 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
   }
 
   /**
-   * @returns the `class_` property value as a CodeableConcept object if defined; else null
+   * @returns the `class_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getClass(): CodeableConcept | null {
-    return this.class_;
+  public getClass(): CodeableConcept {
+    return this.class_ ?? new CodeableConcept();
   }
 
   /**
@@ -712,11 +707,14 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setClass(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `EncounterHistory.class is required`);
-    const optErrMsg = `Invalid EncounterHistory.class; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.class_ = value;
+  public setClass(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid EncounterHistory.class; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.class_ = value;
+    } else {
+      this.class_ = null;
+    }
     return this;
   }
 
@@ -1194,6 +1192,16 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.class_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1233,15 +1241,14 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasEncounter()) {
       setFhirComplexJson(this.getEncounter(), 'encounter', jsonObj);
@@ -1255,14 +1262,13 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`EncounterHistory.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasClass()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getClass()!, 'class', jsonObj);
+      setFhirComplexJson(this.getClass(), 'class', jsonObj);
     } else {
-      missingReqdProperties.push(`EncounterHistory.class`);
+      jsonObj['class'] = null;
     }
 
     if (this.hasType()) {
@@ -1301,11 +1307,6 @@ export class EncounterHistory extends DomainResource implements IDomainResource 
       setFhirBackboneElementListJson(this.getLocation(), 'location', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1338,7 +1339,6 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `EncounterHistoryLocationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EncounterHistoryLocationComponent
    * @returns EncounterHistoryLocationComponent data model or undefined for `EncounterHistoryLocationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): EncounterHistoryLocationComponent | undefined {
@@ -1356,20 +1356,18 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'location';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLocation(null);
       } else {
         instance.setLocation(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLocation(null);
     }
 
     fieldName = 'form';
@@ -1380,12 +1378,6 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
       instance.setForm(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1424,10 +1416,10 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `location` property value as a Reference object if defined; else null
+   * @returns the `location` property value as a Reference object if defined; else an empty Reference object
    */
-  public getLocation(): Reference | null {
-    return this.location;
+  public getLocation(): Reference {
+    return this.location ?? new Reference();
   }
 
   /**
@@ -1442,10 +1434,13 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
   @ReferenceTargets('EncounterHistory.location.location', [
     'Location',
   ])
-  public setLocation(value: Reference): this {
-    assertIsDefined<Reference>(value, `EncounterHistory.location.location is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.location = value;
+  public setLocation(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.location = value;
+    } else {
+      this.location = null;
+    }
     return this;
   }
 
@@ -1508,6 +1503,16 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.location, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1532,30 +1537,23 @@ export class EncounterHistoryLocationComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasLocation()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getLocation()!, 'location', jsonObj);
+      setFhirComplexJson(this.getLocation(), 'location', jsonObj);
     } else {
-      missingReqdProperties.push(`EncounterHistory.location.location`);
+      jsonObj['location'] = null;
     }
 
     if (this.hasForm()) {
       setFhirComplexJson(this.getForm(), 'form', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,25 +45,20 @@ import {
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PositiveIntType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -80,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -141,7 +136,6 @@ export class Coverage extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Coverage`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Coverage
    * @returns Coverage data model or undefined for `Coverage`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Coverage | undefined {
@@ -160,8 +154,6 @@ export class Coverage extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -183,12 +175,12 @@ export class Coverage extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'type';
@@ -230,12 +222,12 @@ export class Coverage extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setBeneficiary(null);
       } else {
         instance.setBeneficiary(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setBeneficiary(null);
     }
 
     fieldName = 'dependent';
@@ -271,13 +263,13 @@ export class Coverage extends DomainResource implements IDomainResource {
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setPayor(null);
         } else {
           instance.addPayor(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPayor(null);
     }
 
     fieldName = 'class';
@@ -346,12 +338,6 @@ export class Coverage extends DomainResource implements IDomainResource {
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -729,11 +715,14 @@ export class Coverage extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Coverage.status is required`);
-    const errMsgPrefix = `Invalid Coverage.status`;
-    assertEnumCodeType<FmStatusEnum>(enumType, FmStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Coverage.status`;
+      assertEnumCodeType<FmStatusEnum>(enumType, FmStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -766,11 +755,14 @@ export class Coverage extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Coverage.status is required`);
-    const optErrMsg = `Invalid Coverage.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.fmStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Coverage.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.fmStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -803,10 +795,13 @@ export class Coverage extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Coverage.status is required`);
-    const optErrMsg = `Invalid Coverage.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fmStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Coverage.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fmStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -992,10 +987,10 @@ export class Coverage extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `beneficiary` property value as a Reference object if defined; else null
+   * @returns the `beneficiary` property value as a Reference object if defined; else an empty Reference object
    */
-  public getBeneficiary(): Reference | null {
-    return this.beneficiary;
+  public getBeneficiary(): Reference {
+    return this.beneficiary ?? new Reference();
   }
 
   /**
@@ -1010,10 +1005,13 @@ export class Coverage extends DomainResource implements IDomainResource {
   @ReferenceTargets('Coverage.beneficiary', [
     'Patient',
   ])
-  public setBeneficiary(value: Reference): this {
-    assertIsDefined<Reference>(value, `Coverage.beneficiary is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.beneficiary = value;
+  public setBeneficiary(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.beneficiary = value;
+    } else {
+      this.beneficiary = null;
+    }
     return this;
   }
 
@@ -1175,10 +1173,13 @@ export class Coverage extends DomainResource implements IDomainResource {
   
     'RelatedPerson',
   ])
-  public setPayor(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `Coverage.payor is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.payor = value;
+  public setPayor(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.payor = value;
+    } else {
+      this.payor = null;
+    }
     return this;
   }
 
@@ -1632,6 +1633,16 @@ export class Coverage extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.beneficiary, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1676,15 +1687,14 @@ export class Coverage extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1694,7 +1704,7 @@ export class Coverage extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasType()) {
@@ -1714,10 +1724,9 @@ export class Coverage extends DomainResource implements IDomainResource {
     }
 
     if (this.hasBeneficiary()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getBeneficiary()!, 'beneficiary', jsonObj);
+      setFhirComplexJson(this.getBeneficiary(), 'beneficiary', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.beneficiary`);
+      jsonObj['beneficiary'] = null;
     }
 
     if (this.hasDependentElement()) {
@@ -1735,7 +1744,7 @@ export class Coverage extends DomainResource implements IDomainResource {
     if (this.hasPayor()) {
       setFhirComplexListJson(this.getPayor(), 'payor', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.payor`);
+      jsonObj['payor'] = null;
     }
 
     if (this.hasClass()) {
@@ -1760,11 +1769,6 @@ export class Coverage extends DomainResource implements IDomainResource {
 
     if (this.hasContract()) {
       setFhirComplexListJson(this.getContract(), 'contract', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1809,7 +1813,6 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
    * @param sourceJson - JSON representing FHIR `CoverageClassComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CoverageClassComponent
    * @returns CoverageClassComponent data model or undefined for `CoverageClassComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CoverageClassComponent | undefined {
@@ -1828,20 +1831,18 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value';
@@ -1851,12 +1852,12 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
     fieldName = 'name';
@@ -1868,12 +1869,6 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
       instance.setNameElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1926,10 +1921,10 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -1939,11 +1934,14 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Coverage.class.type is required`);
-    const optErrMsg = `Invalid Coverage.class.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Coverage.class.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1955,10 +1953,10 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -1969,11 +1967,14 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Coverage.class.value is required`);
-    const optErrMsg = `Invalid Coverage.class.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Coverage.class.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2002,10 +2003,13 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Coverage.class.value is required`);
-    const optErrMsg = `Invalid Coverage.class.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Coverage.class.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2101,6 +2105,16 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2126,37 +2140,29 @@ export class CoverageClassComponent extends BackboneElement implements IBackbone
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.class.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.class.value`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2192,7 +2198,6 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `CoverageCostToBeneficiaryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CoverageCostToBeneficiaryComponent
    * @returns CoverageCostToBeneficiaryComponent data model or undefined for `CoverageCostToBeneficiaryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CoverageCostToBeneficiaryComponent | undefined {
@@ -2214,8 +2219,6 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
     const errorMessage = `DecoratorMetadataObject does not exist for CoverageCostToBeneficiaryComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -2233,7 +2236,7 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
@@ -2251,12 +2254,6 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2366,10 +2363,13 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Coverage.costToBeneficiary.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Coverage.costToBeneficiary.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2508,6 +2508,16 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2534,15 +2544,14 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -2552,16 +2561,11 @@ export class CoverageCostToBeneficiaryComponent extends BackboneElement implemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.costToBeneficiary.value[x]`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasException()) {
       setFhirBackboneElementListJson(this.getException(), 'exception', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2595,7 +2599,6 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
    * @param sourceJson - JSON representing FHIR `CoverageCostToBeneficiaryExceptionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CoverageCostToBeneficiaryExceptionComponent
    * @returns CoverageCostToBeneficiaryExceptionComponent data model or undefined for `CoverageCostToBeneficiaryExceptionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CoverageCostToBeneficiaryExceptionComponent | undefined {
@@ -2613,20 +2616,18 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'period';
@@ -2637,12 +2638,6 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
       instance.setPeriod(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2679,10 +2674,10 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -2692,11 +2687,14 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Coverage.costToBeneficiary.exception.type is required`);
-    const optErrMsg = `Invalid Coverage.costToBeneficiary.exception.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Coverage.costToBeneficiary.exception.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2759,6 +2757,16 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2783,30 +2791,23 @@ export class CoverageCostToBeneficiaryExceptionComponent extends BackboneElement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Coverage.costToBeneficiary.exception.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasPeriod()) {
       setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

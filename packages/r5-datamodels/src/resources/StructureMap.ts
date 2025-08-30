@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -50,12 +49,10 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   IntegerType,
   InvalidTypeError,
@@ -63,8 +60,6 @@ import {
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   TimeType,
   UriType,
@@ -73,7 +68,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -100,6 +94,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexListJson,
@@ -177,7 +172,6 @@ export class StructureMap extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `StructureMap`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMap
    * @returns StructureMap data model or undefined for `StructureMap`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): StructureMap | undefined {
@@ -201,8 +195,6 @@ export class StructureMap extends DomainResource implements IDomainResource {
     const errorMessage = `DecoratorMetadataObject does not exist for StructureMap`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -210,12 +202,12 @@ export class StructureMap extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUrl(null);
       } else {
         instance.setUrlElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUrl(null);
     }
 
     fieldName = 'identifier';
@@ -257,12 +249,12 @@ export class StructureMap extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'title';
@@ -281,12 +273,12 @@ export class StructureMap extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -443,21 +435,15 @@ export class StructureMap extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: StructureMapGroupComponent | undefined = StructureMapGroupComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setGroup(null);
         } else {
           instance.addGroup(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setGroup(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -805,10 +791,10 @@ export class StructureMap extends DomainResource implements IDomainResource {
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `url` property value as a UriType object if defined; else null
+   * @returns the `url` property value as a UriType object if defined; else an empty UriType object
    */
-  public getUrlElement(): UriType | null {
-    return this.url;
+  public getUrlElement(): UriType {
+    return this.url ?? new UriType();
   }
 
   /**
@@ -819,11 +805,14 @@ export class StructureMap extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrlElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `StructureMap.url is required`);
-    const optErrMsg = `Invalid StructureMap.url; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.url = element;
+  public setUrlElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid StructureMap.url; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.url = element;
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -852,10 +841,13 @@ export class StructureMap extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrl(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `StructureMap.url is required`);
-    const optErrMsg = `Invalid StructureMap.url (${String(value)})`;
-    this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setUrl(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid StructureMap.url (${String(value)})`;
+      this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -1072,10 +1064,10 @@ export class StructureMap extends DomainResource implements IDomainResource {
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -1086,11 +1078,14 @@ export class StructureMap extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `StructureMap.name is required`);
-    const optErrMsg = `Invalid StructureMap.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid StructureMap.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1119,10 +1114,13 @@ export class StructureMap extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `StructureMap.name is required`);
-    const optErrMsg = `Invalid StructureMap.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid StructureMap.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1216,11 +1214,14 @@ export class StructureMap extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `StructureMap.status is required`);
-    const errMsgPrefix = `Invalid StructureMap.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid StructureMap.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1253,11 +1254,14 @@ export class StructureMap extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `StructureMap.status is required`);
-    const optErrMsg = `Invalid StructureMap.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid StructureMap.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1290,10 +1294,13 @@ export class StructureMap extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `StructureMap.status is required`);
-    const optErrMsg = `Invalid StructureMap.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid StructureMap.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2178,11 +2185,14 @@ export class StructureMap extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setGroup(value: StructureMapGroupComponent[]): this {
-    assertIsDefinedList<StructureMapGroupComponent>(value, `StructureMap.group is required`);
-    const optErrMsg = `Invalid StructureMap.group; Provided value array has an element that is not an instance of StructureMapGroupComponent.`;
-    assertFhirTypeList<StructureMapGroupComponent>(value, StructureMapGroupComponent, optErrMsg);
-    this.group = value;
+  public setGroup(value: StructureMapGroupComponent[] | undefined | null): this {
+    if (isDefinedList<StructureMapGroupComponent>(value)) {
+      const optErrMsg = `Invalid StructureMap.group; Provided value array has an element that is not an instance of StructureMapGroupComponent.`;
+      assertFhirTypeList<StructureMapGroupComponent>(value, StructureMapGroupComponent, optErrMsg);
+      this.group = value;
+    } else {
+      this.group = null;
+    }
     return this;
   }
 
@@ -2258,6 +2268,16 @@ export class StructureMap extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.url, this.name, this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2309,21 +2329,19 @@ export class StructureMap extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUrlElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getUrlElement()!, 'url', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.url`);
+      jsonObj['url'] = null;
     }
 
     if (this.hasIdentifier()) {
@@ -2340,10 +2358,9 @@ export class StructureMap extends DomainResource implements IDomainResource {
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -2354,7 +2371,7 @@ export class StructureMap extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2412,12 +2429,7 @@ export class StructureMap extends DomainResource implements IDomainResource {
     if (this.hasGroup()) {
       setFhirBackboneElementListJson(this.getGroup(), 'group', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['group'] = null;
     }
 
     return jsonObj;
@@ -2465,7 +2477,6 @@ export class StructureMapStructureComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `StructureMapStructureComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapStructureComponent
    * @returns StructureMapStructureComponent data model or undefined for `StructureMapStructureComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapStructureComponent | undefined {
@@ -2484,8 +2495,6 @@ export class StructureMapStructureComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2493,12 +2502,12 @@ export class StructureMapStructureComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUrl(null);
       } else {
         instance.setUrlElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUrl(null);
     }
 
     fieldName = 'mode';
@@ -2508,12 +2517,12 @@ export class StructureMapStructureComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMode(null);
       } else {
         instance.setModeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMode(null);
     }
 
     fieldName = 'alias';
@@ -2534,12 +2543,6 @@ export class StructureMapStructureComponent extends BackboneElement implements I
       instance.setDocumentationElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2615,10 +2618,10 @@ export class StructureMapStructureComponent extends BackboneElement implements I
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `url` property value as a CanonicalType object if defined; else null
+   * @returns the `url` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getUrlElement(): CanonicalType | null {
-    return this.url;
+  public getUrlElement(): CanonicalType {
+    return this.url ?? new CanonicalType();
   }
 
   /**
@@ -2629,11 +2632,14 @@ export class StructureMapStructureComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrlElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `StructureMap.structure.url is required`);
-    const optErrMsg = `Invalid StructureMap.structure.url; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.url = element;
+  public setUrlElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid StructureMap.structure.url; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.url = element;
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -2662,10 +2668,13 @@ export class StructureMapStructureComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrl(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `StructureMap.structure.url is required`);
-    const optErrMsg = `Invalid StructureMap.structure.url (${String(value)})`;
-    this.url = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setUrl(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid StructureMap.structure.url (${String(value)})`;
+      this.url = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -2695,11 +2704,14 @@ export class StructureMapStructureComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link MapModelModeEnum }
    */
-  public setModeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `StructureMap.structure.mode is required`);
-    const errMsgPrefix = `Invalid StructureMap.structure.mode`;
-    assertEnumCodeType<MapModelModeEnum>(enumType, MapModelModeEnum, errMsgPrefix);
-    this.mode = enumType;
+  public setModeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid StructureMap.structure.mode`;
+      assertEnumCodeType<MapModelModeEnum>(enumType, MapModelModeEnum, errMsgPrefix);
+      this.mode = enumType;
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -2732,11 +2744,14 @@ export class StructureMapStructureComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link MapModelModeEnum }
    */
-  public setModeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `StructureMap.structure.mode is required`);
-    const optErrMsg = `Invalid StructureMap.structure.mode; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.mode = new EnumCodeType(element, this.mapModelModeEnum);
+  public setModeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid StructureMap.structure.mode; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.mode = new EnumCodeType(element, this.mapModelModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -2769,10 +2784,13 @@ export class StructureMapStructureComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link MapModelModeEnum }
    */
-  public setMode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `StructureMap.structure.mode is required`);
-    const optErrMsg = `Invalid StructureMap.structure.mode (${String(value)})`;
-    this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.mapModelModeEnum);
+  public setMode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid StructureMap.structure.mode (${String(value)})`;
+      this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.mapModelModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -2933,6 +2951,16 @@ export class StructureMapStructureComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.url, this.mode, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2959,28 +2987,26 @@ export class StructureMapStructureComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUrlElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getUrlElement()!, 'url', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getUrlElement(), 'url', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.structure.url`);
+      jsonObj['url'] = null;
     }
 
     if (this.hasModeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getModeElement()!, 'mode', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.structure.mode`);
+      jsonObj['mode'] = null;
     }
 
     if (this.hasAliasElement()) {
@@ -2989,11 +3015,6 @@ export class StructureMapStructureComponent extends BackboneElement implements I
 
     if (this.hasDocumentationElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDocumentationElement(), 'documentation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3058,7 +3079,6 @@ export class StructureMapConstComponent extends BackboneElement implements IBack
       instance.setValueElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3322,7 +3342,6 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `StructureMapGroupComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapGroupComponent
    * @returns StructureMapGroupComponent data model or undefined for `StructureMapGroupComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapGroupComponent | undefined {
@@ -3341,8 +3360,6 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3350,12 +3367,12 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'extends';
@@ -3393,13 +3410,13 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: StructureMapGroupInputComponent | undefined = StructureMapGroupInputComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setInput(null);
         } else {
           instance.addInput(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setInput(null);
     }
 
     fieldName = 'rule';
@@ -3415,12 +3432,6 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3522,10 +3533,10 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a IdType object if defined; else null
+   * @returns the `name` property value as a IdType object if defined; else an empty IdType object
    */
-  public getNameElement(): IdType | null {
-    return this.name;
+  public getNameElement(): IdType {
+    return this.name ?? new IdType();
   }
 
   /**
@@ -3536,11 +3547,14 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `StructureMap.group.name is required`);
-    const optErrMsg = `Invalid StructureMap.group.name; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid StructureMap.group.name; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -3569,10 +3583,13 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `StructureMap.group.name is required`);
-    const optErrMsg = `Invalid StructureMap.group.name (${String(value)})`;
-    this.name = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setName(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.name (${String(value)})`;
+      this.name = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -3841,11 +3858,14 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setInput(value: StructureMapGroupInputComponent[]): this {
-    assertIsDefinedList<StructureMapGroupInputComponent>(value, `StructureMap.group.input is required`);
-    const optErrMsg = `Invalid StructureMap.group.input; Provided value array has an element that is not an instance of StructureMapGroupInputComponent.`;
-    assertFhirTypeList<StructureMapGroupInputComponent>(value, StructureMapGroupInputComponent, optErrMsg);
-    this.input = value;
+  public setInput(value: StructureMapGroupInputComponent[] | undefined | null): this {
+    if (isDefinedList<StructureMapGroupInputComponent>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.input; Provided value array has an element that is not an instance of StructureMapGroupInputComponent.`;
+      assertFhirTypeList<StructureMapGroupInputComponent>(value, StructureMapGroupInputComponent, optErrMsg);
+      this.input = value;
+    } else {
+      this.input = null;
+    }
     return this;
   }
 
@@ -3964,6 +3984,16 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3994,21 +4024,19 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasExtendsElement()) {
@@ -4027,16 +4055,11 @@ export class StructureMapGroupComponent extends BackboneElement implements IBack
     if (this.hasInput()) {
       setFhirBackboneElementListJson(this.getInput(), 'input', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.input`);
+      jsonObj['input'] = null;
     }
 
     if (this.hasRule()) {
       setFhirBackboneElementListJson(this.getRule(), 'rule', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4083,7 +4106,6 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `StructureMapGroupInputComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapGroupInputComponent
    * @returns StructureMapGroupInputComponent data model or undefined for `StructureMapGroupInputComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapGroupInputComponent | undefined {
@@ -4102,8 +4124,6 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4111,12 +4131,12 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'type';
@@ -4135,12 +4155,12 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMode(null);
       } else {
         instance.setModeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMode(null);
     }
 
     fieldName = 'documentation';
@@ -4152,12 +4172,6 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
       instance.setDocumentationElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4229,10 +4243,10 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a IdType object if defined; else null
+   * @returns the `name` property value as a IdType object if defined; else an empty IdType object
    */
-  public getNameElement(): IdType | null {
-    return this.name;
+  public getNameElement(): IdType {
+    return this.name ?? new IdType();
   }
 
   /**
@@ -4243,11 +4257,14 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `StructureMap.group.input.name is required`);
-    const optErrMsg = `Invalid StructureMap.group.input.name; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid StructureMap.group.input.name; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -4276,10 +4293,13 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `StructureMap.group.input.name is required`);
-    const optErrMsg = `Invalid StructureMap.group.input.name (${String(value)})`;
-    this.name = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setName(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.input.name (${String(value)})`;
+      this.name = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -4373,11 +4393,14 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link MapInputModeEnum }
    */
-  public setModeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `StructureMap.group.input.mode is required`);
-    const errMsgPrefix = `Invalid StructureMap.group.input.mode`;
-    assertEnumCodeType<MapInputModeEnum>(enumType, MapInputModeEnum, errMsgPrefix);
-    this.mode = enumType;
+  public setModeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid StructureMap.group.input.mode`;
+      assertEnumCodeType<MapInputModeEnum>(enumType, MapInputModeEnum, errMsgPrefix);
+      this.mode = enumType;
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -4410,11 +4433,14 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link MapInputModeEnum }
    */
-  public setModeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `StructureMap.group.input.mode is required`);
-    const optErrMsg = `Invalid StructureMap.group.input.mode; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.mode = new EnumCodeType(element, this.mapInputModeEnum);
+  public setModeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid StructureMap.group.input.mode; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.mode = new EnumCodeType(element, this.mapInputModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -4447,10 +4473,13 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link MapInputModeEnum }
    */
-  public setMode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `StructureMap.group.input.mode is required`);
-    const optErrMsg = `Invalid StructureMap.group.input.mode (${String(value)})`;
-    this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.mapInputModeEnum);
+  public setMode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.input.mode (${String(value)})`;
+      this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.mapInputModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -4547,6 +4576,16 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.mode, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4573,21 +4612,19 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.input.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasTypeElement()) {
@@ -4598,16 +4635,11 @@ export class StructureMapGroupInputComponent extends BackboneElement implements 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getModeElement()!, 'mode', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.input.mode`);
+      jsonObj['mode'] = null;
     }
 
     if (this.hasDocumentationElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDocumentationElement(), 'documentation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4640,7 +4672,6 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `StructureMapGroupRuleComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapGroupRuleComponent
    * @returns StructureMapGroupRuleComponent data model or undefined for `StructureMapGroupRuleComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapGroupRuleComponent | undefined {
@@ -4659,8 +4690,6 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4678,13 +4707,13 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: StructureMapGroupRuleSourceComponent | undefined = StructureMapGroupRuleSourceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setSource(null);
         } else {
           instance.addSource(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSource(null);
     }
 
     fieldName = 'target';
@@ -4735,12 +4764,6 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
       instance.setDocumentationElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4908,11 +4931,14 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSource(value: StructureMapGroupRuleSourceComponent[]): this {
-    assertIsDefinedList<StructureMapGroupRuleSourceComponent>(value, `StructureMap.group.rule.source is required`);
-    const optErrMsg = `Invalid StructureMap.group.rule.source; Provided value array has an element that is not an instance of StructureMapGroupRuleSourceComponent.`;
-    assertFhirTypeList<StructureMapGroupRuleSourceComponent>(value, StructureMapGroupRuleSourceComponent, optErrMsg);
-    this.source = value;
+  public setSource(value: StructureMapGroupRuleSourceComponent[] | undefined | null): this {
+    if (isDefinedList<StructureMapGroupRuleSourceComponent>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.rule.source; Provided value array has an element that is not an instance of StructureMapGroupRuleSourceComponent.`;
+      assertFhirTypeList<StructureMapGroupRuleSourceComponent>(value, StructureMapGroupRuleSourceComponent, optErrMsg);
+      this.source = value;
+    } else {
+      this.source = null;
+    }
     return this;
   }
 
@@ -5211,6 +5237,16 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5243,15 +5279,14 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirId>(this.getNameElement(), 'name', jsonObj);
@@ -5260,7 +5295,7 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
     if (this.hasSource()) {
       setFhirBackboneElementListJson(this.getSource(), 'source', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.rule.source`);
+      jsonObj['source'] = null;
     }
 
     if (this.hasTarget()) {
@@ -5277,11 +5312,6 @@ export class StructureMapGroupRuleComponent extends BackboneElement implements I
 
     if (this.hasDocumentationElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDocumentationElement(), 'documentation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5320,7 +5350,6 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `StructureMapGroupRuleSourceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapGroupRuleSourceComponent
    * @returns StructureMapGroupRuleSourceComponent data model or undefined for `StructureMapGroupRuleSourceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapGroupRuleSourceComponent | undefined {
@@ -5339,8 +5368,6 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'context';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -5348,12 +5375,12 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setContext(null);
       } else {
         instance.setContextElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContext(null);
     }
 
     fieldName = 'min';
@@ -5446,12 +5473,6 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
       instance.setLogMessageElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5623,10 +5644,10 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `context` property value as a IdType object if defined; else null
+   * @returns the `context` property value as a IdType object if defined; else an empty IdType object
    */
-  public getContextElement(): IdType | null {
-    return this.context;
+  public getContextElement(): IdType {
+    return this.context ?? new IdType();
   }
 
   /**
@@ -5637,11 +5658,14 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setContextElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `StructureMap.group.rule.source.context is required`);
-    const optErrMsg = `Invalid StructureMap.group.rule.source.context; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.context = element;
+  public setContextElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid StructureMap.group.rule.source.context; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.context = element;
+    } else {
+      this.context = null;
+    }
     return this;
   }
 
@@ -5670,10 +5694,13 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setContext(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `StructureMap.group.rule.source.context is required`);
-    const optErrMsg = `Invalid StructureMap.group.rule.source.context (${String(value)})`;
-    this.context = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setContext(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.rule.source.context (${String(value)})`;
+      this.context = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.context = null;
+    }
     return this;
   }
 
@@ -6405,6 +6432,16 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.context, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6438,21 +6475,19 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasContextElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getContextElement()!, 'context', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getContextElement(), 'context', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.rule.source.context`);
+      jsonObj['context'] = null;
     }
 
     if (this.hasMinElement()) {
@@ -6494,11 +6529,6 @@ export class StructureMapGroupRuleSourceComponent extends BackboneElement implem
 
     if (this.hasLogMessageElement()) {
       setFhirPrimitiveJson<fhirString>(this.getLogMessageElement(), 'logMessage', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6623,7 +6653,6 @@ export class StructureMapGroupRuleTargetComponent extends BackboneElement implem
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7495,7 +7524,6 @@ export class StructureMapGroupRuleTargetParameterComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `StructureMapGroupRuleTargetParameterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapGroupRuleTargetParameterComponent
    * @returns StructureMapGroupRuleTargetParameterComponent data model or undefined for `StructureMapGroupRuleTargetParameterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapGroupRuleTargetParameterComponent | undefined {
@@ -7517,8 +7545,6 @@ export class StructureMapGroupRuleTargetParameterComponent extends BackboneEleme
     const errorMessage = `DecoratorMetadataObject does not exist for StructureMapGroupRuleTargetParameterComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'value[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const value: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -7528,17 +7554,11 @@ export class StructureMapGroupRuleTargetParameterComponent extends BackboneEleme
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7595,10 +7615,13 @@ export class StructureMapGroupRuleTargetParameterComponent extends BackboneEleme
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('StructureMap.group.rule.target.parameter.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `StructureMap.group.rule.target.parameter.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -7809,6 +7832,16 @@ export class StructureMapGroupRuleTargetParameterComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7832,26 +7865,20 @@ export class StructureMapGroupRuleTargetParameterComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.rule.target.parameter.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -7893,7 +7920,6 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `StructureMapGroupRuleDependentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to StructureMapGroupRuleDependentComponent
    * @returns StructureMapGroupRuleDependentComponent data model or undefined for `StructureMapGroupRuleDependentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): StructureMapGroupRuleDependentComponent | undefined {
@@ -7912,8 +7938,6 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -7921,12 +7945,12 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'parameter';
@@ -7937,21 +7961,15 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: StructureMapGroupRuleTargetParameterComponent | undefined = StructureMapGroupRuleTargetParameterComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setParameter(null);
         } else {
           instance.addParameter(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setParameter(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7986,10 +8004,10 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a IdType object if defined; else null
+   * @returns the `name` property value as a IdType object if defined; else an empty IdType object
    */
-  public getNameElement(): IdType | null {
-    return this.name;
+  public getNameElement(): IdType {
+    return this.name ?? new IdType();
   }
 
   /**
@@ -8000,11 +8018,14 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `StructureMap.group.rule.dependent.name is required`);
-    const optErrMsg = `Invalid StructureMap.group.rule.dependent.name; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid StructureMap.group.rule.dependent.name; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -8033,10 +8054,13 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `StructureMap.group.rule.dependent.name is required`);
-    const optErrMsg = `Invalid StructureMap.group.rule.dependent.name (${String(value)})`;
-    this.name = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setName(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.rule.dependent.name (${String(value)})`;
+      this.name = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -8061,11 +8085,14 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setParameter(value: StructureMapGroupRuleTargetParameterComponent[]): this {
-    assertIsDefinedList<StructureMapGroupRuleTargetParameterComponent>(value, `StructureMap.group.rule.dependent.parameter is required`);
-    const optErrMsg = `Invalid StructureMap.group.rule.dependent.parameter; Provided value array has an element that is not an instance of StructureMapGroupRuleTargetParameterComponent.`;
-    assertFhirTypeList<StructureMapGroupRuleTargetParameterComponent>(value, StructureMapGroupRuleTargetParameterComponent, optErrMsg);
-    this.parameter = value;
+  public setParameter(value: StructureMapGroupRuleTargetParameterComponent[] | undefined | null): this {
+    if (isDefinedList<StructureMapGroupRuleTargetParameterComponent>(value)) {
+      const optErrMsg = `Invalid StructureMap.group.rule.dependent.parameter; Provided value array has an element that is not an instance of StructureMapGroupRuleTargetParameterComponent.`;
+      assertFhirTypeList<StructureMapGroupRuleTargetParameterComponent>(value, StructureMapGroupRuleTargetParameterComponent, optErrMsg);
+      this.parameter = value;
+    } else {
+      this.parameter = null;
+    }
     return this;
   }
 
@@ -8122,6 +8149,16 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -8147,32 +8184,25 @@ export class StructureMapGroupRuleDependentComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.rule.dependent.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasParameter()) {
       setFhirBackboneElementListJson(this.getParameter(), 'parameter', jsonObj);
     } else {
-      missingReqdProperties.push(`StructureMap.group.rule.dependent.parameter`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['parameter'] = null;
     }
 
     return jsonObj;

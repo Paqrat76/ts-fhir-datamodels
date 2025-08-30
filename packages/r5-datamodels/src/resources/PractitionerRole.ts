@@ -37,13 +37,11 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BooleanType,
   DomainResource,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   ReferenceTargets,
   assertFhirType,
@@ -92,7 +90,6 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `PractitionerRole`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PractitionerRole
    * @returns PractitionerRole data model or undefined for `PractitionerRole`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): PractitionerRole | undefined {
@@ -275,7 +272,6 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

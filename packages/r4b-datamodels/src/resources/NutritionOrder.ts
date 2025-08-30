@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CanonicalType,
@@ -47,18 +46,14 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -84,6 +79,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -158,7 +154,6 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `NutritionOrder`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NutritionOrder
    * @returns NutritionOrder data model or undefined for `NutritionOrder`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): NutritionOrder | undefined {
@@ -177,8 +172,6 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -254,12 +247,12 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'intent';
@@ -269,12 +262,12 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'patient';
@@ -283,12 +276,12 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'encounter';
@@ -306,12 +299,12 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDateTime(null);
       } else {
         instance.setDateTimeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDateTime(null);
     }
 
     fieldName = 'orderer';
@@ -403,12 +396,6 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1142,11 +1129,14 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `NutritionOrder.status is required`);
-    const errMsgPrefix = `Invalid NutritionOrder.status`;
-    assertEnumCodeType<RequestStatusEnum>(enumType, RequestStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid NutritionOrder.status`;
+      assertEnumCodeType<RequestStatusEnum>(enumType, RequestStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1179,11 +1169,14 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `NutritionOrder.status is required`);
-    const optErrMsg = `Invalid NutritionOrder.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.requestStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid NutritionOrder.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.requestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1216,10 +1209,13 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `NutritionOrder.status is required`);
-    const optErrMsg = `Invalid NutritionOrder.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid NutritionOrder.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1249,11 +1245,14 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `NutritionOrder.intent is required`);
-    const errMsgPrefix = `Invalid NutritionOrder.intent`;
-    assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
-    this.intent = enumType;
+  public setIntentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid NutritionOrder.intent`;
+      assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
+      this.intent = enumType;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1286,11 +1285,14 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `NutritionOrder.intent is required`);
-    const optErrMsg = `Invalid NutritionOrder.intent; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intent = new EnumCodeType(element, this.requestIntentEnum);
+  public setIntentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid NutritionOrder.intent; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intent = new EnumCodeType(element, this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1323,10 +1325,13 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `NutritionOrder.intent is required`);
-    const optErrMsg = `Invalid NutritionOrder.intent (${String(value)})`;
-    this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+  public setIntent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid NutritionOrder.intent (${String(value)})`;
+      this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1338,10 +1343,10 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -1356,10 +1361,13 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
   @ReferenceTargets('NutritionOrder.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `NutritionOrder.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -1407,10 +1415,10 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `dateTime` property value as a DateTimeType object if defined; else null
+   * @returns the `dateTime` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateTimeElement(): DateTimeType | null {
-    return this.dateTime;
+  public getDateTimeElement(): DateTimeType {
+    return this.dateTime ?? new DateTimeType();
   }
 
   /**
@@ -1421,11 +1429,14 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateTimeElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `NutritionOrder.dateTime is required`);
-    const optErrMsg = `Invalid NutritionOrder.dateTime; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.dateTime = element;
+  public setDateTimeElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid NutritionOrder.dateTime; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.dateTime = element;
+    } else {
+      this.dateTime = null;
+    }
     return this;
   }
 
@@ -1454,10 +1465,13 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateTime(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `NutritionOrder.dateTime is required`);
-    const optErrMsg = `Invalid NutritionOrder.dateTime (${String(value)})`;
-    this.dateTime = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDateTime(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid NutritionOrder.dateTime (${String(value)})`;
+      this.dateTime = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.dateTime = null;
+    }
     return this;
   }
 
@@ -1903,6 +1917,16 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.intent, this.patient, this.dateTime, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1951,15 +1975,14 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1981,21 +2004,20 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionOrder.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasIntentElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getIntentElement()!, 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionOrder.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionOrder.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -2003,10 +2025,9 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
     }
 
     if (this.hasDateTimeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateTimeElement()!, 'dateTime', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateTimeElement(), 'dateTime', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionOrder.dateTime`);
+      jsonObj['dateTime'] = null;
     }
 
     if (this.hasOrderer()) {
@@ -2039,11 +2060,6 @@ export class NutritionOrder extends DomainResource implements IDomainResource {
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2165,7 +2181,6 @@ export class NutritionOrderOralDietComponent extends BackboneElement implements 
       instance.setInstructionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2759,7 +2774,6 @@ export class NutritionOrderOralDietNutrientComponent extends BackboneElement imp
       instance.setAmount(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2977,7 +2991,6 @@ export class NutritionOrderOralDietTextureComponent extends BackboneElement impl
       instance.setFoodType(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3229,7 +3242,6 @@ export class NutritionOrderSupplementComponent extends BackboneElement implement
       instance.setInstructionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3760,7 +3772,6 @@ export class NutritionOrderEnteralFormulaComponent extends BackboneElement imple
       instance.setAdministrationInstructionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4482,7 +4493,6 @@ export class NutritionOrderEnteralFormulaAdministrationComponent extends Backbon
     );
     instance.setRate(rate);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

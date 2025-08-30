@@ -51,7 +51,7 @@ import {
   SimplePersonModel,
   StringType,
 } from '../src';
-import { VALID_IDENTIFIER, VALID_MOCK_COMPLEX_DATATYPE } from './ftest-mocks';
+import { VALID_MOCK_COMPLEX_DATATYPE } from './ftest-mocks';
 import { TestData } from './ftest-data';
 
 describe('Documentation Examples', () => {
@@ -858,28 +858,10 @@ describe('Documentation Examples', () => {
       const MISSING_RESOURCETYPE_JSON = {
         id: TestData.VALID_ID,
       };
-      const MISSING_REQUIRED_JSON = {
-        resourceType: 'Endpoint',
-        id: TestData.VALID_ID,
-      };
       const INVALID_EVENT_JSON = {
         resourceType: 'InvalidResource',
         id: TestData.VALID_ID,
       };
-
-      it('should throw FhirError for serialization: missing required properties', () => {
-        const testInstance: Endpoint = new Endpoint();
-        testInstance.setId(TestData.VALID_ID);
-        testInstance.setIdentifier([VALID_IDENTIFIER]);
-
-        const t = () => {
-          testInstance.toJSON();
-        };
-        expect(t).toThrow(FhirError);
-        expect(t).toThrow(
-          `The following required properties do not exist: Endpoint.status, Endpoint.connectionType, Endpoint.payloadType, Endpoint.address`,
-        );
-      });
 
       it('should throw appropriate Errors for deserialization', () => {
         let t = () => {
@@ -900,14 +882,6 @@ describe('Documentation Examples', () => {
         expect(t).toThrow(FhirError);
         expect(t).toThrow(
           `Invalid FHIR JSON: Provided JSON 'resourceType' value ('InvalidResource') must be 'Endpoint'`,
-        );
-
-        t = () => {
-          Endpoint.parse(MISSING_REQUIRED_JSON);
-        };
-        expect(t).toThrow(FhirError);
-        expect(t).toThrow(
-          `The following required properties must be included in the provided JSON: Endpoint.status, Endpoint.connectionType, Endpoint.payloadType, Endpoint.address`,
         );
       });
     });

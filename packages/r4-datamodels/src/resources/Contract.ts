@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,19 +48,15 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   TimeType,
@@ -71,7 +66,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -96,6 +90,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -140,7 +135,6 @@ export class Contract extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Contract`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Contract
    * @returns Contract data model or undefined for `Contract`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Contract | undefined {
@@ -515,7 +509,6 @@ export class Contract extends DomainResource implements IDomainResource {
     );
     instance.setLegallyBinding(legallyBinding);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3316,7 +3309,6 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `ContractContentDefinitionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractContentDefinitionComponent
    * @returns ContractContentDefinitionComponent data model or undefined for `ContractContentDefinitionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractContentDefinitionComponent | undefined {
@@ -3335,20 +3327,18 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'subType';
@@ -3383,12 +3373,12 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPublicationStatus(null);
       } else {
         instance.setPublicationStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPublicationStatus(null);
     }
 
     fieldName = 'copyright';
@@ -3400,12 +3390,6 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
       instance.setCopyrightElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3510,10 +3494,10 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -3523,11 +3507,14 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Contract.contentDefinition.type is required`);
-    const optErrMsg = `Invalid Contract.contentDefinition.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Contract.contentDefinition.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3693,11 +3680,14 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
    *
    * @see CodeSystem Enumeration: {@link ContractPublicationstatusEnum }
    */
-  public setPublicationStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Contract.contentDefinition.publicationStatus is required`);
-    const errMsgPrefix = `Invalid Contract.contentDefinition.publicationStatus`;
-    assertEnumCodeType<ContractPublicationstatusEnum>(enumType, ContractPublicationstatusEnum, errMsgPrefix);
-    this.publicationStatus = enumType;
+  public setPublicationStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Contract.contentDefinition.publicationStatus`;
+      assertEnumCodeType<ContractPublicationstatusEnum>(enumType, ContractPublicationstatusEnum, errMsgPrefix);
+      this.publicationStatus = enumType;
+    } else {
+      this.publicationStatus = null;
+    }
     return this;
   }
 
@@ -3730,11 +3720,14 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
    *
    * @see CodeSystem Enumeration: {@link ContractPublicationstatusEnum }
    */
-  public setPublicationStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Contract.contentDefinition.publicationStatus is required`);
-    const optErrMsg = `Invalid Contract.contentDefinition.publicationStatus; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.publicationStatus = new EnumCodeType(element, this.contractPublicationstatusEnum);
+  public setPublicationStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Contract.contentDefinition.publicationStatus; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.publicationStatus = new EnumCodeType(element, this.contractPublicationstatusEnum);
+    } else {
+      this.publicationStatus = null;
+    }
     return this;
   }
 
@@ -3767,10 +3760,13 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
    *
    * @see CodeSystem Enumeration: {@link ContractPublicationstatusEnum }
    */
-  public setPublicationStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Contract.contentDefinition.publicationStatus is required`);
-    const optErrMsg = `Invalid Contract.contentDefinition.publicationStatus (${String(value)})`;
-    this.publicationStatus = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.contractPublicationstatusEnum);
+  public setPublicationStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Contract.contentDefinition.publicationStatus (${String(value)})`;
+      this.publicationStatus = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.contractPublicationstatusEnum);
+    } else {
+      this.publicationStatus = null;
+    }
     return this;
   }
 
@@ -3869,6 +3865,16 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.publicationStatus, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3897,21 +3903,19 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.contentDefinition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasSubType()) {
@@ -3930,16 +3934,11 @@ export class ContractContentDefinitionComponent extends BackboneElement implemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getPublicationStatusElement()!, 'publicationStatus', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.contentDefinition.publicationStatus`);
+      jsonObj['publicationStatus'] = null;
     }
 
     if (this.hasCopyrightElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getCopyrightElement(), 'copyright', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3972,7 +3971,6 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
    * @param sourceJson - JSON representing FHIR `ContractTermComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractTermComponent
    * @returns ContractTermComponent data model or undefined for `ContractTermComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractTermComponent | undefined {
@@ -3994,8 +3992,6 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
     const classMetadata: DecoratorMetadataObject | null = ContractTermComponent[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ContractTermComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -4076,12 +4072,12 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const component: ContractTermOfferComponent | undefined = ContractTermOfferComponent.parse(classJsonObj[fieldName]!, sourceField);
       if (component === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOffer(null);
       } else {
         instance.setOffer(component);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOffer(null);
     }
 
     fieldName = 'asset';
@@ -4123,12 +4119,6 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4711,10 +4701,10 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
   }
 
   /**
-   * @returns the `offer` property value as a ContractTermOfferComponent object if defined; else null
+   * @returns the `offer` property value as a ContractTermOfferComponent object if defined; else an empty ContractTermOfferComponent object
    */
-  public getOffer(): ContractTermOfferComponent | null {
-    return this.offer;
+  public getOffer(): ContractTermOfferComponent {
+    return this.offer ?? new ContractTermOfferComponent();
   }
 
   /**
@@ -4724,11 +4714,14 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setOffer(value: ContractTermOfferComponent): this {
-    assertIsDefined<ContractTermOfferComponent>(value, `Contract.term.offer is required`);
-    const optErrMsg = `Invalid Contract.term.offer; Provided element is not an instance of ContractTermOfferComponent.`;
-    assertFhirType<ContractTermOfferComponent>(value, ContractTermOfferComponent, optErrMsg);
-    this.offer = value;
+  public setOffer(value: ContractTermOfferComponent | undefined | null): this {
+    if (isDefined<ContractTermOfferComponent>(value)) {
+      const optErrMsg = `Invalid Contract.term.offer; Provided element is not an instance of ContractTermOfferComponent.`;
+      assertFhirType<ContractTermOfferComponent>(value, ContractTermOfferComponent, optErrMsg);
+      this.offer = value;
+    } else {
+      this.offer = null;
+    }
     return this;
   }
 
@@ -4943,6 +4936,16 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.offer, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4981,15 +4984,14 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -5025,10 +5027,9 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
     }
 
     if (this.hasOffer()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirBackboneElementJson(this.getOffer()!, 'offer', jsonObj);
+      setFhirBackboneElementJson(this.getOffer(), 'offer', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.offer`);
+      jsonObj['offer'] = null;
     }
 
     if (this.hasAsset()) {
@@ -5041,11 +5042,6 @@ export class ContractTermComponent extends BackboneElement implements IBackboneE
 
     if (this.hasGroup()) {
       setFhirBackboneElementListJson(this.getGroup(), 'group', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5079,7 +5075,6 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `ContractTermSecurityLabelComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractTermSecurityLabelComponent
    * @returns ContractTermSecurityLabelComponent data model or undefined for `ContractTermSecurityLabelComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractTermSecurityLabelComponent | undefined {
@@ -5097,8 +5092,6 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'number';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -5124,12 +5117,12 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setClassification(null);
       } else {
         instance.setClassification(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setClassification(null);
     }
 
     fieldName = 'category';
@@ -5158,12 +5151,6 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5348,10 +5335,10 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
   }
 
   /**
-   * @returns the `classification` property value as a Coding object if defined; else null
+   * @returns the `classification` property value as a Coding object if defined; else an empty Coding object
    */
-  public getClassification(): Coding | null {
-    return this.classification;
+  public getClassification(): Coding {
+    return this.classification ?? new Coding();
   }
 
   /**
@@ -5361,11 +5348,14 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setClassification(value: Coding): this {
-    assertIsDefined<Coding>(value, `Contract.term.securityLabel.classification is required`);
-    const optErrMsg = `Invalid Contract.term.securityLabel.classification; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.classification = value;
+  public setClassification(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid Contract.term.securityLabel.classification; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.classification = value;
+    } else {
+      this.classification = null;
+    }
     return this;
   }
 
@@ -5514,6 +5504,16 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.classification, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5543,25 +5543,23 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNumber()) {
       setFhirPrimitiveListJson(this.getNumberElement(), 'number', jsonObj);
     }
 
     if (this.hasClassification()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getClassification()!, 'classification', jsonObj);
+      setFhirComplexJson(this.getClassification(), 'classification', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.securityLabel.classification`);
+      jsonObj['classification'] = null;
     }
 
     if (this.hasCategory()) {
@@ -5570,11 +5568,6 @@ export class ContractTermSecurityLabelComponent extends BackboneElement implemen
 
     if (this.hasControl()) {
       setFhirComplexListJson(this.getControl(), 'control', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5742,7 +5735,6 @@ export class ContractTermOfferComponent extends BackboneElement implements IBack
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6684,7 +6676,6 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `ContractTermOfferPartyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractTermOfferPartyComponent
    * @returns ContractTermOfferPartyComponent data model or undefined for `ContractTermOfferPartyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractTermOfferPartyComponent | undefined {
@@ -6702,8 +6693,6 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'reference';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -6712,13 +6701,13 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setReference(null);
         } else {
           instance.addReference(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
     fieldName = 'role';
@@ -6727,20 +6716,14 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRole(null);
       } else {
         instance.setRole(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRole(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6814,10 +6797,13 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
   
     'Organization',
   ])
-  public setReference(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `Contract.term.offer.party.reference is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -6871,10 +6857,10 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
   }
 
   /**
-   * @returns the `role` property value as a CodeableConcept object if defined; else null
+   * @returns the `role` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getRole(): CodeableConcept | null {
-    return this.role;
+  public getRole(): CodeableConcept {
+    return this.role ?? new CodeableConcept();
   }
 
   /**
@@ -6884,11 +6870,14 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRole(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Contract.term.offer.party.role is required`);
-    const optErrMsg = `Invalid Contract.term.offer.party.role; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.role = value;
+  public setRole(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Contract.term.offer.party.role; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.role = value;
+    } else {
+      this.role = null;
+    }
     return this;
   }
 
@@ -6919,6 +6908,16 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.role, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6944,32 +6943,25 @@ export class ContractTermOfferPartyComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasReference()) {
       setFhirComplexListJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.offer.party.reference`);
+      jsonObj['reference'] = null;
     }
 
     if (this.hasRole()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRole()!, 'role', jsonObj);
+      setFhirComplexJson(this.getRole(), 'role', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.offer.party.role`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['role'] = null;
     }
 
     return jsonObj;
@@ -7003,7 +6995,6 @@ export class ContractTermOfferAnswerComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `ContractTermOfferAnswerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractTermOfferAnswerComponent
    * @returns ContractTermOfferAnswerComponent data model or undefined for `ContractTermOfferAnswerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractTermOfferAnswerComponent | undefined {
@@ -7025,8 +7016,6 @@ export class ContractTermOfferAnswerComponent extends BackboneElement implements
     const errorMessage = `DecoratorMetadataObject does not exist for ContractTermOfferAnswerComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'value[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const value: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -7036,17 +7025,11 @@ export class ContractTermOfferAnswerComponent extends BackboneElement implements
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7111,10 +7094,13 @@ export class ContractTermOfferAnswerComponent extends BackboneElement implements
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Contract.term.offer.answer.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Contract.term.offer.answer.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -7413,6 +7399,16 @@ export class ContractTermOfferAnswerComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7436,26 +7432,20 @@ export class ContractTermOfferAnswerComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.offer.answer.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -7689,7 +7679,6 @@ export class ContractTermAssetComponent extends BackboneElement implements IBack
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9098,7 +9087,6 @@ export class ContractTermAssetContextComponent extends BackboneElement implement
       instance.setTextElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9562,7 +9550,6 @@ export class ContractTermAssetValuedItemComponent extends BackboneElement implem
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -10827,7 +10814,6 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `ContractTermActionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractTermActionComponent
    * @returns ContractTermActionComponent data model or undefined for `ContractTermActionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractTermActionComponent | undefined {
@@ -10850,8 +10836,6 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
     const errorMessage = `DecoratorMetadataObject does not exist for ContractTermActionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'doNotPerform';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'boolean';
@@ -10867,12 +10851,12 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'subject';
@@ -10894,12 +10878,12 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntent(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'linkId';
@@ -10926,12 +10910,12 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'context';
@@ -11141,12 +11125,6 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -11554,10 +11532,10 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -11567,11 +11545,14 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Contract.term.action.type is required`);
-    const optErrMsg = `Invalid Contract.term.action.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Contract.term.action.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -11641,10 +11622,10 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `intent` property value as a CodeableConcept object if defined; else null
+   * @returns the `intent` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getIntent(): CodeableConcept | null {
-    return this.intent;
+  public getIntent(): CodeableConcept {
+    return this.intent ?? new CodeableConcept();
   }
 
   /**
@@ -11654,11 +11635,14 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setIntent(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Contract.term.action.intent is required`);
-    const optErrMsg = `Invalid Contract.term.action.intent; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.intent = value;
+  public setIntent(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Contract.term.action.intent; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.intent = value;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -11792,10 +11776,10 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `status` property value as a CodeableConcept object if defined; else null
+   * @returns the `status` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getStatus(): CodeableConcept | null {
-    return this.status;
+  public getStatus(): CodeableConcept {
+    return this.status ?? new CodeableConcept();
   }
 
   /**
@@ -11805,11 +11789,14 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Contract.term.action.status is required`);
-    const optErrMsg = `Invalid Contract.term.action.status; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.status = value;
+  public setStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Contract.term.action.status; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.status = value;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -13168,6 +13155,16 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.intent, this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -13224,25 +13221,23 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasDoNotPerformElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getDoNotPerformElement(), 'doNotPerform', jsonObj);
     }
 
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.action.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasSubject()) {
@@ -13250,10 +13245,9 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
     }
 
     if (this.hasIntent()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getIntent()!, 'intent', jsonObj);
+      setFhirComplexJson(this.getIntent(), 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.action.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasLinkId()) {
@@ -13261,10 +13255,9 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
     }
 
     if (this.hasStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getStatus()!, 'status', jsonObj);
+      setFhirComplexJson(this.getStatus(), 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.action.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasContext()) {
@@ -13328,11 +13321,6 @@ export class ContractTermActionComponent extends BackboneElement implements IBac
       setFhirPrimitiveListJson(this.getSecurityLabelNumberElement(), 'securityLabelNumber', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -13363,7 +13351,6 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `ContractTermActionSubjectComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractTermActionSubjectComponent
    * @returns ContractTermActionSubjectComponent data model or undefined for `ContractTermActionSubjectComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractTermActionSubjectComponent | undefined {
@@ -13381,8 +13368,6 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'reference';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -13391,13 +13376,13 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setReference(null);
         } else {
           instance.addReference(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
     fieldName = 'role';
@@ -13408,12 +13393,6 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
       instance.setRole(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13487,10 +13466,13 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
   
     'Organization',
   ])
-  public setReference(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `Contract.term.action.subject.reference is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -13595,6 +13577,16 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -13620,29 +13612,23 @@ export class ContractTermActionSubjectComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasReference()) {
       setFhirComplexListJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.term.action.subject.reference`);
+      jsonObj['reference'] = null;
     }
 
     if (this.hasRole()) {
       setFhirComplexJson(this.getRole(), 'role', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -13687,7 +13673,6 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
    * @param sourceJson - JSON representing FHIR `ContractSignerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractSignerComponent
    * @returns ContractSignerComponent data model or undefined for `ContractSignerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractSignerComponent | undefined {
@@ -13705,20 +13690,18 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'party';
@@ -13727,12 +13710,12 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setParty(null);
       } else {
         instance.setParty(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setParty(null);
     }
 
     fieldName = 'signature';
@@ -13743,21 +13726,15 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Signature | undefined = Signature.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setSignature(null);
         } else {
           instance.addSignature(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSignature(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13813,10 +13790,10 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a Coding object if defined; else null
+   * @returns the `type_` property value as a Coding object if defined; else an empty Coding object
    */
-  public getType(): Coding | null {
-    return this.type_;
+  public getType(): Coding {
+    return this.type_ ?? new Coding();
   }
 
   /**
@@ -13826,11 +13803,14 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: Coding): this {
-    assertIsDefined<Coding>(value, `Contract.signer.type is required`);
-    const optErrMsg = `Invalid Contract.signer.type; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.type_ = value;
+  public setType(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid Contract.signer.type; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -13842,10 +13822,10 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
   }
 
   /**
-   * @returns the `party` property value as a Reference object if defined; else null
+   * @returns the `party` property value as a Reference object if defined; else an empty Reference object
    */
-  public getParty(): Reference | null {
-    return this.party;
+  public getParty(): Reference {
+    return this.party ?? new Reference();
   }
 
   /**
@@ -13868,10 +13848,13 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
   
     'RelatedPerson',
   ])
-  public setParty(value: Reference): this {
-    assertIsDefined<Reference>(value, `Contract.signer.party is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.party = value;
+  public setParty(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.party = value;
+    } else {
+      this.party = null;
+    }
     return this;
   }
 
@@ -13896,11 +13879,14 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSignature(value: Signature[]): this {
-    assertIsDefinedList<Signature>(value, `Contract.signer.signature is required`);
-    const optErrMsg = `Invalid Contract.signer.signature; Provided value array has an element that is not an instance of Signature.`;
-    assertFhirTypeList<Signature>(value, Signature, optErrMsg);
-    this.signature = value;
+  public setSignature(value: Signature[] | undefined | null): this {
+    if (isDefinedList<Signature>(value)) {
+      const optErrMsg = `Invalid Contract.signer.signature; Provided value array has an element that is not an instance of Signature.`;
+      assertFhirTypeList<Signature>(value, Signature, optErrMsg);
+      this.signature = value;
+    } else {
+      this.signature = null;
+    }
     return this;
   }
 
@@ -13958,6 +13944,16 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.party, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -13984,39 +13980,31 @@ export class ContractSignerComponent extends BackboneElement implements IBackbon
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.signer.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasParty()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getParty()!, 'party', jsonObj);
+      setFhirComplexJson(this.getParty(), 'party', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.signer.party`);
+      jsonObj['party'] = null;
     }
 
     if (this.hasSignature()) {
       setFhirComplexListJson(this.getSignature(), 'signature', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.signer.signature`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['signature'] = null;
     }
 
     return jsonObj;
@@ -14050,7 +14038,6 @@ export class ContractFriendlyComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `ContractFriendlyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractFriendlyComponent
    * @returns ContractFriendlyComponent data model or undefined for `ContractFriendlyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractFriendlyComponent | undefined {
@@ -14072,8 +14059,6 @@ export class ContractFriendlyComponent extends BackboneElement implements IBackb
     const errorMessage = `DecoratorMetadataObject does not exist for ContractFriendlyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'content[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const content: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -14083,17 +14068,11 @@ export class ContractFriendlyComponent extends BackboneElement implements IBackb
       classMetadata,
     );
     if (content === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     } else {
       instance.setContent(content);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -14138,10 +14117,13 @@ export class ContractFriendlyComponent extends BackboneElement implements IBackb
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Contract.friendly.content[x]')
-  public setContent(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Contract.friendly.content[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.content = value;
+  public setContent(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.content = value;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -14220,6 +14202,16 @@ export class ContractFriendlyComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.content, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -14243,26 +14235,20 @@ export class ContractFriendlyComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasContent()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getContent()!, 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.friendly.content[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['content'] = null;
     }
 
     return jsonObj;
@@ -14296,7 +14282,6 @@ export class ContractLegalComponent extends BackboneElement implements IBackbone
    * @param sourceJson - JSON representing FHIR `ContractLegalComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractLegalComponent
    * @returns ContractLegalComponent data model or undefined for `ContractLegalComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractLegalComponent | undefined {
@@ -14318,8 +14303,6 @@ export class ContractLegalComponent extends BackboneElement implements IBackbone
     const errorMessage = `DecoratorMetadataObject does not exist for ContractLegalComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'content[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const content: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -14329,17 +14312,11 @@ export class ContractLegalComponent extends BackboneElement implements IBackbone
       classMetadata,
     );
     if (content === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     } else {
       instance.setContent(content);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -14384,10 +14361,13 @@ export class ContractLegalComponent extends BackboneElement implements IBackbone
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Contract.legal.content[x]')
-  public setContent(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Contract.legal.content[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.content = value;
+  public setContent(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.content = value;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -14466,6 +14446,16 @@ export class ContractLegalComponent extends BackboneElement implements IBackbone
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.content, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -14489,26 +14479,20 @@ export class ContractLegalComponent extends BackboneElement implements IBackbone
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasContent()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getContent()!, 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.legal.content[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['content'] = null;
     }
 
     return jsonObj;
@@ -14542,7 +14526,6 @@ export class ContractRuleComponent extends BackboneElement implements IBackboneE
    * @param sourceJson - JSON representing FHIR `ContractRuleComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ContractRuleComponent
    * @returns ContractRuleComponent data model or undefined for `ContractRuleComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ContractRuleComponent | undefined {
@@ -14564,8 +14547,6 @@ export class ContractRuleComponent extends BackboneElement implements IBackboneE
     const errorMessage = `DecoratorMetadataObject does not exist for ContractRuleComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'content[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const content: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -14575,17 +14556,11 @@ export class ContractRuleComponent extends BackboneElement implements IBackboneE
       classMetadata,
     );
     if (content === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     } else {
       instance.setContent(content);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -14630,10 +14605,13 @@ export class ContractRuleComponent extends BackboneElement implements IBackboneE
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Contract.rule.content[x]')
-  public setContent(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Contract.rule.content[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.content = value;
+  public setContent(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.content = value;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -14712,6 +14690,16 @@ export class ContractRuleComponent extends BackboneElement implements IBackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.content, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -14735,26 +14723,20 @@ export class ContractRuleComponent extends BackboneElement implements IBackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasContent()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getContent()!, 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`Contract.rule.content[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['content'] = null;
     }
 
     return jsonObj;

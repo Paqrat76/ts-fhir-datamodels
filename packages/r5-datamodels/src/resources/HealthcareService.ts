@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -45,7 +44,6 @@ import {
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
   ReferenceTargets,
@@ -99,7 +97,6 @@ export class HealthcareService extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `HealthcareService`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to HealthcareService
    * @returns HealthcareService data model or undefined for `HealthcareService`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): HealthcareService | undefined {
@@ -388,7 +385,6 @@ export class HealthcareService extends DomainResource implements IDomainResource
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2358,7 +2354,6 @@ export class HealthcareServiceEligibilityComponent extends BackboneElement imple
       instance.setCommentElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

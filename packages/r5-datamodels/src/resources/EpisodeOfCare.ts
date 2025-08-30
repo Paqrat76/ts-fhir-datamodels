@@ -37,25 +37,19 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -65,6 +59,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -114,7 +109,6 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `EpisodeOfCare`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EpisodeOfCare
    * @returns EpisodeOfCare data model or undefined for `EpisodeOfCare`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): EpisodeOfCare | undefined {
@@ -133,8 +127,6 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -156,12 +148,12 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusHistory';
@@ -222,12 +214,12 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'managingOrganization';
@@ -293,12 +285,6 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -598,11 +584,14 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EpisodeOfCareStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `EpisodeOfCare.status is required`);
-    const errMsgPrefix = `Invalid EpisodeOfCare.status`;
-    assertEnumCodeType<EpisodeOfCareStatusEnum>(enumType, EpisodeOfCareStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid EpisodeOfCare.status`;
+      assertEnumCodeType<EpisodeOfCareStatusEnum>(enumType, EpisodeOfCareStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -635,11 +624,14 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EpisodeOfCareStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `EpisodeOfCare.status is required`);
-    const optErrMsg = `Invalid EpisodeOfCare.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.episodeOfCareStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid EpisodeOfCare.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.episodeOfCareStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -672,10 +664,13 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EpisodeOfCareStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `EpisodeOfCare.status is required`);
-    const optErrMsg = `Invalid EpisodeOfCare.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.episodeOfCareStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid EpisodeOfCare.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.episodeOfCareStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -919,10 +914,10 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -937,10 +932,13 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
   @ReferenceTargets('EpisodeOfCare.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `EpisodeOfCare.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -1286,6 +1284,16 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.patient, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1329,15 +1337,14 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1347,7 +1354,7 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`EpisodeOfCare.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusHistory()) {
@@ -1367,10 +1374,9 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`EpisodeOfCare.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasManagingOrganization()) {
@@ -1395,11 +1401,6 @@ export class EpisodeOfCare extends DomainResource implements IDomainResource {
 
     if (this.hasAccount()) {
       setFhirComplexListJson(this.getAccount(), 'account', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1442,7 +1443,6 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `EpisodeOfCareStatusHistoryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EpisodeOfCareStatusHistoryComponent
    * @returns EpisodeOfCareStatusHistoryComponent data model or undefined for `EpisodeOfCareStatusHistoryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): EpisodeOfCareStatusHistoryComponent | undefined {
@@ -1461,8 +1461,6 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'status';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -1470,12 +1468,12 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'period';
@@ -1484,20 +1482,14 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPeriod(null);
       } else {
         instance.setPeriod(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPeriod(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1559,11 +1551,14 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link EpisodeOfCareStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `EpisodeOfCare.statusHistory.status is required`);
-    const errMsgPrefix = `Invalid EpisodeOfCare.statusHistory.status`;
-    assertEnumCodeType<EpisodeOfCareStatusEnum>(enumType, EpisodeOfCareStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid EpisodeOfCare.statusHistory.status`;
+      assertEnumCodeType<EpisodeOfCareStatusEnum>(enumType, EpisodeOfCareStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1596,11 +1591,14 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link EpisodeOfCareStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `EpisodeOfCare.statusHistory.status is required`);
-    const optErrMsg = `Invalid EpisodeOfCare.statusHistory.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.episodeOfCareStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid EpisodeOfCare.statusHistory.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.episodeOfCareStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1633,10 +1631,13 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link EpisodeOfCareStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `EpisodeOfCare.statusHistory.status is required`);
-    const optErrMsg = `Invalid EpisodeOfCare.statusHistory.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.episodeOfCareStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid EpisodeOfCare.statusHistory.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.episodeOfCareStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1648,10 +1649,10 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `period` property value as a Period object if defined; else null
+   * @returns the `period` property value as a Period object if defined; else an empty Period object
    */
-  public getPeriod(): Period | null {
-    return this.period;
+  public getPeriod(): Period {
+    return this.period ?? new Period();
   }
 
   /**
@@ -1661,11 +1662,14 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setPeriod(value: Period): this {
-    assertIsDefined<Period>(value, `EpisodeOfCare.statusHistory.period is required`);
-    const optErrMsg = `Invalid EpisodeOfCare.statusHistory.period; Provided element is not an instance of Period.`;
-    assertFhirType<Period>(value, Period, optErrMsg);
-    this.period = value;
+  public setPeriod(value: Period | undefined | null): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid EpisodeOfCare.statusHistory.period; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.period = value;
+    } else {
+      this.period = null;
+    }
     return this;
   }
 
@@ -1696,6 +1700,16 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.period, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1720,33 +1734,26 @@ export class EpisodeOfCareStatusHistoryComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`EpisodeOfCare.statusHistory.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasPeriod()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+      setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
     } else {
-      missingReqdProperties.push(`EpisodeOfCare.statusHistory.period`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['period'] = null;
     }
 
     return jsonObj;
@@ -1814,7 +1821,6 @@ export class EpisodeOfCareReasonComponent extends BackboneElement implements IBa
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2071,7 +2077,6 @@ export class EpisodeOfCareDiagnosisComponent extends BackboneElement implements 
       instance.setUse(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

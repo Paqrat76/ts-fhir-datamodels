@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -46,17 +45,13 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -80,6 +75,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -134,7 +130,6 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `ClinicalImpression`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ClinicalImpression
    * @returns ClinicalImpression data model or undefined for `ClinicalImpression`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ClinicalImpression | undefined {
@@ -158,8 +153,6 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
     const errorMessage = `DecoratorMetadataObject does not exist for ClinicalImpression`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -180,12 +173,12 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -219,12 +212,12 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'encounter';
@@ -388,12 +381,6 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -809,11 +796,14 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ClinicalImpression.status is required`);
-    const errMsgPrefix = `Invalid ClinicalImpression.status`;
-    assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ClinicalImpression.status`;
+      assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -846,11 +836,14 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ClinicalImpression.status is required`);
-    const optErrMsg = `Invalid ClinicalImpression.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.eventStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ClinicalImpression.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -883,10 +876,13 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ClinicalImpression.status is required`);
-    const optErrMsg = `Invalid ClinicalImpression.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ClinicalImpression.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1026,10 +1022,10 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -1046,10 +1042,13 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
   
     'Group',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `ClinicalImpression.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -1975,6 +1974,16 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2026,15 +2035,14 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2044,7 +2052,7 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalImpression.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -2060,10 +2068,9 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalImpression.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -2123,11 +2130,6 @@ export class ClinicalImpression extends DomainResource implements IDomainResourc
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2159,7 +2161,6 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
    * @param sourceJson - JSON representing FHIR `ClinicalImpressionInvestigationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ClinicalImpressionInvestigationComponent
    * @returns ClinicalImpressionInvestigationComponent data model or undefined for `ClinicalImpressionInvestigationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ClinicalImpressionInvestigationComponent | undefined {
@@ -2177,20 +2178,18 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'item';
@@ -2206,12 +2205,6 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2256,10 +2249,10 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -2269,11 +2262,14 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ClinicalImpression.investigation.code is required`);
-    const optErrMsg = `Invalid ClinicalImpression.investigation.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ClinicalImpression.investigation.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2394,6 +2390,16 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2419,30 +2425,23 @@ export class ClinicalImpressionInvestigationComponent extends BackboneElement im
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalImpression.investigation.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasItem()) {
       setFhirComplexListJson(this.getItem(), 'item', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2514,7 +2513,6 @@ export class ClinicalImpressionFindingComponent extends BackboneElement implemen
       instance.setBasisElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

@@ -37,14 +37,12 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   DomainResource,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveTypeJson,
   StringType,
@@ -96,7 +94,6 @@ export class SubstanceSourceMaterial extends DomainResource implements IDomainRe
    * @param sourceJson - JSON representing FHIR `SubstanceSourceMaterial`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceSourceMaterial
    * @returns SubstanceSourceMaterial data model or undefined for `SubstanceSourceMaterial`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceSourceMaterial | undefined {
@@ -261,7 +258,6 @@ export class SubstanceSourceMaterial extends DomainResource implements IDomainRe
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1376,7 +1372,6 @@ export class SubstanceSourceMaterialFractionDescriptionComponent extends Backbon
       instance.setMaterialType(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1681,7 +1676,6 @@ export class SubstanceSourceMaterialOrganismComponent extends BackboneElement im
       instance.setOrganismGeneral(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2272,7 +2266,6 @@ export class SubstanceSourceMaterialOrganismAuthorComponent extends BackboneElem
       instance.setAuthorDescriptionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2551,7 +2544,6 @@ export class SubstanceSourceMaterialOrganismHybridComponent extends BackboneElem
       instance.setHybridType(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3069,7 +3061,6 @@ export class SubstanceSourceMaterialOrganismOrganismGeneralComponent extends Bac
       instance.setOrder(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3391,7 +3382,6 @@ export class SubstanceSourceMaterialPartDescriptionComponent extends BackboneEle
       instance.setPartLocation(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

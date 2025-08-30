@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,20 +48,16 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UnsignedIntType,
   UriType,
@@ -71,7 +66,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   constructorCodeValueAsEnumCodeTypeList,
   copyListValues,
@@ -97,6 +91,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -159,7 +154,6 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `CodeSystem`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeSystem
    * @returns CodeSystem data model or undefined for `CodeSystem`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): CodeSystem | undefined {
@@ -178,8 +172,6 @@ export class CodeSystem extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -237,12 +229,12 @@ export class CodeSystem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -390,12 +382,12 @@ export class CodeSystem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setContent(null);
       } else {
         instance.setContentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     }
 
     fieldName = 'supplements';
@@ -455,12 +447,6 @@ export class CodeSystem extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1228,11 +1214,14 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `CodeSystem.status is required`);
-    const errMsgPrefix = `Invalid CodeSystem.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid CodeSystem.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1265,11 +1254,14 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.status is required`);
-    const optErrMsg = `Invalid CodeSystem.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1302,10 +1294,13 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.status is required`);
-    const optErrMsg = `Invalid CodeSystem.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2265,11 +2260,14 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link CodesystemContentModeEnum }
    */
-  public setContentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `CodeSystem.content is required`);
-    const errMsgPrefix = `Invalid CodeSystem.content`;
-    assertEnumCodeType<CodesystemContentModeEnum>(enumType, CodesystemContentModeEnum, errMsgPrefix);
-    this.content = enumType;
+  public setContentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid CodeSystem.content`;
+      assertEnumCodeType<CodesystemContentModeEnum>(enumType, CodesystemContentModeEnum, errMsgPrefix);
+      this.content = enumType;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -2302,11 +2300,14 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link CodesystemContentModeEnum }
    */
-  public setContentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.content is required`);
-    const optErrMsg = `Invalid CodeSystem.content; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.content = new EnumCodeType(element, this.codesystemContentModeEnum);
+  public setContentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.content; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.content = new EnumCodeType(element, this.codesystemContentModeEnum);
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -2339,10 +2340,13 @@ export class CodeSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link CodesystemContentModeEnum }
    */
-  public setContent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.content is required`);
-    const optErrMsg = `Invalid CodeSystem.content (${String(value)})`;
-    this.content = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.codesystemContentModeEnum);
+  public setContent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.content (${String(value)})`;
+      this.content = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.codesystemContentModeEnum);
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -2699,6 +2703,16 @@ export class CodeSystem extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.content, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2754,15 +2768,14 @@ export class CodeSystem extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2788,7 +2801,7 @@ export class CodeSystem extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2852,7 +2865,7 @@ export class CodeSystem extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getContentElement()!, 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.content`);
+      jsonObj['content'] = null;
     }
 
     if (this.hasSupplementsElement()) {
@@ -2873,11 +2886,6 @@ export class CodeSystem extends DomainResource implements IDomainResource {
 
     if (this.hasConcept()) {
       setFhirBackboneElementListJson(this.getConcept(), 'concept', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2934,7 +2942,6 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `CodeSystemFilterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeSystemFilterComponent
    * @returns CodeSystemFilterComponent data model or undefined for `CodeSystemFilterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CodeSystemFilterComponent | undefined {
@@ -2953,8 +2960,6 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2962,12 +2967,12 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'description';
@@ -2989,16 +2994,16 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
         fieldName,
         primitiveJsonType,
       );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
         const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setOperator(null);
         } else {
           instance.addOperatorElement(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOperator(null);
     }
 
     fieldName = 'value';
@@ -3008,20 +3013,14 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3093,10 +3092,10 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -3107,11 +3106,14 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.filter.code is required`);
-    const optErrMsg = `Invalid CodeSystem.filter.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.filter.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3140,10 +3142,13 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.filter.code is required`);
-    const optErrMsg = `Invalid CodeSystem.filter.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.filter.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3237,11 +3242,14 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    *
    * @see CodeSystem Enumeration: {@link FilterOperatorEnum }
    */
-  public setOperatorEnumType(enumType: EnumCodeType[]): this {
-    assertIsDefinedList<EnumCodeType>(enumType, `CodeSystem.filter.operator is required`);
-    const errMsgPrefix = `Invalid CodeSystem.filter.operator`;
-    assertEnumCodeTypeList<FilterOperatorEnum>(enumType, FilterOperatorEnum, errMsgPrefix);
-    this.operator = enumType;
+  public setOperatorEnumType(enumType: EnumCodeType[] | undefined | null): this {
+    if (isDefinedList<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid CodeSystem.filter.operator`;
+      assertEnumCodeTypeList<FilterOperatorEnum>(enumType, FilterOperatorEnum, errMsgPrefix);
+      this.operator = enumType;
+    } else {
+      this.operator = null;
+    }
     return this;
   }
 
@@ -3294,15 +3302,18 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    *
    * @see CodeSystem Enumeration: {@link FilterOperatorEnum }
    */
-  public setOperatorElement(element: CodeType[]): this {
-    assertIsDefinedList<CodeType>(element, `CodeSystem.filter.operator is required`);
-    const optErrMsg = `Invalid CodeSystem.filter.operator; Provided element array has an element that is not an instance of CodeType.`;
-    assertFhirTypeList<CodeType>(element, CodeType, optErrMsg);
-    const enumCodeTypes = [] as EnumCodeType[];
-    element.forEach((type: CodeType) => {
-      enumCodeTypes.push(new EnumCodeType(type, this.filterOperatorEnum));
-    });
-    this.operator = enumCodeTypes;
+  public setOperatorElement(element: CodeType[] | undefined | null): this {
+    if (isDefinedList<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.filter.operator; Provided element array has an element that is not an instance of CodeType.`;
+      assertFhirTypeList<CodeType>(element, CodeType, optErrMsg);
+      const enumCodeTypes = [] as EnumCodeType[];
+      element.forEach((type: CodeType) => {
+        enumCodeTypes.push(new EnumCodeType(type, this.filterOperatorEnum));
+      });
+      this.operator = enumCodeTypes;
+    } else {
+      this.operator = null;
+    }
     return this;
   }
 
@@ -3359,14 +3370,17 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    *
    * @see CodeSystem Enumeration: {@link FilterOperatorEnum }
    */
-  public setOperator(value: fhirCode[]): this {
-    assertIsDefinedList<fhirCode>(value, `CodeSystem.filter.operator is required`);
-    const enumCodeTypes = [] as EnumCodeType[];
-    const optErrMsg = `Invalid CodeSystem.filter.operator; Provided value is not an instance of fhirCode.`;
-    value.forEach((val: fhirCode) => {
-      enumCodeTypes.push(new EnumCodeType(parseFhirPrimitiveData(val, fhirCodeSchema, optErrMsg), this.filterOperatorEnum));
-    });
-    this.operator = enumCodeTypes;
+  public setOperator(value: fhirCode[] | undefined | null): this {
+    if (isDefinedList<fhirCode>(value)) {
+      const enumCodeTypes = [] as EnumCodeType[];
+      const optErrMsg = `Invalid CodeSystem.filter.operator; Provided value is not an instance of fhirCode.`;
+      value.forEach((val: fhirCode) => {
+        enumCodeTypes.push(new EnumCodeType(parseFhirPrimitiveData(val, fhirCodeSchema, optErrMsg), this.filterOperatorEnum));
+      });
+      this.operator = enumCodeTypes;
+    } else {
+      this.operator = null;
+    }
     return this;
   }
 
@@ -3406,10 +3420,10 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -3420,11 +3434,14 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `CodeSystem.filter.value is required`);
-    const optErrMsg = `Invalid CodeSystem.filter.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.filter.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3453,10 +3470,13 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `CodeSystem.filter.value is required`);
-    const optErrMsg = `Invalid CodeSystem.filter.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid CodeSystem.filter.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3489,6 +3509,16 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3516,21 +3546,19 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.filter.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -3540,19 +3568,13 @@ export class CodeSystemFilterComponent extends BackboneElement implements IBackb
     if (this.hasOperatorElement()) {
       setFhirPrimitiveListJson<fhirCode>(this.getOperatorElement(), 'operator', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.filter.operator`);
+      jsonObj['operator'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.filter.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -3598,7 +3620,6 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `CodeSystemPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeSystemPropertyComponent
    * @returns CodeSystemPropertyComponent data model or undefined for `CodeSystemPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CodeSystemPropertyComponent | undefined {
@@ -3617,8 +3638,6 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3626,12 +3645,12 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'uri';
@@ -3659,20 +3678,14 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3744,10 +3757,10 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -3758,11 +3771,14 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.property.code is required`);
-    const optErrMsg = `Invalid CodeSystem.property.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.property.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3791,10 +3807,13 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.property.code is required`);
-    const optErrMsg = `Invalid CodeSystem.property.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.property.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3952,11 +3971,14 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
    *
    * @see CodeSystem Enumeration: {@link ConceptPropertyTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `CodeSystem.property.type is required`);
-    const errMsgPrefix = `Invalid CodeSystem.property.type`;
-    assertEnumCodeType<ConceptPropertyTypeEnum>(enumType, ConceptPropertyTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid CodeSystem.property.type`;
+      assertEnumCodeType<ConceptPropertyTypeEnum>(enumType, ConceptPropertyTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3989,11 +4011,14 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
    *
    * @see CodeSystem Enumeration: {@link ConceptPropertyTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.property.type is required`);
-    const optErrMsg = `Invalid CodeSystem.property.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.conceptPropertyTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.property.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.conceptPropertyTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4026,10 +4051,13 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
    *
    * @see CodeSystem Enumeration: {@link ConceptPropertyTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.property.type is required`);
-    const optErrMsg = `Invalid CodeSystem.property.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptPropertyTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.property.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptPropertyTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4062,6 +4090,16 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4088,21 +4126,19 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.property.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasUriElement()) {
@@ -4117,12 +4153,7 @@ export class CodeSystemPropertyComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.property.type`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['type'] = null;
     }
 
     return jsonObj;
@@ -4160,7 +4191,6 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `CodeSystemConceptComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeSystemConceptComponent
    * @returns CodeSystemConceptComponent data model or undefined for `CodeSystemConceptComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CodeSystemConceptComponent | undefined {
@@ -4179,8 +4209,6 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4188,12 +4216,12 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'display';
@@ -4253,12 +4281,6 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4351,10 +4373,10 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -4365,11 +4387,14 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.concept.code is required`);
-    const optErrMsg = `Invalid CodeSystem.concept.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.concept.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -4398,10 +4423,13 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.concept.code is required`);
-    const optErrMsg = `Invalid CodeSystem.concept.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.concept.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -4738,6 +4766,16 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4769,21 +4807,19 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.concept.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDisplayElement()) {
@@ -4804,11 +4840,6 @@ export class CodeSystemConceptComponent extends BackboneElement implements IBack
 
     if (this.hasConcept()) {
       setFhirBackboneElementListJson(this.getConcept(), 'concept', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4847,7 +4878,6 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `CodeSystemConceptDesignationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeSystemConceptDesignationComponent
    * @returns CodeSystemConceptDesignationComponent data model or undefined for `CodeSystemConceptDesignationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CodeSystemConceptDesignationComponent | undefined {
@@ -4865,8 +4895,6 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'language';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -4892,20 +4920,14 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5052,10 +5074,10 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -5066,11 +5088,14 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `CodeSystem.concept.designation.value is required`);
-    const optErrMsg = `Invalid CodeSystem.concept.designation.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.concept.designation.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5099,10 +5124,13 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `CodeSystem.concept.designation.value is required`);
-    const optErrMsg = `Invalid CodeSystem.concept.designation.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid CodeSystem.concept.designation.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5134,6 +5162,16 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5159,15 +5197,14 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasLanguageElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getLanguageElement(), 'language', jsonObj);
@@ -5178,15 +5215,9 @@ export class CodeSystemConceptDesignationComponent extends BackboneElement imple
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.concept.designation.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -5229,7 +5260,6 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `CodeSystemConceptPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CodeSystemConceptPropertyComponent
    * @returns CodeSystemConceptPropertyComponent data model or undefined for `CodeSystemConceptPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CodeSystemConceptPropertyComponent | undefined {
@@ -5252,8 +5282,6 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
     const errorMessage = `DecoratorMetadataObject does not exist for CodeSystemConceptPropertyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5261,12 +5289,12 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value[x]';
@@ -5278,17 +5306,11 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5341,10 +5363,10 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -5355,11 +5377,14 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CodeSystem.concept.property.code is required`);
-    const optErrMsg = `Invalid CodeSystem.concept.property.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CodeSystem.concept.property.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -5388,10 +5413,13 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CodeSystem.concept.property.code is required`);
-    const optErrMsg = `Invalid CodeSystem.concept.property.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CodeSystem.concept.property.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -5419,10 +5447,13 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('CodeSystem.concept.property.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `CodeSystem.concept.property.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5612,6 +5643,16 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5636,33 +5677,26 @@ export class CodeSystemConceptPropertyComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.concept.property.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`CodeSystem.concept.property.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

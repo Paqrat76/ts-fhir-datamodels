@@ -19,6 +19,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-08-30]
+
+### Added
+
+- Implementation of `public override isRequiredFieldsEmpty(): boolean {...}` for data models having "required" fields
+
+### Changed
+
+- Implementation of all "required" field "setters" to accept undefined/null values without throwing a "value is required" error
+- Implementation of single "required" field "getters" to return an empty data model instance instead of returning `null` where possible;
+  This is not possible for the following types (return `null` as before): primitive values (e.g., `fhirString`, etc.), choice data types, EnumCodeType, and Resource
+- Implementation of `static parse()` method to accept undefined/null JSON values for "required" fields without throwing a "value is required" error
+- Implementation of `toJSON()` method to return null JSON values for missing "required" fields without throwing a "value is required" error
+
+
 ## [2025-08-23]
 
 ### Fixed

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,17 +46,13 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -79,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -138,7 +134,6 @@ export class Goal extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Goal`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Goal
    * @returns Goal data model or undefined for `Goal`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Goal | undefined {
@@ -162,8 +157,6 @@ export class Goal extends DomainResource implements IDomainResource {
     const errorMessage = `DecoratorMetadataObject does not exist for Goal`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -184,12 +177,12 @@ export class Goal extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLifecycleStatus(null);
       } else {
         instance.setLifecycleStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLifecycleStatus(null);
     }
 
     fieldName = 'achievementStatus';
@@ -236,12 +229,12 @@ export class Goal extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDescription(null);
       } else {
         instance.setDescription(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDescription(null);
     }
 
     fieldName = 'subject';
@@ -250,12 +243,12 @@ export class Goal extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'start[x]';
@@ -346,12 +339,6 @@ export class Goal extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -724,11 +711,14 @@ export class Goal extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link GoalStatusEnum }
    */
-  public setLifecycleStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Goal.lifecycleStatus is required`);
-    const errMsgPrefix = `Invalid Goal.lifecycleStatus`;
-    assertEnumCodeType<GoalStatusEnum>(enumType, GoalStatusEnum, errMsgPrefix);
-    this.lifecycleStatus = enumType;
+  public setLifecycleStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Goal.lifecycleStatus`;
+      assertEnumCodeType<GoalStatusEnum>(enumType, GoalStatusEnum, errMsgPrefix);
+      this.lifecycleStatus = enumType;
+    } else {
+      this.lifecycleStatus = null;
+    }
     return this;
   }
 
@@ -761,11 +751,14 @@ export class Goal extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link GoalStatusEnum }
    */
-  public setLifecycleStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Goal.lifecycleStatus is required`);
-    const optErrMsg = `Invalid Goal.lifecycleStatus; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.lifecycleStatus = new EnumCodeType(element, this.goalStatusEnum);
+  public setLifecycleStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Goal.lifecycleStatus; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.lifecycleStatus = new EnumCodeType(element, this.goalStatusEnum);
+    } else {
+      this.lifecycleStatus = null;
+    }
     return this;
   }
 
@@ -798,10 +791,13 @@ export class Goal extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link GoalStatusEnum }
    */
-  public setLifecycleStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Goal.lifecycleStatus is required`);
-    const optErrMsg = `Invalid Goal.lifecycleStatus (${String(value)})`;
-    this.lifecycleStatus = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.goalStatusEnum);
+  public setLifecycleStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Goal.lifecycleStatus (${String(value)})`;
+      this.lifecycleStatus = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.goalStatusEnum);
+    } else {
+      this.lifecycleStatus = null;
+    }
     return this;
   }
 
@@ -999,10 +995,10 @@ export class Goal extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `description` property value as a CodeableConcept object if defined; else null
+   * @returns the `description` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getDescription(): CodeableConcept | null {
-    return this.description;
+  public getDescription(): CodeableConcept {
+    return this.description ?? new CodeableConcept();
   }
 
   /**
@@ -1012,11 +1008,14 @@ export class Goal extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setDescription(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Goal.description is required`);
-    const optErrMsg = `Invalid Goal.description; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.description = value;
+  public setDescription(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Goal.description; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.description = value;
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -1028,10 +1027,10 @@ export class Goal extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -1050,10 +1049,13 @@ export class Goal extends DomainResource implements IDomainResource {
   
     'Organization',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `Goal.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -1621,6 +1623,16 @@ export class Goal extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.lifecycleStatus, this.description, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1665,15 +1677,14 @@ export class Goal extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1683,7 +1694,7 @@ export class Goal extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getLifecycleStatusElement()!, 'lifecycleStatus', jsonObj);
     } else {
-      missingReqdProperties.push(`Goal.lifecycleStatus`);
+      jsonObj['lifecycleStatus'] = null;
     }
 
     if (this.hasAchievementStatus()) {
@@ -1703,17 +1714,15 @@ export class Goal extends DomainResource implements IDomainResource {
     }
 
     if (this.hasDescription()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getDescription()!, 'description', jsonObj);
+      setFhirComplexJson(this.getDescription(), 'description', jsonObj);
     } else {
-      missingReqdProperties.push(`Goal.description`);
+      jsonObj['description'] = null;
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`Goal.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasStart()) {
@@ -1747,11 +1756,6 @@ export class Goal extends DomainResource implements IDomainResource {
 
     if (this.hasOutcome()) {
       setFhirComplexListJson(this.getOutcome(), 'outcome', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1832,7 +1836,6 @@ export class GoalTargetComponent extends BackboneElement implements IBackboneEle
     );
     instance.setDue(due);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

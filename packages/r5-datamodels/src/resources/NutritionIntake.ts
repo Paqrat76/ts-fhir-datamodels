@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,24 +47,19 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -84,6 +78,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -143,7 +138,6 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `NutritionIntake`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NutritionIntake
    * @returns NutritionIntake data model or undefined for `NutritionIntake`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): NutritionIntake | undefined {
@@ -166,8 +160,6 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = NutritionIntake[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for NutritionIntake`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -251,12 +243,12 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -286,12 +278,12 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'encounter';
@@ -339,13 +331,13 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: NutritionIntakeConsumedItemComponent | undefined = NutritionIntakeConsumedItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setConsumedItem(null);
         } else {
           instance.addConsumedItem(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setConsumedItem(null);
     }
 
     fieldName = 'ingredientLabel';
@@ -421,12 +413,6 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1260,11 +1246,14 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `NutritionIntake.status is required`);
-    const errMsgPrefix = `Invalid NutritionIntake.status`;
-    assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid NutritionIntake.status`;
+      assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1297,11 +1286,14 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `NutritionIntake.status is required`);
-    const optErrMsg = `Invalid NutritionIntake.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.eventStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid NutritionIntake.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1334,10 +1326,13 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `NutritionIntake.status is required`);
-    const optErrMsg = `Invalid NutritionIntake.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid NutritionIntake.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1439,10 +1434,10 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -1459,10 +1454,13 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
   
     'Group',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `NutritionIntake.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -1753,11 +1751,14 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setConsumedItem(value: NutritionIntakeConsumedItemComponent[]): this {
-    assertIsDefinedList<NutritionIntakeConsumedItemComponent>(value, `NutritionIntake.consumedItem is required`);
-    const optErrMsg = `Invalid NutritionIntake.consumedItem; Provided value array has an element that is not an instance of NutritionIntakeConsumedItemComponent.`;
-    assertFhirTypeList<NutritionIntakeConsumedItemComponent>(value, NutritionIntakeConsumedItemComponent, optErrMsg);
-    this.consumedItem = value;
+  public setConsumedItem(value: NutritionIntakeConsumedItemComponent[] | undefined | null): this {
+    if (isDefinedList<NutritionIntakeConsumedItemComponent>(value)) {
+      const optErrMsg = `Invalid NutritionIntake.consumedItem; Provided value array has an element that is not an instance of NutritionIntakeConsumedItemComponent.`;
+      assertFhirTypeList<NutritionIntakeConsumedItemComponent>(value, NutritionIntakeConsumedItemComponent, optErrMsg);
+      this.consumedItem = value;
+    } else {
+      this.consumedItem = null;
+    }
     return this;
   }
 
@@ -2166,6 +2167,16 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2220,15 +2231,14 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2254,7 +2264,7 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -2266,10 +2276,9 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -2293,7 +2302,7 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
     if (this.hasConsumedItem()) {
       setFhirBackboneElementListJson(this.getConsumedItem(), 'consumedItem', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.consumedItem`);
+      jsonObj['consumedItem'] = null;
     }
 
     if (this.hasIngredientLabel()) {
@@ -2318,11 +2327,6 @@ export class NutritionIntake extends DomainResource implements IDomainResource {
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2361,7 +2365,6 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `NutritionIntakeConsumedItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NutritionIntakeConsumedItemComponent
    * @returns NutritionIntakeConsumedItemComponent data model or undefined for `NutritionIntakeConsumedItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): NutritionIntakeConsumedItemComponent | undefined {
@@ -2380,20 +2383,18 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'nutritionProduct';
@@ -2402,12 +2403,12 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setNutritionProduct(null);
       } else {
         instance.setNutritionProduct(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setNutritionProduct(null);
     }
 
     fieldName = 'schedule';
@@ -2451,12 +2452,6 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
       instance.setNotConsumedReason(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2565,10 +2560,10 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -2578,11 +2573,14 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `NutritionIntake.consumedItem.type is required`);
-    const optErrMsg = `Invalid NutritionIntake.consumedItem.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid NutritionIntake.consumedItem.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2594,10 +2592,10 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
   }
 
   /**
-   * @returns the `nutritionProduct` property value as a CodeableReference object if defined; else null
+   * @returns the `nutritionProduct` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getNutritionProduct(): CodeableReference | null {
-    return this.nutritionProduct;
+  public getNutritionProduct(): CodeableReference {
+    return this.nutritionProduct ?? new CodeableReference();
   }
 
   /**
@@ -2607,11 +2605,14 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setNutritionProduct(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `NutritionIntake.consumedItem.nutritionProduct is required`);
-    const optErrMsg = `Invalid NutritionIntake.consumedItem.nutritionProduct; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.nutritionProduct = value;
+  public setNutritionProduct(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid NutritionIntake.consumedItem.nutritionProduct; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.nutritionProduct = value;
+    } else {
+      this.nutritionProduct = null;
+    }
     return this;
   }
 
@@ -2839,6 +2840,16 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.nutritionProduct, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2868,28 +2879,25 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.consumedItem.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasNutritionProduct()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getNutritionProduct()!, 'nutritionProduct', jsonObj);
+      setFhirComplexJson(this.getNutritionProduct(), 'nutritionProduct', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.consumedItem.nutritionProduct`);
+      jsonObj['nutritionProduct'] = null;
     }
 
     if (this.hasSchedule()) {
@@ -2910,11 +2918,6 @@ export class NutritionIntakeConsumedItemComponent extends BackboneElement implem
 
     if (this.hasNotConsumedReason()) {
       setFhirComplexJson(this.getNotConsumedReason(), 'notConsumedReason', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2953,7 +2956,6 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `NutritionIntakeIngredientLabelComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NutritionIntakeIngredientLabelComponent
    * @returns NutritionIntakeIngredientLabelComponent data model or undefined for `NutritionIntakeIngredientLabelComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): NutritionIntakeIngredientLabelComponent | undefined {
@@ -2971,20 +2973,18 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'nutrient';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setNutrient(null);
       } else {
         instance.setNutrient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setNutrient(null);
     }
 
     fieldName = 'amount';
@@ -2993,20 +2993,14 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAmount(null);
       } else {
         instance.setAmount(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAmount(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3044,10 +3038,10 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `nutrient` property value as a CodeableReference object if defined; else null
+   * @returns the `nutrient` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getNutrient(): CodeableReference | null {
-    return this.nutrient;
+  public getNutrient(): CodeableReference {
+    return this.nutrient ?? new CodeableReference();
   }
 
   /**
@@ -3057,11 +3051,14 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setNutrient(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `NutritionIntake.ingredientLabel.nutrient is required`);
-    const optErrMsg = `Invalid NutritionIntake.ingredientLabel.nutrient; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.nutrient = value;
+  public setNutrient(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid NutritionIntake.ingredientLabel.nutrient; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.nutrient = value;
+    } else {
+      this.nutrient = null;
+    }
     return this;
   }
 
@@ -3073,10 +3070,10 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
   }
 
   /**
-   * @returns the `amount` property value as a Quantity object if defined; else null
+   * @returns the `amount` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getAmount(): Quantity | null {
-    return this.amount;
+  public getAmount(): Quantity {
+    return this.amount ?? new Quantity();
   }
 
   /**
@@ -3086,11 +3083,14 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAmount(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `NutritionIntake.ingredientLabel.amount is required`);
-    const optErrMsg = `Invalid NutritionIntake.ingredientLabel.amount; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.amount = value;
+  public setAmount(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid NutritionIntake.ingredientLabel.amount; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.amount = value;
+    } else {
+      this.amount = null;
+    }
     return this;
   }
 
@@ -3121,6 +3121,16 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.nutrient, this.amount, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3145,33 +3155,25 @@ export class NutritionIntakeIngredientLabelComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNutrient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getNutrient()!, 'nutrient', jsonObj);
+      setFhirComplexJson(this.getNutrient(), 'nutrient', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.ingredientLabel.nutrient`);
+      jsonObj['nutrient'] = null;
     }
 
     if (this.hasAmount()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getAmount()!, 'amount', jsonObj);
+      setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.ingredientLabel.amount`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['amount'] = null;
     }
 
     return jsonObj;
@@ -3204,7 +3206,6 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `NutritionIntakePerformerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NutritionIntakePerformerComponent
    * @returns NutritionIntakePerformerComponent data model or undefined for `NutritionIntakePerformerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): NutritionIntakePerformerComponent | undefined {
@@ -3222,8 +3223,6 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -3238,20 +3237,14 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3327,10 +3320,10 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -3357,10 +3350,13 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
   
     'RelatedPerson',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `NutritionIntake.performer.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -3391,6 +3387,16 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3415,30 +3421,23 @@ export class NutritionIntakePerformerComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`NutritionIntake.performer.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;

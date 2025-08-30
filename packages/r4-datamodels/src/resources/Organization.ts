@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -45,7 +44,6 @@ import {
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveTypeJson,
   ReferenceTargets,
@@ -99,7 +97,6 @@ export class Organization extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Organization`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Organization
    * @returns Organization data model or undefined for `Organization`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Organization | undefined {
@@ -241,7 +238,6 @@ export class Organization extends DomainResource implements IDomainResource {
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1252,7 +1248,6 @@ export class OrganizationContactComponent extends BackboneElement implements IBa
       instance.setAddress(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

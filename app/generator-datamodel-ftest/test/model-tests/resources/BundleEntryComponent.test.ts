@@ -112,6 +112,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -152,6 +153,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -190,6 +192,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -228,6 +231,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -264,6 +268,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -300,6 +305,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -419,6 +425,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedElementProperties(testInstance, 2);
 
       expect(testInstance.hasLink()).toBe(true);
@@ -440,7 +447,7 @@ describe('BundleEntryComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: BundleEntryComponent | undefined = undefined;
+      let testInstance: BundleEntryComponent | undefined;
       testInstance = BundleEntryComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -461,6 +468,7 @@ describe('BundleEntryComponent', () => {
         'Bundle.entry',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedElementProperties(testInstance, 2);
 
@@ -485,6 +493,7 @@ describe('BundleEntryComponent', () => {
     it('link: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setLink([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -493,6 +502,7 @@ describe('BundleEntryComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addLink(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -502,6 +512,7 @@ describe('BundleEntryComponent', () => {
     it('fullUrl: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFullUrlElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -517,6 +528,7 @@ describe('BundleEntryComponent', () => {
     it('resource: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryComponent();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setResource(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -526,6 +538,7 @@ describe('BundleEntryComponent', () => {
     it('search: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryComponent();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setSearch(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -537,6 +550,7 @@ describe('BundleEntryComponent', () => {
     it('request: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryComponent();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setRequest(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -548,6 +562,7 @@ describe('BundleEntryComponent', () => {
     it('response: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryComponent();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setResponse(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);

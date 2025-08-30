@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
@@ -45,21 +44,16 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -76,6 +70,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -122,7 +117,6 @@ export class VerificationResult extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `VerificationResult`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to VerificationResult
    * @returns VerificationResult data model or undefined for `VerificationResult`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): VerificationResult | undefined {
@@ -141,8 +135,6 @@ export class VerificationResult extends DomainResource implements IDomainResourc
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'target';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -190,12 +182,12 @@ export class VerificationResult extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusDate';
@@ -296,12 +288,6 @@ export class VerificationResult extends DomainResource implements IDomainResourc
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -754,11 +740,14 @@ export class VerificationResult extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link VerificationresultStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `VerificationResult.status is required`);
-    const errMsgPrefix = `Invalid VerificationResult.status`;
-    assertEnumCodeType<VerificationresultStatusEnum>(enumType, VerificationresultStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid VerificationResult.status`;
+      assertEnumCodeType<VerificationresultStatusEnum>(enumType, VerificationresultStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -791,11 +780,14 @@ export class VerificationResult extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link VerificationresultStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `VerificationResult.status is required`);
-    const optErrMsg = `Invalid VerificationResult.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.verificationresultStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid VerificationResult.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.verificationresultStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -828,10 +820,13 @@ export class VerificationResult extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link VerificationresultStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `VerificationResult.status is required`);
-    const optErrMsg = `Invalid VerificationResult.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.verificationresultStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid VerificationResult.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.verificationresultStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1368,6 +1363,16 @@ export class VerificationResult extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1409,15 +1414,14 @@ export class VerificationResult extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTarget()) {
       setFhirComplexListJson(this.getTarget(), 'target', jsonObj);
@@ -1435,7 +1439,7 @@ export class VerificationResult extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`VerificationResult.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusDateElement()) {
@@ -1476,11 +1480,6 @@ export class VerificationResult extends DomainResource implements IDomainResourc
 
     if (this.hasValidator()) {
       setFhirBackboneElementListJson(this.getValidator(), 'validator', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1600,7 +1599,6 @@ export class VerificationResultPrimarySourceComponent extends BackboneElement im
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2256,7 +2254,6 @@ export class VerificationResultAttestationComponent extends BackboneElement impl
       instance.setSourceSignature(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2879,7 +2876,6 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `VerificationResultValidatorComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to VerificationResultValidatorComponent
    * @returns VerificationResultValidatorComponent data model or undefined for `VerificationResultValidatorComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): VerificationResultValidatorComponent | undefined {
@@ -2898,20 +2894,18 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'organization';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOrganization(null);
       } else {
         instance.setOrganization(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOrganization(null);
     }
 
     fieldName = 'identityCertificate';
@@ -2931,12 +2925,6 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
       instance.setAttestationSignature(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2988,10 +2976,10 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `organization` property value as a Reference object if defined; else null
+   * @returns the `organization` property value as a Reference object if defined; else an empty Reference object
    */
-  public getOrganization(): Reference | null {
-    return this.organization;
+  public getOrganization(): Reference {
+    return this.organization ?? new Reference();
   }
 
   /**
@@ -3006,10 +2994,13 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
   @ReferenceTargets('VerificationResult.validator.organization', [
     'Organization',
   ])
-  public setOrganization(value: Reference): this {
-    assertIsDefined<Reference>(value, `VerificationResult.validator.organization is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.organization = value;
+  public setOrganization(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.organization = value;
+    } else {
+      this.organization = null;
+    }
     return this;
   }
 
@@ -3137,6 +3128,16 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.organization, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3162,21 +3163,19 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasOrganization()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getOrganization()!, 'organization', jsonObj);
+      setFhirComplexJson(this.getOrganization(), 'organization', jsonObj);
     } else {
-      missingReqdProperties.push(`VerificationResult.validator.organization`);
+      jsonObj['organization'] = null;
     }
 
     if (this.hasIdentityCertificateElement()) {
@@ -3185,11 +3184,6 @@ export class VerificationResultValidatorComponent extends BackboneElement implem
 
     if (this.hasAttestationSignature()) {
       setFhirComplexJson(this.getAttestationSignature(), 'attestationSignature', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

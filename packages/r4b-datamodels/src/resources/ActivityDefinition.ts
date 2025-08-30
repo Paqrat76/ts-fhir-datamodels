@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,19 +48,15 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -93,6 +88,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -149,7 +145,6 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `ActivityDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ActivityDefinition
    * @returns ActivityDefinition data model or undefined for `ActivityDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ActivityDefinition | undefined {
@@ -172,8 +167,6 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
     const classMetadata: DecoratorMetadataObject | null = ActivityDefinition[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ActivityDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -240,12 +233,12 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -671,12 +664,6 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1861,11 +1848,14 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ActivityDefinition.status is required`);
-    const errMsgPrefix = `Invalid ActivityDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ActivityDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1898,11 +1888,14 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ActivityDefinition.status is required`);
-    const optErrMsg = `Invalid ActivityDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ActivityDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1935,10 +1928,13 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ActivityDefinition.status is required`);
-    const optErrMsg = `Invalid ActivityDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ActivityDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -4694,6 +4690,16 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4780,15 +4786,14 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -4818,7 +4823,7 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ActivityDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -4983,11 +4988,6 @@ export class ActivityDefinition extends DomainResource implements IDomainResourc
       setFhirBackboneElementListJson(this.getDynamicValue(), 'dynamicValue', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -5023,7 +5023,6 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `ActivityDefinitionParticipantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ActivityDefinitionParticipantComponent
    * @returns ActivityDefinitionParticipantComponent data model or undefined for `ActivityDefinitionParticipantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ActivityDefinitionParticipantComponent | undefined {
@@ -5042,8 +5041,6 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5051,12 +5048,12 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'role';
@@ -5067,12 +5064,6 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
       instance.setRole(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5134,11 +5125,14 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link ActionParticipantTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ActivityDefinition.participant.type is required`);
-    const errMsgPrefix = `Invalid ActivityDefinition.participant.type`;
-    assertEnumCodeType<ActionParticipantTypeEnum>(enumType, ActionParticipantTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ActivityDefinition.participant.type`;
+      assertEnumCodeType<ActionParticipantTypeEnum>(enumType, ActionParticipantTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -5171,11 +5165,14 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link ActionParticipantTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ActivityDefinition.participant.type is required`);
-    const optErrMsg = `Invalid ActivityDefinition.participant.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.actionParticipantTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ActivityDefinition.participant.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.actionParticipantTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -5208,10 +5205,13 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link ActionParticipantTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ActivityDefinition.participant.type is required`);
-    const optErrMsg = `Invalid ActivityDefinition.participant.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionParticipantTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ActivityDefinition.participant.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionParticipantTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -5274,6 +5274,16 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5298,30 +5308,24 @@ export class ActivityDefinitionParticipantComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ActivityDefinition.participant.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasRole()) {
       setFhirComplexJson(this.getRole(), 'role', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5364,7 +5368,6 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `ActivityDefinitionDynamicValueComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ActivityDefinitionDynamicValueComponent
    * @returns ActivityDefinitionDynamicValueComponent data model or undefined for `ActivityDefinitionDynamicValueComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ActivityDefinitionDynamicValueComponent | undefined {
@@ -5383,8 +5386,6 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'path';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5392,12 +5393,12 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPath(null);
       } else {
         instance.setPathElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPath(null);
     }
 
     fieldName = 'expression';
@@ -5406,20 +5407,14 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Expression | undefined = Expression.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setExpression(null);
       } else {
         instance.setExpression(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setExpression(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5456,10 +5451,10 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `path` property value as a StringType object if defined; else null
+   * @returns the `path` property value as a StringType object if defined; else an empty StringType object
    */
-  public getPathElement(): StringType | null {
-    return this.path;
+  public getPathElement(): StringType {
+    return this.path ?? new StringType();
   }
 
   /**
@@ -5470,11 +5465,14 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPathElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ActivityDefinition.dynamicValue.path is required`);
-    const optErrMsg = `Invalid ActivityDefinition.dynamicValue.path; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.path = element;
+  public setPathElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ActivityDefinition.dynamicValue.path; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.path = element;
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -5503,10 +5501,13 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPath(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ActivityDefinition.dynamicValue.path is required`);
-    const optErrMsg = `Invalid ActivityDefinition.dynamicValue.path (${String(value)})`;
-    this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setPath(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ActivityDefinition.dynamicValue.path (${String(value)})`;
+      this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -5518,10 +5519,10 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
   }
 
   /**
-   * @returns the `expression` property value as a Expression object if defined; else null
+   * @returns the `expression` property value as a Expression object if defined; else an empty Expression object
    */
-  public getExpression(): Expression | null {
-    return this.expression;
+  public getExpression(): Expression {
+    return this.expression ?? new Expression();
   }
 
   /**
@@ -5531,11 +5532,14 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setExpression(value: Expression): this {
-    assertIsDefined<Expression>(value, `ActivityDefinition.dynamicValue.expression is required`);
-    const optErrMsg = `Invalid ActivityDefinition.dynamicValue.expression; Provided element is not an instance of Expression.`;
-    assertFhirType<Expression>(value, Expression, optErrMsg);
-    this.expression = value;
+  public setExpression(value: Expression | undefined | null): this {
+    if (isDefined<Expression>(value)) {
+      const optErrMsg = `Invalid ActivityDefinition.dynamicValue.expression; Provided element is not an instance of Expression.`;
+      assertFhirType<Expression>(value, Expression, optErrMsg);
+      this.expression = value;
+    } else {
+      this.expression = null;
+    }
     return this;
   }
 
@@ -5566,6 +5570,16 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.path, this.expression, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5590,33 +5604,25 @@ export class ActivityDefinitionDynamicValueComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasPathElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getPathElement()!, 'path', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getPathElement(), 'path', jsonObj);
     } else {
-      missingReqdProperties.push(`ActivityDefinition.dynamicValue.path`);
+      jsonObj['path'] = null;
     }
 
     if (this.hasExpression()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getExpression()!, 'expression', jsonObj);
+      setFhirComplexJson(this.getExpression(), 'expression', jsonObj);
     } else {
-      missingReqdProperties.push(`ActivityDefinition.dynamicValue.expression`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['expression'] = null;
     }
 
     return jsonObj;

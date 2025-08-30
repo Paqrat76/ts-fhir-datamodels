@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -46,16 +45,12 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -78,6 +73,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -128,7 +124,6 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `DetectedIssue`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DetectedIssue
    * @returns DetectedIssue data model or undefined for `DetectedIssue`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DetectedIssue | undefined {
@@ -152,8 +147,6 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
     const errorMessage = `DecoratorMetadataObject does not exist for DetectedIssue`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -174,12 +167,12 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'code';
@@ -282,12 +275,6 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -582,11 +569,14 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ObservationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DetectedIssue.status is required`);
-    const errMsgPrefix = `Invalid DetectedIssue.status`;
-    assertEnumCodeType<ObservationStatusEnum>(enumType, ObservationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DetectedIssue.status`;
+      assertEnumCodeType<ObservationStatusEnum>(enumType, ObservationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -619,11 +609,14 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ObservationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DetectedIssue.status is required`);
-    const optErrMsg = `Invalid DetectedIssue.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.observationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DetectedIssue.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.observationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -656,10 +649,13 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ObservationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DetectedIssue.status is required`);
-    const optErrMsg = `Invalid DetectedIssue.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.observationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DetectedIssue.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.observationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1317,6 +1313,16 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1355,15 +1361,14 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1373,7 +1378,7 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`DetectedIssue.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCode()) {
@@ -1416,11 +1421,6 @@ export class DetectedIssue extends DomainResource implements IDomainResource {
 
     if (this.hasMitigation()) {
       setFhirBackboneElementListJson(this.getMitigation(), 'mitigation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1493,7 +1493,6 @@ export class DetectedIssueEvidenceComponent extends BackboneElement implements I
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1747,7 +1746,6 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `DetectedIssueMitigationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DetectedIssueMitigationComponent
    * @returns DetectedIssueMitigationComponent data model or undefined for `DetectedIssueMitigationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DetectedIssueMitigationComponent | undefined {
@@ -1766,20 +1764,18 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAction(null);
       } else {
         instance.setAction(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
     fieldName = 'date';
@@ -1799,12 +1795,6 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
       instance.setAuthor(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1859,10 +1849,10 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `action` property value as a CodeableConcept object if defined; else null
+   * @returns the `action` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getAction(): CodeableConcept | null {
-    return this.action;
+  public getAction(): CodeableConcept {
+    return this.action ?? new CodeableConcept();
   }
 
   /**
@@ -1872,11 +1862,14 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DetectedIssue.mitigation.action is required`);
-    const optErrMsg = `Invalid DetectedIssue.mitigation.action; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.action = value;
+  public setAction(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DetectedIssue.mitigation.action; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -2010,6 +2003,16 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.action, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2035,21 +2038,19 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAction()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getAction()!, 'action', jsonObj);
+      setFhirComplexJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`DetectedIssue.mitigation.action`);
+      jsonObj['action'] = null;
     }
 
     if (this.hasDateElement()) {
@@ -2058,11 +2059,6 @@ export class DetectedIssueMitigationComponent extends BackboneElement implements
 
     if (this.hasAuthor()) {
       setFhirComplexJson(this.getAuthor(), 'author', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

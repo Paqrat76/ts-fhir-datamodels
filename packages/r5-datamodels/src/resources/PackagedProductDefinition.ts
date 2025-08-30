@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,18 +45,14 @@ import {
   DateTimeType,
   DateType,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
@@ -79,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -119,7 +115,6 @@ export class PackagedProductDefinition extends DomainResource implements IDomain
    * @param sourceJson - JSON representing FHIR `PackagedProductDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PackagedProductDefinition
    * @returns PackagedProductDefinition data model or undefined for `PackagedProductDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): PackagedProductDefinition | undefined {
@@ -303,7 +298,6 @@ export class PackagedProductDefinition extends DomainResource implements IDomain
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1576,7 +1570,6 @@ export class PackagedProductDefinitionLegalStatusOfSupplyComponent extends Backb
       instance.setJurisdiction(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1909,7 +1902,6 @@ export class PackagedProductDefinitionPackagingComponent extends BackboneElement
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2857,7 +2849,6 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
    * @param sourceJson - JSON representing FHIR `PackagedProductDefinitionPackagingPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PackagedProductDefinitionPackagingPropertyComponent
    * @returns PackagedProductDefinitionPackagingPropertyComponent data model or undefined for `PackagedProductDefinitionPackagingPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PackagedProductDefinitionPackagingPropertyComponent | undefined {
@@ -2879,20 +2870,18 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
     const errorMessage = `DecoratorMetadataObject does not exist for PackagedProductDefinitionPackagingPropertyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -2905,12 +2894,6 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
     );
     instance.setValue(value);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2959,10 +2942,10 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -2972,11 +2955,14 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `PackagedProductDefinition.packaging.property.type is required`);
-    const optErrMsg = `Invalid PackagedProductDefinition.packaging.property.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid PackagedProductDefinition.packaging.property.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3156,6 +3142,16 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3180,31 +3176,24 @@ export class PackagedProductDefinitionPackagingPropertyComponent extends Backbon
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`PackagedProductDefinition.packaging.property.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3237,7 +3226,6 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
    * @param sourceJson - JSON representing FHIR `PackagedProductDefinitionPackagingContainedItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PackagedProductDefinitionPackagingContainedItemComponent
    * @returns PackagedProductDefinitionPackagingContainedItemComponent data model or undefined for `PackagedProductDefinitionPackagingContainedItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PackagedProductDefinitionPackagingContainedItemComponent | undefined {
@@ -3255,20 +3243,18 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'item';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setItem(null);
       } else {
         instance.setItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     }
 
     fieldName = 'amount';
@@ -3279,12 +3265,6 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
       instance.setAmount(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3326,10 +3306,10 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `item` property value as a CodeableReference object if defined; else null
+   * @returns the `item` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getItem(): CodeableReference | null {
-    return this.item;
+  public getItem(): CodeableReference {
+    return this.item ?? new CodeableReference();
   }
 
   /**
@@ -3339,11 +3319,14 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setItem(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `PackagedProductDefinition.packaging.containedItem.item is required`);
-    const optErrMsg = `Invalid PackagedProductDefinition.packaging.containedItem.item; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.item = value;
+  public setItem(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid PackagedProductDefinition.packaging.containedItem.item; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -3406,6 +3389,16 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3430,30 +3423,23 @@ export class PackagedProductDefinitionPackagingContainedItemComponent extends Ba
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getItem()!, 'item', jsonObj);
+      setFhirComplexJson(this.getItem(), 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`PackagedProductDefinition.packaging.containedItem.item`);
+      jsonObj['item'] = null;
     }
 
     if (this.hasAmount()) {
       setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

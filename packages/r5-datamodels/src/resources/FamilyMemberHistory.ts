@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,17 +48,13 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -87,6 +82,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -146,7 +142,6 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
    * @param sourceJson - JSON representing FHIR `FamilyMemberHistory`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to FamilyMemberHistory
    * @returns FamilyMemberHistory data model or undefined for `FamilyMemberHistory`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): FamilyMemberHistory | undefined {
@@ -169,8 +164,6 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
     const classMetadata: DecoratorMetadataObject | null = FamilyMemberHistory[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for FamilyMemberHistory`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -228,12 +221,12 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'dataAbsentReason';
@@ -250,12 +243,12 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'date';
@@ -295,12 +288,12 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationship(null);
       } else {
         instance.setRelationship(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationship(null);
     }
 
     fieldName = 'sex';
@@ -402,12 +395,6 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1079,11 +1066,14 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link HistoryStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `FamilyMemberHistory.status is required`);
-    const errMsgPrefix = `Invalid FamilyMemberHistory.status`;
-    assertEnumCodeType<HistoryStatusEnum>(enumType, HistoryStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid FamilyMemberHistory.status`;
+      assertEnumCodeType<HistoryStatusEnum>(enumType, HistoryStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1116,11 +1106,14 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link HistoryStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `FamilyMemberHistory.status is required`);
-    const optErrMsg = `Invalid FamilyMemberHistory.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.historyStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid FamilyMemberHistory.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.historyStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1153,10 +1146,13 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link HistoryStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `FamilyMemberHistory.status is required`);
-    const optErrMsg = `Invalid FamilyMemberHistory.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.historyStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid FamilyMemberHistory.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.historyStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1200,10 +1196,10 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -1218,10 +1214,13 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
   @ReferenceTargets('FamilyMemberHistory.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `FamilyMemberHistory.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -1419,10 +1418,10 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `relationship` property value as a CodeableConcept object if defined; else null
+   * @returns the `relationship` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getRelationship(): CodeableConcept | null {
-    return this.relationship;
+  public getRelationship(): CodeableConcept {
+    return this.relationship ?? new CodeableConcept();
   }
 
   /**
@@ -1432,11 +1431,14 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRelationship(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `FamilyMemberHistory.relationship is required`);
-    const optErrMsg = `Invalid FamilyMemberHistory.relationship; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.relationship = value;
+  public setRelationship(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid FamilyMemberHistory.relationship; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.relationship = value;
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -2171,6 +2173,16 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.patient, this.relationship, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2220,15 +2232,14 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2246,7 +2257,7 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`FamilyMemberHistory.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasDataAbsentReason()) {
@@ -2254,10 +2265,9 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`FamilyMemberHistory.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasDateElement()) {
@@ -2273,10 +2283,9 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
     }
 
     if (this.hasRelationship()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelationship()!, 'relationship', jsonObj);
+      setFhirComplexJson(this.getRelationship(), 'relationship', jsonObj);
     } else {
-      missingReqdProperties.push(`FamilyMemberHistory.relationship`);
+      jsonObj['relationship'] = null;
     }
 
     if (this.hasSex()) {
@@ -2318,11 +2327,6 @@ export class FamilyMemberHistory extends DomainResource implements IDomainResour
       setFhirBackboneElementListJson(this.getProcedure(), 'procedure', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2354,7 +2358,6 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `FamilyMemberHistoryParticipantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to FamilyMemberHistoryParticipantComponent
    * @returns FamilyMemberHistoryParticipantComponent data model or undefined for `FamilyMemberHistoryParticipantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): FamilyMemberHistoryParticipantComponent | undefined {
@@ -2372,8 +2375,6 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -2388,20 +2389,14 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2477,10 +2472,10 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -2507,10 +2502,13 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
   
     'CareTeam',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `FamilyMemberHistory.participant.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -2541,6 +2539,16 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2565,30 +2573,23 @@ export class FamilyMemberHistoryParticipantComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`FamilyMemberHistory.participant.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;
@@ -2621,7 +2622,6 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `FamilyMemberHistoryConditionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to FamilyMemberHistoryConditionComponent
    * @returns FamilyMemberHistoryConditionComponent data model or undefined for `FamilyMemberHistoryConditionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): FamilyMemberHistoryConditionComponent | undefined {
@@ -2644,20 +2644,18 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
     const errorMessage = `DecoratorMetadataObject does not exist for FamilyMemberHistoryConditionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'outcome';
@@ -2700,12 +2698,6 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2795,10 +2787,10 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -2808,11 +2800,14 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `FamilyMemberHistory.condition.code is required`);
-    const optErrMsg = `Invalid FamilyMemberHistory.condition.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid FamilyMemberHistory.condition.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3127,6 +3122,16 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3155,21 +3160,19 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`FamilyMemberHistory.condition.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasOutcome()) {
@@ -3187,11 +3190,6 @@ export class FamilyMemberHistoryConditionComponent extends BackboneElement imple
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3224,7 +3222,6 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `FamilyMemberHistoryProcedureComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to FamilyMemberHistoryProcedureComponent
    * @returns FamilyMemberHistoryProcedureComponent data model or undefined for `FamilyMemberHistoryProcedureComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): FamilyMemberHistoryProcedureComponent | undefined {
@@ -3247,20 +3244,18 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
     const errorMessage = `DecoratorMetadataObject does not exist for FamilyMemberHistoryProcedureComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'outcome';
@@ -3303,12 +3298,6 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3399,10 +3388,10 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -3412,11 +3401,14 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `FamilyMemberHistory.procedure.code is required`);
-    const optErrMsg = `Invalid FamilyMemberHistory.procedure.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid FamilyMemberHistory.procedure.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3753,6 +3745,16 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3781,21 +3783,19 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`FamilyMemberHistory.procedure.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasOutcome()) {
@@ -3813,11 +3813,6 @@ export class FamilyMemberHistoryProcedureComponent extends BackboneElement imple
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

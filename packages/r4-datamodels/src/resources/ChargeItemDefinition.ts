@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,24 +47,19 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -92,6 +86,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -147,7 +142,6 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    * @param sourceJson - JSON representing FHIR `ChargeItemDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ChargeItemDefinition
    * @returns ChargeItemDefinition data model or undefined for `ChargeItemDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ChargeItemDefinition | undefined {
@@ -167,8 +161,6 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -176,12 +168,12 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUrl(null);
       } else {
         instance.setUrlElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUrl(null);
     }
 
     fieldName = 'identifier';
@@ -276,12 +268,12 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -441,12 +433,6 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -821,10 +807,10 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `url` property value as a UriType object if defined; else null
+   * @returns the `url` property value as a UriType object if defined; else an empty UriType object
    */
-  public getUrlElement(): UriType | null {
-    return this.url;
+  public getUrlElement(): UriType {
+    return this.url ?? new UriType();
   }
 
   /**
@@ -835,11 +821,14 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrlElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `ChargeItemDefinition.url is required`);
-    const optErrMsg = `Invalid ChargeItemDefinition.url; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.url = element;
+  public setUrlElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid ChargeItemDefinition.url; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.url = element;
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -868,10 +857,13 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrl(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `ChargeItemDefinition.url is required`);
-    const optErrMsg = `Invalid ChargeItemDefinition.url (${String(value)})`;
-    this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setUrl(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid ChargeItemDefinition.url (${String(value)})`;
+      this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -1453,11 +1445,14 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ChargeItemDefinition.status is required`);
-    const errMsgPrefix = `Invalid ChargeItemDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ChargeItemDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1490,11 +1485,14 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ChargeItemDefinition.status is required`);
-    const optErrMsg = `Invalid ChargeItemDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ChargeItemDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1527,10 +1525,13 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ChargeItemDefinition.status is required`);
-    const optErrMsg = `Invalid ChargeItemDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ChargeItemDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2458,6 +2459,16 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.url, this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2513,21 +2524,19 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUrlElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getUrlElement()!, 'url', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
     } else {
-      missingReqdProperties.push(`ChargeItemDefinition.url`);
+      jsonObj['url'] = null;
     }
 
     if (this.hasIdentifier()) {
@@ -2558,7 +2567,7 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ChargeItemDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2619,11 +2628,6 @@ export class ChargeItemDefinition extends DomainResource implements IDomainResou
 
     if (this.hasPropertyGroup()) {
       setFhirBackboneElementListJson(this.getPropertyGroup(), 'propertyGroup', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2699,7 +2703,6 @@ export class ChargeItemDefinitionApplicabilityComponent extends BackboneElement 
       instance.setExpressionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3076,7 +3079,6 @@ export class ChargeItemDefinitionPropertyGroupComponent extends BackboneElement 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3324,7 +3326,6 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
    * @param sourceJson - JSON representing FHIR `ChargeItemDefinitionPropertyGroupPriceComponentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ChargeItemDefinitionPropertyGroupPriceComponentComponent
    * @returns ChargeItemDefinitionPropertyGroupPriceComponentComponent data model or undefined for `ChargeItemDefinitionPropertyGroupPriceComponentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ChargeItemDefinitionPropertyGroupPriceComponentComponent | undefined {
@@ -3343,8 +3344,6 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3352,12 +3351,12 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'code';
@@ -3385,12 +3384,6 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
       instance.setAmount(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3480,11 +3473,14 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
    *
    * @see CodeSystem Enumeration: {@link InvoicePriceComponentTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ChargeItemDefinition.propertyGroup.priceComponent.type is required`);
-    const errMsgPrefix = `Invalid ChargeItemDefinition.propertyGroup.priceComponent.type`;
-    assertEnumCodeType<InvoicePriceComponentTypeEnum>(enumType, InvoicePriceComponentTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ChargeItemDefinition.propertyGroup.priceComponent.type`;
+      assertEnumCodeType<InvoicePriceComponentTypeEnum>(enumType, InvoicePriceComponentTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3517,11 +3513,14 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
    *
    * @see CodeSystem Enumeration: {@link InvoicePriceComponentTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ChargeItemDefinition.propertyGroup.priceComponent.type is required`);
-    const optErrMsg = `Invalid ChargeItemDefinition.propertyGroup.priceComponent.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.invoicePriceComponentTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ChargeItemDefinition.propertyGroup.priceComponent.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.invoicePriceComponentTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3554,10 +3553,13 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
    *
    * @see CodeSystem Enumeration: {@link InvoicePriceComponentTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ChargeItemDefinition.propertyGroup.priceComponent.type is required`);
-    const optErrMsg = `Invalid ChargeItemDefinition.propertyGroup.priceComponent.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.invoicePriceComponentTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ChargeItemDefinition.propertyGroup.priceComponent.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.invoicePriceComponentTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3718,6 +3720,16 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3744,21 +3756,20 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ChargeItemDefinition.propertyGroup.priceComponent.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCode()) {
@@ -3771,11 +3782,6 @@ export class ChargeItemDefinitionPropertyGroupPriceComponentComponent extends Ba
 
     if (this.hasAmount()) {
       setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,18 +46,14 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
@@ -77,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -132,7 +128,6 @@ export class Substance extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Substance`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Substance
    * @returns Substance data model or undefined for `Substance`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Substance | undefined {
@@ -151,8 +146,6 @@ export class Substance extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -174,12 +167,12 @@ export class Substance extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setInstance(null);
       } else {
         instance.setInstanceElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setInstance(null);
     }
 
     fieldName = 'status';
@@ -210,12 +203,12 @@ export class Substance extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'description';
@@ -257,12 +250,6 @@ export class Substance extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -469,10 +456,10 @@ export class Substance extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `instance_` property value as a BooleanType object if defined; else null
+   * @returns the `instance_` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getInstanceElement(): BooleanType | null {
-    return this.instance_;
+  public getInstanceElement(): BooleanType {
+    return this.instance_ ?? new BooleanType();
   }
 
   /**
@@ -483,11 +470,14 @@ export class Substance extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setInstanceElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `Substance.instance is required`);
-    const optErrMsg = `Invalid Substance.instance; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.instance_ = element;
+  public setInstanceElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Substance.instance; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.instance_ = element;
+    } else {
+      this.instance_ = null;
+    }
     return this;
   }
 
@@ -516,10 +506,13 @@ export class Substance extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setInstance(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `Substance.instance is required`);
-    const optErrMsg = `Invalid Substance.instance (${String(value)})`;
-    this.instance_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setInstance(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Substance.instance (${String(value)})`;
+      this.instance_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.instance_ = null;
+    }
     return this;
   }
 
@@ -705,10 +698,10 @@ export class Substance extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `code` property value as a CodeableReference object if defined; else null
+   * @returns the `code` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getCode(): CodeableReference | null {
-    return this.code;
+  public getCode(): CodeableReference {
+    return this.code ?? new CodeableReference();
   }
 
   /**
@@ -718,11 +711,14 @@ export class Substance extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `Substance.code is required`);
-    const optErrMsg = `Invalid Substance.code; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid Substance.code; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -978,6 +974,16 @@ export class Substance extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.instance_, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1012,25 +1018,23 @@ export class Substance extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
     }
 
     if (this.hasInstanceElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getInstanceElement()!, 'instance', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getInstanceElement(), 'instance', jsonObj);
     } else {
-      missingReqdProperties.push(`Substance.instance`);
+      jsonObj['instance'] = null;
     }
 
     if (this.hasStatusElement()) {
@@ -1043,10 +1047,9 @@ export class Substance extends DomainResource implements IDomainResource {
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`Substance.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -1063,11 +1066,6 @@ export class Substance extends DomainResource implements IDomainResource {
 
     if (this.hasIngredient()) {
       setFhirBackboneElementListJson(this.getIngredient(), 'ingredient', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1102,7 +1100,6 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `SubstanceIngredientComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceIngredientComponent
    * @returns SubstanceIngredientComponent data model or undefined for `SubstanceIngredientComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceIngredientComponent | undefined {
@@ -1124,8 +1121,6 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
     const errorMessage = `DecoratorMetadataObject does not exist for SubstanceIngredientComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'quantity';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -1143,17 +1138,11 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
       classMetadata,
     );
     if (substance === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setSubstance(null);
     } else {
       instance.setSubstance(substance);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1244,10 +1233,13 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Substance.ingredient.substance[x]')
-  public setSubstance(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Substance.ingredient.substance[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.substance = value;
+  public setSubstance(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.substance = value;
+    } else {
+      this.substance = null;
+    }
     return this;
   }
 
@@ -1327,6 +1319,16 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.substance, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1351,15 +1353,14 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasQuantity()) {
       setFhirComplexJson(this.getQuantity(), 'quantity', jsonObj);
@@ -1369,12 +1370,7 @@ export class SubstanceIngredientComponent extends BackboneElement implements IBa
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getSubstance()!, 'substance', jsonObj);
     } else {
-      missingReqdProperties.push(`Substance.ingredient.substance[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['substance'] = null;
     }
 
     return jsonObj;

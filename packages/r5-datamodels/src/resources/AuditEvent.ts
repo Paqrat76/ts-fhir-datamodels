@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   Base64BinaryType,
@@ -48,20 +47,16 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   IntegerType,
   InvalidTypeError,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   TimeType,
@@ -70,7 +65,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirBase64Binary,
   fhirBase64BinarySchema,
@@ -88,6 +82,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -158,7 +153,6 @@ export class AuditEvent extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `AuditEvent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AuditEvent
    * @returns AuditEvent data model or undefined for `AuditEvent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): AuditEvent | undefined {
@@ -182,8 +176,6 @@ export class AuditEvent extends DomainResource implements IDomainResource {
     const errorMessage = `DecoratorMetadataObject does not exist for AuditEvent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'category';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -203,12 +195,12 @@ export class AuditEvent extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'action';
@@ -246,12 +238,12 @@ export class AuditEvent extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: InstantType | undefined = fhirParser.parseInstantType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRecorded(null);
       } else {
         instance.setRecordedElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRecorded(null);
     }
 
     fieldName = 'outcome';
@@ -312,13 +304,13 @@ export class AuditEvent extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: AuditEventAgentComponent | undefined = AuditEventAgentComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAgent(null);
         } else {
           instance.addAgent(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAgent(null);
     }
 
     fieldName = 'source';
@@ -327,12 +319,12 @@ export class AuditEvent extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const component: AuditEventSourceComponent | undefined = AuditEventSourceComponent.parse(classJsonObj[fieldName]!, sourceField);
       if (component === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSource(null);
       } else {
         instance.setSource(component);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSource(null);
     }
 
     fieldName = 'entity';
@@ -348,12 +340,6 @@ export class AuditEvent extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -673,10 +659,10 @@ export class AuditEvent extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -686,11 +672,14 @@ export class AuditEvent extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `AuditEvent.code is required`);
-    const optErrMsg = `Invalid AuditEvent.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AuditEvent.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1017,10 +1006,10 @@ export class AuditEvent extends DomainResource implements IDomainResource {
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `recorded` property value as a InstantType object if defined; else null
+   * @returns the `recorded` property value as a InstantType object if defined; else an empty InstantType object
    */
-  public getRecordedElement(): InstantType | null {
-    return this.recorded;
+  public getRecordedElement(): InstantType {
+    return this.recorded ?? new InstantType();
   }
 
   /**
@@ -1031,11 +1020,14 @@ export class AuditEvent extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRecordedElement(element: InstantType): this {
-    assertIsDefined<InstantType>(element, `AuditEvent.recorded is required`);
-    const optErrMsg = `Invalid AuditEvent.recorded; Provided value is not an instance of InstantType.`;
-    assertFhirType<InstantType>(element, InstantType, optErrMsg);
-    this.recorded = element;
+  public setRecordedElement(element: InstantType | undefined | null): this {
+    if (isDefined<InstantType>(element)) {
+      const optErrMsg = `Invalid AuditEvent.recorded; Provided value is not an instance of InstantType.`;
+      assertFhirType<InstantType>(element, InstantType, optErrMsg);
+      this.recorded = element;
+    } else {
+      this.recorded = null;
+    }
     return this;
   }
 
@@ -1064,10 +1056,13 @@ export class AuditEvent extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRecorded(value: fhirInstant): this {
-    assertIsDefined<fhirInstant>(value, `AuditEvent.recorded is required`);
-    const optErrMsg = `Invalid AuditEvent.recorded (${String(value)})`;
-    this.recorded = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+  public setRecorded(value: fhirInstant | undefined | null): this {
+    if (isDefined<fhirInstant>(value)) {
+      const optErrMsg = `Invalid AuditEvent.recorded (${String(value)})`;
+      this.recorded = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+    } else {
+      this.recorded = null;
+    }
     return this;
   }
 
@@ -1344,11 +1339,14 @@ export class AuditEvent extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAgent(value: AuditEventAgentComponent[]): this {
-    assertIsDefinedList<AuditEventAgentComponent>(value, `AuditEvent.agent is required`);
-    const optErrMsg = `Invalid AuditEvent.agent; Provided value array has an element that is not an instance of AuditEventAgentComponent.`;
-    assertFhirTypeList<AuditEventAgentComponent>(value, AuditEventAgentComponent, optErrMsg);
-    this.agent = value;
+  public setAgent(value: AuditEventAgentComponent[] | undefined | null): this {
+    if (isDefinedList<AuditEventAgentComponent>(value)) {
+      const optErrMsg = `Invalid AuditEvent.agent; Provided value array has an element that is not an instance of AuditEventAgentComponent.`;
+      assertFhirTypeList<AuditEventAgentComponent>(value, AuditEventAgentComponent, optErrMsg);
+      this.agent = value;
+    } else {
+      this.agent = null;
+    }
     return this;
   }
 
@@ -1386,10 +1384,10 @@ export class AuditEvent extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `source` property value as a AuditEventSourceComponent object if defined; else null
+   * @returns the `source` property value as a AuditEventSourceComponent object if defined; else an empty AuditEventSourceComponent object
    */
-  public getSource(): AuditEventSourceComponent | null {
-    return this.source;
+  public getSource(): AuditEventSourceComponent {
+    return this.source ?? new AuditEventSourceComponent();
   }
 
   /**
@@ -1399,11 +1397,14 @@ export class AuditEvent extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSource(value: AuditEventSourceComponent): this {
-    assertIsDefined<AuditEventSourceComponent>(value, `AuditEvent.source is required`);
-    const optErrMsg = `Invalid AuditEvent.source; Provided element is not an instance of AuditEventSourceComponent.`;
-    assertFhirType<AuditEventSourceComponent>(value, AuditEventSourceComponent, optErrMsg);
-    this.source = value;
+  public setSource(value: AuditEventSourceComponent | undefined | null): this {
+    if (isDefined<AuditEventSourceComponent>(value)) {
+      const optErrMsg = `Invalid AuditEvent.source; Provided element is not an instance of AuditEventSourceComponent.`;
+      assertFhirType<AuditEventSourceComponent>(value, AuditEventSourceComponent, optErrMsg);
+      this.source = value;
+    } else {
+      this.source = null;
+    }
     return this;
   }
 
@@ -1504,6 +1505,16 @@ export class AuditEvent extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.recorded, this.source, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1545,25 +1556,23 @@ export class AuditEvent extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCategory()) {
       setFhirComplexListJson(this.getCategory(), 'category', jsonObj);
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasActionElement()) {
@@ -1582,10 +1591,9 @@ export class AuditEvent extends DomainResource implements IDomainResource {
     }
 
     if (this.hasRecordedElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInstant>(this.getRecordedElement()!, 'recorded', jsonObj);
+      setFhirPrimitiveJson<fhirInstant>(this.getRecordedElement(), 'recorded', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.recorded`);
+      jsonObj['recorded'] = null;
     }
 
     if (this.hasOutcome()) {
@@ -1611,23 +1619,17 @@ export class AuditEvent extends DomainResource implements IDomainResource {
     if (this.hasAgent()) {
       setFhirBackboneElementListJson(this.getAgent(), 'agent', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.agent`);
+      jsonObj['agent'] = null;
     }
 
     if (this.hasSource()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirBackboneElementJson(this.getSource()!, 'source', jsonObj);
+      setFhirBackboneElementJson(this.getSource(), 'source', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.source`);
+      jsonObj['source'] = null;
     }
 
     if (this.hasEntity()) {
       setFhirBackboneElementListJson(this.getEntity(), 'entity', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1663,7 +1665,6 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `AuditEventOutcomeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AuditEventOutcomeComponent
    * @returns AuditEventOutcomeComponent data model or undefined for `AuditEventOutcomeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AuditEventOutcomeComponent | undefined {
@@ -1681,20 +1682,18 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'detail';
@@ -1710,12 +1709,6 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1753,10 +1746,10 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a Coding object if defined; else null
+   * @returns the `code` property value as a Coding object if defined; else an empty Coding object
    */
-  public getCode(): Coding | null {
-    return this.code;
+  public getCode(): Coding {
+    return this.code ?? new Coding();
   }
 
   /**
@@ -1766,11 +1759,14 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: Coding): this {
-    assertIsDefined<Coding>(value, `AuditEvent.outcome.code is required`);
-    const optErrMsg = `Invalid AuditEvent.outcome.code; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.code = value;
+  public setCode(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid AuditEvent.outcome.code; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1859,6 +1855,16 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1884,30 +1890,23 @@ export class AuditEventOutcomeComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.outcome.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDetail()) {
       setFhirComplexListJson(this.getDetail(), 'detail', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1942,7 +1941,6 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `AuditEventAgentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AuditEventAgentComponent
    * @returns AuditEventAgentComponent data model or undefined for `AuditEventAgentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AuditEventAgentComponent | undefined {
@@ -1964,8 +1962,6 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
     const classMetadata: DecoratorMetadataObject | null = AuditEventAgentComponent[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for AuditEventAgentComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -1994,12 +1990,12 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setWho(null);
       } else {
         instance.setWho(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setWho(null);
     }
 
     fieldName = 'requestor';
@@ -2060,12 +2056,6 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2310,10 +2300,10 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
   }
 
   /**
-   * @returns the `who` property value as a Reference object if defined; else null
+   * @returns the `who` property value as a Reference object if defined; else an empty Reference object
    */
-  public getWho(): Reference | null {
-    return this.who;
+  public getWho(): Reference {
+    return this.who ?? new Reference();
   }
 
   /**
@@ -2340,10 +2330,13 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
   
     'RelatedPerson',
   ])
-  public setWho(value: Reference): this {
-    assertIsDefined<Reference>(value, `AuditEvent.agent.who is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.who = value;
+  public setWho(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.who = value;
+    } else {
+      this.who = null;
+    }
     return this;
   }
 
@@ -2765,6 +2758,16 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.who, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2798,15 +2801,14 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -2817,10 +2819,9 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
     }
 
     if (this.hasWho()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getWho()!, 'who', jsonObj);
+      setFhirComplexJson(this.getWho(), 'who', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.agent.who`);
+      jsonObj['who'] = null;
     }
 
     if (this.hasRequestorElement()) {
@@ -2842,11 +2843,6 @@ export class AuditEventAgentComponent extends BackboneElement implements IBackbo
 
     if (this.hasAuthorization()) {
       setFhirComplexListJson(this.getAuthorization(), 'authorization', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2881,7 +2877,6 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `AuditEventSourceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AuditEventSourceComponent
    * @returns AuditEventSourceComponent data model or undefined for `AuditEventSourceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AuditEventSourceComponent | undefined {
@@ -2899,8 +2894,6 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'site';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -2915,12 +2908,12 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setObserver(null);
       } else {
         instance.setObserver(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setObserver(null);
     }
 
     fieldName = 'type';
@@ -2936,12 +2929,6 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3041,10 +3028,10 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
   }
 
   /**
-   * @returns the `observer` property value as a Reference object if defined; else null
+   * @returns the `observer` property value as a Reference object if defined; else an empty Reference object
    */
-  public getObserver(): Reference | null {
-    return this.observer;
+  public getObserver(): Reference {
+    return this.observer ?? new Reference();
   }
 
   /**
@@ -3071,10 +3058,13 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
   
     'RelatedPerson',
   ])
-  public setObserver(value: Reference): this {
-    assertIsDefined<Reference>(value, `AuditEvent.source.observer is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.observer = value;
+  public setObserver(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.observer = value;
+    } else {
+      this.observer = null;
+    }
     return this;
   }
 
@@ -3164,6 +3154,16 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.observer, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3190,34 +3190,27 @@ export class AuditEventSourceComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSite()) {
       setFhirComplexJson(this.getSite(), 'site', jsonObj);
     }
 
     if (this.hasObserver()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getObserver()!, 'observer', jsonObj);
+      setFhirComplexJson(this.getObserver(), 'observer', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.source.observer`);
+      jsonObj['observer'] = null;
     }
 
     if (this.hasType()) {
       setFhirComplexListJson(this.getType(), 'type', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3330,7 +3323,6 @@ export class AuditEventEntityComponent extends BackboneElement implements IBackb
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3862,7 +3854,6 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `AuditEventEntityDetailComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AuditEventEntityDetailComponent
    * @returns AuditEventEntityDetailComponent data model or undefined for `AuditEventEntityDetailComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AuditEventEntityDetailComponent | undefined {
@@ -3884,20 +3875,18 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
     const errorMessage = `DecoratorMetadataObject does not exist for AuditEventEntityDetailComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -3909,17 +3898,11 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3981,10 +3964,10 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -3994,11 +3977,14 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `AuditEvent.entity.detail.type is required`);
-    const optErrMsg = `Invalid AuditEvent.entity.detail.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AuditEvent.entity.detail.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4026,10 +4012,13 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('AuditEvent.entity.detail.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `AuditEvent.entity.detail.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -4307,6 +4296,16 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4331,33 +4330,26 @@ export class AuditEventEntityDetailComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.entity.detail.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`AuditEvent.entity.detail.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

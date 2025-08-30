@@ -37,26 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -68,6 +62,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -124,7 +119,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `DeviceMetric`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceMetric
    * @returns DeviceMetric data model or undefined for `DeviceMetric`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DeviceMetric | undefined {
@@ -143,8 +137,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -165,12 +157,12 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'unit';
@@ -222,12 +214,12 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCategory(null);
       } else {
         instance.setCategoryElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCategory(null);
     }
 
     fieldName = 'measurementPeriod';
@@ -251,12 +243,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -497,10 +483,10 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -510,11 +496,14 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceMetric.type is required`);
-    const optErrMsg = `Invalid DeviceMetric.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceMetric.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -880,11 +869,14 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MetricCategoryEnum }
    */
-  public setCategoryEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DeviceMetric.category is required`);
-    const errMsgPrefix = `Invalid DeviceMetric.category`;
-    assertEnumCodeType<MetricCategoryEnum>(enumType, MetricCategoryEnum, errMsgPrefix);
-    this.category = enumType;
+  public setCategoryEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DeviceMetric.category`;
+      assertEnumCodeType<MetricCategoryEnum>(enumType, MetricCategoryEnum, errMsgPrefix);
+      this.category = enumType;
+    } else {
+      this.category = null;
+    }
     return this;
   }
 
@@ -917,11 +909,14 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MetricCategoryEnum }
    */
-  public setCategoryElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DeviceMetric.category is required`);
-    const optErrMsg = `Invalid DeviceMetric.category; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.category = new EnumCodeType(element, this.metricCategoryEnum);
+  public setCategoryElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DeviceMetric.category; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.category = new EnumCodeType(element, this.metricCategoryEnum);
+    } else {
+      this.category = null;
+    }
     return this;
   }
 
@@ -954,10 +949,13 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MetricCategoryEnum }
    */
-  public setCategory(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DeviceMetric.category is required`);
-    const optErrMsg = `Invalid DeviceMetric.category (${String(value)})`;
-    this.category = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.metricCategoryEnum);
+  public setCategory(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DeviceMetric.category (${String(value)})`;
+      this.category = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.metricCategoryEnum);
+    } else {
+      this.category = null;
+    }
     return this;
   }
 
@@ -1086,6 +1084,16 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.category, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1120,25 +1128,23 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
     }
 
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceMetric.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasUnit()) {
@@ -1167,7 +1173,7 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCategoryElement()!, 'category', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceMetric.category`);
+      jsonObj['category'] = null;
     }
 
     if (this.hasMeasurementPeriod()) {
@@ -1176,11 +1182,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
 
     if (this.hasCalibration()) {
       setFhirBackboneElementListJson(this.getCalibration(), 'calibration', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1257,7 +1258,6 @@ export class DeviceMetricCalibrationComponent extends BackboneElement implements
       instance.setTimeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

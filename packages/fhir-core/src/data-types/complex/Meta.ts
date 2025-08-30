@@ -21,7 +21,6 @@
  *
  */
 
-import { strict as assert } from 'node:assert';
 import {
   DataType,
   setFhirComplexListJson,
@@ -31,7 +30,6 @@ import {
 import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
-import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { Coding } from './Coding';
 import { CanonicalType } from '../primitive/CanonicalType';
 import { IdType } from '../primitive/IdType';
@@ -177,7 +175,6 @@ export class Meta extends DataType implements IDataType {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

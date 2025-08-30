@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,18 +45,14 @@ import {
   DateTimeType,
   DateType,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
@@ -77,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -117,7 +113,6 @@ export class SubstanceDefinition extends DomainResource implements IDomainResour
    * @param sourceJson - JSON representing FHIR `SubstanceDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceDefinition
    * @returns SubstanceDefinition data model or undefined for `SubstanceDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceDefinition | undefined {
@@ -356,7 +351,6 @@ export class SubstanceDefinition extends DomainResource implements IDomainResour
       instance.setSourceMaterial(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1964,7 +1958,6 @@ export class SubstanceDefinitionMoietyComponent extends BackboneElement implemen
       instance.setMeasurementType(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2589,7 +2582,6 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `SubstanceDefinitionPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceDefinitionPropertyComponent
    * @returns SubstanceDefinitionPropertyComponent data model or undefined for `SubstanceDefinitionPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceDefinitionPropertyComponent | undefined {
@@ -2611,20 +2603,18 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
     const errorMessage = `DecoratorMetadataObject does not exist for SubstanceDefinitionPropertyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -2637,12 +2627,6 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
     );
     instance.setValue(value);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2691,10 +2675,10 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -2704,11 +2688,14 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `SubstanceDefinition.property.type is required`);
-    const optErrMsg = `Invalid SubstanceDefinition.property.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid SubstanceDefinition.property.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2888,6 +2875,16 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2912,31 +2909,24 @@ export class SubstanceDefinitionPropertyComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`SubstanceDefinition.property.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2969,7 +2959,6 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
    * @param sourceJson - JSON representing FHIR `SubstanceDefinitionMolecularWeightComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceDefinitionMolecularWeightComponent
    * @returns SubstanceDefinitionMolecularWeightComponent data model or undefined for `SubstanceDefinitionMolecularWeightComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceDefinitionMolecularWeightComponent | undefined {
@@ -2986,8 +2975,6 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
 
     let fieldName = '';
     let sourceField = '';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'method';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3011,20 +2998,14 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAmount(null);
       } else {
         instance.setAmount(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAmount(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3137,10 +3118,10 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
   }
 
   /**
-   * @returns the `amount` property value as a Quantity object if defined; else null
+   * @returns the `amount` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getAmount(): Quantity | null {
-    return this.amount;
+  public getAmount(): Quantity {
+    return this.amount ?? new Quantity();
   }
 
   /**
@@ -3150,11 +3131,14 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAmount(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `SubstanceDefinition.molecularWeight.amount is required`);
-    const optErrMsg = `Invalid SubstanceDefinition.molecularWeight.amount; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.amount = value;
+  public setAmount(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid SubstanceDefinition.molecularWeight.amount; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.amount = value;
+    } else {
+      this.amount = null;
+    }
     return this;
   }
 
@@ -3186,6 +3170,16 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.amount, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3211,15 +3205,14 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasMethod()) {
       setFhirComplexJson(this.getMethod(), 'method', jsonObj);
@@ -3230,15 +3223,9 @@ export class SubstanceDefinitionMolecularWeightComponent extends BackboneElement
     }
 
     if (this.hasAmount()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getAmount()!, 'amount', jsonObj);
+      setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
     } else {
-      missingReqdProperties.push(`SubstanceDefinition.molecularWeight.amount`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['amount'] = null;
     }
 
     return jsonObj;
@@ -3366,7 +3353,6 @@ export class SubstanceDefinitionStructureComponent extends BackboneElement imple
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4070,7 +4056,6 @@ export class SubstanceDefinitionStructureRepresentationComponent extends Backbon
       instance.setDocument(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4467,7 +4452,6 @@ export class SubstanceDefinitionCodeComponent extends BackboneElement implements
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4913,7 +4897,6 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `SubstanceDefinitionNameComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceDefinitionNameComponent
    * @returns SubstanceDefinitionNameComponent data model or undefined for `SubstanceDefinitionNameComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceDefinitionNameComponent | undefined {
@@ -4932,8 +4915,6 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4941,12 +4922,12 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'type';
@@ -5065,12 +5046,6 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5234,10 +5209,10 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -5248,11 +5223,14 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `SubstanceDefinition.name.name is required`);
-    const optErrMsg = `Invalid SubstanceDefinition.name.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid SubstanceDefinition.name.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -5281,10 +5259,13 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `SubstanceDefinition.name.name is required`);
-    const optErrMsg = `Invalid SubstanceDefinition.name.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid SubstanceDefinition.name.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -5866,6 +5847,16 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5906,21 +5897,19 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`SubstanceDefinition.name.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasType()) {
@@ -5961,11 +5950,6 @@ export class SubstanceDefinitionNameComponent extends BackboneElement implements
 
     if (this.hasSource()) {
       setFhirComplexListJson(this.getSource(), 'source', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6037,7 +6021,6 @@ export class SubstanceDefinitionNameOfficialComponent extends BackboneElement im
       instance.setDateElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6310,7 +6293,6 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
    * @param sourceJson - JSON representing FHIR `SubstanceDefinitionRelationshipComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceDefinitionRelationshipComponent
    * @returns SubstanceDefinitionRelationshipComponent data model or undefined for `SubstanceDefinitionRelationshipComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceDefinitionRelationshipComponent | undefined {
@@ -6333,8 +6315,6 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
     const errorMessage = `DecoratorMetadataObject does not exist for SubstanceDefinitionRelationshipComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'substanceDefinition[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const substanceDefinition: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -6351,12 +6331,12 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'isDefining';
@@ -6407,12 +6387,6 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6621,10 +6595,10 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -6634,11 +6608,14 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `SubstanceDefinition.relationship.type is required`);
-    const optErrMsg = `Invalid SubstanceDefinition.relationship.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid SubstanceDefinition.relationship.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6973,6 +6950,16 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7003,15 +6990,14 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSubstanceDefinition()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -7019,10 +7005,9 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
     }
 
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`SubstanceDefinition.relationship.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasIsDefiningElement()) {
@@ -7044,11 +7029,6 @@ export class SubstanceDefinitionRelationshipComponent extends BackboneElement im
 
     if (this.hasSource()) {
       setFhirComplexListJson(this.getSource(), 'source', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -7139,7 +7119,6 @@ export class SubstanceDefinitionSourceMaterialComponent extends BackboneElement 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

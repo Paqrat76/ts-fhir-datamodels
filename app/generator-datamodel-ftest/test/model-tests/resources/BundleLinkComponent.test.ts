@@ -21,8 +21,7 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
-import { FhirError, IBackboneElement, InvalidTypeError, PrimitiveTypeError } from '@paq-ts-fhir/fhir-core';
+import { IBackboneElement, InvalidTypeError, PrimitiveTypeError, StringType, UriType } from '@paq-ts-fhir/fhir-core';
 import { BundleLinkComponent } from '../../../src/resources/Bundle';
 import {
   expectBackboneElementBase,
@@ -48,19 +47,16 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('The following required properties do not exist: Bundle.link.relation, Bundle.link.url');
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
       expect(testInstance.hasRelationElement()).toBe(false);
-      expect(testInstance.getRelationElement()).toBeNull();
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
       expect(testInstance.hasRelation()).toBe(false);
       expect(testInstance.getRelation()).toBeNull();
       expect(testInstance.hasUrlElement()).toBe(false);
-      expect(testInstance.getUrlElement()).toBeNull();
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
       expect(testInstance.hasUrl()).toBe(false);
       expect(testInstance.getUrl()).toBeNull();
     });
@@ -75,6 +71,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -96,6 +93,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -123,6 +121,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -139,16 +138,8 @@ describe('BundleLinkComponent', () => {
 
       undefineBackboneElementProperties(testModel);
 
-      let t = () => {
-        testModel.setRelation(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.link.relation is required');
-      t = () => {
-        testModel.setUrl(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.link.url is required');
+      testModel.setRelation(TestData.UNDEFINED_VALUE);
+      testModel.setUrl(TestData.UNDEFINED_VALUE);
 
       testInstance = testModel.copy();
 
@@ -158,18 +149,19 @@ describe('BundleLinkComponent', () => {
         'BundleLinkComponent',
         'Bundle.link',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
-      expect(testInstance.hasRelationElement()).toBe(true);
-      expect(testInstance.getRelationElement()).toEqual(TestData.VALID_STRING_TYPE);
-      expect(testInstance.hasRelation()).toBe(true);
-      expect(testInstance.getRelation()).toEqual(TestData.VALID_STRING);
-      expect(testInstance.hasUrlElement()).toBe(true);
-      expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE);
-      expect(testInstance.hasUrl()).toBe(true);
-      expect(testInstance.getUrl()).toEqual(TestData.VALID_URI);
+      expect(testInstance.hasRelationElement()).toBe(false);
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
+      expect(testInstance.hasRelation()).toBe(false);
+      expect(testInstance.getRelation()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
     });
 
     it('should be properly reset by modifying/adding all properties with primitive elements as appropriate', () => {
@@ -187,6 +179,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -213,6 +206,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -229,16 +223,8 @@ describe('BundleLinkComponent', () => {
 
       undefineBackboneElementProperties(testInstance);
 
-      let t = () => {
-        testInstance.setRelation(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.link.relation is required');
-      t = () => {
-        testInstance.setUrl(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.link.url is required');
+      testInstance.setRelation(TestData.UNDEFINED_VALUE);
+      testInstance.setUrl(TestData.UNDEFINED_VALUE);
 
       expectBackboneElementBase(
         BundleLinkComponent as unknown as IBackboneElement,
@@ -246,18 +232,19 @@ describe('BundleLinkComponent', () => {
         'BundleLinkComponent',
         'Bundle.link',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
-      expect(testInstance.hasRelationElement()).toBe(true);
-      expect(testInstance.getRelationElement()).toEqual(TestData.VALID_STRING_TYPE_2);
-      expect(testInstance.hasRelation()).toBe(true);
-      expect(testInstance.getRelation()).toEqual(TestData.VALID_STRING_2);
-      expect(testInstance.hasUrlElement()).toBe(true);
-      expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE_2);
-      expect(testInstance.hasUrl()).toBe(true);
-      expect(testInstance.getUrl()).toEqual(TestData.VALID_URI_2);
+      expect(testInstance.hasRelationElement()).toBe(false);
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
+      expect(testInstance.hasRelation()).toBe(false);
+      expect(testInstance.getRelation()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
     });
 
     it('should be properly reset by modifying/adding all properties with PrimitiveType elements as appropriate', () => {
@@ -275,6 +262,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -301,6 +289,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -317,16 +306,8 @@ describe('BundleLinkComponent', () => {
 
       undefineBackboneElementProperties(testInstance);
 
-      let t = () => {
-        testInstance.setRelation(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.link.relation is required');
-      t = () => {
-        testInstance.setUrl(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.link.url is required');
+      testInstance.setRelation(TestData.UNDEFINED_VALUE);
+      testInstance.setUrl(TestData.UNDEFINED_VALUE);
 
       expectBackboneElementBase(
         BundleLinkComponent as unknown as IBackboneElement,
@@ -334,18 +315,19 @@ describe('BundleLinkComponent', () => {
         'BundleLinkComponent',
         'Bundle.link',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
-      expect(testInstance.hasRelationElement()).toBe(true);
-      expect(testInstance.getRelationElement()).toEqual(TestData.VALID_STRING_TYPE_2);
-      expect(testInstance.hasRelation()).toBe(true);
-      expect(testInstance.getRelation()).toEqual(TestData.VALID_STRING_2);
-      expect(testInstance.hasUrlElement()).toBe(true);
-      expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE_2);
-      expect(testInstance.hasUrl()).toBe(true);
-      expect(testInstance.getUrl()).toEqual(TestData.VALID_URI_2);
+      expect(testInstance.hasRelationElement()).toBe(false);
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
+      expect(testInstance.hasRelation()).toBe(false);
+      expect(testInstance.getRelation()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
     });
   });
 
@@ -388,18 +370,6 @@ describe('BundleLinkComponent', () => {
       },
       url: 'validUri',
     };
-    const INVALID_JSON = {
-      bogusField: 'bogus value',
-    };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new BundleLinkComponent();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties do not exist: Bundle.link.relation, Bundle.link.url`);
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleLinkComponent(altRelation, TestData.VALID_URI_TYPE);
@@ -413,6 +383,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedElementProperties(testInstance, 2);
 
       expect(testInstance.hasRelationElement()).toBe(true);
@@ -428,7 +399,7 @@ describe('BundleLinkComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: BundleLinkComponent | undefined = undefined;
+      let testInstance: BundleLinkComponent | undefined;
       testInstance = BundleLinkComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -437,16 +408,6 @@ describe('BundleLinkComponent', () => {
 
       testInstance = BundleLinkComponent.parse(undefined);
       expect(testInstance).toBeUndefined();
-    });
-
-    it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        BundleLinkComponent.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: BundleLinkComponent.relation, BundleLinkComponent.url`,
-      );
     });
 
     it('should return parsed Bundle for valid json', () => {
@@ -459,6 +420,7 @@ describe('BundleLinkComponent', () => {
         'Bundle.link',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedElementProperties(testInstance, 2);
 
@@ -476,18 +438,21 @@ describe('BundleLinkComponent', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleLinkComponent(TestData.INVALID_STRING_TYPE, null);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.link.relation; Provided value is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleLinkComponent(TestData.INVALID_STRING_TYPE_VALUE, null);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Bundle.link.relation (12345)`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleLinkComponent(null, TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -503,12 +468,14 @@ describe('BundleLinkComponent', () => {
     it('relation: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleLinkComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setRelationElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.link.relation; Provided value is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setRelation(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -518,6 +485,7 @@ describe('BundleLinkComponent', () => {
     it('url: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleLinkComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setUrlElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);

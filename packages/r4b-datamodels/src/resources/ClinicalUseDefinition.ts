@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -45,17 +44,13 @@ import {
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -73,6 +68,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -122,7 +118,6 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
    * @param sourceJson - JSON representing FHIR `ClinicalUseDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ClinicalUseDefinition
    * @returns ClinicalUseDefinition data model or undefined for `ClinicalUseDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ClinicalUseDefinition | undefined {
@@ -141,8 +136,6 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -164,12 +157,12 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'category';
@@ -259,12 +252,6 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
       instance.setWarning(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -522,11 +509,14 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
    *
    * @see CodeSystem Enumeration: {@link ClinicalUseDefinitionTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ClinicalUseDefinition.type is required`);
-    const errMsgPrefix = `Invalid ClinicalUseDefinition.type`;
-    assertEnumCodeType<ClinicalUseDefinitionTypeEnum>(enumType, ClinicalUseDefinitionTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ClinicalUseDefinition.type`;
+      assertEnumCodeType<ClinicalUseDefinitionTypeEnum>(enumType, ClinicalUseDefinitionTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -559,11 +549,14 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
    *
    * @see CodeSystem Enumeration: {@link ClinicalUseDefinitionTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ClinicalUseDefinition.type is required`);
-    const optErrMsg = `Invalid ClinicalUseDefinition.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.clinicalUseDefinitionTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ClinicalUseDefinition.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.clinicalUseDefinitionTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -596,10 +589,13 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
    *
    * @see CodeSystem Enumeration: {@link ClinicalUseDefinitionTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ClinicalUseDefinition.type is required`);
-    const optErrMsg = `Invalid ClinicalUseDefinition.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.clinicalUseDefinitionTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ClinicalUseDefinition.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.clinicalUseDefinitionTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1045,6 +1041,16 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1082,15 +1088,14 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1100,7 +1105,7 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalUseDefinition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCategory()) {
@@ -1137,11 +1142,6 @@ export class ClinicalUseDefinition extends DomainResource implements IDomainReso
 
     if (this.hasWarning()) {
       setFhirBackboneElementJson(this.getWarning(), 'warning', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1243,7 +1243,6 @@ export class ClinicalUseDefinitionContraindicationComponent extends BackboneElem
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1694,7 +1693,6 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
    * @param sourceJson - JSON representing FHIR `ClinicalUseDefinitionContraindicationOtherTherapyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ClinicalUseDefinitionContraindicationOtherTherapyComponent
    * @returns ClinicalUseDefinitionContraindicationOtherTherapyComponent data model or undefined for `ClinicalUseDefinitionContraindicationOtherTherapyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ClinicalUseDefinitionContraindicationOtherTherapyComponent | undefined {
@@ -1712,20 +1710,18 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'relationshipType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationshipType(null);
       } else {
         instance.setRelationshipType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationshipType(null);
     }
 
     fieldName = 'therapy';
@@ -1734,20 +1730,14 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTherapy(null);
       } else {
         instance.setTherapy(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTherapy(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1789,10 +1779,10 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `relationshipType` property value as a CodeableConcept object if defined; else null
+   * @returns the `relationshipType` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getRelationshipType(): CodeableConcept | null {
-    return this.relationshipType;
+  public getRelationshipType(): CodeableConcept {
+    return this.relationshipType ?? new CodeableConcept();
   }
 
   /**
@@ -1802,11 +1792,14 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRelationshipType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ClinicalUseDefinition.contraindication.otherTherapy.relationshipType is required`);
-    const optErrMsg = `Invalid ClinicalUseDefinition.contraindication.otherTherapy.relationshipType; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.relationshipType = value;
+  public setRelationshipType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ClinicalUseDefinition.contraindication.otherTherapy.relationshipType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.relationshipType = value;
+    } else {
+      this.relationshipType = null;
+    }
     return this;
   }
 
@@ -1818,10 +1811,10 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
   }
 
   /**
-   * @returns the `therapy` property value as a CodeableReference object if defined; else null
+   * @returns the `therapy` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getTherapy(): CodeableReference | null {
-    return this.therapy;
+  public getTherapy(): CodeableReference {
+    return this.therapy ?? new CodeableReference();
   }
 
   /**
@@ -1831,11 +1824,14 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setTherapy(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `ClinicalUseDefinition.contraindication.otherTherapy.therapy is required`);
-    const optErrMsg = `Invalid ClinicalUseDefinition.contraindication.otherTherapy.therapy; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.therapy = value;
+  public setTherapy(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid ClinicalUseDefinition.contraindication.otherTherapy.therapy; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.therapy = value;
+    } else {
+      this.therapy = null;
+    }
     return this;
   }
 
@@ -1866,6 +1862,16 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.relationshipType, this.therapy, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1890,33 +1896,25 @@ export class ClinicalUseDefinitionContraindicationOtherTherapyComponent extends 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRelationshipType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelationshipType()!, 'relationshipType', jsonObj);
+      setFhirComplexJson(this.getRelationshipType(), 'relationshipType', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalUseDefinition.contraindication.otherTherapy.relationshipType`);
+      jsonObj['relationshipType'] = null;
     }
 
     if (this.hasTherapy()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getTherapy()!, 'therapy', jsonObj);
+      setFhirComplexJson(this.getTherapy(), 'therapy', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalUseDefinition.contraindication.otherTherapy.therapy`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['therapy'] = null;
     }
 
     return jsonObj;
@@ -2039,7 +2037,6 @@ export class ClinicalUseDefinitionIndicationComponent extends BackboneElement im
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2715,7 +2712,6 @@ export class ClinicalUseDefinitionInteractionComponent extends BackboneElement i
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3118,7 +3114,6 @@ export class ClinicalUseDefinitionInteractionInteractantComponent extends Backbo
    * @param sourceJson - JSON representing FHIR `ClinicalUseDefinitionInteractionInteractantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ClinicalUseDefinitionInteractionInteractantComponent
    * @returns ClinicalUseDefinitionInteractionInteractantComponent data model or undefined for `ClinicalUseDefinitionInteractionInteractantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ClinicalUseDefinitionInteractionInteractantComponent | undefined {
@@ -3140,8 +3135,6 @@ export class ClinicalUseDefinitionInteractionInteractantComponent extends Backbo
     const errorMessage = `DecoratorMetadataObject does not exist for ClinicalUseDefinitionInteractionInteractantComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'item[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const item: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -3151,17 +3144,11 @@ export class ClinicalUseDefinitionInteractionInteractantComponent extends Backbo
       classMetadata,
     );
     if (item === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     } else {
       instance.setItem(item);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3206,10 +3193,13 @@ export class ClinicalUseDefinitionInteractionInteractantComponent extends Backbo
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('ClinicalUseDefinition.interaction.interactant.item[x]')
-  public setItem(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `ClinicalUseDefinition.interaction.interactant.item[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.item = value;
+  public setItem(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -3288,6 +3278,16 @@ export class ClinicalUseDefinitionInteractionInteractantComponent extends Backbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3311,26 +3311,20 @@ export class ClinicalUseDefinitionInteractionInteractantComponent extends Backbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasItem()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getItem()!, 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`ClinicalUseDefinition.interaction.interactant.item[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['item'] = null;
     }
 
     return jsonObj;
@@ -3400,7 +3394,6 @@ export class ClinicalUseDefinitionUndesirableEffectComponent extends BackboneEle
       instance.setFrequencyOfOccurrence(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3675,7 +3668,6 @@ export class ClinicalUseDefinitionWarningComponent extends BackboneElement imple
       instance.setCode(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

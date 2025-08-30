@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -46,17 +45,13 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -64,7 +59,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirCode,
   fhirCodeSchema,
@@ -78,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -133,7 +128,6 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `AllergyIntolerance`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AllergyIntolerance
    * @returns AllergyIntolerance data model or undefined for `AllergyIntolerance`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): AllergyIntolerance | undefined {
@@ -156,8 +150,6 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
     const classMetadata: DecoratorMetadataObject | null = AllergyIntolerance[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for AllergyIntolerance`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -238,12 +230,12 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'encounter';
@@ -324,12 +316,6 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1213,10 +1199,10 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -1231,10 +1217,13 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
   @ReferenceTargets('AllergyIntolerance.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `AllergyIntolerance.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -1792,6 +1781,16 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.patient, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1834,15 +1833,14 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1875,10 +1873,9 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`AllergyIntolerance.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -1914,11 +1911,6 @@ export class AllergyIntolerance extends DomainResource implements IDomainResourc
       setFhirBackboneElementListJson(this.getReaction(), 'reaction', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1952,7 +1944,6 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `AllergyIntoleranceReactionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AllergyIntoleranceReactionComponent
    * @returns AllergyIntoleranceReactionComponent data model or undefined for `AllergyIntoleranceReactionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AllergyIntoleranceReactionComponent | undefined {
@@ -1971,8 +1962,6 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'substance';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -1989,13 +1978,13 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setManifestation(null);
         } else {
           instance.addManifestation(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setManifestation(null);
     }
 
     fieldName = 'description';
@@ -2046,12 +2035,6 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2216,11 +2199,14 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setManifestation(value: CodeableConcept[]): this {
-    assertIsDefinedList<CodeableConcept>(value, `AllergyIntolerance.reaction.manifestation is required`);
-    const optErrMsg = `Invalid AllergyIntolerance.reaction.manifestation; Provided value array has an element that is not an instance of CodeableConcept.`;
-    assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.manifestation = value;
+  public setManifestation(value: CodeableConcept[] | undefined | null): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AllergyIntolerance.reaction.manifestation; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.manifestation = value;
+    } else {
+      this.manifestation = null;
+    }
     return this;
   }
 
@@ -2616,6 +2602,16 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2647,15 +2643,14 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSubstance()) {
       setFhirComplexJson(this.getSubstance(), 'substance', jsonObj);
@@ -2664,7 +2659,7 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
     if (this.hasManifestation()) {
       setFhirComplexListJson(this.getManifestation(), 'manifestation', jsonObj);
     } else {
-      missingReqdProperties.push(`AllergyIntolerance.reaction.manifestation`);
+      jsonObj['manifestation'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -2686,11 +2681,6 @@ export class AllergyIntoleranceReactionComponent extends BackboneElement impleme
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

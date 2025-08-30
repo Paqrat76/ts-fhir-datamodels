@@ -37,22 +37,17 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
   ChoiceDataTypesMeta,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertFhirType,
   assertFhirTypeList,
@@ -62,6 +57,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -99,7 +95,6 @@ export class MedicinalProductIndication extends DomainResource implements IDomai
    * @param sourceJson - JSON representing FHIR `MedicinalProductIndication`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductIndication
    * @returns MedicinalProductIndication data model or undefined for `MedicinalProductIndication`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductIndication | undefined {
@@ -215,7 +210,6 @@ export class MedicinalProductIndication extends DomainResource implements IDomai
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -937,7 +931,6 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
    * @param sourceJson - JSON representing FHIR `MedicinalProductIndicationOtherTherapyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductIndicationOtherTherapyComponent
    * @returns MedicinalProductIndicationOtherTherapyComponent data model or undefined for `MedicinalProductIndicationOtherTherapyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductIndicationOtherTherapyComponent | undefined {
@@ -959,20 +952,18 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
     const errorMessage = `DecoratorMetadataObject does not exist for MedicinalProductIndicationOtherTherapyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'therapyRelationshipType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTherapyRelationshipType(null);
       } else {
         instance.setTherapyRelationshipType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTherapyRelationshipType(null);
     }
 
     fieldName = 'medication[x]';
@@ -984,17 +975,11 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
       classMetadata,
     );
     if (medication === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setMedication(null);
     } else {
       instance.setMedication(medication);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1037,10 +1022,10 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `therapyRelationshipType` property value as a CodeableConcept object if defined; else null
+   * @returns the `therapyRelationshipType` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getTherapyRelationshipType(): CodeableConcept | null {
-    return this.therapyRelationshipType;
+  public getTherapyRelationshipType(): CodeableConcept {
+    return this.therapyRelationshipType ?? new CodeableConcept();
   }
 
   /**
@@ -1050,11 +1035,14 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setTherapyRelationshipType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductIndication.otherTherapy.therapyRelationshipType is required`);
-    const optErrMsg = `Invalid MedicinalProductIndication.otherTherapy.therapyRelationshipType; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.therapyRelationshipType = value;
+  public setTherapyRelationshipType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductIndication.otherTherapy.therapyRelationshipType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.therapyRelationshipType = value;
+    } else {
+      this.therapyRelationshipType = null;
+    }
     return this;
   }
 
@@ -1082,10 +1070,13 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MedicinalProductIndication.otherTherapy.medication[x]')
-  public setMedication(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MedicinalProductIndication.otherTherapy.medication[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.medication = value;
+  public setMedication(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.medication = value;
+    } else {
+      this.medication = null;
+    }
     return this;
   }
 
@@ -1165,6 +1156,16 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.therapyRelationshipType, this.medication, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1189,33 +1190,26 @@ export class MedicinalProductIndicationOtherTherapyComponent extends BackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTherapyRelationshipType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getTherapyRelationshipType()!, 'therapyRelationshipType', jsonObj);
+      setFhirComplexJson(this.getTherapyRelationshipType(), 'therapyRelationshipType', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductIndication.otherTherapy.therapyRelationshipType`);
+      jsonObj['therapyRelationshipType'] = null;
     }
 
     if (this.hasMedication()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getMedication()!, 'medication', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductIndication.otherTherapy.medication[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['medication'] = null;
     }
 
     return jsonObj;

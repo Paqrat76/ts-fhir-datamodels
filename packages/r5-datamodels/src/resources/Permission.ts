@@ -37,27 +37,21 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -70,6 +64,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -127,7 +122,6 @@ export class Permission extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Permission`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Permission
    * @returns Permission data model or undefined for `Permission`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Permission | undefined {
@@ -147,8 +141,6 @@ export class Permission extends DomainResource implements IDomainResource {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'status';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -156,12 +148,12 @@ export class Permission extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'asserter';
@@ -213,12 +205,12 @@ export class Permission extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCombining(null);
       } else {
         instance.setCombiningElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCombining(null);
     }
 
     fieldName = 'rule';
@@ -234,12 +226,6 @@ export class Permission extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -391,11 +377,14 @@ export class Permission extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PermissionStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Permission.status is required`);
-    const errMsgPrefix = `Invalid Permission.status`;
-    assertEnumCodeType<PermissionStatusEnum>(enumType, PermissionStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Permission.status`;
+      assertEnumCodeType<PermissionStatusEnum>(enumType, PermissionStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -428,11 +417,14 @@ export class Permission extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PermissionStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Permission.status is required`);
-    const optErrMsg = `Invalid Permission.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.permissionStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Permission.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.permissionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -465,10 +457,13 @@ export class Permission extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PermissionStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Permission.status is required`);
-    const optErrMsg = `Invalid Permission.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.permissionStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Permission.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.permissionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -732,11 +727,14 @@ export class Permission extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PermissionRuleCombiningEnum }
    */
-  public setCombiningEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Permission.combining is required`);
-    const errMsgPrefix = `Invalid Permission.combining`;
-    assertEnumCodeType<PermissionRuleCombiningEnum>(enumType, PermissionRuleCombiningEnum, errMsgPrefix);
-    this.combining = enumType;
+  public setCombiningEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Permission.combining`;
+      assertEnumCodeType<PermissionRuleCombiningEnum>(enumType, PermissionRuleCombiningEnum, errMsgPrefix);
+      this.combining = enumType;
+    } else {
+      this.combining = null;
+    }
     return this;
   }
 
@@ -769,11 +767,14 @@ export class Permission extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PermissionRuleCombiningEnum }
    */
-  public setCombiningElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Permission.combining is required`);
-    const optErrMsg = `Invalid Permission.combining; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.combining = new EnumCodeType(element, this.permissionRuleCombiningEnum);
+  public setCombiningElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Permission.combining; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.combining = new EnumCodeType(element, this.permissionRuleCombiningEnum);
+    } else {
+      this.combining = null;
+    }
     return this;
   }
 
@@ -806,10 +807,13 @@ export class Permission extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PermissionRuleCombiningEnum }
    */
-  public setCombining(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Permission.combining is required`);
-    const optErrMsg = `Invalid Permission.combining (${String(value)})`;
-    this.combining = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.permissionRuleCombiningEnum);
+  public setCombining(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Permission.combining (${String(value)})`;
+      this.combining = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.permissionRuleCombiningEnum);
+    } else {
+      this.combining = null;
+    }
     return this;
   }
 
@@ -903,6 +907,16 @@ export class Permission extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.combining, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -934,21 +948,20 @@ export class Permission extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Permission.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasAsserter()) {
@@ -971,16 +984,11 @@ export class Permission extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCombiningElement()!, 'combining', jsonObj);
     } else {
-      missingReqdProperties.push(`Permission.combining`);
+      jsonObj['combining'] = null;
     }
 
     if (this.hasRule()) {
       setFhirBackboneElementListJson(this.getRule(), 'rule', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1053,7 +1061,6 @@ export class PermissionJustificationComponent extends BackboneElement implements
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1371,7 +1378,6 @@ export class PermissionRuleComponent extends BackboneElement implements IBackbon
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1900,7 +1906,6 @@ export class PermissionRuleDataComponent extends BackboneElement implements IBac
       instance.setExpression(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2285,7 +2290,6 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `PermissionRuleDataResourceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PermissionRuleDataResourceComponent
    * @returns PermissionRuleDataResourceComponent data model or undefined for `PermissionRuleDataResourceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PermissionRuleDataResourceComponent | undefined {
@@ -2304,8 +2308,6 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'meaning';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -2313,12 +2315,12 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMeaning(null);
       } else {
         instance.setMeaningElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMeaning(null);
     }
 
     fieldName = 'reference';
@@ -2327,20 +2329,14 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReference(null);
       } else {
         instance.setReference(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2405,11 +2401,14 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link ConsentDataMeaningEnum }
    */
-  public setMeaningEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Permission.rule.data.resource.meaning is required`);
-    const errMsgPrefix = `Invalid Permission.rule.data.resource.meaning`;
-    assertEnumCodeType<ConsentDataMeaningEnum>(enumType, ConsentDataMeaningEnum, errMsgPrefix);
-    this.meaning = enumType;
+  public setMeaningEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Permission.rule.data.resource.meaning`;
+      assertEnumCodeType<ConsentDataMeaningEnum>(enumType, ConsentDataMeaningEnum, errMsgPrefix);
+      this.meaning = enumType;
+    } else {
+      this.meaning = null;
+    }
     return this;
   }
 
@@ -2442,11 +2441,14 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link ConsentDataMeaningEnum }
    */
-  public setMeaningElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Permission.rule.data.resource.meaning is required`);
-    const optErrMsg = `Invalid Permission.rule.data.resource.meaning; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.meaning = new EnumCodeType(element, this.consentDataMeaningEnum);
+  public setMeaningElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Permission.rule.data.resource.meaning; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.meaning = new EnumCodeType(element, this.consentDataMeaningEnum);
+    } else {
+      this.meaning = null;
+    }
     return this;
   }
 
@@ -2479,10 +2481,13 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link ConsentDataMeaningEnum }
    */
-  public setMeaning(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Permission.rule.data.resource.meaning is required`);
-    const optErrMsg = `Invalid Permission.rule.data.resource.meaning (${String(value)})`;
-    this.meaning = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.consentDataMeaningEnum);
+  public setMeaning(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Permission.rule.data.resource.meaning (${String(value)})`;
+      this.meaning = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.consentDataMeaningEnum);
+    } else {
+      this.meaning = null;
+    }
     return this;
   }
 
@@ -2494,10 +2499,10 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `reference` property value as a Reference object if defined; else null
+   * @returns the `reference` property value as a Reference object if defined; else an empty Reference object
    */
-  public getReference(): Reference | null {
-    return this.reference;
+  public getReference(): Reference {
+    return this.reference ?? new Reference();
   }
 
   /**
@@ -2512,10 +2517,13 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
   @ReferenceTargets('Permission.rule.data.resource.reference', [
     'Resource',
   ])
-  public setReference(value: Reference): this {
-    assertIsDefined<Reference>(value, `Permission.rule.data.resource.reference is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -2546,6 +2554,16 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.meaning, this.reference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2570,33 +2588,26 @@ export class PermissionRuleDataResourceComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasMeaningElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getMeaningElement()!, 'meaning', jsonObj);
     } else {
-      missingReqdProperties.push(`Permission.rule.data.resource.meaning`);
+      jsonObj['meaning'] = null;
     }
 
     if (this.hasReference()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getReference()!, 'reference', jsonObj);
+      setFhirComplexJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`Permission.rule.data.resource.reference`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['reference'] = null;
     }
 
     return jsonObj;
@@ -2681,7 +2692,6 @@ export class PermissionRuleActivityComponent extends BackboneElement implements 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

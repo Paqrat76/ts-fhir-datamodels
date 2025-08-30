@@ -37,30 +37,24 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   copyListValues,
   fhirCode,
   fhirCodeSchema,
@@ -76,6 +70,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirComplexJson,
@@ -116,7 +111,6 @@ export class Location extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Location`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Location
    * @returns Location data model or undefined for `Location`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Location | undefined {
@@ -329,7 +323,6 @@ export class Location extends DomainResource implements IDomainResource {
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1945,7 +1938,6 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `LocationPositionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to LocationPositionComponent
    * @returns LocationPositionComponent data model or undefined for `LocationPositionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): LocationPositionComponent | undefined {
@@ -1964,8 +1956,6 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'longitude';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
@@ -1973,12 +1963,12 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLongitude(null);
       } else {
         instance.setLongitudeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLongitude(null);
     }
 
     fieldName = 'latitude';
@@ -1988,12 +1978,12 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLatitude(null);
       } else {
         instance.setLatitudeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLatitude(null);
     }
 
     fieldName = 'altitude';
@@ -2005,12 +1995,6 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
       instance.setAltitudeElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2059,10 +2043,10 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `longitude` property value as a DecimalType object if defined; else null
+   * @returns the `longitude` property value as a DecimalType object if defined; else an empty DecimalType object
    */
-  public getLongitudeElement(): DecimalType | null {
-    return this.longitude;
+  public getLongitudeElement(): DecimalType {
+    return this.longitude ?? new DecimalType();
   }
 
   /**
@@ -2073,11 +2057,14 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLongitudeElement(element: DecimalType): this {
-    assertIsDefined<DecimalType>(element, `Location.position.longitude is required`);
-    const optErrMsg = `Invalid Location.position.longitude; Provided value is not an instance of DecimalType.`;
-    assertFhirType<DecimalType>(element, DecimalType, optErrMsg);
-    this.longitude = element;
+  public setLongitudeElement(element: DecimalType | undefined | null): this {
+    if (isDefined<DecimalType>(element)) {
+      const optErrMsg = `Invalid Location.position.longitude; Provided value is not an instance of DecimalType.`;
+      assertFhirType<DecimalType>(element, DecimalType, optErrMsg);
+      this.longitude = element;
+    } else {
+      this.longitude = null;
+    }
     return this;
   }
 
@@ -2106,10 +2093,13 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLongitude(value: fhirDecimal): this {
-    assertIsDefined<fhirDecimal>(value, `Location.position.longitude is required`);
-    const optErrMsg = `Invalid Location.position.longitude (${String(value)})`;
-    this.longitude = new DecimalType(parseFhirPrimitiveData(value, fhirDecimalSchema, optErrMsg));
+  public setLongitude(value: fhirDecimal | undefined | null): this {
+    if (isDefined<fhirDecimal>(value)) {
+      const optErrMsg = `Invalid Location.position.longitude (${String(value)})`;
+      this.longitude = new DecimalType(parseFhirPrimitiveData(value, fhirDecimalSchema, optErrMsg));
+    } else {
+      this.longitude = null;
+    }
     return this;
   }
 
@@ -2121,10 +2111,10 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
   }
 
   /**
-   * @returns the `latitude` property value as a DecimalType object if defined; else null
+   * @returns the `latitude` property value as a DecimalType object if defined; else an empty DecimalType object
    */
-  public getLatitudeElement(): DecimalType | null {
-    return this.latitude;
+  public getLatitudeElement(): DecimalType {
+    return this.latitude ?? new DecimalType();
   }
 
   /**
@@ -2135,11 +2125,14 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLatitudeElement(element: DecimalType): this {
-    assertIsDefined<DecimalType>(element, `Location.position.latitude is required`);
-    const optErrMsg = `Invalid Location.position.latitude; Provided value is not an instance of DecimalType.`;
-    assertFhirType<DecimalType>(element, DecimalType, optErrMsg);
-    this.latitude = element;
+  public setLatitudeElement(element: DecimalType | undefined | null): this {
+    if (isDefined<DecimalType>(element)) {
+      const optErrMsg = `Invalid Location.position.latitude; Provided value is not an instance of DecimalType.`;
+      assertFhirType<DecimalType>(element, DecimalType, optErrMsg);
+      this.latitude = element;
+    } else {
+      this.latitude = null;
+    }
     return this;
   }
 
@@ -2168,10 +2161,13 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLatitude(value: fhirDecimal): this {
-    assertIsDefined<fhirDecimal>(value, `Location.position.latitude is required`);
-    const optErrMsg = `Invalid Location.position.latitude (${String(value)})`;
-    this.latitude = new DecimalType(parseFhirPrimitiveData(value, fhirDecimalSchema, optErrMsg));
+  public setLatitude(value: fhirDecimal | undefined | null): this {
+    if (isDefined<fhirDecimal>(value)) {
+      const optErrMsg = `Invalid Location.position.latitude (${String(value)})`;
+      this.latitude = new DecimalType(parseFhirPrimitiveData(value, fhirDecimalSchema, optErrMsg));
+    } else {
+      this.latitude = null;
+    }
     return this;
   }
 
@@ -2267,6 +2263,16 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.longitude, this.latitude, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2292,37 +2298,29 @@ export class LocationPositionComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasLongitudeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDecimal>(this.getLongitudeElement()!, 'longitude', jsonObj);
+      setFhirPrimitiveJson<fhirDecimal>(this.getLongitudeElement(), 'longitude', jsonObj);
     } else {
-      missingReqdProperties.push(`Location.position.longitude`);
+      jsonObj['longitude'] = null;
     }
 
     if (this.hasLatitudeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDecimal>(this.getLatitudeElement()!, 'latitude', jsonObj);
+      setFhirPrimitiveJson<fhirDecimal>(this.getLatitudeElement(), 'latitude', jsonObj);
     } else {
-      missingReqdProperties.push(`Location.position.latitude`);
+      jsonObj['latitude'] = null;
     }
 
     if (this.hasAltitudeElement()) {
       setFhirPrimitiveJson<fhirDecimal>(this.getAltitudeElement(), 'altitude', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

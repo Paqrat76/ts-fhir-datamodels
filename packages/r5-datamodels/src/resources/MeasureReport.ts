@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,17 +47,13 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -82,6 +77,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -146,7 +142,6 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `MeasureReport`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MeasureReport
    * @returns MeasureReport data model or undefined for `MeasureReport`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MeasureReport | undefined {
@@ -165,8 +160,6 @@ export class MeasureReport extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -188,12 +181,12 @@ export class MeasureReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'type';
@@ -203,12 +196,12 @@ export class MeasureReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'dataUpdateType';
@@ -276,12 +269,12 @@ export class MeasureReport extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPeriod(null);
       } else {
         instance.setPeriod(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPeriod(null);
     }
 
     fieldName = 'inputParameters';
@@ -347,12 +340,6 @@ export class MeasureReport extends DomainResource implements IDomainResource {
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -750,11 +737,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MeasureReportStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MeasureReport.status is required`);
-    const errMsgPrefix = `Invalid MeasureReport.status`;
-    assertEnumCodeType<MeasureReportStatusEnum>(enumType, MeasureReportStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MeasureReport.status`;
+      assertEnumCodeType<MeasureReportStatusEnum>(enumType, MeasureReportStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -787,11 +777,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MeasureReportStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MeasureReport.status is required`);
-    const optErrMsg = `Invalid MeasureReport.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.measureReportStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MeasureReport.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.measureReportStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -824,10 +817,13 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MeasureReportStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MeasureReport.status is required`);
-    const optErrMsg = `Invalid MeasureReport.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.measureReportStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MeasureReport.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.measureReportStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -857,11 +853,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MeasureReportTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MeasureReport.type is required`);
-    const errMsgPrefix = `Invalid MeasureReport.type`;
-    assertEnumCodeType<MeasureReportTypeEnum>(enumType, MeasureReportTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MeasureReport.type`;
+      assertEnumCodeType<MeasureReportTypeEnum>(enumType, MeasureReportTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -894,11 +893,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MeasureReportTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MeasureReport.type is required`);
-    const optErrMsg = `Invalid MeasureReport.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.measureReportTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MeasureReport.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.measureReportTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -931,10 +933,13 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link MeasureReportTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MeasureReport.type is required`);
-    const optErrMsg = `Invalid MeasureReport.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.measureReportTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MeasureReport.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.measureReportTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1358,10 +1363,10 @@ export class MeasureReport extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `period` property value as a Period object if defined; else null
+   * @returns the `period` property value as a Period object if defined; else an empty Period object
    */
-  public getPeriod(): Period | null {
-    return this.period;
+  public getPeriod(): Period {
+    return this.period ?? new Period();
   }
 
   /**
@@ -1371,11 +1376,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setPeriod(value: Period): this {
-    assertIsDefined<Period>(value, `MeasureReport.period is required`);
-    const optErrMsg = `Invalid MeasureReport.period; Provided element is not an instance of Period.`;
-    assertFhirType<Period>(value, Period, optErrMsg);
-    this.period = value;
+  public setPeriod(value: Period | undefined | null): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid MeasureReport.period; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.period = value;
+    } else {
+      this.period = null;
+    }
     return this;
   }
 
@@ -1711,6 +1719,16 @@ export class MeasureReport extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.type_, this.period, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1754,15 +1772,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1772,14 +1789,14 @@ export class MeasureReport extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`MeasureReport.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MeasureReport.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasDataUpdateTypeElement()) {
@@ -1812,10 +1829,9 @@ export class MeasureReport extends DomainResource implements IDomainResource {
     }
 
     if (this.hasPeriod()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+      setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
     } else {
-      missingReqdProperties.push(`MeasureReport.period`);
+      jsonObj['period'] = null;
     }
 
     if (this.hasInputParameters()) {
@@ -1840,11 +1856,6 @@ export class MeasureReport extends DomainResource implements IDomainResource {
 
     if (this.hasEvaluatedResource()) {
       setFhirComplexListJson(this.getEvaluatedResource(), 'evaluatedResource', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1957,7 +1968,6 @@ export class MeasureReportGroupComponent extends BackboneElement implements IBac
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2699,7 +2709,6 @@ export class MeasureReportGroupPopulationComponent extends BackboneElement imple
       instance.setSubjects(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3258,7 +3267,6 @@ export class MeasureReportGroupStratifierComponent extends BackboneElement imple
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3621,7 +3629,6 @@ export class MeasureReportGroupStratifierStratumComponent extends BackboneElemen
     );
     instance.setMeasureScore(measureScore);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4262,7 +4269,6 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
    * @param sourceJson - JSON representing FHIR `MeasureReportGroupStratifierStratumComponentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MeasureReportGroupStratifierStratumComponentComponent
    * @returns MeasureReportGroupStratifierStratumComponentComponent data model or undefined for `MeasureReportGroupStratifierStratumComponentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MeasureReportGroupStratifierStratumComponentComponent | undefined {
@@ -4285,8 +4291,6 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
     const errorMessage = `DecoratorMetadataObject does not exist for MeasureReportGroupStratifierStratumComponentComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'linkId';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -4302,12 +4306,12 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value[x]';
@@ -4319,17 +4323,11 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4456,10 +4454,10 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
   }
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -4469,11 +4467,14 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MeasureReport.group.stratifier.stratum.component.code is required`);
-    const optErrMsg = `Invalid MeasureReport.group.stratifier.stratum.component.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MeasureReport.group.stratifier.stratum.component.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -4501,10 +4502,13 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MeasureReport.group.stratifier.stratum.component.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MeasureReport.group.stratifier.stratum.component.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -4651,6 +4655,16 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4676,37 +4690,30 @@ export class MeasureReportGroupStratifierStratumComponentComponent extends Backb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasLinkIdElement()) {
       setFhirPrimitiveJson<fhirString>(this.getLinkIdElement(), 'linkId', jsonObj);
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`MeasureReport.group.stratifier.stratum.component.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`MeasureReport.group.stratifier.stratum.component.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -4808,7 +4815,6 @@ export class MeasureReportGroupStratifierStratumPopulationComponent extends Back
       instance.setSubjects(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

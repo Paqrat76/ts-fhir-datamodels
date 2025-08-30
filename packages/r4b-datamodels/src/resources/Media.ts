@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   ChoiceDataTypes,
   ChoiceDataTypesMeta,
@@ -46,17 +45,13 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   InvalidTypeError,
   JSON,
   PositiveIntType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -80,6 +75,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -132,7 +128,6 @@ export class Media extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Media`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Media
    * @returns Media data model or undefined for `Media`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Media | undefined {
@@ -155,8 +150,6 @@ export class Media extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = Media[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for Media`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -204,12 +197,12 @@ export class Media extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'type';
@@ -359,12 +352,12 @@ export class Media extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Attachment | undefined = Attachment.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setContent(null);
       } else {
         instance.setContent(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     }
 
     fieldName = 'note';
@@ -380,12 +373,6 @@ export class Media extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -979,11 +966,14 @@ export class Media extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Media.status is required`);
-    const errMsgPrefix = `Invalid Media.status`;
-    assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Media.status`;
+      assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1016,11 +1006,14 @@ export class Media extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Media.status is required`);
-    const optErrMsg = `Invalid Media.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.eventStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Media.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1053,10 +1046,13 @@ export class Media extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Media.status is required`);
-    const optErrMsg = `Invalid Media.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Media.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1893,10 +1889,10 @@ export class Media extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `content` property value as a Attachment object if defined; else null
+   * @returns the `content` property value as a Attachment object if defined; else an empty Attachment object
    */
-  public getContent(): Attachment | null {
-    return this.content;
+  public getContent(): Attachment {
+    return this.content ?? new Attachment();
   }
 
   /**
@@ -1906,11 +1902,14 @@ export class Media extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setContent(value: Attachment): this {
-    assertIsDefined<Attachment>(value, `Media.content is required`);
-    const optErrMsg = `Invalid Media.content; Provided element is not an instance of Attachment.`;
-    assertFhirType<Attachment>(value, Attachment, optErrMsg);
-    this.content = value;
+  public setContent(value: Attachment | undefined | null): this {
+    if (isDefined<Attachment>(value)) {
+      const optErrMsg = `Invalid Media.content; Provided element is not an instance of Attachment.`;
+      assertFhirType<Attachment>(value, Attachment, optErrMsg);
+      this.content = value;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -2019,6 +2018,16 @@ export class Media extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.content, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2068,15 +2077,14 @@ export class Media extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2094,7 +2102,7 @@ export class Media extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Media.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasType()) {
@@ -2163,19 +2171,13 @@ export class Media extends DomainResource implements IDomainResource {
     }
 
     if (this.hasContent()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getContent()!, 'content', jsonObj);
+      setFhirComplexJson(this.getContent(), 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`Media.content`);
+      jsonObj['content'] = null;
     }
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

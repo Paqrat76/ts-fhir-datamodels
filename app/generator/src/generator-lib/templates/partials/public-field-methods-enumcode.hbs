@@ -136,11 +136,14 @@
    *
    * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
-  public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `{{edHbs.path}} is required`);
-    const errMsgPrefix = `Invalid {{edHbs.path}}`;
-    assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
-    this.{{edHbs.fieldIdentifierName}} = enumType;
+  public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid {{edHbs.path}}`;
+      assertEnumCodeType<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
+      this.{{edHbs.fieldIdentifierName}} = enumType;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -173,11 +176,14 @@
    *
    * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
-  public set{{upperFirst edHbs.fieldName}}Element(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}});
+  public set{{upperFirst edHbs.fieldName}}Element(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(element, this.{{camelCase edHbs.type.codeSystemEnumName}});
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -210,10 +216,13 @@
    *
    * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
-  public set{{upperFirst edHbs.fieldName}}(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
-    this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}});
+  public set{{upperFirst edHbs.fieldName}}(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
+      this.{{edHbs.fieldIdentifierName}} = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}});
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -440,11 +449,14 @@
    *
    * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
-  public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType[]): this {
-    assertIsDefinedList<EnumCodeType>(enumType, `{{edHbs.path}} is required`);
-    const errMsgPrefix = `Invalid {{edHbs.path}}`;
-    assertEnumCodeTypeList<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
-    this.{{edHbs.fieldIdentifierName}} = enumType;
+  public set{{upperFirst edHbs.fieldName}}EnumType(enumType: EnumCodeType[] | undefined | null): this {
+    if (isDefinedList<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid {{edHbs.path}}`;
+      assertEnumCodeTypeList<{{edHbs.type.codeSystemEnumName}}>(enumType, {{edHbs.type.codeSystemEnumName}}, errMsgPrefix);
+      this.{{edHbs.fieldIdentifierName}} = enumType;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -497,15 +509,18 @@
    *
    * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
-  public set{{upperFirst edHbs.fieldName}}Element(element: CodeType[]): this {
-    assertIsDefinedList<CodeType>(element, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided element array has an element that is not an instance of CodeType.`;
-    assertFhirTypeList<CodeType>(element, CodeType, optErrMsg);
-    const enumCodeTypes = [] as EnumCodeType[];
-    element.forEach((type: CodeType) => {
-      enumCodeTypes.push(new EnumCodeType(type, this.{{camelCase edHbs.type.codeSystemEnumName}}));
-    });
-    this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
+  public set{{upperFirst edHbs.fieldName}}Element(element: CodeType[] | undefined | null): this {
+    if (isDefinedList<CodeType>(element)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided element array has an element that is not an instance of CodeType.`;
+      assertFhirTypeList<CodeType>(element, CodeType, optErrMsg);
+      const enumCodeTypes = [] as EnumCodeType[];
+      element.forEach((type: CodeType) => {
+        enumCodeTypes.push(new EnumCodeType(type, this.{{camelCase edHbs.type.codeSystemEnumName}}));
+      });
+      this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -562,14 +577,17 @@
    *
    * @see CodeSystem Enumeration: {@link {{edHbs.type.codeSystemEnumName}} }
    */
-  public set{{upperFirst edHbs.fieldName}}(value: fhirCode[]): this {
-    assertIsDefinedList<fhirCode>(value, `{{edHbs.path}} is required`);
-    const enumCodeTypes = [] as EnumCodeType[];
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of fhirCode.`;
-    value.forEach((val: fhirCode) => {
-      enumCodeTypes.push(new EnumCodeType(parseFhirPrimitiveData(val, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
-    });
-    this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
+  public set{{upperFirst edHbs.fieldName}}(value: fhirCode[] | undefined | null): this {
+    if (isDefinedList<fhirCode>(value)) {
+      const enumCodeTypes = [] as EnumCodeType[];
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of fhirCode.`;
+      value.forEach((val: fhirCode) => {
+        enumCodeTypes.push(new EnumCodeType(parseFhirPrimitiveData(val, fhirCodeSchema, optErrMsg), this.{{camelCase edHbs.type.codeSystemEnumName}}));
+      });
+      this.{{edHbs.fieldIdentifierName}} = enumCodeTypes;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 

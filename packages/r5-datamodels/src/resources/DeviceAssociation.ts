@@ -37,27 +37,22 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   copyListValues,
   isDefined,
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -100,7 +95,6 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `DeviceAssociation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceAssociation
    * @returns DeviceAssociation data model or undefined for `DeviceAssociation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DeviceAssociation | undefined {
@@ -118,8 +112,6 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
 
     let fieldName = '';
     let sourceField = '';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -140,12 +132,12 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDevice(null);
       } else {
         instance.setDevice(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDevice(null);
     }
 
     fieldName = 'category';
@@ -167,12 +159,12 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -225,12 +217,6 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -434,10 +420,10 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
   }
 
   /**
-   * @returns the `device` property value as a Reference object if defined; else null
+   * @returns the `device` property value as a Reference object if defined; else an empty Reference object
    */
-  public getDevice(): Reference | null {
-    return this.device;
+  public getDevice(): Reference {
+    return this.device ?? new Reference();
   }
 
   /**
@@ -452,10 +438,13 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
   @ReferenceTargets('DeviceAssociation.device', [
     'Device',
   ])
-  public setDevice(value: Reference): this {
-    assertIsDefined<Reference>(value, `DeviceAssociation.device is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.device = value;
+  public setDevice(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.device = value;
+    } else {
+      this.device = null;
+    }
     return this;
   }
 
@@ -525,10 +514,10 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
   }
 
   /**
-   * @returns the `status` property value as a CodeableConcept object if defined; else null
+   * @returns the `status` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getStatus(): CodeableConcept | null {
-    return this.status;
+  public getStatus(): CodeableConcept {
+    return this.status ?? new CodeableConcept();
   }
 
   /**
@@ -538,11 +527,14 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceAssociation.status is required`);
-    const optErrMsg = `Invalid DeviceAssociation.status; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.status = value;
+  public setStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceAssociation.status; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.status = value;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -808,6 +800,16 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.device, this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -843,25 +845,23 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
     }
 
     if (this.hasDevice()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getDevice()!, 'device', jsonObj);
+      setFhirComplexJson(this.getDevice(), 'device', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceAssociation.device`);
+      jsonObj['device'] = null;
     }
 
     if (this.hasCategory()) {
@@ -869,10 +869,9 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
     }
 
     if (this.hasStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getStatus()!, 'status', jsonObj);
+      setFhirComplexJson(this.getStatus(), 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceAssociation.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -893,11 +892,6 @@ export class DeviceAssociation extends DomainResource implements IDomainResource
 
     if (this.hasOperation()) {
       setFhirBackboneElementListJson(this.getOperation(), 'operation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -931,7 +925,6 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `DeviceAssociationOperationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceAssociationOperationComponent
    * @returns DeviceAssociationOperationComponent data model or undefined for `DeviceAssociationOperationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceAssociationOperationComponent | undefined {
@@ -949,20 +942,18 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'status';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'operator';
@@ -986,12 +977,6 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
       instance.setPeriod(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1045,10 +1030,10 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `status` property value as a CodeableConcept object if defined; else null
+   * @returns the `status` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getStatus(): CodeableConcept | null {
-    return this.status;
+  public getStatus(): CodeableConcept {
+    return this.status ?? new CodeableConcept();
   }
 
   /**
@@ -1058,11 +1043,14 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceAssociation.operation.status is required`);
-    const optErrMsg = `Invalid DeviceAssociation.operation.status; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.status = value;
+  public setStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceAssociation.operation.status; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.status = value;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1200,6 +1188,16 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1226,21 +1224,19 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getStatus()!, 'status', jsonObj);
+      setFhirComplexJson(this.getStatus(), 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceAssociation.operation.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasOperator()) {
@@ -1249,11 +1245,6 @@ export class DeviceAssociationOperationComponent extends BackboneElement impleme
 
     if (this.hasPeriod()) {
       setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -49,7 +48,6 @@ import {
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   ReferenceTargets,
@@ -109,7 +107,6 @@ export class CareTeam extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `CareTeam`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CareTeam
    * @returns CareTeam data model or undefined for `CareTeam`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): CareTeam | undefined {
@@ -254,7 +251,6 @@ export class CareTeam extends DomainResource implements IDomainResource {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1314,7 +1310,6 @@ export class CareTeamParticipantComponent extends BackboneElement implements IBa
     );
     instance.setCoverage(coverage);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

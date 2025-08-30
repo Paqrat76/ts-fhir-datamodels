@@ -37,31 +37,24 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   JSON,
   PositiveIntType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UnsignedIntType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -81,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -132,7 +126,6 @@ export class Appointment extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Appointment`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Appointment
    * @returns Appointment data model or undefined for `Appointment`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Appointment | undefined {
@@ -151,8 +144,6 @@ export class Appointment extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -174,12 +165,12 @@ export class Appointment extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'cancelationReason';
@@ -382,13 +373,13 @@ export class Appointment extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: AppointmentParticipantComponent | undefined = AppointmentParticipantComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setParticipant(null);
         } else {
           instance.addParticipant(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setParticipant(null);
     }
 
     fieldName = 'requestedPeriod';
@@ -404,12 +395,6 @@ export class Appointment extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -831,11 +816,14 @@ export class Appointment extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AppointmentstatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Appointment.status is required`);
-    const errMsgPrefix = `Invalid Appointment.status`;
-    assertEnumCodeType<AppointmentstatusEnum>(enumType, AppointmentstatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Appointment.status`;
+      assertEnumCodeType<AppointmentstatusEnum>(enumType, AppointmentstatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -868,11 +856,14 @@ export class Appointment extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AppointmentstatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Appointment.status is required`);
-    const optErrMsg = `Invalid Appointment.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.appointmentstatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Appointment.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.appointmentstatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -905,10 +896,13 @@ export class Appointment extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AppointmentstatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Appointment.status is required`);
-    const optErrMsg = `Invalid Appointment.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.appointmentstatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Appointment.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.appointmentstatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2017,11 +2011,14 @@ export class Appointment extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setParticipant(value: AppointmentParticipantComponent[]): this {
-    assertIsDefinedList<AppointmentParticipantComponent>(value, `Appointment.participant is required`);
-    const optErrMsg = `Invalid Appointment.participant; Provided value array has an element that is not an instance of AppointmentParticipantComponent.`;
-    assertFhirTypeList<AppointmentParticipantComponent>(value, AppointmentParticipantComponent, optErrMsg);
-    this.participant = value;
+  public setParticipant(value: AppointmentParticipantComponent[] | undefined | null): this {
+    if (isDefinedList<AppointmentParticipantComponent>(value)) {
+      const optErrMsg = `Invalid Appointment.participant; Provided value array has an element that is not an instance of AppointmentParticipantComponent.`;
+      assertFhirTypeList<AppointmentParticipantComponent>(value, AppointmentParticipantComponent, optErrMsg);
+      this.participant = value;
+    } else {
+      this.participant = null;
+    }
     return this;
   }
 
@@ -2156,6 +2153,16 @@ export class Appointment extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2211,15 +2218,14 @@ export class Appointment extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2229,7 +2235,7 @@ export class Appointment extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Appointment.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCancelationReason()) {
@@ -2307,16 +2313,11 @@ export class Appointment extends DomainResource implements IDomainResource {
     if (this.hasParticipant()) {
       setFhirBackboneElementListJson(this.getParticipant(), 'participant', jsonObj);
     } else {
-      missingReqdProperties.push(`Appointment.participant`);
+      jsonObj['participant'] = null;
     }
 
     if (this.hasRequestedPeriod()) {
       setFhirComplexListJson(this.getRequestedPeriod(), 'requestedPeriod', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2355,7 +2356,6 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `AppointmentParticipantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AppointmentParticipantComponent
    * @returns AppointmentParticipantComponent data model or undefined for `AppointmentParticipantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AppointmentParticipantComponent | undefined {
@@ -2373,8 +2373,6 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -2413,12 +2411,12 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'period';
@@ -2429,12 +2427,6 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
       instance.setPeriod(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2779,11 +2771,14 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link ParticipationstatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Appointment.participant.status is required`);
-    const errMsgPrefix = `Invalid Appointment.participant.status`;
-    assertEnumCodeType<ParticipationstatusEnum>(enumType, ParticipationstatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Appointment.participant.status`;
+      assertEnumCodeType<ParticipationstatusEnum>(enumType, ParticipationstatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2816,11 +2811,14 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link ParticipationstatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Appointment.participant.status is required`);
-    const optErrMsg = `Invalid Appointment.participant.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.participationstatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Appointment.participant.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.participationstatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2853,10 +2851,13 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link ParticipationstatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Appointment.participant.status is required`);
-    const optErrMsg = `Invalid Appointment.participant.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.participationstatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Appointment.participant.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.participationstatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2922,6 +2923,16 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2950,15 +2961,14 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexListJson(this.getType(), 'type', jsonObj);
@@ -2977,16 +2987,11 @@ export class AppointmentParticipantComponent extends BackboneElement implements 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Appointment.participant.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasPeriod()) {
       setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

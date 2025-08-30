@@ -21,12 +21,10 @@
  *
  */
 
-import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexListJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
 import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
-import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { Coding } from './Coding';
 import { fhirString, fhirStringSchema, parseFhirPrimitiveData } from '../primitive/primitive-types';
 import { StringType } from '../primitive/StringType';
@@ -104,7 +102,6 @@ export class CodeableConcept extends DataType implements IDataType {
       instance.setTextElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

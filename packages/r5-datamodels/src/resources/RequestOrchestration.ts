@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CanonicalType,
@@ -47,20 +46,16 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -90,6 +85,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -158,7 +154,6 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    * @param sourceJson - JSON representing FHIR `RequestOrchestration`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequestOrchestration
    * @returns RequestOrchestration data model or undefined for `RequestOrchestration`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): RequestOrchestration | undefined {
@@ -177,8 +172,6 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -270,12 +263,12 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'intent';
@@ -285,12 +278,12 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'priority';
@@ -395,12 +388,6 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1215,11 +1202,14 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestOrchestration.status is required`);
-    const errMsgPrefix = `Invalid RequestOrchestration.status`;
-    assertEnumCodeType<RequestStatusEnum>(enumType, RequestStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestOrchestration.status`;
+      assertEnumCodeType<RequestStatusEnum>(enumType, RequestStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1252,11 +1242,14 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestOrchestration.status is required`);
-    const optErrMsg = `Invalid RequestOrchestration.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.requestStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestOrchestration.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.requestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1289,10 +1282,13 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestOrchestration.status is required`);
-    const optErrMsg = `Invalid RequestOrchestration.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestOrchestration.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1322,11 +1318,14 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestOrchestration.intent is required`);
-    const errMsgPrefix = `Invalid RequestOrchestration.intent`;
-    assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
-    this.intent = enumType;
+  public setIntentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestOrchestration.intent`;
+      assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
+      this.intent = enumType;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1359,11 +1358,14 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestOrchestration.intent is required`);
-    const optErrMsg = `Invalid RequestOrchestration.intent; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intent = new EnumCodeType(element, this.requestIntentEnum);
+  public setIntentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestOrchestration.intent; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intent = new EnumCodeType(element, this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1396,10 +1398,13 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestOrchestration.intent is required`);
-    const optErrMsg = `Invalid RequestOrchestration.intent (${String(value)})`;
-    this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+  public setIntent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestOrchestration.intent (${String(value)})`;
+      this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -2028,6 +2033,16 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.intent, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2077,15 +2092,14 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2115,14 +2129,14 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestOrchestration.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasIntentElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getIntentElement()!, 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestOrchestration.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasPriorityElement()) {
@@ -2164,11 +2178,6 @@ export class RequestOrchestration extends DomainResource implements IDomainResou
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2508,7 +2517,6 @@ export class RequestOrchestrationActionComponent extends BackboneElement impleme
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5278,7 +5286,6 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `RequestOrchestrationActionConditionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequestOrchestrationActionConditionComponent
    * @returns RequestOrchestrationActionConditionComponent data model or undefined for `RequestOrchestrationActionConditionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): RequestOrchestrationActionConditionComponent | undefined {
@@ -5297,8 +5304,6 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'kind';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5306,12 +5311,12 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKind(null);
       } else {
         instance.setKindElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKind(null);
     }
 
     fieldName = 'expression';
@@ -5322,12 +5327,6 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
       instance.setExpression(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5391,11 +5390,14 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link ActionConditionKindEnum }
    */
-  public setKindEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestOrchestration.action.condition.kind is required`);
-    const errMsgPrefix = `Invalid RequestOrchestration.action.condition.kind`;
-    assertEnumCodeType<ActionConditionKindEnum>(enumType, ActionConditionKindEnum, errMsgPrefix);
-    this.kind = enumType;
+  public setKindEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestOrchestration.action.condition.kind`;
+      assertEnumCodeType<ActionConditionKindEnum>(enumType, ActionConditionKindEnum, errMsgPrefix);
+      this.kind = enumType;
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -5428,11 +5430,14 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link ActionConditionKindEnum }
    */
-  public setKindElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestOrchestration.action.condition.kind is required`);
-    const optErrMsg = `Invalid RequestOrchestration.action.condition.kind; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.kind = new EnumCodeType(element, this.actionConditionKindEnum);
+  public setKindElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestOrchestration.action.condition.kind; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.kind = new EnumCodeType(element, this.actionConditionKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -5465,10 +5470,13 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link ActionConditionKindEnum }
    */
-  public setKind(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestOrchestration.action.condition.kind is required`);
-    const optErrMsg = `Invalid RequestOrchestration.action.condition.kind (${String(value)})`;
-    this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionConditionKindEnum);
+  public setKind(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestOrchestration.action.condition.kind (${String(value)})`;
+      this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionConditionKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -5531,6 +5539,16 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.kind, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5555,30 +5573,24 @@ export class RequestOrchestrationActionConditionComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasKindElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getKindElement()!, 'kind', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestOrchestration.action.condition.kind`);
+      jsonObj['kind'] = null;
     }
 
     if (this.hasExpression()) {
       setFhirComplexJson(this.getExpression(), 'expression', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5651,7 +5663,6 @@ export class RequestOrchestrationActionInputComponent extends BackboneElement im
       instance.setRelatedDataElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5997,7 +6008,6 @@ export class RequestOrchestrationActionOutputComponent extends BackboneElement i
       instance.setRelatedDataElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6316,7 +6326,6 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
    * @param sourceJson - JSON representing FHIR `RequestOrchestrationActionRelatedActionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequestOrchestrationActionRelatedActionComponent
    * @returns RequestOrchestrationActionRelatedActionComponent data model or undefined for `RequestOrchestrationActionRelatedActionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): RequestOrchestrationActionRelatedActionComponent | undefined {
@@ -6339,8 +6348,6 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
     const errorMessage = `DecoratorMetadataObject does not exist for RequestOrchestrationActionRelatedActionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'targetId';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -6348,12 +6355,12 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTargetId(null);
       } else {
         instance.setTargetIdElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTargetId(null);
     }
 
     fieldName = 'relationship';
@@ -6363,12 +6370,12 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationship(null);
       } else {
         instance.setRelationshipElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationship(null);
     }
 
     fieldName = 'endRelationship';
@@ -6390,12 +6397,6 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
     );
     instance.setOffset(offset);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6477,10 +6478,10 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `targetId` property value as a IdType object if defined; else null
+   * @returns the `targetId` property value as a IdType object if defined; else an empty IdType object
    */
-  public getTargetIdElement(): IdType | null {
-    return this.targetId;
+  public getTargetIdElement(): IdType {
+    return this.targetId ?? new IdType();
   }
 
   /**
@@ -6491,11 +6492,14 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTargetIdElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `RequestOrchestration.action.relatedAction.targetId is required`);
-    const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.targetId; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.targetId = element;
+  public setTargetIdElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.targetId; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.targetId = element;
+    } else {
+      this.targetId = null;
+    }
     return this;
   }
 
@@ -6524,10 +6528,13 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTargetId(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `RequestOrchestration.action.relatedAction.targetId is required`);
-    const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.targetId (${String(value)})`;
-    this.targetId = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setTargetId(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.targetId (${String(value)})`;
+      this.targetId = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.targetId = null;
+    }
     return this;
   }
 
@@ -6557,11 +6564,14 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
    *
    * @see CodeSystem Enumeration: {@link ActionRelationshipTypeEnum }
    */
-  public setRelationshipEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestOrchestration.action.relatedAction.relationship is required`);
-    const errMsgPrefix = `Invalid RequestOrchestration.action.relatedAction.relationship`;
-    assertEnumCodeType<ActionRelationshipTypeEnum>(enumType, ActionRelationshipTypeEnum, errMsgPrefix);
-    this.relationship = enumType;
+  public setRelationshipEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestOrchestration.action.relatedAction.relationship`;
+      assertEnumCodeType<ActionRelationshipTypeEnum>(enumType, ActionRelationshipTypeEnum, errMsgPrefix);
+      this.relationship = enumType;
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -6594,11 +6604,14 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
    *
    * @see CodeSystem Enumeration: {@link ActionRelationshipTypeEnum }
    */
-  public setRelationshipElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestOrchestration.action.relatedAction.relationship is required`);
-    const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.relationship; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.relationship = new EnumCodeType(element, this.actionRelationshipTypeEnum);
+  public setRelationshipElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.relationship; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.relationship = new EnumCodeType(element, this.actionRelationshipTypeEnum);
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -6631,10 +6644,13 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
    *
    * @see CodeSystem Enumeration: {@link ActionRelationshipTypeEnum }
    */
-  public setRelationship(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestOrchestration.action.relatedAction.relationship is required`);
-    const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.relationship (${String(value)})`;
-    this.relationship = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionRelationshipTypeEnum);
+  public setRelationship(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestOrchestration.action.relatedAction.relationship (${String(value)})`;
+      this.relationship = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionRelationshipTypeEnum);
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -6866,6 +6882,16 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.targetId, this.relationship, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6892,28 +6918,26 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTargetIdElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getTargetIdElement()!, 'targetId', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getTargetIdElement(), 'targetId', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestOrchestration.action.relatedAction.targetId`);
+      jsonObj['targetId'] = null;
     }
 
     if (this.hasRelationshipElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRelationshipElement()!, 'relationship', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestOrchestration.action.relatedAction.relationship`);
+      jsonObj['relationship'] = null;
     }
 
     if (this.hasEndRelationshipElement()) {
@@ -6924,11 +6948,6 @@ export class RequestOrchestrationActionRelatedActionComponent extends BackboneEl
     if (this.hasOffset()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getOffset()!, 'offset', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -7033,7 +7052,6 @@ export class RequestOrchestrationActionParticipantComponent extends BackboneElem
     );
     instance.setActor(actor);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7692,7 +7710,6 @@ export class RequestOrchestrationActionDynamicValueComponent extends BackboneEle
       instance.setExpression(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

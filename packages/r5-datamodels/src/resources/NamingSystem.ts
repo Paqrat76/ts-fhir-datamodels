@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,25 +47,20 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -88,6 +82,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -169,7 +164,6 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `NamingSystem`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NamingSystem
    * @returns NamingSystem data model or undefined for `NamingSystem`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): NamingSystem | undefined {
@@ -192,8 +186,6 @@ export class NamingSystem extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = NamingSystem[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for NamingSystem`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -243,12 +235,12 @@ export class NamingSystem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'title';
@@ -267,12 +259,12 @@ export class NamingSystem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'kind';
@@ -282,12 +274,12 @@ export class NamingSystem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKind(null);
       } else {
         instance.setKindElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKind(null);
     }
 
     fieldName = 'experimental';
@@ -306,12 +298,12 @@ export class NamingSystem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDate(null);
       } else {
         instance.setDateElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDate(null);
     }
 
     fieldName = 'publisher';
@@ -536,21 +528,15 @@ export class NamingSystem extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: NamingSystemUniqueIdComponent | undefined = NamingSystemUniqueIdComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setUniqueId(null);
         } else {
           instance.addUniqueId(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUniqueId(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1325,10 +1311,10 @@ export class NamingSystem extends DomainResource implements IDomainResource {
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -1339,11 +1325,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `NamingSystem.name is required`);
-    const optErrMsg = `Invalid NamingSystem.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid NamingSystem.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1372,10 +1361,13 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `NamingSystem.name is required`);
-    const optErrMsg = `Invalid NamingSystem.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid NamingSystem.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1469,11 +1461,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `NamingSystem.status is required`);
-    const errMsgPrefix = `Invalid NamingSystem.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid NamingSystem.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1506,11 +1501,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `NamingSystem.status is required`);
-    const optErrMsg = `Invalid NamingSystem.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid NamingSystem.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1543,10 +1541,13 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `NamingSystem.status is required`);
-    const optErrMsg = `Invalid NamingSystem.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid NamingSystem.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1576,11 +1577,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link NamingsystemTypeEnum }
    */
-  public setKindEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `NamingSystem.kind is required`);
-    const errMsgPrefix = `Invalid NamingSystem.kind`;
-    assertEnumCodeType<NamingsystemTypeEnum>(enumType, NamingsystemTypeEnum, errMsgPrefix);
-    this.kind = enumType;
+  public setKindEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid NamingSystem.kind`;
+      assertEnumCodeType<NamingsystemTypeEnum>(enumType, NamingsystemTypeEnum, errMsgPrefix);
+      this.kind = enumType;
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -1613,11 +1617,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link NamingsystemTypeEnum }
    */
-  public setKindElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `NamingSystem.kind is required`);
-    const optErrMsg = `Invalid NamingSystem.kind; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.kind = new EnumCodeType(element, this.namingsystemTypeEnum);
+  public setKindElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid NamingSystem.kind; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.kind = new EnumCodeType(element, this.namingsystemTypeEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -1650,10 +1657,13 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link NamingsystemTypeEnum }
    */
-  public setKind(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `NamingSystem.kind is required`);
-    const optErrMsg = `Invalid NamingSystem.kind (${String(value)})`;
-    this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.namingsystemTypeEnum);
+  public setKind(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid NamingSystem.kind (${String(value)})`;
+      this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.namingsystemTypeEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -1729,10 +1739,10 @@ export class NamingSystem extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `date` property value as a DateTimeType object if defined; else null
+   * @returns the `date` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateElement(): DateTimeType | null {
-    return this.date;
+  public getDateElement(): DateTimeType {
+    return this.date ?? new DateTimeType();
   }
 
   /**
@@ -1743,11 +1753,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `NamingSystem.date is required`);
-    const optErrMsg = `Invalid NamingSystem.date; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.date = element;
+  public setDateElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid NamingSystem.date; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.date = element;
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -1776,10 +1789,13 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDate(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `NamingSystem.date is required`);
-    const optErrMsg = `Invalid NamingSystem.date (${String(value)})`;
-    this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDate(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid NamingSystem.date (${String(value)})`;
+      this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -2966,11 +2982,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setUniqueId(value: NamingSystemUniqueIdComponent[]): this {
-    assertIsDefinedList<NamingSystemUniqueIdComponent>(value, `NamingSystem.uniqueId is required`);
-    const optErrMsg = `Invalid NamingSystem.uniqueId; Provided value array has an element that is not an instance of NamingSystemUniqueIdComponent.`;
-    assertFhirTypeList<NamingSystemUniqueIdComponent>(value, NamingSystemUniqueIdComponent, optErrMsg);
-    this.uniqueId = value;
+  public setUniqueId(value: NamingSystemUniqueIdComponent[] | undefined | null): this {
+    if (isDefinedList<NamingSystemUniqueIdComponent>(value)) {
+      const optErrMsg = `Invalid NamingSystem.uniqueId; Provided value array has an element that is not an instance of NamingSystemUniqueIdComponent.`;
+      assertFhirTypeList<NamingSystemUniqueIdComponent>(value, NamingSystemUniqueIdComponent, optErrMsg);
+      this.uniqueId = value;
+    } else {
+      this.uniqueId = null;
+    }
     return this;
   }
 
@@ -3056,6 +3075,16 @@ export class NamingSystem extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.status, this.kind, this.date, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3120,15 +3149,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -3148,10 +3176,9 @@ export class NamingSystem extends DomainResource implements IDomainResource {
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -3162,14 +3189,14 @@ export class NamingSystem extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasKindElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getKindElement()!, 'kind', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.kind`);
+      jsonObj['kind'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -3177,10 +3204,9 @@ export class NamingSystem extends DomainResource implements IDomainResource {
     }
 
     if (this.hasDateElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement()!, 'date', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement(), 'date', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.date`);
+      jsonObj['date'] = null;
     }
 
     if (this.hasPublisherElement()) {
@@ -3266,12 +3292,7 @@ export class NamingSystem extends DomainResource implements IDomainResource {
     if (this.hasUniqueId()) {
       setFhirBackboneElementListJson(this.getUniqueId(), 'uniqueId', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.uniqueId`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['uniqueId'] = null;
     }
 
     return jsonObj;
@@ -3319,7 +3340,6 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
    * @param sourceJson - JSON representing FHIR `NamingSystemUniqueIdComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to NamingSystemUniqueIdComponent
    * @returns NamingSystemUniqueIdComponent data model or undefined for `NamingSystemUniqueIdComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): NamingSystemUniqueIdComponent | undefined {
@@ -3338,8 +3358,6 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3347,12 +3365,12 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value';
@@ -3362,12 +3380,12 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
     fieldName = 'preferred';
@@ -3405,12 +3423,6 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
       instance.setAuthoritativeElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3532,11 +3544,14 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link NamingsystemIdentifierTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `NamingSystem.uniqueId.type is required`);
-    const errMsgPrefix = `Invalid NamingSystem.uniqueId.type`;
-    assertEnumCodeType<NamingsystemIdentifierTypeEnum>(enumType, NamingsystemIdentifierTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid NamingSystem.uniqueId.type`;
+      assertEnumCodeType<NamingsystemIdentifierTypeEnum>(enumType, NamingsystemIdentifierTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3569,11 +3584,14 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link NamingsystemIdentifierTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `NamingSystem.uniqueId.type is required`);
-    const optErrMsg = `Invalid NamingSystem.uniqueId.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.namingsystemIdentifierTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid NamingSystem.uniqueId.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.namingsystemIdentifierTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3606,10 +3624,13 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link NamingsystemIdentifierTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `NamingSystem.uniqueId.type is required`);
-    const optErrMsg = `Invalid NamingSystem.uniqueId.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.namingsystemIdentifierTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid NamingSystem.uniqueId.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.namingsystemIdentifierTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3621,10 +3642,10 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -3635,11 +3656,14 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `NamingSystem.uniqueId.value is required`);
-    const optErrMsg = `Invalid NamingSystem.uniqueId.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid NamingSystem.uniqueId.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3668,10 +3692,13 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `NamingSystem.uniqueId.value is required`);
-    const optErrMsg = `Invalid NamingSystem.uniqueId.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid NamingSystem.uniqueId.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3930,6 +3957,16 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3958,28 +3995,26 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.uniqueId.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`NamingSystem.uniqueId.value`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasPreferredElement()) {
@@ -3996,11 +4031,6 @@ export class NamingSystemUniqueIdComponent extends BackboneElement implements IB
 
     if (this.hasAuthoritativeElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getAuthoritativeElement(), 'authoritative', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

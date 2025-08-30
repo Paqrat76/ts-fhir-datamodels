@@ -21,7 +21,6 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
 import { DataType, Extension } from '../../../base-models/core-fhir-models';
 import { NarrativeStatusEnum } from '../../../data-types/code-systems/NarrativeStatusEnum';
 import { Narrative } from '../../../data-types/complex/Narrative';
@@ -33,7 +32,7 @@ import { InvalidCodeError } from '../../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
 import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
-import { INVALID_NON_STRING_TYPE } from '../../test-utils';
+import { INVALID_NON_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
 
 describe('Narrative', () => {
   const VALID_CODE_GENERATED = `generated`;
@@ -72,13 +71,10 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(true);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(true);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
-      const t = () => {
-        testNarrative.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties do not exist: Narrative.status, Narrative.div`);
+      expect(testNarrative.toJSON()).toBeUndefined();
 
       // inherited properties from Element
       expect(testNarrative.hasId()).toBe(false);
@@ -92,7 +88,7 @@ describe('Narrative', () => {
       expect(testNarrative.hasStatusElement()).toBe(false);
       expect(testNarrative.getStatusElement()).toBeNull();
       expect(testNarrative.hasDivElement()).toBe(false);
-      expect(testNarrative.getDivElement()).toBeNull();
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
       expect(testNarrative.hasStatus()).toBe(false);
       expect(testNarrative.getStatus()).toBeNull();
       expect(testNarrative.hasDiv()).toBe(false);
@@ -109,6 +105,7 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
       expect(testNarrative.toJSON()).toEqual(expectedJson);
@@ -142,13 +139,10 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(true);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(true);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
-      const t = () => {
-        testNarrative.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties do not exist: Narrative.status, Narrative.div`);
+      expect(testNarrative.toJSON()).toBeUndefined();
 
       // inherited properties from Element
       expect(testNarrative.hasId()).toBe(false);
@@ -162,7 +156,7 @@ describe('Narrative', () => {
       expect(testNarrative.hasStatusElement()).toBe(false);
       expect(testNarrative.getStatusElement()).toBeNull();
       expect(testNarrative.hasDivElement()).toBe(false);
-      expect(testNarrative.getDivElement()).toBeNull();
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
       expect(testNarrative.hasStatus()).toBe(false);
       expect(testNarrative.getStatus()).toBeNull();
       expect(testNarrative.hasDiv()).toBe(false);
@@ -201,42 +195,6 @@ describe('Narrative', () => {
       };
       expect(t).toThrow(InvalidCodeError);
       expect(t).toThrow(`Unknown NarrativeStatusEnum 'code' value '${UNSUPPORTED_ENUM_CODE}'`);
-
-      t = () => {
-        testNarrative.setStatus(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.status is required`);
-
-      t = () => {
-        testNarrative.setStatusElement(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.status is required`);
-
-      t = () => {
-        testNarrative.setStatusEnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.status is required`);
-
-      t = () => {
-        testNarrative.setStatus(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.status is required`);
-
-      t = () => {
-        testNarrative.setStatusElement(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.status is required`);
-
-      t = () => {
-        testNarrative.setStatusEnumType(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.status is required`);
     });
 
     // Tests using primitives
@@ -249,6 +207,7 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.toJSON()).toEqual(expectedJson);
 
@@ -277,6 +236,7 @@ describe('Narrative', () => {
       const testNarrative = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
       expect(testNarrative).toBeDefined();
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
 
       testNarrative.setStatus(VALID_CODE_ADDITIONAL);
       testNarrative.setDiv(VALID_XHTML_2);
@@ -293,6 +253,24 @@ describe('Narrative', () => {
       expect(testNarrative.getStatus()).toStrictEqual(VALID_CODE_ADDITIONAL);
       expect(testNarrative.hasDiv()).toBe(true);
       expect(testNarrative.getDiv()).toStrictEqual(VALID_XHTML_2);
+
+      // Reset to undefined
+
+      testNarrative.setStatus(UNDEFINED_VALUE);
+      testNarrative.setDiv(UNDEFINED_VALUE);
+
+      expect(testNarrative.hasStatusEnumType()).toBe(false);
+      expect(testNarrative.getStatusEnumType()).toBeNull();
+
+      expect(testNarrative.hasStatusElement()).toBe(false);
+      expect(testNarrative.getStatusElement()).toBeNull();
+      expect(testNarrative.hasDivElement()).toBe(false);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
+
+      expect(testNarrative.hasStatus()).toBe(false);
+      expect(testNarrative.getStatus()).toBeNull();
+      expect(testNarrative.hasDiv()).toBe(false);
+      expect(testNarrative.getDiv()).toBeNull();
     });
 
     it('should throw errors for invalid primitive values', () => {
@@ -321,18 +299,6 @@ describe('Narrative', () => {
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Narrative.div ( cannot start with whitespace)`);
-
-      t = () => {
-        testNarrative.setDiv(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.div is required`);
-
-      t = () => {
-        testNarrative.setDiv(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.div is required`);
     });
 
     // Tests using DataType elements
@@ -345,6 +311,7 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.toJSON()).toEqual(expectedJson);
 
@@ -378,6 +345,7 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.toJSON()).toEqual(expectedJson);
 
@@ -387,7 +355,7 @@ describe('Narrative', () => {
       expect(testNarrative.hasExtension()).toBe(false);
       expect(testNarrative.getExtension()).toEqual([] as Extension[]);
 
-      // Period properties
+      // status enum properties
       expect(testNarrative.hasStatusEnumType()).toBe(true);
       expect(testNarrative.getStatusEnumType()).toEqual(new EnumCodeType(VALID_CODE_GENERATED, narrativeStatusEnum));
 
@@ -406,6 +374,7 @@ describe('Narrative', () => {
       const testNarrative = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
       expect(testNarrative).toBeDefined();
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
 
       testNarrative.setStatusElement(VALID_CODE_ADDITIONAL_TYPE);
       testNarrative.setDivElement(VALID_XHTML_TYPE_2);
@@ -422,12 +391,31 @@ describe('Narrative', () => {
       expect(testNarrative.getStatus()).toStrictEqual(VALID_CODE_ADDITIONAL);
       expect(testNarrative.hasDiv()).toBe(true);
       expect(testNarrative.getDiv()).toStrictEqual(VALID_XHTML_2);
+
+      // Reset to undefined
+
+      testNarrative.setStatusElement(UNDEFINED_VALUE);
+      testNarrative.setDivElement(UNDEFINED_VALUE);
+
+      expect(testNarrative.hasStatusEnumType()).toBe(false);
+      expect(testNarrative.getStatusEnumType()).toBeNull();
+
+      expect(testNarrative.hasStatusElement()).toBe(false);
+      expect(testNarrative.getStatusElement()).toBeNull();
+      expect(testNarrative.hasDivElement()).toBe(false);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
+
+      expect(testNarrative.hasStatus()).toBe(false);
+      expect(testNarrative.getStatus()).toBeNull();
+      expect(testNarrative.hasDiv()).toBe(false);
+      expect(testNarrative.getDiv()).toBeNull();
     });
 
     it('should be properly reset by modifying Narrative.status with EnumCodeType and Narrative.div with DataType values', () => {
       const testNarrative = new Narrative(VALID_CODE_GENERATED, VALID_XHTML);
       expect(testNarrative).toBeDefined();
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
 
       testNarrative.setStatusEnumType(new EnumCodeType(VALID_CODE_ADDITIONAL, narrativeStatusEnum));
       testNarrative.setDivElement(VALID_XHTML_TYPE_2);
@@ -444,6 +432,24 @@ describe('Narrative', () => {
       expect(testNarrative.getStatus()).toStrictEqual(VALID_CODE_ADDITIONAL);
       expect(testNarrative.hasDiv()).toBe(true);
       expect(testNarrative.getDiv()).toStrictEqual(VALID_XHTML_2);
+
+      // Reset to undefined
+
+      testNarrative.setStatusEnumType(UNDEFINED_VALUE);
+      testNarrative.setDivElement(UNDEFINED_VALUE);
+
+      expect(testNarrative.hasStatusEnumType()).toBe(false);
+      expect(testNarrative.getStatusEnumType()).toBeNull();
+
+      expect(testNarrative.hasStatusElement()).toBe(false);
+      expect(testNarrative.getStatusElement()).toBeNull();
+      expect(testNarrative.hasDivElement()).toBe(false);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
+
+      expect(testNarrative.hasStatus()).toBe(false);
+      expect(testNarrative.getStatus()).toBeNull();
+      expect(testNarrative.hasDiv()).toBe(false);
+      expect(testNarrative.getDiv()).toBeNull();
     });
 
     it('should throw errors for invalid DataType values', () => {
@@ -486,18 +492,6 @@ describe('Narrative', () => {
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Narrative.div; Provided value is not an instance of XhtmlType`);
-
-      t = () => {
-        testNarrative.setDivElement(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.div is required`);
-
-      t = () => {
-        testNarrative.setDivElement(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Narrative.div is required`);
     });
   });
 
@@ -538,36 +532,31 @@ describe('Narrative', () => {
       expect(testType).toBeUndefined();
     });
 
-    it('should throw FhirError for missing required fields', () => {
+    it('should return empty instance for JSON not having any of the fields', () => {
       const INVALID_JSON = { bogus: true };
-
-      const t = () => {
-        Narrative.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: Narrative.status, Narrative.div`,
-      );
+      const expected = new Narrative();
+      expect(Narrative.parse(INVALID_JSON)).toEqual(expected);
     });
 
-    it('should throw FhirError for missing status', () => {
+    it('should return instance with null for missing status value', () => {
       const INVALID_JSON = { status: '', div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>' };
+      const expected = new Narrative(null, '<div xmlns="http://www.w3.org/1999/xhtml">text</div>');
 
-      const t = () => {
-        Narrative.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties must be included in the provided JSON: Narrative.status`);
+      const parsedNarrative = Narrative.parse(INVALID_JSON);
+      expect(parsedNarrative).toEqual(expected);
+      expect(parsedNarrative.getStatusEnumType()).toBeNull();
+      expect(parsedNarrative.getStatusElement()).toBeNull();
+      expect(parsedNarrative.getStatus()).toBeNull();
     });
 
-    it('should throw FhirError for missing div', () => {
+    it('should return instance with null for missing div value', () => {
       const INVALID_JSON = { status: 'generated', div: '' };
+      const expected = new Narrative('generated', null);
 
-      const t = () => {
-        Narrative.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties must be included in the provided JSON: Narrative.div`);
+      const parsedNarrative = Narrative.parse(INVALID_JSON);
+      expect(parsedNarrative).toEqual(expected);
+      expect(parsedNarrative.getDivElement()).toEqual(new XhtmlType());
+      expect(parsedNarrative.getDiv()).toBeNull();
     });
 
     it('should throw JsonError for invalid json type', () => {
@@ -599,16 +588,18 @@ describe('Narrative', () => {
       expect(t).toThrow(`According to the FHIR specification, Extensions are not permitted on the xhtml type`);
     });
 
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
+    it('should properly create serialized content for missing required fields', () => {
       const testId = 'id1234';
       const testNarrative = new Narrative(null, null);
       testNarrative.setId(testId);
 
-      const t = () => {
-        testNarrative.toJSON();
+      const expectedJson = {
+        id: testId,
+        status: null,
+        div: null,
       };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties do not exist: Narrative.status, Narrative.div`);
+      const json = testNarrative.toJSON();
+      expect(json).toEqual(expectedJson);
     });
 
     it('should properly create serialized content', () => {
@@ -632,6 +623,7 @@ describe('Narrative', () => {
       expect(testNarrative.constructor.name).toStrictEqual('Narrative');
       expect(testNarrative.fhirType()).toStrictEqual('Narrative');
       expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(false);
       expect(testNarrative.isComplexDataType()).toBe(true);
       expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
 
@@ -665,6 +657,7 @@ describe('Narrative', () => {
       expect(testType?.constructor.name).toStrictEqual('Narrative');
       expect(testType?.fhirType()).toStrictEqual('Narrative');
       expect(testType?.isEmpty()).toBe(false);
+      expect(testType?.isRequiredFieldsEmpty()).toBe(false);
       expect(testType?.isComplexDataType()).toBe(true);
       expect(testType?.dataTypeName()).toStrictEqual('Narrative');
       expect(testType?.toJSON()).toEqual(VALID_JSON);

@@ -90,6 +90,14 @@ export abstract class Base implements IBase {
   public abstract toJSON(): JSON.Value | undefined;
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public isRequiredFieldsEmpty(): boolean {
+    return false;
+  }
+
+  /**
    * @returns `true` if the instance is a FHIR resource; `false` otherwise
    */
   public isResource(): boolean {

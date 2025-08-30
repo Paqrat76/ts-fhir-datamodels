@@ -37,25 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   DomainResource,
-  FhirError,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   copyListValues,
   isDefined,
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   setFhirComplexJson,
   setFhirComplexListJson,
 } from '@paq-ts-fhir/fhir-core';
@@ -97,7 +92,6 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
    * @param sourceJson - JSON representing FHIR `MedicinalProductManufactured`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductManufactured
    * @returns MedicinalProductManufactured data model or undefined for `MedicinalProductManufactured`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductManufactured | undefined {
@@ -116,20 +110,18 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'manufacturedDoseForm';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setManufacturedDoseForm(null);
       } else {
         instance.setManufacturedDoseForm(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setManufacturedDoseForm(null);
     }
 
     fieldName = 'unitOfPresentation';
@@ -146,12 +138,12 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setQuantity(null);
       } else {
         instance.setQuantity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setQuantity(null);
     }
 
     fieldName = 'manufacturer';
@@ -201,12 +193,6 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -317,10 +303,10 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `manufacturedDoseForm` property value as a CodeableConcept object if defined; else null
+   * @returns the `manufacturedDoseForm` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getManufacturedDoseForm(): CodeableConcept | null {
-    return this.manufacturedDoseForm;
+  public getManufacturedDoseForm(): CodeableConcept {
+    return this.manufacturedDoseForm ?? new CodeableConcept();
   }
 
   /**
@@ -330,11 +316,14 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setManufacturedDoseForm(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductManufactured.manufacturedDoseForm is required`);
-    const optErrMsg = `Invalid MedicinalProductManufactured.manufacturedDoseForm; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.manufacturedDoseForm = value;
+  public setManufacturedDoseForm(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductManufactured.manufacturedDoseForm; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.manufacturedDoseForm = value;
+    } else {
+      this.manufacturedDoseForm = null;
+    }
     return this;
   }
 
@@ -378,10 +367,10 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
   }
 
   /**
-   * @returns the `quantity` property value as a Quantity object if defined; else null
+   * @returns the `quantity` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getQuantity(): Quantity | null {
-    return this.quantity;
+  public getQuantity(): Quantity {
+    return this.quantity ?? new Quantity();
   }
 
   /**
@@ -391,11 +380,14 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setQuantity(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `MedicinalProductManufactured.quantity is required`);
-    const optErrMsg = `Invalid MedicinalProductManufactured.quantity; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.quantity = value;
+  public setQuantity(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid MedicinalProductManufactured.quantity; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.quantity = value;
+    } else {
+      this.quantity = null;
+    }
     return this;
   }
 
@@ -653,6 +645,16 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.manufacturedDoseForm, this.quantity, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -685,21 +687,19 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasManufacturedDoseForm()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getManufacturedDoseForm()!, 'manufacturedDoseForm', jsonObj);
+      setFhirComplexJson(this.getManufacturedDoseForm(), 'manufacturedDoseForm', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductManufactured.manufacturedDoseForm`);
+      jsonObj['manufacturedDoseForm'] = null;
     }
 
     if (this.hasUnitOfPresentation()) {
@@ -707,10 +707,9 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
     }
 
     if (this.hasQuantity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getQuantity()!, 'quantity', jsonObj);
+      setFhirComplexJson(this.getQuantity(), 'quantity', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductManufactured.quantity`);
+      jsonObj['quantity'] = null;
     }
 
     if (this.hasManufacturer()) {
@@ -727,11 +726,6 @@ export class MedicinalProductManufactured extends DomainResource implements IDom
 
     if (this.hasOtherCharacteristics()) {
       setFhirComplexListJson(this.getOtherCharacteristics(), 'otherCharacteristics', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

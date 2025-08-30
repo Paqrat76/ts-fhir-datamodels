@@ -61,6 +61,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -93,6 +94,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -123,6 +125,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -153,6 +156,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -181,6 +185,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -209,6 +214,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 2);
 
@@ -237,6 +243,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -340,6 +347,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedElementProperties(testInstance, 2);
 
       expect(testInstance.hasModeEnumType()).toBe(true);
@@ -357,7 +365,7 @@ describe('BundleEntrySearchComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: BundleEntrySearchComponent | undefined = undefined;
+      let testInstance: BundleEntrySearchComponent | undefined;
       testInstance = BundleEntrySearchComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -378,6 +386,7 @@ describe('BundleEntrySearchComponent', () => {
         'Bundle.entry.search',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedElementProperties(testInstance, 2);
 
@@ -398,12 +407,14 @@ describe('BundleEntrySearchComponent', () => {
     it('mode: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntrySearchComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setModeEnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.search.mode; Provided type is not an instance of SearchEntryModeEnum.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setModeElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -425,12 +436,14 @@ describe('BundleEntrySearchComponent', () => {
     it('score: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntrySearchComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setScoreElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.search.score; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setScore(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);

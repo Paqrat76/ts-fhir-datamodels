@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CanonicalType,
@@ -47,19 +46,15 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   InvalidTypeError,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -87,6 +82,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -154,7 +150,6 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `RequestGroup`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequestGroup
    * @returns RequestGroup data model or undefined for `RequestGroup`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): RequestGroup | undefined {
@@ -173,8 +168,6 @@ export class RequestGroup extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -266,12 +259,12 @@ export class RequestGroup extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'intent';
@@ -281,12 +274,12 @@ export class RequestGroup extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'priority';
@@ -391,12 +384,6 @@ export class RequestGroup extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1200,11 +1187,14 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestGroup.status is required`);
-    const errMsgPrefix = `Invalid RequestGroup.status`;
-    assertEnumCodeType<RequestStatusEnum>(enumType, RequestStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestGroup.status`;
+      assertEnumCodeType<RequestStatusEnum>(enumType, RequestStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1237,11 +1227,14 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestGroup.status is required`);
-    const optErrMsg = `Invalid RequestGroup.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.requestStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestGroup.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.requestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1274,10 +1267,13 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestGroup.status is required`);
-    const optErrMsg = `Invalid RequestGroup.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestGroup.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1307,11 +1303,14 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestGroup.intent is required`);
-    const errMsgPrefix = `Invalid RequestGroup.intent`;
-    assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
-    this.intent = enumType;
+  public setIntentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestGroup.intent`;
+      assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
+      this.intent = enumType;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1344,11 +1343,14 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestGroup.intent is required`);
-    const optErrMsg = `Invalid RequestGroup.intent; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intent = new EnumCodeType(element, this.requestIntentEnum);
+  public setIntentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestGroup.intent; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intent = new EnumCodeType(element, this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1381,10 +1383,13 @@ export class RequestGroup extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestGroup.intent is required`);
-    const optErrMsg = `Invalid RequestGroup.intent (${String(value)})`;
-    this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+  public setIntent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestGroup.intent (${String(value)})`;
+      this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -2009,6 +2014,16 @@ export class RequestGroup extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.intent, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2058,15 +2073,14 @@ export class RequestGroup extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2096,14 +2110,14 @@ export class RequestGroup extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestGroup.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasIntentElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getIntentElement()!, 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestGroup.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasPriorityElement()) {
@@ -2145,11 +2159,6 @@ export class RequestGroup extends DomainResource implements IDomainResource {
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2401,7 +2410,6 @@ export class RequestGroupActionComponent extends BackboneElement implements IBac
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4529,7 +4537,6 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `RequestGroupActionConditionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequestGroupActionConditionComponent
    * @returns RequestGroupActionConditionComponent data model or undefined for `RequestGroupActionConditionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): RequestGroupActionConditionComponent | undefined {
@@ -4548,8 +4555,6 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'kind';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -4557,12 +4562,12 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKind(null);
       } else {
         instance.setKindElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKind(null);
     }
 
     fieldName = 'expression';
@@ -4573,12 +4578,6 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
       instance.setExpression(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4642,11 +4641,14 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link ActionConditionKindEnum }
    */
-  public setKindEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestGroup.action.condition.kind is required`);
-    const errMsgPrefix = `Invalid RequestGroup.action.condition.kind`;
-    assertEnumCodeType<ActionConditionKindEnum>(enumType, ActionConditionKindEnum, errMsgPrefix);
-    this.kind = enumType;
+  public setKindEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestGroup.action.condition.kind`;
+      assertEnumCodeType<ActionConditionKindEnum>(enumType, ActionConditionKindEnum, errMsgPrefix);
+      this.kind = enumType;
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -4679,11 +4681,14 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link ActionConditionKindEnum }
    */
-  public setKindElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestGroup.action.condition.kind is required`);
-    const optErrMsg = `Invalid RequestGroup.action.condition.kind; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.kind = new EnumCodeType(element, this.actionConditionKindEnum);
+  public setKindElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestGroup.action.condition.kind; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.kind = new EnumCodeType(element, this.actionConditionKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -4716,10 +4721,13 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link ActionConditionKindEnum }
    */
-  public setKind(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestGroup.action.condition.kind is required`);
-    const optErrMsg = `Invalid RequestGroup.action.condition.kind (${String(value)})`;
-    this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionConditionKindEnum);
+  public setKind(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestGroup.action.condition.kind (${String(value)})`;
+      this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionConditionKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -4782,6 +4790,16 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.kind, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4806,30 +4824,24 @@ export class RequestGroupActionConditionComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasKindElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getKindElement()!, 'kind', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestGroup.action.condition.kind`);
+      jsonObj['kind'] = null;
     }
 
     if (this.hasExpression()) {
       setFhirComplexJson(this.getExpression(), 'expression', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4875,7 +4887,6 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
    * @param sourceJson - JSON representing FHIR `RequestGroupActionRelatedActionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequestGroupActionRelatedActionComponent
    * @returns RequestGroupActionRelatedActionComponent data model or undefined for `RequestGroupActionRelatedActionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): RequestGroupActionRelatedActionComponent | undefined {
@@ -4898,8 +4909,6 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
     const errorMessage = `DecoratorMetadataObject does not exist for RequestGroupActionRelatedActionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'actionId';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4907,12 +4916,12 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActionId(null);
       } else {
         instance.setActionIdElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActionId(null);
     }
 
     fieldName = 'relationship';
@@ -4922,12 +4931,12 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationship(null);
       } else {
         instance.setRelationshipElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationship(null);
     }
 
     fieldName = 'offset[x]';
@@ -4940,12 +4949,6 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
     );
     instance.setOffset(offset);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5011,10 +5014,10 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `actionId` property value as a IdType object if defined; else null
+   * @returns the `actionId` property value as a IdType object if defined; else an empty IdType object
    */
-  public getActionIdElement(): IdType | null {
-    return this.actionId;
+  public getActionIdElement(): IdType {
+    return this.actionId ?? new IdType();
   }
 
   /**
@@ -5025,11 +5028,14 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setActionIdElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `RequestGroup.action.relatedAction.actionId is required`);
-    const optErrMsg = `Invalid RequestGroup.action.relatedAction.actionId; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.actionId = element;
+  public setActionIdElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid RequestGroup.action.relatedAction.actionId; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.actionId = element;
+    } else {
+      this.actionId = null;
+    }
     return this;
   }
 
@@ -5058,10 +5064,13 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setActionId(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `RequestGroup.action.relatedAction.actionId is required`);
-    const optErrMsg = `Invalid RequestGroup.action.relatedAction.actionId (${String(value)})`;
-    this.actionId = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setActionId(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid RequestGroup.action.relatedAction.actionId (${String(value)})`;
+      this.actionId = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.actionId = null;
+    }
     return this;
   }
 
@@ -5091,11 +5100,14 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
    *
    * @see CodeSystem Enumeration: {@link ActionRelationshipTypeEnum }
    */
-  public setRelationshipEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RequestGroup.action.relatedAction.relationship is required`);
-    const errMsgPrefix = `Invalid RequestGroup.action.relatedAction.relationship`;
-    assertEnumCodeType<ActionRelationshipTypeEnum>(enumType, ActionRelationshipTypeEnum, errMsgPrefix);
-    this.relationship = enumType;
+  public setRelationshipEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RequestGroup.action.relatedAction.relationship`;
+      assertEnumCodeType<ActionRelationshipTypeEnum>(enumType, ActionRelationshipTypeEnum, errMsgPrefix);
+      this.relationship = enumType;
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -5128,11 +5140,14 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
    *
    * @see CodeSystem Enumeration: {@link ActionRelationshipTypeEnum }
    */
-  public setRelationshipElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RequestGroup.action.relatedAction.relationship is required`);
-    const optErrMsg = `Invalid RequestGroup.action.relatedAction.relationship; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.relationship = new EnumCodeType(element, this.actionRelationshipTypeEnum);
+  public setRelationshipElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RequestGroup.action.relatedAction.relationship; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.relationship = new EnumCodeType(element, this.actionRelationshipTypeEnum);
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -5165,10 +5180,13 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
    *
    * @see CodeSystem Enumeration: {@link ActionRelationshipTypeEnum }
    */
-  public setRelationship(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RequestGroup.action.relatedAction.relationship is required`);
-    const optErrMsg = `Invalid RequestGroup.action.relatedAction.relationship (${String(value)})`;
-    this.relationship = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionRelationshipTypeEnum);
+  public setRelationship(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RequestGroup.action.relatedAction.relationship (${String(value)})`;
+      this.relationship = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.actionRelationshipTypeEnum);
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -5283,6 +5301,16 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actionId, this.relationship, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5308,38 +5336,31 @@ export class RequestGroupActionRelatedActionComponent extends BackboneElement im
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasActionIdElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getActionIdElement()!, 'actionId', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getActionIdElement(), 'actionId', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestGroup.action.relatedAction.actionId`);
+      jsonObj['actionId'] = null;
     }
 
     if (this.hasRelationshipElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRelationshipElement()!, 'relationship', jsonObj);
     } else {
-      missingReqdProperties.push(`RequestGroup.action.relatedAction.relationship`);
+      jsonObj['relationship'] = null;
     }
 
     if (this.hasOffset()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getOffset()!, 'offset', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

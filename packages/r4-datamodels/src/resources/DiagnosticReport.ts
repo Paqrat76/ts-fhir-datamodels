@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -46,17 +45,13 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -76,6 +71,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -132,7 +128,6 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `DiagnosticReport`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DiagnosticReport
    * @returns DiagnosticReport data model or undefined for `DiagnosticReport`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DiagnosticReport | undefined {
@@ -155,8 +150,6 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
     const classMetadata: DecoratorMetadataObject | null = DiagnosticReport[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for DiagnosticReport`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -191,12 +184,12 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'category';
@@ -218,12 +211,12 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'subject';
@@ -374,12 +367,6 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -877,11 +864,14 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link DiagnosticReportStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DiagnosticReport.status is required`);
-    const errMsgPrefix = `Invalid DiagnosticReport.status`;
-    assertEnumCodeType<DiagnosticReportStatusEnum>(enumType, DiagnosticReportStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DiagnosticReport.status`;
+      assertEnumCodeType<DiagnosticReportStatusEnum>(enumType, DiagnosticReportStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -914,11 +904,14 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link DiagnosticReportStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DiagnosticReport.status is required`);
-    const optErrMsg = `Invalid DiagnosticReport.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.diagnosticReportStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DiagnosticReport.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.diagnosticReportStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -951,10 +944,13 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link DiagnosticReportStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DiagnosticReport.status is required`);
-    const optErrMsg = `Invalid DiagnosticReport.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.diagnosticReportStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DiagnosticReport.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.diagnosticReportStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1024,10 +1020,10 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
   }
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -1037,11 +1033,14 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DiagnosticReport.code is required`);
-    const optErrMsg = `Invalid DiagnosticReport.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DiagnosticReport.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1905,6 +1904,16 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1956,15 +1965,14 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1978,7 +1986,7 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`DiagnosticReport.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCategory()) {
@@ -1986,10 +1994,9 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`DiagnosticReport.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasSubject()) {
@@ -2045,11 +2052,6 @@ export class DiagnosticReport extends DomainResource implements IDomainResource 
       setFhirComplexListJson(this.getPresentedForm(), 'presentedForm', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2082,7 +2084,6 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `DiagnosticReportMediaComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DiagnosticReportMediaComponent
    * @returns DiagnosticReportMediaComponent data model or undefined for `DiagnosticReportMediaComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DiagnosticReportMediaComponent | undefined {
@@ -2101,8 +2102,6 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'comment';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -2118,20 +2117,14 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLink(null);
       } else {
         instance.setLink(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLink(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2235,10 +2228,10 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
   }
 
   /**
-   * @returns the `link` property value as a Reference object if defined; else null
+   * @returns the `link` property value as a Reference object if defined; else an empty Reference object
    */
-  public getLink(): Reference | null {
-    return this.link;
+  public getLink(): Reference {
+    return this.link ?? new Reference();
   }
 
   /**
@@ -2253,10 +2246,13 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
   @ReferenceTargets('DiagnosticReport.media.link', [
     'Media',
   ])
-  public setLink(value: Reference): this {
-    assertIsDefined<Reference>(value, `DiagnosticReport.media.link is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.link = value;
+  public setLink(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.link = value;
+    } else {
+      this.link = null;
+    }
     return this;
   }
 
@@ -2287,6 +2283,16 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.link, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2311,30 +2317,23 @@ export class DiagnosticReportMediaComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCommentElement()) {
       setFhirPrimitiveJson<fhirString>(this.getCommentElement(), 'comment', jsonObj);
     }
 
     if (this.hasLink()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getLink()!, 'link', jsonObj);
+      setFhirComplexJson(this.getLink(), 'link', jsonObj);
     } else {
-      missingReqdProperties.push(`DiagnosticReport.media.link`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['link'] = null;
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,24 +45,19 @@ import {
   DateTimeType,
   DateType,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirDateTime,
   fhirDateTimeSchema,
@@ -76,6 +70,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -119,7 +114,6 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinition
    * @returns MedicinalProductDefinition data model or undefined for `MedicinalProductDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinition | undefined {
@@ -138,8 +132,6 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -410,13 +402,13 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: MedicinalProductDefinitionNameComponent | undefined = MedicinalProductDefinitionNameComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setName(null);
         } else {
           instance.addName(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'crossReference';
@@ -458,12 +450,6 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2146,11 +2132,14 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setName(value: MedicinalProductDefinitionNameComponent[]): this {
-    assertIsDefinedList<MedicinalProductDefinitionNameComponent>(value, `MedicinalProductDefinition.name is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name; Provided value array has an element that is not an instance of MedicinalProductDefinitionNameComponent.`;
-    assertFhirTypeList<MedicinalProductDefinitionNameComponent>(value, MedicinalProductDefinitionNameComponent, optErrMsg);
-    this.name = value;
+  public setName(value: MedicinalProductDefinitionNameComponent[] | undefined | null): this {
+    if (isDefinedList<MedicinalProductDefinitionNameComponent>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name; Provided value array has an element that is not an instance of MedicinalProductDefinitionNameComponent.`;
+      assertFhirTypeList<MedicinalProductDefinitionNameComponent>(value, MedicinalProductDefinitionNameComponent, optErrMsg);
+      this.name = value;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -2407,6 +2396,16 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2474,15 +2473,14 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2583,7 +2581,7 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
     if (this.hasName()) {
       setFhirBackboneElementListJson(this.getName(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasCrossReference()) {
@@ -2596,11 +2594,6 @@ export class MedicinalProductDefinition extends DomainResource implements IDomai
 
     if (this.hasCharacteristic()) {
       setFhirBackboneElementListJson(this.getCharacteristic(), 'characteristic', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2634,7 +2627,6 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinitionContactComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinitionContactComponent
    * @returns MedicinalProductDefinitionContactComponent data model or undefined for `MedicinalProductDefinitionContactComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinitionContactComponent | undefined {
@@ -2652,8 +2644,6 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -2668,20 +2658,14 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setContact(null);
       } else {
         instance.setContact(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContact(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2752,10 +2736,10 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
   }
 
   /**
-   * @returns the `contact` property value as a Reference object if defined; else null
+   * @returns the `contact` property value as a Reference object if defined; else an empty Reference object
    */
-  public getContact(): Reference | null {
-    return this.contact;
+  public getContact(): Reference {
+    return this.contact ?? new Reference();
   }
 
   /**
@@ -2772,10 +2756,13 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
   
     'PractitionerRole',
   ])
-  public setContact(value: Reference): this {
-    assertIsDefined<Reference>(value, `MedicinalProductDefinition.contact.contact is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.contact = value;
+  public setContact(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.contact = value;
+    } else {
+      this.contact = null;
+    }
     return this;
   }
 
@@ -2806,6 +2793,16 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.contact, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2830,30 +2827,23 @@ export class MedicinalProductDefinitionContactComponent extends BackboneElement 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
     }
 
     if (this.hasContact()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getContact()!, 'contact', jsonObj);
+      setFhirComplexJson(this.getContact(), 'contact', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.contact.contact`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['contact'] = null;
     }
 
     return jsonObj;
@@ -2890,7 +2880,6 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinitionNameComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinitionNameComponent
    * @returns MedicinalProductDefinitionNameComponent data model or undefined for `MedicinalProductDefinitionNameComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinitionNameComponent | undefined {
@@ -2909,8 +2898,6 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'productName';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -2918,12 +2905,12 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProductName(null);
       } else {
         instance.setProductNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProductName(null);
     }
 
     fieldName = 'type';
@@ -2960,12 +2947,6 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3028,10 +3009,10 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `productName` property value as a StringType object if defined; else null
+   * @returns the `productName` property value as a StringType object if defined; else an empty StringType object
    */
-  public getProductNameElement(): StringType | null {
-    return this.productName;
+  public getProductNameElement(): StringType {
+    return this.productName ?? new StringType();
   }
 
   /**
@@ -3042,11 +3023,14 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setProductNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `MedicinalProductDefinition.name.productName is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.productName; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.productName = element;
+  public setProductNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.productName; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.productName = element;
+    } else {
+      this.productName = null;
+    }
     return this;
   }
 
@@ -3075,10 +3059,13 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setProductName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `MedicinalProductDefinition.name.productName is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.productName (${String(value)})`;
-    this.productName = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setProductName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.productName (${String(value)})`;
+      this.productName = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.productName = null;
+    }
     return this;
   }
 
@@ -3259,6 +3246,16 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.productName, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3287,21 +3284,19 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasProductNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getProductNameElement()!, 'productName', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getProductNameElement(), 'productName', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.name.productName`);
+      jsonObj['productName'] = null;
     }
 
     if (this.hasType()) {
@@ -3314,11 +3309,6 @@ export class MedicinalProductDefinitionNameComponent extends BackboneElement imp
 
     if (this.hasCountryLanguage()) {
       setFhirBackboneElementListJson(this.getCountryLanguage(), 'countryLanguage', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3360,7 +3350,6 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinitionNameNamePartComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinitionNameNamePartComponent
    * @returns MedicinalProductDefinitionNameNamePartComponent data model or undefined for `MedicinalProductDefinitionNameNamePartComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinitionNameNamePartComponent | undefined {
@@ -3379,8 +3368,6 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'part';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -3388,12 +3375,12 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPart(null);
       } else {
         instance.setPartElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPart(null);
     }
 
     fieldName = 'type';
@@ -3402,20 +3389,14 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3450,10 +3431,10 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `part` property value as a StringType object if defined; else null
+   * @returns the `part` property value as a StringType object if defined; else an empty StringType object
    */
-  public getPartElement(): StringType | null {
-    return this.part;
+  public getPartElement(): StringType {
+    return this.part ?? new StringType();
   }
 
   /**
@@ -3464,11 +3445,14 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPartElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `MedicinalProductDefinition.name.namePart.part is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.namePart.part; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.part = element;
+  public setPartElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.namePart.part; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.part = element;
+    } else {
+      this.part = null;
+    }
     return this;
   }
 
@@ -3497,10 +3481,13 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPart(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `MedicinalProductDefinition.name.namePart.part is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.namePart.part (${String(value)})`;
-    this.part = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setPart(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.namePart.part (${String(value)})`;
+      this.part = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.part = null;
+    }
     return this;
   }
 
@@ -3512,10 +3499,10 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
   }
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -3525,11 +3512,14 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductDefinition.name.namePart.type is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.namePart.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.namePart.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3560,6 +3550,16 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.part, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3584,33 +3584,25 @@ export class MedicinalProductDefinitionNameNamePartComponent extends BackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasPartElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getPartElement()!, 'part', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getPartElement(), 'part', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.name.namePart.part`);
+      jsonObj['part'] = null;
     }
 
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.name.namePart.type`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['type'] = null;
     }
 
     return jsonObj;
@@ -3648,7 +3640,6 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinitionNameCountryLanguageComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinitionNameCountryLanguageComponent
    * @returns MedicinalProductDefinitionNameCountryLanguageComponent data model or undefined for `MedicinalProductDefinitionNameCountryLanguageComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinitionNameCountryLanguageComponent | undefined {
@@ -3666,20 +3657,18 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'country';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCountry(null);
       } else {
         instance.setCountry(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCountry(null);
     }
 
     fieldName = 'jurisdiction';
@@ -3696,20 +3685,14 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLanguage(null);
       } else {
         instance.setLanguage(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLanguage(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3758,10 +3741,10 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `country` property value as a CodeableConcept object if defined; else null
+   * @returns the `country` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCountry(): CodeableConcept | null {
-    return this.country;
+  public getCountry(): CodeableConcept {
+    return this.country ?? new CodeableConcept();
   }
 
   /**
@@ -3771,11 +3754,14 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCountry(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductDefinition.name.countryLanguage.country is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.countryLanguage.country; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.country = value;
+  public setCountry(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.countryLanguage.country; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.country = value;
+    } else {
+      this.country = null;
+    }
     return this;
   }
 
@@ -3819,10 +3805,10 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
   }
 
   /**
-   * @returns the `language` property value as a CodeableConcept object if defined; else null
+   * @returns the `language` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getLanguage(): CodeableConcept | null {
-    return this.language;
+  public getLanguage(): CodeableConcept {
+    return this.language ?? new CodeableConcept();
   }
 
   /**
@@ -3832,11 +3818,14 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setLanguage(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductDefinition.name.countryLanguage.language is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.name.countryLanguage.language; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.language = value;
+  public setLanguage(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.name.countryLanguage.language; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.language = value;
+    } else {
+      this.language = null;
+    }
     return this;
   }
 
@@ -3868,6 +3857,16 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.country, this.language, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3893,21 +3892,19 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCountry()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCountry()!, 'country', jsonObj);
+      setFhirComplexJson(this.getCountry(), 'country', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.name.countryLanguage.country`);
+      jsonObj['country'] = null;
     }
 
     if (this.hasJurisdiction()) {
@@ -3915,15 +3912,9 @@ export class MedicinalProductDefinitionNameCountryLanguageComponent extends Back
     }
 
     if (this.hasLanguage()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getLanguage()!, 'language', jsonObj);
+      setFhirComplexJson(this.getLanguage(), 'language', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.name.countryLanguage.language`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['language'] = null;
     }
 
     return jsonObj;
@@ -3956,7 +3947,6 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinitionCrossReferenceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinitionCrossReferenceComponent
    * @returns MedicinalProductDefinitionCrossReferenceComponent data model or undefined for `MedicinalProductDefinitionCrossReferenceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinitionCrossReferenceComponent | undefined {
@@ -3974,20 +3964,18 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'product';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProduct(null);
       } else {
         instance.setProduct(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProduct(null);
     }
 
     fieldName = 'type';
@@ -3998,12 +3986,6 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
       instance.setType(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4041,10 +4023,10 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `product` property value as a CodeableReference object if defined; else null
+   * @returns the `product` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getProduct(): CodeableReference | null {
-    return this.product;
+  public getProduct(): CodeableReference {
+    return this.product ?? new CodeableReference();
   }
 
   /**
@@ -4054,11 +4036,14 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setProduct(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `MedicinalProductDefinition.crossReference.product is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.crossReference.product; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.product = value;
+  public setProduct(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.crossReference.product; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.product = value;
+    } else {
+      this.product = null;
+    }
     return this;
   }
 
@@ -4121,6 +4106,16 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.product, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4145,30 +4140,23 @@ export class MedicinalProductDefinitionCrossReferenceComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasProduct()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProduct()!, 'product', jsonObj);
+      setFhirComplexJson(this.getProduct(), 'product', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.crossReference.product`);
+      jsonObj['product'] = null;
     }
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4251,7 +4239,6 @@ export class MedicinalProductDefinitionOperationComponent extends BackboneElemen
       instance.setConfidentialityIndicator(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4586,7 +4573,6 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `MedicinalProductDefinitionCharacteristicComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductDefinitionCharacteristicComponent
    * @returns MedicinalProductDefinitionCharacteristicComponent data model or undefined for `MedicinalProductDefinitionCharacteristicComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductDefinitionCharacteristicComponent | undefined {
@@ -4608,20 +4594,18 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
     const errorMessage = `DecoratorMetadataObject does not exist for MedicinalProductDefinitionCharacteristicComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -4634,12 +4618,6 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
     );
     instance.setValue(value);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4688,10 +4666,10 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -4701,11 +4679,14 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductDefinition.characteristic.type is required`);
-    const optErrMsg = `Invalid MedicinalProductDefinition.characteristic.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductDefinition.characteristic.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4885,6 +4866,16 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4909,31 +4900,24 @@ export class MedicinalProductDefinitionCharacteristicComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductDefinition.characteristic.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

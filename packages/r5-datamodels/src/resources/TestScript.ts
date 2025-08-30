@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,12 +47,10 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   IntegerType,
   InvalidTypeError,
@@ -61,8 +58,6 @@ import {
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -71,7 +66,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -100,6 +94,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -164,7 +159,6 @@ export class TestScript extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `TestScript`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScript
    * @returns TestScript data model or undefined for `TestScript`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): TestScript | undefined {
@@ -187,8 +181,6 @@ export class TestScript extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = TestScript[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for TestScript`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -238,12 +230,12 @@ export class TestScript extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'title';
@@ -262,12 +254,12 @@ export class TestScript extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -492,12 +484,6 @@ export class TestScript extends DomainResource implements IDomainResource {
       instance.setTeardown(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1200,10 +1186,10 @@ export class TestScript extends DomainResource implements IDomainResource {
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -1214,11 +1200,14 @@ export class TestScript extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `TestScript.name is required`);
-    const optErrMsg = `Invalid TestScript.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid TestScript.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1247,10 +1236,13 @@ export class TestScript extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `TestScript.name is required`);
-    const optErrMsg = `Invalid TestScript.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid TestScript.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1344,11 +1336,14 @@ export class TestScript extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TestScript.status is required`);
-    const errMsgPrefix = `Invalid TestScript.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TestScript.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1381,11 +1376,14 @@ export class TestScript extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TestScript.status is required`);
-    const optErrMsg = `Invalid TestScript.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TestScript.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1418,10 +1416,13 @@ export class TestScript extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TestScript.status is required`);
-    const optErrMsg = `Invalid TestScript.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TestScript.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2665,6 +2666,16 @@ export class TestScript extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2725,15 +2736,14 @@ export class TestScript extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2753,10 +2763,9 @@ export class TestScript extends DomainResource implements IDomainResource {
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -2767,7 +2776,7 @@ export class TestScript extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2850,11 +2859,6 @@ export class TestScript extends DomainResource implements IDomainResource {
       setFhirBackboneElementJson(this.getTeardown(), 'teardown', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2896,7 +2900,6 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `TestScriptOriginComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptOriginComponent
    * @returns TestScriptOriginComponent data model or undefined for `TestScriptOriginComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptOriginComponent | undefined {
@@ -2915,8 +2918,6 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'index';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
@@ -2924,12 +2925,12 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IntegerType | undefined = fhirParser.parseIntegerType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIndex(null);
       } else {
         instance.setIndexElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIndex(null);
     }
 
     fieldName = 'profile';
@@ -2938,12 +2939,12 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProfile(null);
       } else {
         instance.setProfile(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProfile(null);
     }
 
     fieldName = 'url';
@@ -2955,12 +2956,6 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
       instance.setUrlElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3012,10 +3007,10 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `index` property value as a IntegerType object if defined; else null
+   * @returns the `index` property value as a IntegerType object if defined; else an empty IntegerType object
    */
-  public getIndexElement(): IntegerType | null {
-    return this.index;
+  public getIndexElement(): IntegerType {
+    return this.index ?? new IntegerType();
   }
 
   /**
@@ -3026,11 +3021,14 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIndexElement(element: IntegerType): this {
-    assertIsDefined<IntegerType>(element, `TestScript.origin.index is required`);
-    const optErrMsg = `Invalid TestScript.origin.index; Provided value is not an instance of IntegerType.`;
-    assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
-    this.index = element;
+  public setIndexElement(element: IntegerType | undefined | null): this {
+    if (isDefined<IntegerType>(element)) {
+      const optErrMsg = `Invalid TestScript.origin.index; Provided value is not an instance of IntegerType.`;
+      assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
+      this.index = element;
+    } else {
+      this.index = null;
+    }
     return this;
   }
 
@@ -3059,10 +3057,13 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIndex(value: fhirInteger): this {
-    assertIsDefined<fhirInteger>(value, `TestScript.origin.index is required`);
-    const optErrMsg = `Invalid TestScript.origin.index (${String(value)})`;
-    this.index = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+  public setIndex(value: fhirInteger | undefined | null): this {
+    if (isDefined<fhirInteger>(value)) {
+      const optErrMsg = `Invalid TestScript.origin.index (${String(value)})`;
+      this.index = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+    } else {
+      this.index = null;
+    }
     return this;
   }
 
@@ -3074,10 +3075,10 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
   }
 
   /**
-   * @returns the `profile` property value as a Coding object if defined; else null
+   * @returns the `profile` property value as a Coding object if defined; else an empty Coding object
    */
-  public getProfile(): Coding | null {
-    return this.profile;
+  public getProfile(): Coding {
+    return this.profile ?? new Coding();
   }
 
   /**
@@ -3087,11 +3088,14 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setProfile(value: Coding): this {
-    assertIsDefined<Coding>(value, `TestScript.origin.profile is required`);
-    const optErrMsg = `Invalid TestScript.origin.profile; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.profile = value;
+  public setProfile(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid TestScript.origin.profile; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.profile = value;
+    } else {
+      this.profile = null;
+    }
     return this;
   }
 
@@ -3187,6 +3191,16 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.index, this.profile, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3212,37 +3226,29 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasIndexElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInteger>(this.getIndexElement()!, 'index', jsonObj);
+      setFhirPrimitiveJson<fhirInteger>(this.getIndexElement(), 'index', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.origin.index`);
+      jsonObj['index'] = null;
     }
 
     if (this.hasProfile()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProfile()!, 'profile', jsonObj);
+      setFhirComplexJson(this.getProfile(), 'profile', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.origin.profile`);
+      jsonObj['profile'] = null;
     }
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUrl>(this.getUrlElement(), 'url', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3285,7 +3291,6 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `TestScriptDestinationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptDestinationComponent
    * @returns TestScriptDestinationComponent data model or undefined for `TestScriptDestinationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptDestinationComponent | undefined {
@@ -3304,8 +3309,6 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'index';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
@@ -3313,12 +3316,12 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IntegerType | undefined = fhirParser.parseIntegerType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIndex(null);
       } else {
         instance.setIndexElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIndex(null);
     }
 
     fieldName = 'profile';
@@ -3327,12 +3330,12 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProfile(null);
       } else {
         instance.setProfile(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProfile(null);
     }
 
     fieldName = 'url';
@@ -3344,12 +3347,6 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
       instance.setUrlElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3401,10 +3398,10 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `index` property value as a IntegerType object if defined; else null
+   * @returns the `index` property value as a IntegerType object if defined; else an empty IntegerType object
    */
-  public getIndexElement(): IntegerType | null {
-    return this.index;
+  public getIndexElement(): IntegerType {
+    return this.index ?? new IntegerType();
   }
 
   /**
@@ -3415,11 +3412,14 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIndexElement(element: IntegerType): this {
-    assertIsDefined<IntegerType>(element, `TestScript.destination.index is required`);
-    const optErrMsg = `Invalid TestScript.destination.index; Provided value is not an instance of IntegerType.`;
-    assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
-    this.index = element;
+  public setIndexElement(element: IntegerType | undefined | null): this {
+    if (isDefined<IntegerType>(element)) {
+      const optErrMsg = `Invalid TestScript.destination.index; Provided value is not an instance of IntegerType.`;
+      assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
+      this.index = element;
+    } else {
+      this.index = null;
+    }
     return this;
   }
 
@@ -3448,10 +3448,13 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIndex(value: fhirInteger): this {
-    assertIsDefined<fhirInteger>(value, `TestScript.destination.index is required`);
-    const optErrMsg = `Invalid TestScript.destination.index (${String(value)})`;
-    this.index = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+  public setIndex(value: fhirInteger | undefined | null): this {
+    if (isDefined<fhirInteger>(value)) {
+      const optErrMsg = `Invalid TestScript.destination.index (${String(value)})`;
+      this.index = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+    } else {
+      this.index = null;
+    }
     return this;
   }
 
@@ -3463,10 +3466,10 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
   }
 
   /**
-   * @returns the `profile` property value as a Coding object if defined; else null
+   * @returns the `profile` property value as a Coding object if defined; else an empty Coding object
    */
-  public getProfile(): Coding | null {
-    return this.profile;
+  public getProfile(): Coding {
+    return this.profile ?? new Coding();
   }
 
   /**
@@ -3476,11 +3479,14 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setProfile(value: Coding): this {
-    assertIsDefined<Coding>(value, `TestScript.destination.profile is required`);
-    const optErrMsg = `Invalid TestScript.destination.profile; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.profile = value;
+  public setProfile(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid TestScript.destination.profile; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.profile = value;
+    } else {
+      this.profile = null;
+    }
     return this;
   }
 
@@ -3576,6 +3582,16 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.index, this.profile, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3601,37 +3617,29 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasIndexElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInteger>(this.getIndexElement()!, 'index', jsonObj);
+      setFhirPrimitiveJson<fhirInteger>(this.getIndexElement(), 'index', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.destination.index`);
+      jsonObj['index'] = null;
     }
 
     if (this.hasProfile()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProfile()!, 'profile', jsonObj);
+      setFhirComplexJson(this.getProfile(), 'profile', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.destination.profile`);
+      jsonObj['profile'] = null;
     }
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUrl>(this.getUrlElement(), 'url', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3664,7 +3672,6 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `TestScriptMetadataComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptMetadataComponent
    * @returns TestScriptMetadataComponent data model or undefined for `TestScriptMetadataComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptMetadataComponent | undefined {
@@ -3681,8 +3688,6 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
 
     let fieldName = '';
     let sourceField = '';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'link';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3705,21 +3710,15 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestScriptMetadataCapabilityComponent | undefined = TestScriptMetadataCapabilityComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setCapability(null);
         } else {
           instance.addCapability(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCapability(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3826,11 +3825,14 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCapability(value: TestScriptMetadataCapabilityComponent[]): this {
-    assertIsDefinedList<TestScriptMetadataCapabilityComponent>(value, `TestScript.metadata.capability is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability; Provided value array has an element that is not an instance of TestScriptMetadataCapabilityComponent.`;
-    assertFhirTypeList<TestScriptMetadataCapabilityComponent>(value, TestScriptMetadataCapabilityComponent, optErrMsg);
-    this.capability = value;
+  public setCapability(value: TestScriptMetadataCapabilityComponent[] | undefined | null): this {
+    if (isDefinedList<TestScriptMetadataCapabilityComponent>(value)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability; Provided value array has an element that is not an instance of TestScriptMetadataCapabilityComponent.`;
+      assertFhirTypeList<TestScriptMetadataCapabilityComponent>(value, TestScriptMetadataCapabilityComponent, optErrMsg);
+      this.capability = value;
+    } else {
+      this.capability = null;
+    }
     return this;
   }
 
@@ -3887,6 +3889,16 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3913,15 +3925,14 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasLink()) {
       setFhirBackboneElementListJson(this.getLink(), 'link', jsonObj);
@@ -3930,12 +3941,7 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
     if (this.hasCapability()) {
       setFhirBackboneElementListJson(this.getCapability(), 'capability', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.metadata.capability`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['capability'] = null;
     }
 
     return jsonObj;
@@ -3972,7 +3978,6 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `TestScriptMetadataLinkComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptMetadataLinkComponent
    * @returns TestScriptMetadataLinkComponent data model or undefined for `TestScriptMetadataLinkComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptMetadataLinkComponent | undefined {
@@ -3991,8 +3996,6 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4000,12 +4003,12 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUrl(null);
       } else {
         instance.setUrlElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUrl(null);
     }
 
     fieldName = 'description';
@@ -4017,12 +4020,6 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
       instance.setDescriptionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4057,10 +4054,10 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `url` property value as a UriType object if defined; else null
+   * @returns the `url` property value as a UriType object if defined; else an empty UriType object
    */
-  public getUrlElement(): UriType | null {
-    return this.url;
+  public getUrlElement(): UriType {
+    return this.url ?? new UriType();
   }
 
   /**
@@ -4071,11 +4068,14 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrlElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `TestScript.metadata.link.url is required`);
-    const optErrMsg = `Invalid TestScript.metadata.link.url; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.url = element;
+  public setUrlElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid TestScript.metadata.link.url; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.url = element;
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -4104,10 +4104,13 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUrl(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `TestScript.metadata.link.url is required`);
-    const optErrMsg = `Invalid TestScript.metadata.link.url (${String(value)})`;
-    this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setUrl(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid TestScript.metadata.link.url (${String(value)})`;
+      this.url = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.url = null;
+    }
     return this;
   }
 
@@ -4202,6 +4205,16 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.url, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4226,30 +4239,23 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUrlElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getUrlElement()!, 'url', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.metadata.link.url`);
+      jsonObj['url'] = null;
     }
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4305,7 +4311,6 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `TestScriptMetadataCapabilityComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptMetadataCapabilityComponent
    * @returns TestScriptMetadataCapabilityComponent data model or undefined for `TestScriptMetadataCapabilityComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptMetadataCapabilityComponent | undefined {
@@ -4324,8 +4329,6 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'required';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'boolean';
@@ -4333,12 +4336,12 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRequired(null);
       } else {
         instance.setRequiredElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRequired(null);
     }
 
     fieldName = 'validated';
@@ -4348,12 +4351,12 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValidated(null);
       } else {
         instance.setValidatedElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValidated(null);
     }
 
     fieldName = 'description';
@@ -4417,20 +4420,14 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCapabilities(null);
       } else {
         instance.setCapabilitiesElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCapabilities(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4539,10 +4536,10 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `required` property value as a BooleanType object if defined; else null
+   * @returns the `required` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getRequiredElement(): BooleanType | null {
-    return this.required;
+  public getRequiredElement(): BooleanType {
+    return this.required ?? new BooleanType();
   }
 
   /**
@@ -4553,11 +4550,14 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRequiredElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.metadata.capability.required is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability.required; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.required = element;
+  public setRequiredElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability.required; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.required = element;
+    } else {
+      this.required = null;
+    }
     return this;
   }
 
@@ -4586,10 +4586,13 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRequired(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.metadata.capability.required is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability.required (${String(value)})`;
-    this.required = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setRequired(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability.required (${String(value)})`;
+      this.required = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.required = null;
+    }
     return this;
   }
 
@@ -4601,10 +4604,10 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
   }
 
   /**
-   * @returns the `validated` property value as a BooleanType object if defined; else null
+   * @returns the `validated` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getValidatedElement(): BooleanType | null {
-    return this.validated;
+  public getValidatedElement(): BooleanType {
+    return this.validated ?? new BooleanType();
   }
 
   /**
@@ -4615,11 +4618,14 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValidatedElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.metadata.capability.validated is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability.validated; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.validated = element;
+  public setValidatedElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability.validated; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.validated = element;
+    } else {
+      this.validated = null;
+    }
     return this;
   }
 
@@ -4648,10 +4654,13 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValidated(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.metadata.capability.validated is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability.validated (${String(value)})`;
-    this.validated = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setValidated(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability.validated (${String(value)})`;
+      this.validated = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.validated = null;
+    }
     return this;
   }
 
@@ -5035,10 +5044,10 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
   }
 
   /**
-   * @returns the `capabilities` property value as a CanonicalType object if defined; else null
+   * @returns the `capabilities` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getCapabilitiesElement(): CanonicalType | null {
-    return this.capabilities;
+  public getCapabilitiesElement(): CanonicalType {
+    return this.capabilities ?? new CanonicalType();
   }
 
   /**
@@ -5049,11 +5058,14 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCapabilitiesElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `TestScript.metadata.capability.capabilities is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability.capabilities; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.capabilities = element;
+  public setCapabilitiesElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability.capabilities; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.capabilities = element;
+    } else {
+      this.capabilities = null;
+    }
     return this;
   }
 
@@ -5082,10 +5094,13 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCapabilities(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `TestScript.metadata.capability.capabilities is required`);
-    const optErrMsg = `Invalid TestScript.metadata.capability.capabilities (${String(value)})`;
-    this.capabilities = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setCapabilities(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid TestScript.metadata.capability.capabilities (${String(value)})`;
+      this.capabilities = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.capabilities = null;
+    }
     return this;
   }
 
@@ -5121,6 +5136,16 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.required, this.validated, this.capabilities, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5152,28 +5177,25 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRequiredElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getRequiredElement()!, 'required', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getRequiredElement(), 'required', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.metadata.capability.required`);
+      jsonObj['required'] = null;
     }
 
     if (this.hasValidatedElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getValidatedElement()!, 'validated', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getValidatedElement(), 'validated', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.metadata.capability.validated`);
+      jsonObj['validated'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -5193,15 +5215,9 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
     }
 
     if (this.hasCapabilitiesElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getCapabilitiesElement()!, 'capabilities', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getCapabilitiesElement(), 'capabilities', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.metadata.capability.capabilities`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['capabilities'] = null;
     }
 
     return jsonObj;
@@ -5238,7 +5254,6 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `TestScriptScopeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptScopeComponent
    * @returns TestScriptScopeComponent data model or undefined for `TestScriptScopeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptScopeComponent | undefined {
@@ -5257,8 +5272,6 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'artifact';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5266,12 +5279,12 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setArtifact(null);
       } else {
         instance.setArtifactElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setArtifact(null);
     }
 
     fieldName = 'conformance';
@@ -5290,12 +5303,6 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
       instance.setPhase(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5347,10 +5354,10 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `artifact` property value as a CanonicalType object if defined; else null
+   * @returns the `artifact` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getArtifactElement(): CanonicalType | null {
-    return this.artifact;
+  public getArtifactElement(): CanonicalType {
+    return this.artifact ?? new CanonicalType();
   }
 
   /**
@@ -5361,11 +5368,14 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setArtifactElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `TestScript.scope.artifact is required`);
-    const optErrMsg = `Invalid TestScript.scope.artifact; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.artifact = element;
+  public setArtifactElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid TestScript.scope.artifact; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.artifact = element;
+    } else {
+      this.artifact = null;
+    }
     return this;
   }
 
@@ -5394,10 +5404,13 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setArtifact(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `TestScript.scope.artifact is required`);
-    const optErrMsg = `Invalid TestScript.scope.artifact (${String(value)})`;
-    this.artifact = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setArtifact(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid TestScript.scope.artifact (${String(value)})`;
+      this.artifact = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.artifact = null;
+    }
     return this;
   }
 
@@ -5493,6 +5506,16 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.artifact, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5518,21 +5541,19 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasArtifactElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getArtifactElement()!, 'artifact', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getArtifactElement(), 'artifact', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.scope.artifact`);
+      jsonObj['artifact'] = null;
     }
 
     if (this.hasConformance()) {
@@ -5541,11 +5562,6 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
 
     if (this.hasPhase()) {
       setFhirComplexJson(this.getPhase(), 'phase', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5591,7 +5607,6 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `TestScriptFixtureComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptFixtureComponent
    * @returns TestScriptFixtureComponent data model or undefined for `TestScriptFixtureComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptFixtureComponent | undefined {
@@ -5610,8 +5625,6 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'autocreate';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'boolean';
@@ -5619,12 +5632,12 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAutocreate(null);
       } else {
         instance.setAutocreateElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAutocreate(null);
     }
 
     fieldName = 'autodelete';
@@ -5634,12 +5647,12 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAutodelete(null);
       } else {
         instance.setAutodeleteElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAutodelete(null);
     }
 
     fieldName = 'resource';
@@ -5650,12 +5663,6 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
       instance.setResource(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5708,10 +5715,10 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `autocreate` property value as a BooleanType object if defined; else null
+   * @returns the `autocreate` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getAutocreateElement(): BooleanType | null {
-    return this.autocreate;
+  public getAutocreateElement(): BooleanType {
+    return this.autocreate ?? new BooleanType();
   }
 
   /**
@@ -5722,11 +5729,14 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAutocreateElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.fixture.autocreate is required`);
-    const optErrMsg = `Invalid TestScript.fixture.autocreate; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.autocreate = element;
+  public setAutocreateElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.fixture.autocreate; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.autocreate = element;
+    } else {
+      this.autocreate = null;
+    }
     return this;
   }
 
@@ -5755,10 +5765,13 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAutocreate(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.fixture.autocreate is required`);
-    const optErrMsg = `Invalid TestScript.fixture.autocreate (${String(value)})`;
-    this.autocreate = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setAutocreate(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.fixture.autocreate (${String(value)})`;
+      this.autocreate = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.autocreate = null;
+    }
     return this;
   }
 
@@ -5770,10 +5783,10 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
   }
 
   /**
-   * @returns the `autodelete` property value as a BooleanType object if defined; else null
+   * @returns the `autodelete` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getAutodeleteElement(): BooleanType | null {
-    return this.autodelete;
+  public getAutodeleteElement(): BooleanType {
+    return this.autodelete ?? new BooleanType();
   }
 
   /**
@@ -5784,11 +5797,14 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAutodeleteElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.fixture.autodelete is required`);
-    const optErrMsg = `Invalid TestScript.fixture.autodelete; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.autodelete = element;
+  public setAutodeleteElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.fixture.autodelete; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.autodelete = element;
+    } else {
+      this.autodelete = null;
+    }
     return this;
   }
 
@@ -5817,10 +5833,13 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAutodelete(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.fixture.autodelete is required`);
-    const optErrMsg = `Invalid TestScript.fixture.autodelete (${String(value)})`;
-    this.autodelete = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setAutodelete(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.fixture.autodelete (${String(value)})`;
+      this.autodelete = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.autodelete = null;
+    }
     return this;
   }
 
@@ -5888,6 +5907,16 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.autocreate, this.autodelete, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5913,37 +5942,29 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAutocreateElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getAutocreateElement()!, 'autocreate', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getAutocreateElement(), 'autocreate', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.fixture.autocreate`);
+      jsonObj['autocreate'] = null;
     }
 
     if (this.hasAutodeleteElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getAutodeleteElement()!, 'autodelete', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getAutodeleteElement(), 'autodelete', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.fixture.autodelete`);
+      jsonObj['autodelete'] = null;
     }
 
     if (this.hasResource()) {
       setFhirComplexJson(this.getResource(), 'resource', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5981,7 +6002,6 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `TestScriptVariableComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptVariableComponent
    * @returns TestScriptVariableComponent data model or undefined for `TestScriptVariableComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptVariableComponent | undefined {
@@ -6000,8 +6020,6 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -6009,12 +6027,12 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'defaultValue';
@@ -6080,12 +6098,6 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
       instance.setSourceIdElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6210,10 +6222,10 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -6224,11 +6236,14 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `TestScript.variable.name is required`);
-    const optErrMsg = `Invalid TestScript.variable.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid TestScript.variable.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -6257,10 +6272,13 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `TestScript.variable.name is required`);
-    const optErrMsg = `Invalid TestScript.variable.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid TestScript.variable.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -6745,6 +6763,16 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6775,21 +6803,19 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.variable.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasDefaultValueElement()) {
@@ -6818,11 +6844,6 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
 
     if (this.hasSourceIdElement()) {
       setFhirPrimitiveJson<fhirId>(this.getSourceIdElement(), 'sourceId', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6855,7 +6876,6 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `TestScriptSetupComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptSetupComponent
    * @returns TestScriptSetupComponent data model or undefined for `TestScriptSetupComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptSetupComponent | undefined {
@@ -6873,8 +6893,6 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -6883,21 +6901,15 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestScriptSetupActionComponent | undefined = TestScriptSetupActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAction(null);
         } else {
           instance.addAction(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6932,11 +6944,14 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: TestScriptSetupActionComponent[]): this {
-    assertIsDefinedList<TestScriptSetupActionComponent>(value, `TestScript.setup.action is required`);
-    const optErrMsg = `Invalid TestScript.setup.action; Provided value array has an element that is not an instance of TestScriptSetupActionComponent.`;
-    assertFhirTypeList<TestScriptSetupActionComponent>(value, TestScriptSetupActionComponent, optErrMsg);
-    this.action = value;
+  public setAction(value: TestScriptSetupActionComponent[] | undefined | null): this {
+    if (isDefinedList<TestScriptSetupActionComponent>(value)) {
+      const optErrMsg = `Invalid TestScript.setup.action; Provided value array has an element that is not an instance of TestScriptSetupActionComponent.`;
+      assertFhirTypeList<TestScriptSetupActionComponent>(value, TestScriptSetupActionComponent, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -6992,6 +7007,16 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7016,25 +7041,19 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.setup.action`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -7097,7 +7116,6 @@ export class TestScriptSetupActionComponent extends BackboneElement implements I
       instance.setAssert(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7293,7 +7311,6 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `TestScriptSetupActionOperationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptSetupActionOperationComponent
    * @returns TestScriptSetupActionOperationComponent data model or undefined for `TestScriptSetupActionOperationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptSetupActionOperationComponent | undefined {
@@ -7311,8 +7328,6 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -7383,12 +7398,12 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setEncodeRequestUrl(null);
       } else {
         instance.setEncodeRequestUrlElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setEncodeRequestUrl(null);
     }
 
     fieldName = 'method';
@@ -7476,12 +7491,6 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
       instance.setUrlElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -8166,10 +8175,10 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
   }
 
   /**
-   * @returns the `encodeRequestUrl` property value as a BooleanType object if defined; else null
+   * @returns the `encodeRequestUrl` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getEncodeRequestUrlElement(): BooleanType | null {
-    return this.encodeRequestUrl;
+  public getEncodeRequestUrlElement(): BooleanType {
+    return this.encodeRequestUrl ?? new BooleanType();
   }
 
   /**
@@ -8180,11 +8189,14 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEncodeRequestUrlElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.setup.action.operation.encodeRequestUrl is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.operation.encodeRequestUrl; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.encodeRequestUrl = element;
+  public setEncodeRequestUrlElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.setup.action.operation.encodeRequestUrl; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.encodeRequestUrl = element;
+    } else {
+      this.encodeRequestUrl = null;
+    }
     return this;
   }
 
@@ -8213,10 +8225,13 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEncodeRequestUrl(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.setup.action.operation.encodeRequestUrl is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.operation.encodeRequestUrl (${String(value)})`;
-    this.encodeRequestUrl = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setEncodeRequestUrl(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.setup.action.operation.encodeRequestUrl (${String(value)})`;
+      this.encodeRequestUrl = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.encodeRequestUrl = null;
+    }
     return this;
   }
 
@@ -8884,6 +8899,16 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.encodeRequestUrl, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -8924,15 +8949,14 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -8963,10 +8987,9 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
     }
 
     if (this.hasEncodeRequestUrlElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getEncodeRequestUrlElement()!, 'encodeRequestUrl', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getEncodeRequestUrlElement(), 'encodeRequestUrl', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.setup.action.operation.encodeRequestUrl`);
+      jsonObj['encodeRequestUrl'] = null;
     }
 
     if (this.hasMethodElement()) {
@@ -9004,11 +9027,6 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirString>(this.getUrlElement(), 'url', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -9055,7 +9073,6 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
    * @param sourceJson - JSON representing FHIR `TestScriptSetupActionOperationRequestHeaderComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptSetupActionOperationRequestHeaderComponent
    * @returns TestScriptSetupActionOperationRequestHeaderComponent data model or undefined for `TestScriptSetupActionOperationRequestHeaderComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptSetupActionOperationRequestHeaderComponent | undefined {
@@ -9074,8 +9091,6 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'field';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -9083,12 +9098,12 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setField(null);
       } else {
         instance.setFieldElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setField(null);
     }
 
     fieldName = 'value';
@@ -9098,20 +9113,14 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9148,10 +9157,10 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `field` property value as a StringType object if defined; else null
+   * @returns the `field` property value as a StringType object if defined; else an empty StringType object
    */
-  public getFieldElement(): StringType | null {
-    return this.field;
+  public getFieldElement(): StringType {
+    return this.field ?? new StringType();
   }
 
   /**
@@ -9162,11 +9171,14 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setFieldElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `TestScript.setup.action.operation.requestHeader.field is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.field; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.field = element;
+  public setFieldElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.field; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.field = element;
+    } else {
+      this.field = null;
+    }
     return this;
   }
 
@@ -9195,10 +9207,13 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setField(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `TestScript.setup.action.operation.requestHeader.field is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.field (${String(value)})`;
-    this.field = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setField(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.field (${String(value)})`;
+      this.field = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.field = null;
+    }
     return this;
   }
 
@@ -9210,10 +9225,10 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -9224,11 +9239,14 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `TestScript.setup.action.operation.requestHeader.value is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -9257,10 +9275,13 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `TestScript.setup.action.operation.requestHeader.value is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid TestScript.setup.action.operation.requestHeader.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -9291,6 +9312,16 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.field, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -9315,33 +9346,25 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasFieldElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getFieldElement()!, 'field', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getFieldElement(), 'field', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.setup.action.operation.requestHeader.field`);
+      jsonObj['field'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.setup.action.operation.requestHeader.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -9394,7 +9417,6 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `TestScriptSetupActionAssertComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptSetupActionAssertComponent
    * @returns TestScriptSetupActionAssertComponent data model or undefined for `TestScriptSetupActionAssertComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptSetupActionAssertComponent | undefined {
@@ -9412,8 +9434,6 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'label';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -9602,12 +9622,12 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStopTestOnFail(null);
       } else {
         instance.setStopTestOnFailElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStopTestOnFail(null);
     }
 
     fieldName = 'validateProfileId';
@@ -9635,12 +9655,12 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setWarningOnly(null);
       } else {
         instance.setWarningOnlyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setWarningOnly(null);
     }
 
     fieldName = 'requirement';
@@ -9656,12 +9676,6 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -11627,10 +11641,10 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
   }
 
   /**
-   * @returns the `stopTestOnFail` property value as a BooleanType object if defined; else null
+   * @returns the `stopTestOnFail` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getStopTestOnFailElement(): BooleanType | null {
-    return this.stopTestOnFail;
+  public getStopTestOnFailElement(): BooleanType {
+    return this.stopTestOnFail ?? new BooleanType();
   }
 
   /**
@@ -11641,11 +11655,14 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setStopTestOnFailElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.setup.action.assert.stopTestOnFail is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.assert.stopTestOnFail; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.stopTestOnFail = element;
+  public setStopTestOnFailElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.setup.action.assert.stopTestOnFail; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.stopTestOnFail = element;
+    } else {
+      this.stopTestOnFail = null;
+    }
     return this;
   }
 
@@ -11674,10 +11691,13 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setStopTestOnFail(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.setup.action.assert.stopTestOnFail is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.assert.stopTestOnFail (${String(value)})`;
-    this.stopTestOnFail = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setStopTestOnFail(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.setup.action.assert.stopTestOnFail (${String(value)})`;
+      this.stopTestOnFail = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.stopTestOnFail = null;
+    }
     return this;
   }
 
@@ -11817,10 +11837,10 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
   }
 
   /**
-   * @returns the `warningOnly` property value as a BooleanType object if defined; else null
+   * @returns the `warningOnly` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getWarningOnlyElement(): BooleanType | null {
-    return this.warningOnly;
+  public getWarningOnlyElement(): BooleanType {
+    return this.warningOnly ?? new BooleanType();
   }
 
   /**
@@ -11831,11 +11851,14 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setWarningOnlyElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TestScript.setup.action.assert.warningOnly is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.assert.warningOnly; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.warningOnly = element;
+  public setWarningOnlyElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TestScript.setup.action.assert.warningOnly; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.warningOnly = element;
+    } else {
+      this.warningOnly = null;
+    }
     return this;
   }
 
@@ -11864,10 +11887,13 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setWarningOnly(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TestScript.setup.action.assert.warningOnly is required`);
-    const optErrMsg = `Invalid TestScript.setup.action.assert.warningOnly (${String(value)})`;
-    this.warningOnly = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setWarningOnly(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TestScript.setup.action.assert.warningOnly (${String(value)})`;
+      this.warningOnly = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.warningOnly = null;
+    }
     return this;
   }
 
@@ -11979,6 +12005,16 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.stopTestOnFail, this.warningOnly, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -12027,15 +12063,14 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasLabelElement()) {
       setFhirPrimitiveJson<fhirString>(this.getLabelElement(), 'label', jsonObj);
@@ -12123,10 +12158,9 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
     }
 
     if (this.hasStopTestOnFailElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getStopTestOnFailElement()!, 'stopTestOnFail', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getStopTestOnFailElement(), 'stopTestOnFail', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.setup.action.assert.stopTestOnFail`);
+      jsonObj['stopTestOnFail'] = null;
     }
 
     if (this.hasValidateProfileIdElement()) {
@@ -12138,19 +12172,13 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
     }
 
     if (this.hasWarningOnlyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getWarningOnlyElement()!, 'warningOnly', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getWarningOnlyElement(), 'warningOnly', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.setup.action.assert.warningOnly`);
+      jsonObj['warningOnly'] = null;
     }
 
     if (this.hasRequirement()) {
       setFhirBackboneElementListJson(this.getRequirement(), 'requirement', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -12211,7 +12239,6 @@ export class TestScriptSetupActionAssertRequirementComponent extends BackboneEle
     );
     instance.setLink(link);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -12408,7 +12435,6 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
    * @param sourceJson - JSON representing FHIR `TestScriptTestComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptTestComponent
    * @returns TestScriptTestComponent data model or undefined for `TestScriptTestComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptTestComponent | undefined {
@@ -12426,8 +12452,6 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -12455,21 +12479,15 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestScriptTestActionComponent | undefined = TestScriptTestActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAction(null);
         } else {
           instance.addAction(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -12660,11 +12678,14 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: TestScriptTestActionComponent[]): this {
-    assertIsDefinedList<TestScriptTestActionComponent>(value, `TestScript.test.action is required`);
-    const optErrMsg = `Invalid TestScript.test.action; Provided value array has an element that is not an instance of TestScriptTestActionComponent.`;
-    assertFhirTypeList<TestScriptTestActionComponent>(value, TestScriptTestActionComponent, optErrMsg);
-    this.action = value;
+  public setAction(value: TestScriptTestActionComponent[] | undefined | null): this {
+    if (isDefinedList<TestScriptTestActionComponent>(value)) {
+      const optErrMsg = `Invalid TestScript.test.action; Provided value array has an element that is not an instance of TestScriptTestActionComponent.`;
+      assertFhirTypeList<TestScriptTestActionComponent>(value, TestScriptTestActionComponent, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -12722,6 +12743,16 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -12748,15 +12779,14 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
@@ -12769,12 +12799,7 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.test.action`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -12837,7 +12862,6 @@ export class TestScriptTestActionComponent extends BackboneElement implements IB
       instance.setAssert(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13027,7 +13051,6 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `TestScriptTeardownComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptTeardownComponent
    * @returns TestScriptTeardownComponent data model or undefined for `TestScriptTeardownComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptTeardownComponent | undefined {
@@ -13045,8 +13068,6 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -13055,21 +13076,15 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: TestScriptTeardownActionComponent | undefined = TestScriptTeardownActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAction(null);
         } else {
           instance.addAction(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13104,11 +13119,14 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAction(value: TestScriptTeardownActionComponent[]): this {
-    assertIsDefinedList<TestScriptTeardownActionComponent>(value, `TestScript.teardown.action is required`);
-    const optErrMsg = `Invalid TestScript.teardown.action; Provided value array has an element that is not an instance of TestScriptTeardownActionComponent.`;
-    assertFhirTypeList<TestScriptTeardownActionComponent>(value, TestScriptTeardownActionComponent, optErrMsg);
-    this.action = value;
+  public setAction(value: TestScriptTeardownActionComponent[] | undefined | null): this {
+    if (isDefinedList<TestScriptTeardownActionComponent>(value)) {
+      const optErrMsg = `Invalid TestScript.teardown.action; Provided value array has an element that is not an instance of TestScriptTeardownActionComponent.`;
+      assertFhirTypeList<TestScriptTeardownActionComponent>(value, TestScriptTeardownActionComponent, optErrMsg);
+      this.action = value;
+    } else {
+      this.action = null;
+    }
     return this;
   }
 
@@ -13164,6 +13182,16 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -13188,25 +13216,19 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.teardown.action`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -13240,7 +13262,6 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `TestScriptTeardownActionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TestScriptTeardownActionComponent
    * @returns TestScriptTeardownActionComponent data model or undefined for `TestScriptTeardownActionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TestScriptTeardownActionComponent | undefined {
@@ -13258,28 +13279,20 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'operation';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const component: TestScriptSetupActionOperationComponent | undefined = TestScriptSetupActionOperationComponent.parse(classJsonObj[fieldName]!, sourceField);
       if (component === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOperation(null);
       } else {
         instance.setOperation(component);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOperation(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13300,10 +13313,10 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `operation` property value as a TestScriptSetupActionOperationComponent object if defined; else null
+   * @returns the `operation` property value as a TestScriptSetupActionOperationComponent object if defined; else an empty TestScriptSetupActionOperationComponent object
    */
-  public getOperation(): TestScriptSetupActionOperationComponent | null {
-    return this.operation;
+  public getOperation(): TestScriptSetupActionOperationComponent {
+    return this.operation ?? new TestScriptSetupActionOperationComponent();
   }
 
   /**
@@ -13313,11 +13326,14 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setOperation(value: TestScriptSetupActionOperationComponent): this {
-    assertIsDefined<TestScriptSetupActionOperationComponent>(value, `TestScript.teardown.action.operation is required`);
-    const optErrMsg = `Invalid TestScript.teardown.action.operation; Provided element is not an instance of TestScriptSetupActionOperationComponent.`;
-    assertFhirType<TestScriptSetupActionOperationComponent>(value, TestScriptSetupActionOperationComponent, optErrMsg);
-    this.operation = value;
+  public setOperation(value: TestScriptSetupActionOperationComponent | undefined | null): this {
+    if (isDefined<TestScriptSetupActionOperationComponent>(value)) {
+      const optErrMsg = `Invalid TestScript.teardown.action.operation; Provided element is not an instance of TestScriptSetupActionOperationComponent.`;
+      assertFhirType<TestScriptSetupActionOperationComponent>(value, TestScriptSetupActionOperationComponent, optErrMsg);
+      this.operation = value;
+    } else {
+      this.operation = null;
+    }
     return this;
   }
 
@@ -13347,6 +13363,16 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.operation, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -13370,26 +13396,19 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasOperation()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirBackboneElementJson(this.getOperation()!, 'operation', jsonObj);
+      setFhirBackboneElementJson(this.getOperation(), 'operation', jsonObj);
     } else {
-      missingReqdProperties.push(`TestScript.teardown.action.operation`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['operation'] = null;
     }
 
     return jsonObj;

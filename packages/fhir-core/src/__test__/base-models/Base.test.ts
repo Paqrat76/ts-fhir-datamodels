@@ -33,6 +33,7 @@ describe('Base', () => {
     expect(mockBase.mockValue).toBeUndefined();
     expect(mockBase.fhirType()).toStrictEqual('MockBase');
     expect(mockBase.isEmpty()).toBe(true);
+    expect(mockBase.isRequiredFieldsEmpty()).toBe(false);
   });
 
   it('should correctly execute copy()', () => {
@@ -43,6 +44,7 @@ describe('Base', () => {
     expect(mockBase.mockValue).toStrictEqual(testString);
     expect(mockBase.fhirType()).toStrictEqual('MockBase');
     expect(mockBase.isEmpty()).toBe(false);
+    expect(mockBase.isRequiredFieldsEmpty()).toBe(false);
 
     const testBase = mockBase.copy();
     expect(testBase).toBeDefined();
@@ -57,6 +59,7 @@ describe('Base', () => {
     // The is[Type] methods default to false and must be overridden in subclasses as appropriate
     expect(mockBase.isResource()).toBe(false);
     expect(mockBase.isComplexDataType()).toBe(false);
+    expect(mockBase.isDataType()).toBe(false);
     expect(mockBase.isPrimitive()).toBe(false);
     expect(mockBase.isBooleanPrimitive()).toBe(false);
     expect(mockBase.isStringPrimitive()).toBe(false);

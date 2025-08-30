@@ -26,6 +26,8 @@ The following abstract methods are implemented in all data model classes:
 
 The following public methods in `Base` all return `false` and are overridden as appropriate in subclassed data models:
 
+- `public isRequiredFieldsEmpty(): boolean` - Returns `true` if and only if the data model has "required" fields
+  (min cardinality > 0) and at least one of those "required" fields in the instance is empty
 - `public isResource(): boolean` - Returns `true` from the `Resource` abstract class
 - `public isDataType(): boolean` - Returns `true` from the `DataType` abstract class
 - `public isComplexDataType(): boolean` - Returns `true` from all generated data models representing FHIR complex data types
@@ -48,10 +50,6 @@ That said, the data models are designed to provide basic data validation as foll
   - Data elements having a cardinality of `0..1` or `1..1` have "set" methods that allow only a single value.
   - Data elements having a cardinality of `0..*` or `1..*` have "set" methods that require an array of values and "add"
     methods that allow only a single value.
-- **Required Data Elements:** All "required" data elements (`max` cardinality >= 1) are validated to ensure they are present.
-  This is achieved during serialization (instance `toJSON()` method) and deserialization (static `parse()` method).
-  If a required data element is found missing during processing, a `FhirError` is thrown.
-  See [Required vs. Optional Fields](#required-vs-optional-fields) below for more information.
 - **Data Type Usage:** All data elements are validated to ensure the correct data type is provided.
   All "get" and "add" methods are type-safe and will throw an error (`InvalidTypeError` or `PrimitiveTypeError`)
   if the data element is not of the correct type or correct primitive value.
@@ -105,8 +103,11 @@ Within all data models, "optional" fields use `undefined` and "required" fields 
 So, JSON representations of resource data will not have keys/values for missing "optional" data elements while keys
 will exist for "required" data elements having a `null` value when no data is present.
 
-Data model serialization (instance `toJSON()` method) and deserialization (static `parse()` method) will throw a
-`FhirError` if a "required" data element is missing.
+To determine if an instance of a data model has missing "required" data elements, use the `isRequiredFieldsEmpty()`
+method.
+This method returns `true` if and only if the data model has required fields (min cardinality > 0) and at least one
+of those required fields in the instance is empty; `false` otherwise.
+To determine which "required" fields are missing, use the field-specific "has" methods for each "required" data element.
 
 ## Date/DateTime/Instant Data Types
 
@@ -208,8 +209,7 @@ are expected to be thrown by the generated data models:
 - `InvalidCodeError` - Error thrown when an unknown code in a "code enumerator" is provided.
 - `InvalidDateTimeError` - Error thrown when a Luxon DateTime object is invalid
 - `InvalidTypeError` - Error thrown when an invalid type is provided
-- `JsonError` - Error thrown when parsing invalid JSON data and when "required" fields are identified as missing when
-  serializing or deserializing
+- `JsonError` - Error thrown when parsing invalid JSON data
 - `PrimitiveTypeError` - Error thrown when instances of primitive types fail validation.
 
 ### Primitive Type Validation Errors
@@ -248,4 +248,4 @@ This includes when the value is not of the correct type for a "choice" data type
 ### Serialization/Deserialization Errors
 
 The `FhirError` is thrown when the provided JSON representation is not a valid JSON object or
-when the JSON representation is missing required data elements.
+when the JSON representation is missing a required data element (i.e., `resourceType` in resource data models).

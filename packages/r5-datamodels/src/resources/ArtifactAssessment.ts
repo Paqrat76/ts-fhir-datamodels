@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,18 +48,14 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -89,6 +84,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -140,7 +136,6 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `ArtifactAssessment`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ArtifactAssessment
    * @returns ArtifactAssessment data model or undefined for `ArtifactAssessment`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ArtifactAssessment | undefined {
@@ -163,8 +158,6 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
     const classMetadata: DecoratorMetadataObject | null = ArtifactAssessment[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ArtifactAssessment`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -243,7 +236,7 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
       classMetadata,
     );
     if (artifact === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setArtifact(null);
     } else {
       instance.setArtifact(artifact);
     }
@@ -279,12 +272,6 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
       instance.setDispositionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -965,10 +952,13 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('ArtifactAssessment.artifact[x]')
-  public setArtifact(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `ArtifactAssessment.artifact[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.artifact = value;
+  public setArtifact(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.artifact = value;
+    } else {
+      this.artifact = null;
+    }
     return this;
   }
 
@@ -1369,6 +1359,16 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.artifact, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1404,15 +1404,14 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1447,7 +1446,7 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getArtifact()!, 'artifact', jsonObj);
     } else {
-      missingReqdProperties.push(`ArtifactAssessment.artifact[x]`);
+      jsonObj['artifact'] = null;
     }
 
     if (this.hasContent()) {
@@ -1462,11 +1461,6 @@ export class ArtifactAssessment extends DomainResource implements IDomainResourc
     if (this.hasDispositionElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getDispositionElement()!, 'disposition', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1623,7 +1617,6 @@ export class ArtifactAssessmentContentComponent extends BackboneElement implemen
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

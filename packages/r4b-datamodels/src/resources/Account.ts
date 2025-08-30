@@ -37,28 +37,22 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PositiveIntType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -74,6 +68,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -118,7 +113,6 @@ export class Account extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Account`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Account
    * @returns Account data model or undefined for `Account`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Account | undefined {
@@ -137,8 +131,6 @@ export class Account extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -160,12 +152,12 @@ export class Account extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'type';
@@ -257,12 +249,6 @@ export class Account extends DomainResource implements IDomainResource {
       instance.setPartOf(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -528,11 +514,14 @@ export class Account extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AccountStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Account.status is required`);
-    const errMsgPrefix = `Invalid Account.status`;
-    assertEnumCodeType<AccountStatusEnum>(enumType, AccountStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Account.status`;
+      assertEnumCodeType<AccountStatusEnum>(enumType, AccountStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -565,11 +554,14 @@ export class Account extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AccountStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Account.status is required`);
-    const optErrMsg = `Invalid Account.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.accountStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Account.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.accountStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -602,10 +594,13 @@ export class Account extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AccountStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Account.status is required`);
-    const optErrMsg = `Invalid Account.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.accountStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Account.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.accountStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1115,6 +1110,16 @@ export class Account extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1152,15 +1157,14 @@ export class Account extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1170,7 +1174,7 @@ export class Account extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Account.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasType()) {
@@ -1209,11 +1213,6 @@ export class Account extends DomainResource implements IDomainResource {
       setFhirComplexJson(this.getPartOf(), 'partOf', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1246,7 +1245,6 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `AccountCoverageComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AccountCoverageComponent
    * @returns AccountCoverageComponent data model or undefined for `AccountCoverageComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AccountCoverageComponent | undefined {
@@ -1265,20 +1263,18 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'coverage';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCoverage(null);
       } else {
         instance.setCoverage(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCoverage(null);
     }
 
     fieldName = 'priority';
@@ -1290,12 +1286,6 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
       instance.setPriorityElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1334,10 +1324,10 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `coverage` property value as a Reference object if defined; else null
+   * @returns the `coverage` property value as a Reference object if defined; else an empty Reference object
    */
-  public getCoverage(): Reference | null {
-    return this.coverage;
+  public getCoverage(): Reference {
+    return this.coverage ?? new Reference();
   }
 
   /**
@@ -1352,10 +1342,13 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
   @ReferenceTargets('Account.coverage.coverage', [
     'Coverage',
   ])
-  public setCoverage(value: Reference): this {
-    assertIsDefined<Reference>(value, `Account.coverage.coverage is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.coverage = value;
+  public setCoverage(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.coverage = value;
+    } else {
+      this.coverage = null;
+    }
     return this;
   }
 
@@ -1450,6 +1443,16 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.coverage, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1474,30 +1477,23 @@ export class AccountCoverageComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCoverage()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCoverage()!, 'coverage', jsonObj);
+      setFhirComplexJson(this.getCoverage(), 'coverage', jsonObj);
     } else {
-      missingReqdProperties.push(`Account.coverage.coverage`);
+      jsonObj['coverage'] = null;
     }
 
     if (this.hasPriorityElement()) {
       setFhirPrimitiveJson<fhirPositiveInt>(this.getPriorityElement(), 'priority', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1530,7 +1526,6 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `AccountGuarantorComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AccountGuarantorComponent
    * @returns AccountGuarantorComponent data model or undefined for `AccountGuarantorComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AccountGuarantorComponent | undefined {
@@ -1549,20 +1544,18 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'party';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setParty(null);
       } else {
         instance.setParty(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setParty(null);
     }
 
     fieldName = 'onHold';
@@ -1582,12 +1575,6 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
       instance.setPeriod(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1641,10 +1628,10 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `party` property value as a Reference object if defined; else null
+   * @returns the `party` property value as a Reference object if defined; else an empty Reference object
    */
-  public getParty(): Reference | null {
-    return this.party;
+  public getParty(): Reference {
+    return this.party ?? new Reference();
   }
 
   /**
@@ -1663,10 +1650,13 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
   
     'Organization',
   ])
-  public setParty(value: Reference): this {
-    assertIsDefined<Reference>(value, `Account.guarantor.party is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.party = value;
+  public setParty(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.party = value;
+    } else {
+      this.party = null;
+    }
     return this;
   }
 
@@ -1794,6 +1784,16 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.party, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1819,21 +1819,19 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasParty()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getParty()!, 'party', jsonObj);
+      setFhirComplexJson(this.getParty(), 'party', jsonObj);
     } else {
-      missingReqdProperties.push(`Account.guarantor.party`);
+      jsonObj['party'] = null;
     }
 
     if (this.hasOnHoldElement()) {
@@ -1842,11 +1840,6 @@ export class AccountGuarantorComponent extends BackboneElement implements IBackb
 
     if (this.hasPeriod()) {
       setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

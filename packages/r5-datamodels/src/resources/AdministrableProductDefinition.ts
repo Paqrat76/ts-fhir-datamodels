@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,24 +46,19 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -78,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -131,7 +126,6 @@ export class AdministrableProductDefinition extends DomainResource implements ID
    * @param sourceJson - JSON representing FHIR `AdministrableProductDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdministrableProductDefinition
    * @returns AdministrableProductDefinition data model or undefined for `AdministrableProductDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): AdministrableProductDefinition | undefined {
@@ -150,8 +144,6 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -173,12 +165,12 @@ export class AdministrableProductDefinition extends DomainResource implements ID
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'formOf';
@@ -274,21 +266,15 @@ export class AdministrableProductDefinition extends DomainResource implements ID
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: AdministrableProductDefinitionRouteOfAdministrationComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setRouteOfAdministration(null);
         } else {
           instance.addRouteOfAdministration(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRouteOfAdministration(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -545,11 +531,14 @@ export class AdministrableProductDefinition extends DomainResource implements ID
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `AdministrableProductDefinition.status is required`);
-    const errMsgPrefix = `Invalid AdministrableProductDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid AdministrableProductDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -582,11 +571,14 @@ export class AdministrableProductDefinition extends DomainResource implements ID
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `AdministrableProductDefinition.status is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -619,10 +611,13 @@ export class AdministrableProductDefinition extends DomainResource implements ID
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `AdministrableProductDefinition.status is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1059,11 +1054,14 @@ export class AdministrableProductDefinition extends DomainResource implements ID
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRouteOfAdministration(value: AdministrableProductDefinitionRouteOfAdministrationComponent[]): this {
-    assertIsDefinedList<AdministrableProductDefinitionRouteOfAdministrationComponent>(value, `AdministrableProductDefinition.routeOfAdministration is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration; Provided value array has an element that is not an instance of AdministrableProductDefinitionRouteOfAdministrationComponent.`;
-    assertFhirTypeList<AdministrableProductDefinitionRouteOfAdministrationComponent>(value, AdministrableProductDefinitionRouteOfAdministrationComponent, optErrMsg);
-    this.routeOfAdministration = value;
+  public setRouteOfAdministration(value: AdministrableProductDefinitionRouteOfAdministrationComponent[] | undefined | null): this {
+    if (isDefinedList<AdministrableProductDefinitionRouteOfAdministrationComponent>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration; Provided value array has an element that is not an instance of AdministrableProductDefinitionRouteOfAdministrationComponent.`;
+      assertFhirTypeList<AdministrableProductDefinitionRouteOfAdministrationComponent>(value, AdministrableProductDefinitionRouteOfAdministrationComponent, optErrMsg);
+      this.routeOfAdministration = value;
+    } else {
+      this.routeOfAdministration = null;
+    }
     return this;
   }
 
@@ -1129,6 +1127,16 @@ export class AdministrableProductDefinition extends DomainResource implements ID
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1168,15 +1176,14 @@ export class AdministrableProductDefinition extends DomainResource implements ID
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1186,7 +1193,7 @@ export class AdministrableProductDefinition extends DomainResource implements ID
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasFormOf()) {
@@ -1224,12 +1231,7 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     if (this.hasRouteOfAdministration()) {
       setFhirBackboneElementListJson(this.getRouteOfAdministration(), 'routeOfAdministration', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.routeOfAdministration`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['routeOfAdministration'] = null;
     }
 
     return jsonObj;
@@ -1263,7 +1265,6 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
    * @param sourceJson - JSON representing FHIR `AdministrableProductDefinitionPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdministrableProductDefinitionPropertyComponent
    * @returns AdministrableProductDefinitionPropertyComponent data model or undefined for `AdministrableProductDefinitionPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AdministrableProductDefinitionPropertyComponent | undefined {
@@ -1285,20 +1286,18 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
     const errorMessage = `DecoratorMetadataObject does not exist for AdministrableProductDefinitionPropertyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -1319,12 +1318,6 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
       instance.setStatus(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1391,10 +1384,10 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -1404,11 +1397,14 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `AdministrableProductDefinition.property.type is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.property.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.property.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1665,6 +1661,16 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1690,21 +1696,19 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.property.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
@@ -1714,11 +1718,6 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
 
     if (this.hasStatus()) {
       setFhirComplexJson(this.getStatus(), 'status', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1751,7 +1750,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
    * @param sourceJson - JSON representing FHIR `AdministrableProductDefinitionRouteOfAdministrationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdministrableProductDefinitionRouteOfAdministrationComponent
    * @returns AdministrableProductDefinitionRouteOfAdministrationComponent data model or undefined for `AdministrableProductDefinitionRouteOfAdministrationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AdministrableProductDefinitionRouteOfAdministrationComponent | undefined {
@@ -1769,20 +1767,18 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'firstDose';
@@ -1838,12 +1834,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1948,10 +1938,10 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -1961,11 +1951,14 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `AdministrableProductDefinition.routeOfAdministration.code is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2219,6 +2212,16 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2249,21 +2252,19 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.routeOfAdministration.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasFirstDose()) {
@@ -2288,11 +2289,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
 
     if (this.hasTargetSpecies()) {
       setFhirBackboneElementListJson(this.getTargetSpecies(), 'targetSpecies', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2325,7 +2321,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
    * @param sourceJson - JSON representing FHIR `AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent
    * @returns AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent data model or undefined for `AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent | undefined {
@@ -2343,20 +2338,18 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'withdrawalPeriod';
@@ -2372,12 +2365,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2412,10 +2399,10 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -2425,11 +2412,14 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `AdministrableProductDefinition.routeOfAdministration.targetSpecies.code is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.targetSpecies.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.targetSpecies.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2518,6 +2508,16 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2543,30 +2543,23 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.routeOfAdministration.targetSpecies.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasWithdrawalPeriod()) {
       setFhirBackboneElementListJson(this.getWithdrawalPeriod(), 'withdrawalPeriod', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2604,7 +2597,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
    * @param sourceJson - JSON representing FHIR `AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent
    * @returns AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent data model or undefined for `AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent | undefined {
@@ -2623,20 +2615,18 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'tissue';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTissue(null);
       } else {
         instance.setTissue(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTissue(null);
     }
 
     fieldName = 'value';
@@ -2645,12 +2635,12 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValue(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
     fieldName = 'supportingInformation';
@@ -2662,12 +2652,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
       instance.setSupportingInformationElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2716,10 +2700,10 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `tissue` property value as a CodeableConcept object if defined; else null
+   * @returns the `tissue` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getTissue(): CodeableConcept | null {
-    return this.tissue;
+  public getTissue(): CodeableConcept {
+    return this.tissue ?? new CodeableConcept();
   }
 
   /**
@@ -2729,11 +2713,14 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setTissue(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.tissue is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.tissue; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.tissue = value;
+  public setTissue(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.tissue; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.tissue = value;
+    } else {
+      this.tissue = null;
+    }
     return this;
   }
 
@@ -2745,10 +2732,10 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
   }
 
   /**
-   * @returns the `value` property value as a Quantity object if defined; else null
+   * @returns the `value` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getValue(): Quantity | null {
-    return this.value;
+  public getValue(): Quantity {
+    return this.value ?? new Quantity();
   }
 
   /**
@@ -2758,11 +2745,14 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setValue(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.value is required`);
-    const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.value; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.value = value;
+  public setValue(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.value; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2858,6 +2848,16 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.tissue, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2883,37 +2883,29 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTissue()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getTissue()!, 'tissue', jsonObj);
+      setFhirComplexJson(this.getTissue(), 'tissue', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.tissue`);
+      jsonObj['tissue'] = null;
     }
 
     if (this.hasValue()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getValue()!, 'value', jsonObj);
+      setFhirComplexJson(this.getValue(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`AdministrableProductDefinition.routeOfAdministration.targetSpecies.withdrawalPeriod.value`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasSupportingInformationElement()) {
       setFhirPrimitiveJson<fhirString>(this.getSupportingInformationElement(), 'supportingInformation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

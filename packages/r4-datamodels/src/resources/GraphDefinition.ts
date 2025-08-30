@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,23 +45,18 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -86,6 +80,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexListJson,
@@ -150,7 +145,6 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `GraphDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to GraphDefinition
    * @returns GraphDefinition data model or undefined for `GraphDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): GraphDefinition | undefined {
@@ -169,8 +163,6 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -197,12 +189,12 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'status';
@@ -212,12 +204,12 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -311,12 +303,12 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStart(null);
       } else {
         instance.setStartElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStart(null);
     }
 
     fieldName = 'profile';
@@ -341,12 +333,6 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -731,10 +717,10 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -745,11 +731,14 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `GraphDefinition.name is required`);
-    const optErrMsg = `Invalid GraphDefinition.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -778,10 +767,13 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `GraphDefinition.name is required`);
-    const optErrMsg = `Invalid GraphDefinition.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -811,11 +803,14 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GraphDefinition.status is required`);
-    const errMsgPrefix = `Invalid GraphDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GraphDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -848,11 +843,14 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GraphDefinition.status is required`);
-    const optErrMsg = `Invalid GraphDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -885,10 +883,13 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GraphDefinition.status is required`);
-    const optErrMsg = `Invalid GraphDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1412,11 +1413,14 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setStartEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GraphDefinition.start is required`);
-    const errMsgPrefix = `Invalid GraphDefinition.start`;
-    assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
-    this.start = enumType;
+  public setStartEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GraphDefinition.start`;
+      assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
+      this.start = enumType;
+    } else {
+      this.start = null;
+    }
     return this;
   }
 
@@ -1449,11 +1453,14 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setStartElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GraphDefinition.start is required`);
-    const optErrMsg = `Invalid GraphDefinition.start; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.start = new EnumCodeType(element, this.resourceTypesEnum);
+  public setStartElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.start; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.start = new EnumCodeType(element, this.resourceTypesEnum);
+    } else {
+      this.start = null;
+    }
     return this;
   }
 
@@ -1486,10 +1493,13 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setStart(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GraphDefinition.start is required`);
-    const optErrMsg = `Invalid GraphDefinition.start (${String(value)})`;
-    this.start = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceTypesEnum);
+  public setStart(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.start (${String(value)})`;
+      this.start = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceTypesEnum);
+    } else {
+      this.start = null;
+    }
     return this;
   }
 
@@ -1655,6 +1665,16 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.status, this.start, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1696,15 +1716,14 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -1715,17 +1734,16 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -1764,7 +1782,7 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStartElement()!, 'start', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.start`);
+      jsonObj['start'] = null;
     }
 
     if (this.hasProfileElement()) {
@@ -1773,11 +1791,6 @@ export class GraphDefinition extends DomainResource implements IDomainResource {
 
     if (this.hasLink()) {
       setFhirBackboneElementListJson(this.getLink(), 'link', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1883,7 +1896,6 @@ export class GraphDefinitionLinkComponent extends BackboneElement implements IBa
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2472,7 +2484,6 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `GraphDefinitionLinkTargetComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to GraphDefinitionLinkTargetComponent
    * @returns GraphDefinitionLinkTargetComponent data model or undefined for `GraphDefinitionLinkTargetComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): GraphDefinitionLinkTargetComponent | undefined {
@@ -2491,8 +2502,6 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2500,12 +2509,12 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'params';
@@ -2552,12 +2561,6 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2665,11 +2668,14 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GraphDefinition.link.target.type is required`);
-    const errMsgPrefix = `Invalid GraphDefinition.link.target.type`;
-    assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GraphDefinition.link.target.type`;
+      assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2702,11 +2708,14 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GraphDefinition.link.target.type is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.resourceTypesEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.resourceTypesEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2739,10 +2748,13 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GraphDefinition.link.target.type is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceTypesEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceTypesEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3020,6 +3032,16 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3049,21 +3071,20 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.link.target.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasParamsElement()) {
@@ -3080,11 +3101,6 @@ export class GraphDefinitionLinkTargetComponent extends BackboneElement implemen
 
     if (this.hasLink()) {
       setFhirBackboneElementListJson(this.getLink(), 'link', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3137,7 +3153,6 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `GraphDefinitionLinkTargetCompartmentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to GraphDefinitionLinkTargetCompartmentComponent
    * @returns GraphDefinitionLinkTargetCompartmentComponent data model or undefined for `GraphDefinitionLinkTargetCompartmentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): GraphDefinitionLinkTargetCompartmentComponent | undefined {
@@ -3156,8 +3171,6 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'use';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3165,12 +3178,12 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUse(null);
       } else {
         instance.setUseElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUse(null);
     }
 
     fieldName = 'code';
@@ -3180,12 +3193,12 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'rule';
@@ -3195,12 +3208,12 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRule(null);
       } else {
         instance.setRuleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRule(null);
     }
 
     fieldName = 'expression';
@@ -3221,12 +3234,6 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
       instance.setDescriptionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3349,11 +3356,14 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link GraphCompartmentUseEnum }
    */
-  public setUseEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GraphDefinition.link.target.compartment.use is required`);
-    const errMsgPrefix = `Invalid GraphDefinition.link.target.compartment.use`;
-    assertEnumCodeType<GraphCompartmentUseEnum>(enumType, GraphCompartmentUseEnum, errMsgPrefix);
-    this.use = enumType;
+  public setUseEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GraphDefinition.link.target.compartment.use`;
+      assertEnumCodeType<GraphCompartmentUseEnum>(enumType, GraphCompartmentUseEnum, errMsgPrefix);
+      this.use = enumType;
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -3386,11 +3396,14 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link GraphCompartmentUseEnum }
    */
-  public setUseElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GraphDefinition.link.target.compartment.use is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.compartment.use; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.use = new EnumCodeType(element, this.graphCompartmentUseEnum);
+  public setUseElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.compartment.use; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.use = new EnumCodeType(element, this.graphCompartmentUseEnum);
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -3423,10 +3436,13 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link GraphCompartmentUseEnum }
    */
-  public setUse(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GraphDefinition.link.target.compartment.use is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.compartment.use (${String(value)})`;
-    this.use = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.graphCompartmentUseEnum);
+  public setUse(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.compartment.use (${String(value)})`;
+      this.use = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.graphCompartmentUseEnum);
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -3456,11 +3472,14 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link CompartmentTypeEnum }
    */
-  public setCodeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GraphDefinition.link.target.compartment.code is required`);
-    const errMsgPrefix = `Invalid GraphDefinition.link.target.compartment.code`;
-    assertEnumCodeType<CompartmentTypeEnum>(enumType, CompartmentTypeEnum, errMsgPrefix);
-    this.code = enumType;
+  public setCodeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GraphDefinition.link.target.compartment.code`;
+      assertEnumCodeType<CompartmentTypeEnum>(enumType, CompartmentTypeEnum, errMsgPrefix);
+      this.code = enumType;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3493,11 +3512,14 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link CompartmentTypeEnum }
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GraphDefinition.link.target.compartment.code is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.compartment.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = new EnumCodeType(element, this.compartmentTypeEnum);
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.compartment.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = new EnumCodeType(element, this.compartmentTypeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3530,10 +3552,13 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link CompartmentTypeEnum }
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GraphDefinition.link.target.compartment.code is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.compartment.code (${String(value)})`;
-    this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.compartmentTypeEnum);
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.compartment.code (${String(value)})`;
+      this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.compartmentTypeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3563,11 +3588,14 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link GraphCompartmentRuleEnum }
    */
-  public setRuleEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GraphDefinition.link.target.compartment.rule is required`);
-    const errMsgPrefix = `Invalid GraphDefinition.link.target.compartment.rule`;
-    assertEnumCodeType<GraphCompartmentRuleEnum>(enumType, GraphCompartmentRuleEnum, errMsgPrefix);
-    this.rule = enumType;
+  public setRuleEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GraphDefinition.link.target.compartment.rule`;
+      assertEnumCodeType<GraphCompartmentRuleEnum>(enumType, GraphCompartmentRuleEnum, errMsgPrefix);
+      this.rule = enumType;
+    } else {
+      this.rule = null;
+    }
     return this;
   }
 
@@ -3600,11 +3628,14 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link GraphCompartmentRuleEnum }
    */
-  public setRuleElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GraphDefinition.link.target.compartment.rule is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.compartment.rule; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.rule = new EnumCodeType(element, this.graphCompartmentRuleEnum);
+  public setRuleElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.compartment.rule; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.rule = new EnumCodeType(element, this.graphCompartmentRuleEnum);
+    } else {
+      this.rule = null;
+    }
     return this;
   }
 
@@ -3637,10 +3668,13 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link GraphCompartmentRuleEnum }
    */
-  public setRule(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GraphDefinition.link.target.compartment.rule is required`);
-    const optErrMsg = `Invalid GraphDefinition.link.target.compartment.rule (${String(value)})`;
-    this.rule = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.graphCompartmentRuleEnum);
+  public setRule(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GraphDefinition.link.target.compartment.rule (${String(value)})`;
+      this.rule = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.graphCompartmentRuleEnum);
+    } else {
+      this.rule = null;
+    }
     return this;
   }
 
@@ -3802,6 +3836,16 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.use, this.code, this.rule, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3829,35 +3873,34 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUseElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getUseElement()!, 'use', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.link.target.compartment.use`);
+      jsonObj['use'] = null;
     }
 
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.link.target.compartment.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasRuleElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRuleElement()!, 'rule', jsonObj);
     } else {
-      missingReqdProperties.push(`GraphDefinition.link.target.compartment.rule`);
+      jsonObj['rule'] = null;
     }
 
     if (this.hasExpressionElement()) {
@@ -3866,11 +3909,6 @@ export class GraphDefinitionLinkTargetCompartmentComponent extends BackboneEleme
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

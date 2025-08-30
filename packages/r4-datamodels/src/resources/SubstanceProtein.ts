@@ -37,14 +37,12 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   DomainResource,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   PrimitiveTypeJson,
@@ -97,7 +95,6 @@ export class SubstanceProtein extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `SubstanceProtein`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceProtein
    * @returns SubstanceProtein data model or undefined for `SubstanceProtein`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceProtein | undefined {
@@ -165,7 +162,6 @@ export class SubstanceProtein extends DomainResource implements IDomainResource 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -692,7 +688,6 @@ export class SubstanceProteinSubunitComponent extends BackboneElement implements
       instance.setCTerminalModificationElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

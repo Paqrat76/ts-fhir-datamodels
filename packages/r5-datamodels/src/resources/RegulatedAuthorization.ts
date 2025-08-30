@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -48,7 +47,6 @@ import {
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
@@ -106,7 +104,6 @@ export class RegulatedAuthorization extends DomainResource implements IDomainRes
    * @param sourceJson - JSON representing FHIR `RegulatedAuthorization`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RegulatedAuthorization
    * @returns RegulatedAuthorization data model or undefined for `RegulatedAuthorization`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): RegulatedAuthorization | undefined {
@@ -278,7 +275,6 @@ export class RegulatedAuthorization extends DomainResource implements IDomainRes
       instance.setCase(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1543,7 +1539,6 @@ export class RegulatedAuthorizationCaseComponent extends BackboneElement impleme
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

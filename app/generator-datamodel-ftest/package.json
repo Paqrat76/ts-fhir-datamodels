@@ -7,17 +7,18 @@
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo lib coverage src/*",
     "generate:ftest": "ts-node scripts/generate-ftest-src.ts",
-    "precompile": "npm run generate:ftest",
-    "compile": "tsc",
+    "prebuild": "npm run generate:ftest",
+    "build": "tsc",
     "pretest": "npm run jest:clear && npm run generate:ftest",
     "test": "jest",
-    "precoverage": "npm run jest:clear && npm run generate:ftest",
+    "precoverage": "rm -rf coverage && npm run jest:clear && npm run generate:ftest",
     "coverage": "jest --coverage",
+    "postcoverage": "opener ./coverage/lcov-report/index.html",
     "jest:clear": "jest --clearCache",
     "jest:updateSnapshot": "jest --updateSnapshot"
   },
   "dependencies": {
-    "@paq-ts-fhir/fhir-core": "~1.0.0-rc.1"
+    "@paq-ts-fhir/fhir-core": "~1.1.0"
   },
   "engines": {
     "node": ">=22.11",

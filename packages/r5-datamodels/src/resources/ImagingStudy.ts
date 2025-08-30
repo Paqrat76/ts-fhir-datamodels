@@ -37,30 +37,24 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UnsignedIntType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -78,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -127,7 +122,6 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `ImagingStudy`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingStudy
    * @returns ImagingStudy data model or undefined for `ImagingStudy`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ImagingStudy | undefined {
@@ -146,8 +140,6 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -169,12 +161,12 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'modality';
@@ -196,12 +188,12 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'encounter';
@@ -355,12 +347,6 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -753,11 +739,14 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ImagingstudyStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ImagingStudy.status is required`);
-    const errMsgPrefix = `Invalid ImagingStudy.status`;
-    assertEnumCodeType<ImagingstudyStatusEnum>(enumType, ImagingstudyStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ImagingStudy.status`;
+      assertEnumCodeType<ImagingstudyStatusEnum>(enumType, ImagingstudyStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -790,11 +779,14 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ImagingstudyStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ImagingStudy.status is required`);
-    const optErrMsg = `Invalid ImagingStudy.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.imagingstudyStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ImagingStudy.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.imagingstudyStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -827,10 +819,13 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ImagingstudyStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ImagingStudy.status is required`);
-    const optErrMsg = `Invalid ImagingStudy.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingstudyStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ImagingStudy.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingstudyStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -900,10 +895,10 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -922,10 +917,13 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
   
     'Group',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `ImagingStudy.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -1784,6 +1782,16 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1833,15 +1841,14 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1851,7 +1858,7 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasModality()) {
@@ -1859,10 +1866,9 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -1921,11 +1927,6 @@ export class ImagingStudy extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getSeries(), 'series', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1966,7 +1967,6 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `ImagingStudySeriesComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingStudySeriesComponent
    * @returns ImagingStudySeriesComponent data model or undefined for `ImagingStudySeriesComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImagingStudySeriesComponent | undefined {
@@ -1985,8 +1985,6 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'uid';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -1994,12 +1992,12 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUid(null);
       } else {
         instance.setUidElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUid(null);
     }
 
     fieldName = 'number';
@@ -2017,12 +2015,12 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setModality(null);
       } else {
         instance.setModality(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setModality(null);
     }
 
     fieldName = 'description';
@@ -2120,12 +2118,6 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2315,10 +2307,10 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `uid` property value as a IdType object if defined; else null
+   * @returns the `uid` property value as a IdType object if defined; else an empty IdType object
    */
-  public getUidElement(): IdType | null {
-    return this.uid;
+  public getUidElement(): IdType {
+    return this.uid ?? new IdType();
   }
 
   /**
@@ -2329,11 +2321,14 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUidElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `ImagingStudy.series.uid is required`);
-    const optErrMsg = `Invalid ImagingStudy.series.uid; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.uid = element;
+  public setUidElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid ImagingStudy.series.uid; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.uid = element;
+    } else {
+      this.uid = null;
+    }
     return this;
   }
 
@@ -2362,10 +2357,13 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUid(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `ImagingStudy.series.uid is required`);
-    const optErrMsg = `Invalid ImagingStudy.series.uid (${String(value)})`;
-    this.uid = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setUid(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid ImagingStudy.series.uid (${String(value)})`;
+      this.uid = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.uid = null;
+    }
     return this;
   }
 
@@ -2441,10 +2439,10 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `modality` property value as a CodeableConcept object if defined; else null
+   * @returns the `modality` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getModality(): CodeableConcept | null {
-    return this.modality;
+  public getModality(): CodeableConcept {
+    return this.modality ?? new CodeableConcept();
   }
 
   /**
@@ -2454,11 +2452,14 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setModality(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ImagingStudy.series.modality is required`);
-    const optErrMsg = `Invalid ImagingStudy.series.modality; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.modality = value;
+  public setModality(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ImagingStudy.series.modality; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.modality = value;
+    } else {
+      this.modality = null;
+    }
     return this;
   }
 
@@ -3003,6 +3004,16 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.uid, this.modality, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3041,21 +3052,19 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUidElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getUidElement()!, 'uid', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getUidElement(), 'uid', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.series.uid`);
+      jsonObj['uid'] = null;
     }
 
     if (this.hasNumberElement()) {
@@ -3063,10 +3072,9 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
     }
 
     if (this.hasModality()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getModality()!, 'modality', jsonObj);
+      setFhirComplexJson(this.getModality(), 'modality', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.series.modality`);
+      jsonObj['modality'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -3105,11 +3113,6 @@ export class ImagingStudySeriesComponent extends BackboneElement implements IBac
       setFhirBackboneElementListJson(this.getInstance(), 'instance', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -3142,7 +3145,6 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `ImagingStudySeriesPerformerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingStudySeriesPerformerComponent
    * @returns ImagingStudySeriesPerformerComponent data model or undefined for `ImagingStudySeriesPerformerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImagingStudySeriesPerformerComponent | undefined {
@@ -3160,8 +3162,6 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -3176,20 +3176,14 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3267,10 +3261,10 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -3299,10 +3293,13 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
   
     'HealthcareService',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `ImagingStudy.series.performer.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -3333,6 +3330,16 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3357,30 +3364,23 @@ export class ImagingStudySeriesPerformerComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.series.performer.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;
@@ -3422,7 +3422,6 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `ImagingStudySeriesInstanceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingStudySeriesInstanceComponent
    * @returns ImagingStudySeriesInstanceComponent data model or undefined for `ImagingStudySeriesInstanceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImagingStudySeriesInstanceComponent | undefined {
@@ -3441,8 +3440,6 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'uid';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3450,12 +3447,12 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUid(null);
       } else {
         instance.setUidElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUid(null);
     }
 
     fieldName = 'sopClass';
@@ -3464,12 +3461,12 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSopClass(null);
       } else {
         instance.setSopClass(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSopClass(null);
     }
 
     fieldName = 'number';
@@ -3490,12 +3487,6 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
       instance.setTitleElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3561,10 +3552,10 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `uid` property value as a IdType object if defined; else null
+   * @returns the `uid` property value as a IdType object if defined; else an empty IdType object
    */
-  public getUidElement(): IdType | null {
-    return this.uid;
+  public getUidElement(): IdType {
+    return this.uid ?? new IdType();
   }
 
   /**
@@ -3575,11 +3566,14 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUidElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `ImagingStudy.series.instance.uid is required`);
-    const optErrMsg = `Invalid ImagingStudy.series.instance.uid; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.uid = element;
+  public setUidElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid ImagingStudy.series.instance.uid; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.uid = element;
+    } else {
+      this.uid = null;
+    }
     return this;
   }
 
@@ -3608,10 +3602,13 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUid(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `ImagingStudy.series.instance.uid is required`);
-    const optErrMsg = `Invalid ImagingStudy.series.instance.uid (${String(value)})`;
-    this.uid = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setUid(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid ImagingStudy.series.instance.uid (${String(value)})`;
+      this.uid = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.uid = null;
+    }
     return this;
   }
 
@@ -3623,10 +3620,10 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `sopClass` property value as a Coding object if defined; else null
+   * @returns the `sopClass` property value as a Coding object if defined; else an empty Coding object
    */
-  public getSopClass(): Coding | null {
-    return this.sopClass;
+  public getSopClass(): Coding {
+    return this.sopClass ?? new Coding();
   }
 
   /**
@@ -3636,11 +3633,14 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSopClass(value: Coding): this {
-    assertIsDefined<Coding>(value, `ImagingStudy.series.instance.sopClass is required`);
-    const optErrMsg = `Invalid ImagingStudy.series.instance.sopClass; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.sopClass = value;
+  public setSopClass(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid ImagingStudy.series.instance.sopClass; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.sopClass = value;
+    } else {
+      this.sopClass = null;
+    }
     return this;
   }
 
@@ -3801,6 +3801,16 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.uid, this.sopClass, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3827,28 +3837,25 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUidElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getUidElement()!, 'uid', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getUidElement(), 'uid', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.series.instance.uid`);
+      jsonObj['uid'] = null;
     }
 
     if (this.hasSopClass()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSopClass()!, 'sopClass', jsonObj);
+      setFhirComplexJson(this.getSopClass(), 'sopClass', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingStudy.series.instance.sopClass`);
+      jsonObj['sopClass'] = null;
     }
 
     if (this.hasNumberElement()) {
@@ -3857,11 +3864,6 @@ export class ImagingStudySeriesInstanceComponent extends BackboneElement impleme
 
     if (this.hasTitleElement()) {
       setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -50,27 +49,22 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -97,6 +91,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -148,7 +143,6 @@ export class ValueSet extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `ValueSet`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSet
    * @returns ValueSet data model or undefined for `ValueSet`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ValueSet | undefined {
@@ -167,8 +161,6 @@ export class ValueSet extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -226,12 +218,12 @@ export class ValueSet extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -352,12 +344,6 @@ export class ValueSet extends DomainResource implements IDomainResource {
       instance.setExpansion(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -982,11 +968,14 @@ export class ValueSet extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ValueSet.status is required`);
-    const errMsgPrefix = `Invalid ValueSet.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ValueSet.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1019,11 +1008,14 @@ export class ValueSet extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ValueSet.status is required`);
-    const optErrMsg = `Invalid ValueSet.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ValueSet.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1056,10 +1048,13 @@ export class ValueSet extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ValueSet.status is required`);
-    const optErrMsg = `Invalid ValueSet.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ValueSet.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1792,6 +1787,16 @@ export class ValueSet extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1836,15 +1841,14 @@ export class ValueSet extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -1870,7 +1874,7 @@ export class ValueSet extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -1921,11 +1925,6 @@ export class ValueSet extends DomainResource implements IDomainResource {
       setFhirBackboneElementJson(this.getExpansion(), 'expansion', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1957,7 +1956,6 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `ValueSetComposeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSetComposeComponent
    * @returns ValueSetComposeComponent data model or undefined for `ValueSetComposeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ValueSetComposeComponent | undefined {
@@ -1975,8 +1973,6 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'lockedDate';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -2004,13 +2000,13 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: ValueSetComposeIncludeComponent | undefined = ValueSetComposeIncludeComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setInclude(null);
         } else {
           instance.addInclude(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setInclude(null);
     }
 
     fieldName = 'exclude';
@@ -2026,12 +2022,6 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2239,11 +2229,14 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setInclude(value: ValueSetComposeIncludeComponent[]): this {
-    assertIsDefinedList<ValueSetComposeIncludeComponent>(value, `ValueSet.compose.include is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include; Provided value array has an element that is not an instance of ValueSetComposeIncludeComponent.`;
-    assertFhirTypeList<ValueSetComposeIncludeComponent>(value, ValueSetComposeIncludeComponent, optErrMsg);
-    this.include = value;
+  public setInclude(value: ValueSetComposeIncludeComponent[] | undefined | null): this {
+    if (isDefinedList<ValueSetComposeIncludeComponent>(value)) {
+      const optErrMsg = `Invalid ValueSet.compose.include; Provided value array has an element that is not an instance of ValueSetComposeIncludeComponent.`;
+      assertFhirTypeList<ValueSetComposeIncludeComponent>(value, ValueSetComposeIncludeComponent, optErrMsg);
+      this.include = value;
+    } else {
+      this.include = null;
+    }
     return this;
   }
 
@@ -2360,6 +2353,16 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2388,15 +2391,14 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasLockedDateElement()) {
       setFhirPrimitiveJson<fhirDate>(this.getLockedDateElement(), 'lockedDate', jsonObj);
@@ -2409,16 +2411,11 @@ export class ValueSetComposeComponent extends BackboneElement implements IBackbo
     if (this.hasInclude()) {
       setFhirBackboneElementListJson(this.getInclude(), 'include', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.compose.include`);
+      jsonObj['include'] = null;
     }
 
     if (this.hasExclude()) {
       setFhirBackboneElementListJson(this.getExclude(), 'exclude', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2528,7 +2525,6 @@ export class ValueSetComposeIncludeComponent extends BackboneElement implements 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3095,7 +3091,6 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `ValueSetComposeIncludeConceptComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSetComposeIncludeConceptComponent
    * @returns ValueSetComposeIncludeConceptComponent data model or undefined for `ValueSetComposeIncludeConceptComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ValueSetComposeIncludeConceptComponent | undefined {
@@ -3114,8 +3109,6 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3123,12 +3116,12 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'display';
@@ -3153,12 +3146,6 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3210,10 +3197,10 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -3224,11 +3211,14 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ValueSet.compose.include.concept.code is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.concept.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.concept.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3257,10 +3247,13 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ValueSet.compose.include.concept.code is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.concept.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.concept.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3414,6 +3407,16 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3440,21 +3443,19 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.compose.include.concept.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDisplayElement()) {
@@ -3463,11 +3464,6 @@ export class ValueSetComposeIncludeConceptComponent extends BackboneElement impl
 
     if (this.hasDesignation()) {
       setFhirBackboneElementListJson(this.getDesignation(), 'designation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3505,7 +3501,6 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `ValueSetComposeIncludeConceptDesignationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSetComposeIncludeConceptDesignationComponent
    * @returns ValueSetComposeIncludeConceptDesignationComponent data model or undefined for `ValueSetComposeIncludeConceptDesignationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ValueSetComposeIncludeConceptDesignationComponent | undefined {
@@ -3523,8 +3518,6 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'language';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3550,20 +3543,14 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3710,10 +3697,10 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -3724,11 +3711,14 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ValueSet.compose.include.concept.designation.value is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.concept.designation.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.concept.designation.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3757,10 +3747,13 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ValueSet.compose.include.concept.designation.value is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.concept.designation.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.concept.designation.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3792,6 +3785,16 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3817,15 +3820,14 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasLanguageElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getLanguageElement(), 'language', jsonObj);
@@ -3836,15 +3838,9 @@ export class ValueSetComposeIncludeConceptDesignationComponent extends BackboneE
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.compose.include.concept.designation.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -3900,7 +3896,6 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `ValueSetComposeIncludeFilterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSetComposeIncludeFilterComponent
    * @returns ValueSetComposeIncludeFilterComponent data model or undefined for `ValueSetComposeIncludeFilterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ValueSetComposeIncludeFilterComponent | undefined {
@@ -3919,8 +3914,6 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'property';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3928,12 +3921,12 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProperty(null);
       } else {
         instance.setPropertyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProperty(null);
     }
 
     fieldName = 'op';
@@ -3943,12 +3936,12 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOp(null);
       } else {
         instance.setOpElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOp(null);
     }
 
     fieldName = 'value';
@@ -3958,20 +3951,14 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4031,10 +4018,10 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `property` property value as a CodeType object if defined; else null
+   * @returns the `property` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getPropertyElement(): CodeType | null {
-    return this.property;
+  public getPropertyElement(): CodeType {
+    return this.property ?? new CodeType();
   }
 
   /**
@@ -4045,11 +4032,14 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPropertyElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ValueSet.compose.include.filter.property is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.filter.property; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.property = element;
+  public setPropertyElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.filter.property; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.property = element;
+    } else {
+      this.property = null;
+    }
     return this;
   }
 
@@ -4078,10 +4068,13 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setProperty(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ValueSet.compose.include.filter.property is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.filter.property (${String(value)})`;
-    this.property = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setProperty(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.filter.property (${String(value)})`;
+      this.property = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.property = null;
+    }
     return this;
   }
 
@@ -4111,11 +4104,14 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link FilterOperatorEnum }
    */
-  public setOpEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ValueSet.compose.include.filter.op is required`);
-    const errMsgPrefix = `Invalid ValueSet.compose.include.filter.op`;
-    assertEnumCodeType<FilterOperatorEnum>(enumType, FilterOperatorEnum, errMsgPrefix);
-    this.op = enumType;
+  public setOpEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ValueSet.compose.include.filter.op`;
+      assertEnumCodeType<FilterOperatorEnum>(enumType, FilterOperatorEnum, errMsgPrefix);
+      this.op = enumType;
+    } else {
+      this.op = null;
+    }
     return this;
   }
 
@@ -4148,11 +4144,14 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link FilterOperatorEnum }
    */
-  public setOpElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ValueSet.compose.include.filter.op is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.filter.op; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.op = new EnumCodeType(element, this.filterOperatorEnum);
+  public setOpElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.filter.op; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.op = new EnumCodeType(element, this.filterOperatorEnum);
+    } else {
+      this.op = null;
+    }
     return this;
   }
 
@@ -4185,10 +4184,13 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link FilterOperatorEnum }
    */
-  public setOp(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ValueSet.compose.include.filter.op is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.filter.op (${String(value)})`;
-    this.op = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.filterOperatorEnum);
+  public setOp(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.filter.op (${String(value)})`;
+      this.op = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.filterOperatorEnum);
+    } else {
+      this.op = null;
+    }
     return this;
   }
 
@@ -4200,10 +4202,10 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -4214,11 +4216,14 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ValueSet.compose.include.filter.value is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.filter.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.filter.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -4247,10 +4252,13 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ValueSet.compose.include.filter.value is required`);
-    const optErrMsg = `Invalid ValueSet.compose.include.filter.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ValueSet.compose.include.filter.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -4282,6 +4290,16 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.property, this.op, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4307,40 +4325,32 @@ export class ValueSetComposeIncludeFilterComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasPropertyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getPropertyElement()!, 'property', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getPropertyElement(), 'property', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.compose.include.filter.property`);
+      jsonObj['property'] = null;
     }
 
     if (this.hasOpElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getOpElement()!, 'op', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.compose.include.filter.op`);
+      jsonObj['op'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.compose.include.filter.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -4378,7 +4388,6 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `ValueSetExpansionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSetExpansionComponent
    * @returns ValueSetExpansionComponent data model or undefined for `ValueSetExpansionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ValueSetExpansionComponent | undefined {
@@ -4397,8 +4406,6 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4415,12 +4422,12 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTimestamp(null);
       } else {
         instance.setTimestampElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTimestamp(null);
     }
 
     fieldName = 'total';
@@ -4467,12 +4474,6 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4632,10 +4633,10 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
   }
 
   /**
-   * @returns the `timestamp` property value as a DateTimeType object if defined; else null
+   * @returns the `timestamp` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getTimestampElement(): DateTimeType | null {
-    return this.timestamp;
+  public getTimestampElement(): DateTimeType {
+    return this.timestamp ?? new DateTimeType();
   }
 
   /**
@@ -4646,11 +4647,14 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTimestampElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `ValueSet.expansion.timestamp is required`);
-    const optErrMsg = `Invalid ValueSet.expansion.timestamp; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.timestamp = element;
+  public setTimestampElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid ValueSet.expansion.timestamp; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.timestamp = element;
+    } else {
+      this.timestamp = null;
+    }
     return this;
   }
 
@@ -4679,10 +4683,13 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTimestamp(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `ValueSet.expansion.timestamp is required`);
-    const optErrMsg = `Invalid ValueSet.expansion.timestamp (${String(value)})`;
-    this.timestamp = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setTimestamp(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid ValueSet.expansion.timestamp (${String(value)})`;
+      this.timestamp = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.timestamp = null;
+    }
     return this;
   }
 
@@ -4961,6 +4968,16 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.timestamp, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4991,25 +5008,23 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifierElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getIdentifierElement(), 'identifier', jsonObj);
     }
 
     if (this.hasTimestampElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getTimestampElement()!, 'timestamp', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getTimestampElement(), 'timestamp', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.expansion.timestamp`);
+      jsonObj['timestamp'] = null;
     }
 
     if (this.hasTotalElement()) {
@@ -5026,11 +5041,6 @@ export class ValueSetExpansionComponent extends BackboneElement implements IBack
 
     if (this.hasContains()) {
       setFhirBackboneElementListJson(this.getContains(), 'contains', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5068,7 +5078,6 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `ValueSetExpansionParameterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ValueSetExpansionParameterComponent
    * @returns ValueSetExpansionParameterComponent data model or undefined for `ValueSetExpansionParameterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ValueSetExpansionParameterComponent | undefined {
@@ -5091,8 +5100,6 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
     const errorMessage = `DecoratorMetadataObject does not exist for ValueSetExpansionParameterComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5100,12 +5107,12 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'value[x]';
@@ -5118,12 +5125,6 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
     );
     instance.setValue(value);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5177,10 +5178,10 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -5191,11 +5192,14 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ValueSet.expansion.parameter.name is required`);
-    const optErrMsg = `Invalid ValueSet.expansion.parameter.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ValueSet.expansion.parameter.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -5224,10 +5228,13 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ValueSet.expansion.parameter.name is required`);
-    const optErrMsg = `Invalid ValueSet.expansion.parameter.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ValueSet.expansion.parameter.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -5451,6 +5458,16 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5475,31 +5492,24 @@ export class ValueSetExpansionParameterComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`ValueSet.expansion.parameter.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5626,7 +5636,6 @@ export class ValueSetExpansionContainsComponent extends BackboneElement implemen
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

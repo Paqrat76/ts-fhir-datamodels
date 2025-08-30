@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -50,20 +49,16 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   TimeType,
   UriType,
@@ -98,6 +93,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -156,7 +152,6 @@ export class Questionnaire extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Questionnaire`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Questionnaire
    * @returns Questionnaire data model or undefined for `Questionnaire`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Questionnaire | undefined {
@@ -179,8 +174,6 @@ export class Questionnaire extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = Questionnaire[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for Questionnaire`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -266,12 +259,12 @@ export class Questionnaire extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -446,12 +439,6 @@ export class Questionnaire extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1397,11 +1384,14 @@ export class Questionnaire extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Questionnaire.status is required`);
-    const errMsgPrefix = `Invalid Questionnaire.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Questionnaire.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1434,11 +1424,14 @@ export class Questionnaire extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Questionnaire.status is required`);
-    const optErrMsg = `Invalid Questionnaire.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Questionnaire.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1471,10 +1464,13 @@ export class Questionnaire extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Questionnaire.status is required`);
-    const optErrMsg = `Invalid Questionnaire.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Questionnaire.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2620,6 +2616,16 @@ export class Questionnaire extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2674,15 +2680,14 @@ export class Questionnaire extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2717,7 +2722,7 @@ export class Questionnaire extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2784,11 +2789,6 @@ export class Questionnaire extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getItem(), 'item', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2837,7 +2837,6 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `QuestionnaireItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to QuestionnaireItemComponent
    * @returns QuestionnaireItemComponent data model or undefined for `QuestionnaireItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): QuestionnaireItemComponent | undefined {
@@ -2856,8 +2855,6 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'linkId';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2865,12 +2862,12 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLinkId(null);
       } else {
         instance.setLinkIdElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLinkId(null);
     }
 
     fieldName = 'definition';
@@ -2920,12 +2917,12 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'enableWhen';
@@ -3052,12 +3049,6 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3384,10 +3375,10 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `linkId` property value as a StringType object if defined; else null
+   * @returns the `linkId` property value as a StringType object if defined; else an empty StringType object
    */
-  public getLinkIdElement(): StringType | null {
-    return this.linkId;
+  public getLinkIdElement(): StringType {
+    return this.linkId ?? new StringType();
   }
 
   /**
@@ -3398,11 +3389,14 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLinkIdElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Questionnaire.item.linkId is required`);
-    const optErrMsg = `Invalid Questionnaire.item.linkId; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.linkId = element;
+  public setLinkIdElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Questionnaire.item.linkId; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.linkId = element;
+    } else {
+      this.linkId = null;
+    }
     return this;
   }
 
@@ -3431,10 +3425,13 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLinkId(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Questionnaire.item.linkId is required`);
-    const optErrMsg = `Invalid Questionnaire.item.linkId (${String(value)})`;
-    this.linkId = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setLinkId(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Questionnaire.item.linkId (${String(value)})`;
+      this.linkId = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.linkId = null;
+    }
     return this;
   }
 
@@ -3714,11 +3711,14 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
    *
    * @see CodeSystem Enumeration: {@link ItemTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Questionnaire.item.type is required`);
-    const errMsgPrefix = `Invalid Questionnaire.item.type`;
-    assertEnumCodeType<ItemTypeEnum>(enumType, ItemTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Questionnaire.item.type`;
+      assertEnumCodeType<ItemTypeEnum>(enumType, ItemTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3751,11 +3751,14 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
    *
    * @see CodeSystem Enumeration: {@link ItemTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Questionnaire.item.type is required`);
-    const optErrMsg = `Invalid Questionnaire.item.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.itemTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Questionnaire.item.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.itemTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3788,10 +3791,13 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
    *
    * @see CodeSystem Enumeration: {@link ItemTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Questionnaire.item.type is required`);
-    const optErrMsg = `Invalid Questionnaire.item.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.itemTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Questionnaire.item.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.itemTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4738,6 +4744,16 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.linkId, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4783,21 +4799,19 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasLinkIdElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getLinkIdElement()!, 'linkId', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getLinkIdElement(), 'linkId', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.linkId`);
+      jsonObj['linkId'] = null;
     }
 
     if (this.hasDefinitionElement()) {
@@ -4820,7 +4834,7 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasEnableWhen()) {
@@ -4874,11 +4888,6 @@ export class QuestionnaireItemComponent extends BackboneElement implements IBack
       setFhirBackboneElementListJson(this.getItem(), 'item', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -4930,7 +4939,6 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `QuestionnaireItemEnableWhenComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to QuestionnaireItemEnableWhenComponent
    * @returns QuestionnaireItemEnableWhenComponent data model or undefined for `QuestionnaireItemEnableWhenComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): QuestionnaireItemEnableWhenComponent | undefined {
@@ -4953,8 +4961,6 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
     const errorMessage = `DecoratorMetadataObject does not exist for QuestionnaireItemEnableWhenComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'question';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4962,12 +4968,12 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setQuestion(null);
       } else {
         instance.setQuestionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setQuestion(null);
     }
 
     fieldName = 'operator';
@@ -4977,12 +4983,12 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOperator(null);
       } else {
         instance.setOperatorElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOperator(null);
     }
 
     fieldName = 'answer[x]';
@@ -4994,17 +5000,11 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
       classMetadata,
     );
     if (answer === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setAnswer(null);
     } else {
       instance.setAnswer(answer);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5087,10 +5087,10 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `question` property value as a StringType object if defined; else null
+   * @returns the `question` property value as a StringType object if defined; else an empty StringType object
    */
-  public getQuestionElement(): StringType | null {
-    return this.question;
+  public getQuestionElement(): StringType {
+    return this.question ?? new StringType();
   }
 
   /**
@@ -5101,11 +5101,14 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setQuestionElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Questionnaire.item.enableWhen.question is required`);
-    const optErrMsg = `Invalid Questionnaire.item.enableWhen.question; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.question = element;
+  public setQuestionElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Questionnaire.item.enableWhen.question; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.question = element;
+    } else {
+      this.question = null;
+    }
     return this;
   }
 
@@ -5134,10 +5137,13 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setQuestion(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Questionnaire.item.enableWhen.question is required`);
-    const optErrMsg = `Invalid Questionnaire.item.enableWhen.question (${String(value)})`;
-    this.question = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setQuestion(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Questionnaire.item.enableWhen.question (${String(value)})`;
+      this.question = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.question = null;
+    }
     return this;
   }
 
@@ -5167,11 +5173,14 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link QuestionnaireEnableOperatorEnum }
    */
-  public setOperatorEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Questionnaire.item.enableWhen.operator is required`);
-    const errMsgPrefix = `Invalid Questionnaire.item.enableWhen.operator`;
-    assertEnumCodeType<QuestionnaireEnableOperatorEnum>(enumType, QuestionnaireEnableOperatorEnum, errMsgPrefix);
-    this.operator = enumType;
+  public setOperatorEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Questionnaire.item.enableWhen.operator`;
+      assertEnumCodeType<QuestionnaireEnableOperatorEnum>(enumType, QuestionnaireEnableOperatorEnum, errMsgPrefix);
+      this.operator = enumType;
+    } else {
+      this.operator = null;
+    }
     return this;
   }
 
@@ -5204,11 +5213,14 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link QuestionnaireEnableOperatorEnum }
    */
-  public setOperatorElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Questionnaire.item.enableWhen.operator is required`);
-    const optErrMsg = `Invalid Questionnaire.item.enableWhen.operator; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.operator = new EnumCodeType(element, this.questionnaireEnableOperatorEnum);
+  public setOperatorElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Questionnaire.item.enableWhen.operator; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.operator = new EnumCodeType(element, this.questionnaireEnableOperatorEnum);
+    } else {
+      this.operator = null;
+    }
     return this;
   }
 
@@ -5241,10 +5253,13 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link QuestionnaireEnableOperatorEnum }
    */
-  public setOperator(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Questionnaire.item.enableWhen.operator is required`);
-    const optErrMsg = `Invalid Questionnaire.item.enableWhen.operator (${String(value)})`;
-    this.operator = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.questionnaireEnableOperatorEnum);
+  public setOperator(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Questionnaire.item.enableWhen.operator (${String(value)})`;
+      this.operator = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.questionnaireEnableOperatorEnum);
+    } else {
+      this.operator = null;
+    }
     return this;
   }
 
@@ -5272,10 +5287,13 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Questionnaire.item.enableWhen.answer[x]')
-  public setAnswer(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Questionnaire.item.enableWhen.answer[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.answer = value;
+  public setAnswer(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.answer = value;
+    } else {
+      this.answer = null;
+    }
     return this;
   }
 
@@ -5532,6 +5550,16 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.question, this.operator, this.answer, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5557,40 +5585,33 @@ export class QuestionnaireItemEnableWhenComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasQuestionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getQuestionElement()!, 'question', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getQuestionElement(), 'question', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.enableWhen.question`);
+      jsonObj['question'] = null;
     }
 
     if (this.hasOperatorElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getOperatorElement()!, 'operator', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.enableWhen.operator`);
+      jsonObj['operator'] = null;
     }
 
     if (this.hasAnswer()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getAnswer()!, 'answer', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.enableWhen.answer[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['answer'] = null;
     }
 
     return jsonObj;
@@ -5625,7 +5646,6 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `QuestionnaireItemAnswerOptionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to QuestionnaireItemAnswerOptionComponent
    * @returns QuestionnaireItemAnswerOptionComponent data model or undefined for `QuestionnaireItemAnswerOptionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): QuestionnaireItemAnswerOptionComponent | undefined {
@@ -5648,8 +5668,6 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
     const errorMessage = `DecoratorMetadataObject does not exist for QuestionnaireItemAnswerOptionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'value[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const value: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -5659,7 +5677,7 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
@@ -5673,12 +5691,6 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
       instance.setInitialSelectedElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5746,10 +5758,13 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Questionnaire.item.answerOption.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Questionnaire.item.answerOption.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5981,6 +5996,16 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6005,30 +6030,24 @@ export class QuestionnaireItemAnswerOptionComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.answerOption.value[x]`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasInitialSelectedElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getInitialSelectedElement(), 'initialSelected', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6064,7 +6083,6 @@ export class QuestionnaireItemInitialComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `QuestionnaireItemInitialComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to QuestionnaireItemInitialComponent
    * @returns QuestionnaireItemInitialComponent data model or undefined for `QuestionnaireItemInitialComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): QuestionnaireItemInitialComponent | undefined {
@@ -6086,8 +6104,6 @@ export class QuestionnaireItemInitialComponent extends BackboneElement implement
     const errorMessage = `DecoratorMetadataObject does not exist for QuestionnaireItemInitialComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'value[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const value: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -6097,17 +6113,11 @@ export class QuestionnaireItemInitialComponent extends BackboneElement implement
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6173,10 +6183,13 @@ export class QuestionnaireItemInitialComponent extends BackboneElement implement
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Questionnaire.item.initial.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Questionnaire.item.initial.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -6475,6 +6488,16 @@ export class QuestionnaireItemInitialComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6498,26 +6521,20 @@ export class QuestionnaireItemInitialComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Questionnaire.item.initial.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,17 +47,13 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -82,6 +77,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -146,7 +142,6 @@ export class Immunization extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Immunization`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Immunization
    * @returns Immunization data model or undefined for `Immunization`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Immunization | undefined {
@@ -169,8 +164,6 @@ export class Immunization extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = Immunization[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for Immunization`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -205,12 +198,12 @@ export class Immunization extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -227,12 +220,12 @@ export class Immunization extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setVaccineCode(null);
       } else {
         instance.setVaccineCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setVaccineCode(null);
     }
 
     fieldName = 'administeredProduct';
@@ -275,12 +268,12 @@ export class Immunization extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'encounter';
@@ -313,7 +306,7 @@ export class Immunization extends DomainResource implements IDomainResource {
       classMetadata,
     );
     if (occurrence === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setOccurrence(null);
     } else {
       instance.setOccurrence(occurrence);
     }
@@ -475,12 +468,6 @@ export class Immunization extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1097,11 +1084,14 @@ export class Immunization extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Immunization.status is required`);
-    const errMsgPrefix = `Invalid Immunization.status`;
-    assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Immunization.status`;
+      assertEnumCodeType<EventStatusEnum>(enumType, EventStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1134,11 +1124,14 @@ export class Immunization extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Immunization.status is required`);
-    const optErrMsg = `Invalid Immunization.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.eventStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Immunization.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1171,10 +1164,13 @@ export class Immunization extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EventStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Immunization.status is required`);
-    const optErrMsg = `Invalid Immunization.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Immunization.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.eventStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1218,10 +1214,10 @@ export class Immunization extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `vaccineCode` property value as a CodeableConcept object if defined; else null
+   * @returns the `vaccineCode` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getVaccineCode(): CodeableConcept | null {
-    return this.vaccineCode;
+  public getVaccineCode(): CodeableConcept {
+    return this.vaccineCode ?? new CodeableConcept();
   }
 
   /**
@@ -1231,11 +1227,14 @@ export class Immunization extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setVaccineCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Immunization.vaccineCode is required`);
-    const optErrMsg = `Invalid Immunization.vaccineCode; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.vaccineCode = value;
+  public setVaccineCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Immunization.vaccineCode; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.vaccineCode = value;
+    } else {
+      this.vaccineCode = null;
+    }
     return this;
   }
 
@@ -1439,10 +1438,10 @@ export class Immunization extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -1457,10 +1456,13 @@ export class Immunization extends DomainResource implements IDomainResource {
   @ReferenceTargets('Immunization.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `Immunization.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -1590,10 +1592,13 @@ export class Immunization extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Immunization.occurrence[x]')
-  public setOccurrence(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Immunization.occurrence[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.occurrence = value;
+  public setOccurrence(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.occurrence = value;
+    } else {
+      this.occurrence = null;
+    }
     return this;
   }
 
@@ -2429,6 +2434,16 @@ export class Immunization extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.vaccineCode, this.patient, this.occurrence, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2489,15 +2504,14 @@ export class Immunization extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2511,7 +2525,7 @@ export class Immunization extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -2519,10 +2533,9 @@ export class Immunization extends DomainResource implements IDomainResource {
     }
 
     if (this.hasVaccineCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getVaccineCode()!, 'vaccineCode', jsonObj);
+      setFhirComplexJson(this.getVaccineCode(), 'vaccineCode', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.vaccineCode`);
+      jsonObj['vaccineCode'] = null;
     }
 
     if (this.hasAdministeredProduct()) {
@@ -2542,10 +2555,9 @@ export class Immunization extends DomainResource implements IDomainResource {
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -2560,7 +2572,7 @@ export class Immunization extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getOccurrence()!, 'occurrence', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.occurrence[x]`);
+      jsonObj['occurrence'] = null;
     }
 
     if (this.hasPrimarySourceElement()) {
@@ -2623,11 +2635,6 @@ export class Immunization extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getProtocolApplied(), 'protocolApplied', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2659,7 +2666,6 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `ImmunizationPerformerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationPerformerComponent
    * @returns ImmunizationPerformerComponent data model or undefined for `ImmunizationPerformerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationPerformerComponent | undefined {
@@ -2677,8 +2683,6 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -2693,20 +2697,14 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2781,10 +2779,10 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -2807,10 +2805,13 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
   
     'RelatedPerson',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `Immunization.performer.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -2841,6 +2842,16 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2865,30 +2876,23 @@ export class ImmunizationPerformerComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.performer.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;
@@ -2926,7 +2930,6 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `ImmunizationProgramEligibilityComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationProgramEligibilityComponent
    * @returns ImmunizationProgramEligibilityComponent data model or undefined for `ImmunizationProgramEligibilityComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationProgramEligibilityComponent | undefined {
@@ -2944,20 +2947,18 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'program';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProgram(null);
       } else {
         instance.setProgram(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProgram(null);
     }
 
     fieldName = 'programStatus';
@@ -2966,20 +2967,14 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProgramStatus(null);
       } else {
         instance.setProgramStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProgramStatus(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3014,10 +3009,10 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `program` property value as a CodeableConcept object if defined; else null
+   * @returns the `program` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getProgram(): CodeableConcept | null {
-    return this.program;
+  public getProgram(): CodeableConcept {
+    return this.program ?? new CodeableConcept();
   }
 
   /**
@@ -3027,11 +3022,14 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setProgram(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Immunization.programEligibility.program is required`);
-    const optErrMsg = `Invalid Immunization.programEligibility.program; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.program = value;
+  public setProgram(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Immunization.programEligibility.program; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.program = value;
+    } else {
+      this.program = null;
+    }
     return this;
   }
 
@@ -3043,10 +3041,10 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
   }
 
   /**
-   * @returns the `programStatus` property value as a CodeableConcept object if defined; else null
+   * @returns the `programStatus` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getProgramStatus(): CodeableConcept | null {
-    return this.programStatus;
+  public getProgramStatus(): CodeableConcept {
+    return this.programStatus ?? new CodeableConcept();
   }
 
   /**
@@ -3056,11 +3054,14 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setProgramStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Immunization.programEligibility.programStatus is required`);
-    const optErrMsg = `Invalid Immunization.programEligibility.programStatus; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.programStatus = value;
+  public setProgramStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Immunization.programEligibility.programStatus; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.programStatus = value;
+    } else {
+      this.programStatus = null;
+    }
     return this;
   }
 
@@ -3091,6 +3092,16 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.program, this.programStatus, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3115,33 +3126,25 @@ export class ImmunizationProgramEligibilityComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasProgram()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProgram()!, 'program', jsonObj);
+      setFhirComplexJson(this.getProgram(), 'program', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.programEligibility.program`);
+      jsonObj['program'] = null;
     }
 
     if (this.hasProgramStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProgramStatus()!, 'programStatus', jsonObj);
+      setFhirComplexJson(this.getProgramStatus(), 'programStatus', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.programEligibility.programStatus`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['programStatus'] = null;
     }
 
     return jsonObj;
@@ -3215,7 +3218,6 @@ export class ImmunizationReactionComponent extends BackboneElement implements IB
       instance.setReportedElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3527,7 +3529,6 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `ImmunizationProtocolAppliedComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationProtocolAppliedComponent
    * @returns ImmunizationProtocolAppliedComponent data model or undefined for `ImmunizationProtocolAppliedComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationProtocolAppliedComponent | undefined {
@@ -3545,8 +3546,6 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'series';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3585,12 +3584,12 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDoseNumber(null);
       } else {
         instance.setDoseNumberElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDoseNumber(null);
     }
 
     fieldName = 'seriesDoses';
@@ -3602,12 +3601,6 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
       instance.setSeriesDosesElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3847,10 +3840,10 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
   }
 
   /**
-   * @returns the `doseNumber` property value as a StringType object if defined; else null
+   * @returns the `doseNumber` property value as a StringType object if defined; else an empty StringType object
    */
-  public getDoseNumberElement(): StringType | null {
-    return this.doseNumber;
+  public getDoseNumberElement(): StringType {
+    return this.doseNumber ?? new StringType();
   }
 
   /**
@@ -3861,11 +3854,14 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDoseNumberElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Immunization.protocolApplied.doseNumber is required`);
-    const optErrMsg = `Invalid Immunization.protocolApplied.doseNumber; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.doseNumber = element;
+  public setDoseNumberElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Immunization.protocolApplied.doseNumber; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.doseNumber = element;
+    } else {
+      this.doseNumber = null;
+    }
     return this;
   }
 
@@ -3894,10 +3890,13 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDoseNumber(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Immunization.protocolApplied.doseNumber is required`);
-    const optErrMsg = `Invalid Immunization.protocolApplied.doseNumber (${String(value)})`;
-    this.doseNumber = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setDoseNumber(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Immunization.protocolApplied.doseNumber (${String(value)})`;
+      this.doseNumber = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.doseNumber = null;
+    }
     return this;
   }
 
@@ -3995,6 +3994,16 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.doseNumber, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4023,15 +4032,14 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSeriesElement()) {
       setFhirPrimitiveJson<fhirString>(this.getSeriesElement(), 'series', jsonObj);
@@ -4046,19 +4054,13 @@ export class ImmunizationProtocolAppliedComponent extends BackboneElement implem
     }
 
     if (this.hasDoseNumberElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getDoseNumberElement()!, 'doseNumber', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getDoseNumberElement(), 'doseNumber', jsonObj);
     } else {
-      missingReqdProperties.push(`Immunization.protocolApplied.doseNumber`);
+      jsonObj['doseNumber'] = null;
     }
 
     if (this.hasSeriesDosesElement()) {
       setFhirPrimitiveJson<fhirString>(this.getSeriesDosesElement(), 'seriesDoses', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

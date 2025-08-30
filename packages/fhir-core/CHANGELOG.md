@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.1.0] - 2025-08-30
+
+### Added
+
+- `Base.isRequiredFieldsEmpty()` - returns `true` if and only if the data model has required fields (min cardinality > 0)
+  and at least one of those required fields in the instance is empty
+
+### Changed
+
+- Updated dependencies
+- Updated Narrative to properly handle missing required field values
+- Updated unit tests to plug some coverage gaps
+
+
 ## [1.0.0] - 2025-08-23
 
 ### Changed

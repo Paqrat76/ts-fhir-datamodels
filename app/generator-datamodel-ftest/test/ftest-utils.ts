@@ -160,20 +160,12 @@ export function expectUndefinedElementProperties(testInstance: IElement): void {
 
 export function expectUndefinedBackboneElementProperties(testInstance: IBackboneElement): void {
   expectUndefinedElementProperties(testInstance);
-  // expect(testInstance.hasId()).toBe(false);
-  // expect(testInstance.getId()).toBeUndefined();
-  // expect(testInstance.hasExtension()).toBe(false);
-  // expect(testInstance.getExtension()).toEqual([] as Extension[]);
   expect(testInstance.hasModifierExtension()).toBe(false);
   expect(testInstance.getModifierExtension()).toEqual([] as Extension[]);
 }
 
 export function expectUndefinedBackboneTypeProperties(testInstance: IBackboneType): void {
   expectUndefinedElementProperties(testInstance);
-  // expect(testInstance.hasId()).toBe(false);
-  // expect(testInstance.getId()).toBeUndefined();
-  // expect(testInstance.hasExtension()).toBe(false);
-  // expect(testInstance.getExtension()).toEqual([] as Extension[]);
   expect(testInstance.hasModifierExtension()).toBe(false);
   expect(testInstance.getModifierExtension()).toEqual([] as Extension[]);
 }
@@ -214,9 +206,6 @@ export function initializeElementProperties(testInstance: IElement, numExt: 1 | 
 
 export function initializeBackboneElementProperties(testInstance: IBackboneElement, numExt: 1 | 2): void {
   initializeElementProperties(testInstance, numExt);
-  // testInstance.setId(TestData.VALID_ID);
-  // const extensions: Extension[] = numExt === 1 ? [VALID_EXTENSION] : [VALID_EXTENSION, VALID_EXTENSION_2];
-  // testInstance.setExtension(extensions);
   const modExtensions: Extension[] =
     numExt === 1 ? [VALID_MODIFIER_EXTENSION] : [VALID_MODIFIER_EXTENSION, VALID_MODIFIER_EXTENSION_2];
   testInstance.setModifierExtension(modExtensions);
@@ -224,9 +213,6 @@ export function initializeBackboneElementProperties(testInstance: IBackboneEleme
 
 export function initializeBackboneTypeProperties(testInstance: IBackboneType, numExt: 1 | 2): void {
   initializeElementProperties(testInstance, numExt);
-  // testInstance.setId(TestData.VALID_ID);
-  // const extensions: Extension[] = numExt === 1 ? [VALID_EXTENSION] : [VALID_EXTENSION, VALID_EXTENSION_2];
-  // testInstance.setExtension(extensions);
   const modExtensions: Extension[] =
     numExt === 1 ? [VALID_MODIFIER_EXTENSION] : [VALID_MODIFIER_EXTENSION, VALID_MODIFIER_EXTENSION_2];
   testInstance.setModifierExtension(modExtensions);
@@ -257,15 +243,11 @@ export function resetElementProperties(testInstance: IElement): void {
 
 export function resetBackboneElementProperties(testInstance: IBackboneElement): void {
   resetElementProperties(testInstance);
-  // testInstance.setId(TestData.VALID_ID_2);
-  // testInstance.setExtension([VALID_EXTENSION_2]);
   testInstance.setModifierExtension([VALID_MODIFIER_EXTENSION_2]);
 }
 
 export function resetBackboneTypeProperties(testInstance: IBackboneType): void {
   resetElementProperties(testInstance);
-  // testInstance.setId(TestData.VALID_ID_2);
-  // testInstance.setExtension([VALID_EXTENSION_2]);
   testInstance.setModifierExtension([VALID_MODIFIER_EXTENSION_2]);
 }
 
@@ -294,15 +276,11 @@ export function undefineElementProperties(testInstance: IElement): void {
 
 export function undefineBackboneElementProperties(testInstance: IBackboneElement): void {
   undefineElementProperties(testInstance);
-  // testInstance.setId(TestData.UNDEFINED_VALUE);
-  // testInstance.setExtension(TestData.UNDEFINED_VALUE);
   testInstance.setModifierExtension(TestData.UNDEFINED_VALUE);
 }
 
 export function undefineBackboneTypeProperties(testInstance: IBackboneType): void {
   undefineElementProperties(testInstance);
-  // testInstance.setId(TestData.UNDEFINED_VALUE);
-  // testInstance.setExtension(TestData.UNDEFINED_VALUE);
   testInstance.setModifierExtension(TestData.UNDEFINED_VALUE);
 }
 
@@ -357,11 +335,6 @@ export function expectInitializedElementProperties(testInstance: IElement, numEx
 
 export function expectInitializedBackboneElementProperties(testInstance: IBackboneElement, numExt: 1 | 2): void {
   expectInitializedElementProperties(testInstance, numExt);
-  // expect(testInstance.hasId()).toBe(true);
-  // expect(testInstance.getId()).toStrictEqual(TestData.VALID_ID);
-  // expect(testInstance.hasExtension()).toBe(true);
-  // const expectedExt: Extension[] = numExt === 1 ? [VALID_EXTENSION] : [VALID_EXTENSION, VALID_EXTENSION_2];
-  // expect(testInstance.getExtension()).toEqual(expectedExt);
   expect(testInstance.hasModifierExtension()).toBe(true);
   const expectedModExt: Extension[] =
     numExt === 1 ? [VALID_MODIFIER_EXTENSION] : [VALID_MODIFIER_EXTENSION, VALID_MODIFIER_EXTENSION_2];
@@ -370,11 +343,6 @@ export function expectInitializedBackboneElementProperties(testInstance: IBackbo
 
 export function expectInitializedBackboneTypeProperties(testInstance: IBackboneType, numExt: 1 | 2): void {
   expectInitializedElementProperties(testInstance, numExt);
-  // expect(testInstance.hasId()).toBe(true);
-  // expect(testInstance.getId()).toStrictEqual(TestData.VALID_ID);
-  // expect(testInstance.hasExtension()).toBe(true);
-  // const expectedExt: Extension[] = numExt === 1 ? [VALID_EXTENSION] : [VALID_EXTENSION, VALID_EXTENSION_2];
-  // expect(testInstance.getExtension()).toEqual(expectedExt);
   expect(testInstance.hasModifierExtension()).toBe(true);
   const expectedModExt: Extension[] =
     numExt === 1 ? [VALID_MODIFIER_EXTENSION] : [VALID_MODIFIER_EXTENSION, VALID_MODIFIER_EXTENSION_2];
@@ -419,20 +387,12 @@ export function expectResetElementProperties(testInstance: IElement): void {
 
 export function expectResetBackboneElementProperties(testInstance: IBackboneElement): void {
   expectResetElementProperties(testInstance);
-  // expect(testInstance.hasId()).toBe(true);
-  // expect(testInstance.getId()).toStrictEqual(TestData.VALID_ID_2);
-  // expect(testInstance.hasExtension()).toBe(true);
-  // expect(testInstance.getExtension()).toEqual([VALID_EXTENSION_2]);
   expect(testInstance.hasModifierExtension()).toBe(true);
   expect(testInstance.getModifierExtension()).toEqual([VALID_MODIFIER_EXTENSION_2]);
 }
 
 export function expectResetBackboneTypeProperties(testInstance: IBackboneType): void {
   expectResetElementProperties(testInstance);
-  // expect(testInstance.hasId()).toBe(true);
-  // expect(testInstance.getId()).toStrictEqual(TestData.VALID_ID_2);
-  // expect(testInstance.hasExtension()).toBe(true);
-  // expect(testInstance.getExtension()).toEqual([VALID_EXTENSION_2]);
   expect(testInstance.hasModifierExtension()).toBe(true);
   expect(testInstance.getModifierExtension()).toEqual([VALID_MODIFIER_EXTENSION_2]);
 }

@@ -37,33 +37,26 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   InstantType,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UnsignedIntType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -84,6 +77,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -136,7 +130,6 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `ImagingSelection`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingSelection
    * @returns ImagingSelection data model or undefined for `ImagingSelection`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ImagingSelection | undefined {
@@ -155,8 +148,6 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -178,12 +169,12 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'subject';
@@ -248,12 +239,12 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'studyUid';
@@ -352,12 +343,6 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -738,11 +723,14 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link ImagingselectionStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ImagingSelection.status is required`);
-    const errMsgPrefix = `Invalid ImagingSelection.status`;
-    assertEnumCodeType<ImagingselectionStatusEnum>(enumType, ImagingselectionStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ImagingSelection.status`;
+      assertEnumCodeType<ImagingselectionStatusEnum>(enumType, ImagingselectionStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -775,11 +763,14 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link ImagingselectionStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ImagingSelection.status is required`);
-    const optErrMsg = `Invalid ImagingSelection.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.imagingselectionStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ImagingSelection.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.imagingselectionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -812,10 +803,13 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link ImagingselectionStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ImagingSelection.status is required`);
-    const optErrMsg = `Invalid ImagingSelection.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingselectionStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ImagingSelection.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingselectionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1143,10 +1137,10 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
   }
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -1156,11 +1150,14 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ImagingSelection.code is required`);
-    const optErrMsg = `Invalid ImagingSelection.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ImagingSelection.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1754,6 +1751,16 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1801,15 +1808,14 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1819,7 +1825,7 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasSubject()) {
@@ -1843,10 +1849,9 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasStudyUidElement()) {
@@ -1883,11 +1888,6 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
 
     if (this.hasInstance()) {
       setFhirBackboneElementListJson(this.getInstance(), 'instance', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1950,7 +1950,6 @@ export class ImagingSelectionPerformerComponent extends BackboneElement implemen
       instance.setActor(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2173,7 +2172,6 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `ImagingSelectionInstanceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingSelectionInstanceComponent
    * @returns ImagingSelectionInstanceComponent data model or undefined for `ImagingSelectionInstanceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImagingSelectionInstanceComponent | undefined {
@@ -2192,8 +2190,6 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'uid';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2201,12 +2197,12 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUid(null);
       } else {
         instance.setUidElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUid(null);
     }
 
     fieldName = 'number';
@@ -2270,12 +2266,6 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2374,10 +2364,10 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `uid` property value as a IdType object if defined; else null
+   * @returns the `uid` property value as a IdType object if defined; else an empty IdType object
    */
-  public getUidElement(): IdType | null {
-    return this.uid;
+  public getUidElement(): IdType {
+    return this.uid ?? new IdType();
   }
 
   /**
@@ -2388,11 +2378,14 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUidElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `ImagingSelection.instance.uid is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.uid; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.uid = element;
+  public setUidElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.uid; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.uid = element;
+    } else {
+      this.uid = null;
+    }
     return this;
   }
 
@@ -2421,10 +2414,13 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setUid(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `ImagingSelection.instance.uid is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.uid (${String(value)})`;
-    this.uid = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setUid(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.uid (${String(value)})`;
+      this.uid = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.uid = null;
+    }
     return this;
   }
 
@@ -2793,6 +2789,16 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.uid, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2824,21 +2830,19 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasUidElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getUidElement()!, 'uid', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getUidElement(), 'uid', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.instance.uid`);
+      jsonObj['uid'] = null;
     }
 
     if (this.hasNumberElement()) {
@@ -2859,11 +2863,6 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
 
     if (this.hasImageRegion3D()) {
       setFhirBackboneElementListJson(this.getImageRegion3D(), 'imageRegion3D', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2910,7 +2909,6 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
    * @param sourceJson - JSON representing FHIR `ImagingSelectionInstanceImageRegion2DComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingSelectionInstanceImageRegion2DComponent
    * @returns ImagingSelectionInstanceImageRegion2DComponent data model or undefined for `ImagingSelectionInstanceImageRegion2DComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImagingSelectionInstanceImageRegion2DComponent | undefined {
@@ -2929,8 +2927,6 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'regionType';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2938,12 +2934,12 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRegionType(null);
       } else {
         instance.setRegionTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRegionType(null);
     }
 
     fieldName = 'coordinate';
@@ -2956,24 +2952,18 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
         fieldName,
         primitiveJsonType,
       );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
         const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dataJson.dtJson, dataJson.dtSiblingJson);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setCoordinate(null);
         } else {
           instance.addCoordinateElement(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCoordinate(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3038,11 +3028,14 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
    *
    * @see CodeSystem Enumeration: {@link Imagingselection2DgraphictypeEnum }
    */
-  public setRegionTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ImagingSelection.instance.imageRegion2D.regionType is required`);
-    const errMsgPrefix = `Invalid ImagingSelection.instance.imageRegion2D.regionType`;
-    assertEnumCodeType<Imagingselection2DgraphictypeEnum>(enumType, Imagingselection2DgraphictypeEnum, errMsgPrefix);
-    this.regionType = enumType;
+  public setRegionTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ImagingSelection.instance.imageRegion2D.regionType`;
+      assertEnumCodeType<Imagingselection2DgraphictypeEnum>(enumType, Imagingselection2DgraphictypeEnum, errMsgPrefix);
+      this.regionType = enumType;
+    } else {
+      this.regionType = null;
+    }
     return this;
   }
 
@@ -3075,11 +3068,14 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
    *
    * @see CodeSystem Enumeration: {@link Imagingselection2DgraphictypeEnum }
    */
-  public setRegionTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ImagingSelection.instance.imageRegion2D.regionType is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.regionType; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.regionType = new EnumCodeType(element, this.imagingselection2DgraphictypeEnum);
+  public setRegionTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.regionType; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.regionType = new EnumCodeType(element, this.imagingselection2DgraphictypeEnum);
+    } else {
+      this.regionType = null;
+    }
     return this;
   }
 
@@ -3112,10 +3108,13 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
    *
    * @see CodeSystem Enumeration: {@link Imagingselection2DgraphictypeEnum }
    */
-  public setRegionType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ImagingSelection.instance.imageRegion2D.regionType is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.regionType (${String(value)})`;
-    this.regionType = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingselection2DgraphictypeEnum);
+  public setRegionType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.regionType (${String(value)})`;
+      this.regionType = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingselection2DgraphictypeEnum);
+    } else {
+      this.regionType = null;
+    }
     return this;
   }
 
@@ -3141,11 +3140,14 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCoordinateElement(element: DecimalType[]): this {
-    assertIsDefinedList<DecimalType>(element, `ImagingSelection.instance.imageRegion2D.coordinate is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.coordinate; Provided value array has an element that is not an instance of DecimalType.`;
-    assertFhirTypeList<DecimalType>(element, DecimalType, optErrMsg);
-    this.coordinate = element;
+  public setCoordinateElement(element: DecimalType[] | undefined | null): this {
+     if (isDefinedList<DecimalType>(element)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.coordinate; Provided value array has an element that is not an instance of DecimalType.`;
+      assertFhirTypeList<DecimalType>(element, DecimalType, optErrMsg);
+      this.coordinate = element;
+    } else {
+      this.coordinate = null;
+    }
     return this;
   }
 
@@ -3197,15 +3199,18 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCoordinate(value: fhirDecimal[]): this {
-    assertIsDefinedList<fhirDecimal>(value, `ImagingSelection.instance.imageRegion2D.coordinate is required`);
-    const coordinateElements = [] as DecimalType[];
-    for (const coordinateValue of value) {
-      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.coordinate array item (${String(coordinateValue)})`;
-      const element = new DecimalType(parseFhirPrimitiveData(coordinateValue, fhirDecimalSchema, optErrMsg));
-      coordinateElements.push(element);
+  public setCoordinate(value: fhirDecimal[] | undefined | null): this {
+    if (isDefinedList<fhirDecimal>(value)) {
+      const coordinateElements = [] as DecimalType[];
+      for (const coordinateValue of value) {
+        const optErrMsg = `Invalid ImagingSelection.instance.imageRegion2D.coordinate array item (${String(coordinateValue)})`;
+        const element = new DecimalType(parseFhirPrimitiveData(coordinateValue, fhirDecimalSchema, optErrMsg));
+        coordinateElements.push(element);
+      }
+      this.coordinate = coordinateElements;
+    } else {
+      this.coordinate = null;
     }
-    this.coordinate = coordinateElements;
     return this;
   }
 
@@ -3262,6 +3267,16 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.regionType, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3287,32 +3302,26 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRegionTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRegionTypeElement()!, 'regionType', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.instance.imageRegion2D.regionType`);
+      jsonObj['regionType'] = null;
     }
 
     if (this.hasCoordinateElement()) {
       setFhirPrimitiveListJson(this.getCoordinateElement(), 'coordinate', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.instance.imageRegion2D.coordinate`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['coordinate'] = null;
     }
 
     return jsonObj;
@@ -3359,7 +3368,6 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
    * @param sourceJson - JSON representing FHIR `ImagingSelectionInstanceImageRegion3DComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImagingSelectionInstanceImageRegion3DComponent
    * @returns ImagingSelectionInstanceImageRegion3DComponent data model or undefined for `ImagingSelectionInstanceImageRegion3DComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImagingSelectionInstanceImageRegion3DComponent | undefined {
@@ -3378,8 +3386,6 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'regionType';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3387,12 +3393,12 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRegionType(null);
       } else {
         instance.setRegionTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRegionType(null);
     }
 
     fieldName = 'coordinate';
@@ -3405,24 +3411,18 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
         fieldName,
         primitiveJsonType,
       );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
         const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dataJson.dtJson, dataJson.dtSiblingJson);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setCoordinate(null);
         } else {
           instance.addCoordinateElement(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCoordinate(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3487,11 +3487,14 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
    *
    * @see CodeSystem Enumeration: {@link Imagingselection3DgraphictypeEnum }
    */
-  public setRegionTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ImagingSelection.instance.imageRegion3D.regionType is required`);
-    const errMsgPrefix = `Invalid ImagingSelection.instance.imageRegion3D.regionType`;
-    assertEnumCodeType<Imagingselection3DgraphictypeEnum>(enumType, Imagingselection3DgraphictypeEnum, errMsgPrefix);
-    this.regionType = enumType;
+  public setRegionTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ImagingSelection.instance.imageRegion3D.regionType`;
+      assertEnumCodeType<Imagingselection3DgraphictypeEnum>(enumType, Imagingselection3DgraphictypeEnum, errMsgPrefix);
+      this.regionType = enumType;
+    } else {
+      this.regionType = null;
+    }
     return this;
   }
 
@@ -3524,11 +3527,14 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
    *
    * @see CodeSystem Enumeration: {@link Imagingselection3DgraphictypeEnum }
    */
-  public setRegionTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ImagingSelection.instance.imageRegion3D.regionType is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.regionType; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.regionType = new EnumCodeType(element, this.imagingselection3DgraphictypeEnum);
+  public setRegionTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.regionType; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.regionType = new EnumCodeType(element, this.imagingselection3DgraphictypeEnum);
+    } else {
+      this.regionType = null;
+    }
     return this;
   }
 
@@ -3561,10 +3567,13 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
    *
    * @see CodeSystem Enumeration: {@link Imagingselection3DgraphictypeEnum }
    */
-  public setRegionType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ImagingSelection.instance.imageRegion3D.regionType is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.regionType (${String(value)})`;
-    this.regionType = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingselection3DgraphictypeEnum);
+  public setRegionType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.regionType (${String(value)})`;
+      this.regionType = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.imagingselection3DgraphictypeEnum);
+    } else {
+      this.regionType = null;
+    }
     return this;
   }
 
@@ -3590,11 +3599,14 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCoordinateElement(element: DecimalType[]): this {
-    assertIsDefinedList<DecimalType>(element, `ImagingSelection.instance.imageRegion3D.coordinate is required`);
-    const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.coordinate; Provided value array has an element that is not an instance of DecimalType.`;
-    assertFhirTypeList<DecimalType>(element, DecimalType, optErrMsg);
-    this.coordinate = element;
+  public setCoordinateElement(element: DecimalType[] | undefined | null): this {
+     if (isDefinedList<DecimalType>(element)) {
+      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.coordinate; Provided value array has an element that is not an instance of DecimalType.`;
+      assertFhirTypeList<DecimalType>(element, DecimalType, optErrMsg);
+      this.coordinate = element;
+    } else {
+      this.coordinate = null;
+    }
     return this;
   }
 
@@ -3646,15 +3658,18 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCoordinate(value: fhirDecimal[]): this {
-    assertIsDefinedList<fhirDecimal>(value, `ImagingSelection.instance.imageRegion3D.coordinate is required`);
-    const coordinateElements = [] as DecimalType[];
-    for (const coordinateValue of value) {
-      const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.coordinate array item (${String(coordinateValue)})`;
-      const element = new DecimalType(parseFhirPrimitiveData(coordinateValue, fhirDecimalSchema, optErrMsg));
-      coordinateElements.push(element);
+  public setCoordinate(value: fhirDecimal[] | undefined | null): this {
+    if (isDefinedList<fhirDecimal>(value)) {
+      const coordinateElements = [] as DecimalType[];
+      for (const coordinateValue of value) {
+        const optErrMsg = `Invalid ImagingSelection.instance.imageRegion3D.coordinate array item (${String(coordinateValue)})`;
+        const element = new DecimalType(parseFhirPrimitiveData(coordinateValue, fhirDecimalSchema, optErrMsg));
+        coordinateElements.push(element);
+      }
+      this.coordinate = coordinateElements;
+    } else {
+      this.coordinate = null;
     }
-    this.coordinate = coordinateElements;
     return this;
   }
 
@@ -3711,6 +3726,16 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.regionType, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3736,32 +3761,26 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRegionTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRegionTypeElement()!, 'regionType', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.instance.imageRegion3D.regionType`);
+      jsonObj['regionType'] = null;
     }
 
     if (this.hasCoordinateElement()) {
       setFhirPrimitiveListJson(this.getCoordinateElement(), 'coordinate', jsonObj);
     } else {
-      missingReqdProperties.push(`ImagingSelection.instance.imageRegion3D.coordinate`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['coordinate'] = null;
     }
 
     return jsonObj;

@@ -37,27 +37,21 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -69,6 +63,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -131,7 +126,6 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `InventoryReport`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryReport
    * @returns InventoryReport data model or undefined for `InventoryReport`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): InventoryReport | undefined {
@@ -150,8 +144,6 @@ export class InventoryReport extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -173,12 +165,12 @@ export class InventoryReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'countType';
@@ -188,12 +180,12 @@ export class InventoryReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCountType(null);
       } else {
         instance.setCountTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCountType(null);
     }
 
     fieldName = 'operationType';
@@ -219,12 +211,12 @@ export class InventoryReport extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReportedDateTime(null);
       } else {
         instance.setReportedDateTimeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReportedDateTime(null);
     }
 
     fieldName = 'reporter';
@@ -269,12 +261,6 @@ export class InventoryReport extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -523,11 +509,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryreportStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `InventoryReport.status is required`);
-    const errMsgPrefix = `Invalid InventoryReport.status`;
-    assertEnumCodeType<InventoryreportStatusEnum>(enumType, InventoryreportStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid InventoryReport.status`;
+      assertEnumCodeType<InventoryreportStatusEnum>(enumType, InventoryreportStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -560,11 +549,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryreportStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `InventoryReport.status is required`);
-    const optErrMsg = `Invalid InventoryReport.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.inventoryreportStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid InventoryReport.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.inventoryreportStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -597,10 +589,13 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryreportStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `InventoryReport.status is required`);
-    const optErrMsg = `Invalid InventoryReport.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.inventoryreportStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid InventoryReport.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.inventoryreportStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -630,11 +625,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryreportCounttypeEnum }
    */
-  public setCountTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `InventoryReport.countType is required`);
-    const errMsgPrefix = `Invalid InventoryReport.countType`;
-    assertEnumCodeType<InventoryreportCounttypeEnum>(enumType, InventoryreportCounttypeEnum, errMsgPrefix);
-    this.countType = enumType;
+  public setCountTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid InventoryReport.countType`;
+      assertEnumCodeType<InventoryreportCounttypeEnum>(enumType, InventoryreportCounttypeEnum, errMsgPrefix);
+      this.countType = enumType;
+    } else {
+      this.countType = null;
+    }
     return this;
   }
 
@@ -667,11 +665,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryreportCounttypeEnum }
    */
-  public setCountTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `InventoryReport.countType is required`);
-    const optErrMsg = `Invalid InventoryReport.countType; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.countType = new EnumCodeType(element, this.inventoryreportCounttypeEnum);
+  public setCountTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid InventoryReport.countType; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.countType = new EnumCodeType(element, this.inventoryreportCounttypeEnum);
+    } else {
+      this.countType = null;
+    }
     return this;
   }
 
@@ -704,10 +705,13 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryreportCounttypeEnum }
    */
-  public setCountType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `InventoryReport.countType is required`);
-    const optErrMsg = `Invalid InventoryReport.countType (${String(value)})`;
-    this.countType = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.inventoryreportCounttypeEnum);
+  public setCountType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid InventoryReport.countType (${String(value)})`;
+      this.countType = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.inventoryreportCounttypeEnum);
+    } else {
+      this.countType = null;
+    }
     return this;
   }
 
@@ -783,10 +787,10 @@ export class InventoryReport extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `reportedDateTime` property value as a DateTimeType object if defined; else null
+   * @returns the `reportedDateTime` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getReportedDateTimeElement(): DateTimeType | null {
-    return this.reportedDateTime;
+  public getReportedDateTimeElement(): DateTimeType {
+    return this.reportedDateTime ?? new DateTimeType();
   }
 
   /**
@@ -797,11 +801,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setReportedDateTimeElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `InventoryReport.reportedDateTime is required`);
-    const optErrMsg = `Invalid InventoryReport.reportedDateTime; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.reportedDateTime = element;
+  public setReportedDateTimeElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid InventoryReport.reportedDateTime; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.reportedDateTime = element;
+    } else {
+      this.reportedDateTime = null;
+    }
     return this;
   }
 
@@ -830,10 +837,13 @@ export class InventoryReport extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setReportedDateTime(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `InventoryReport.reportedDateTime is required`);
-    const optErrMsg = `Invalid InventoryReport.reportedDateTime (${String(value)})`;
-    this.reportedDateTime = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setReportedDateTime(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid InventoryReport.reportedDateTime (${String(value)})`;
+      this.reportedDateTime = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.reportedDateTime = null;
+    }
     return this;
   }
 
@@ -1062,6 +1072,16 @@ export class InventoryReport extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.countType, this.reportedDateTime, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1097,15 +1117,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1115,14 +1134,14 @@ export class InventoryReport extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryReport.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCountTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCountTypeElement()!, 'countType', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryReport.countType`);
+      jsonObj['countType'] = null;
     }
 
     if (this.hasOperationType()) {
@@ -1134,10 +1153,9 @@ export class InventoryReport extends DomainResource implements IDomainResource {
     }
 
     if (this.hasReportedDateTimeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getReportedDateTimeElement()!, 'reportedDateTime', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getReportedDateTimeElement(), 'reportedDateTime', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryReport.reportedDateTime`);
+      jsonObj['reportedDateTime'] = null;
     }
 
     if (this.hasReporter()) {
@@ -1154,11 +1172,6 @@ export class InventoryReport extends DomainResource implements IDomainResource {
 
     if (this.hasNote()) {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1244,7 +1257,6 @@ export class InventoryReportInventoryListingComponent extends BackboneElement im
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1608,7 +1620,6 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `InventoryReportInventoryListingItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryReportInventoryListingItemComponent
    * @returns InventoryReportInventoryListingItemComponent data model or undefined for `InventoryReportInventoryListingItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InventoryReportInventoryListingItemComponent | undefined {
@@ -1626,8 +1637,6 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'category';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -1642,12 +1651,12 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setQuantity(null);
       } else {
         instance.setQuantity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setQuantity(null);
     }
 
     fieldName = 'item';
@@ -1656,20 +1665,14 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setItem(null);
       } else {
         instance.setItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1759,10 +1762,10 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `quantity` property value as a Quantity object if defined; else null
+   * @returns the `quantity` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getQuantity(): Quantity | null {
-    return this.quantity;
+  public getQuantity(): Quantity {
+    return this.quantity ?? new Quantity();
   }
 
   /**
@@ -1772,11 +1775,14 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setQuantity(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `InventoryReport.inventoryListing.item.quantity is required`);
-    const optErrMsg = `Invalid InventoryReport.inventoryListing.item.quantity; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.quantity = value;
+  public setQuantity(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid InventoryReport.inventoryListing.item.quantity; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.quantity = value;
+    } else {
+      this.quantity = null;
+    }
     return this;
   }
 
@@ -1788,10 +1794,10 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `item` property value as a CodeableReference object if defined; else null
+   * @returns the `item` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getItem(): CodeableReference | null {
-    return this.item;
+  public getItem(): CodeableReference {
+    return this.item ?? new CodeableReference();
   }
 
   /**
@@ -1801,11 +1807,14 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setItem(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `InventoryReport.inventoryListing.item.item is required`);
-    const optErrMsg = `Invalid InventoryReport.inventoryListing.item.item; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.item = value;
+  public setItem(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid InventoryReport.inventoryListing.item.item; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -1837,6 +1846,16 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.quantity, this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1862,37 +1881,29 @@ export class InventoryReportInventoryListingItemComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCategory()) {
       setFhirComplexJson(this.getCategory(), 'category', jsonObj);
     }
 
     if (this.hasQuantity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getQuantity()!, 'quantity', jsonObj);
+      setFhirComplexJson(this.getQuantity(), 'quantity', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryReport.inventoryListing.item.quantity`);
+      jsonObj['quantity'] = null;
     }
 
     if (this.hasItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getItem()!, 'item', jsonObj);
+      setFhirComplexJson(this.getItem(), 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryReport.inventoryListing.item.item`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['item'] = null;
     }
 
     return jsonObj;

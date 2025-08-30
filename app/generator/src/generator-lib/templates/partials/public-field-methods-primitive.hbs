@@ -66,10 +66,10 @@
 {{/if}}
 {{#if this.isRequiredItem}}
   /**
-   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} object if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} object if defined; else an empty {{edHbs.type.code}} object
    */
-  public get{{upperFirst edHbs.fieldName}}Element(): {{edHbs.type.code}} | null {
-    return this.{{edHbs.fieldIdentifierName}};
+  public get{{upperFirst edHbs.fieldName}}Element(): {{edHbs.type.code}} {
+    return this.{{edHbs.fieldIdentifierName}} ?? new {{edHbs.type.code}}();
   }
 
   /**
@@ -80,11 +80,14 @@
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}): this {
-    assertIsDefined<{{edHbs.type.code}}>(element, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of {{edHbs.type.code}}.`;
-    assertFhirType<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
-    this.{{edHbs.fieldIdentifierName}} = element;
+  public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}} | undefined | null): this {
+    if (isDefined<{{edHbs.type.code}}>(element)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided value is not an instance of {{edHbs.type.code}}.`;
+      assertFhirType<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
+      this.{{edHbs.fieldIdentifierName}} = element;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -113,10 +116,13 @@
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}): this {
-    assertIsDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
-    this.{{edHbs.fieldIdentifierName}} = new {{edHbs.type.code}}(parseFhirPrimitiveData(value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
+  public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}} | undefined | null): this {
+    if (isDefined<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {
+      const optErrMsg = `Invalid {{edHbs.path}} (${String(value)})`;
+      this.{{edHbs.fieldIdentifierName}} = new {{edHbs.type.code}}(parseFhirPrimitiveData(value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -266,11 +272,14 @@
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}[]): this {
-    assertIsDefinedList<{{edHbs.type.code}}>(element, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided value array has an element that is not an instance of {{edHbs.type.code}}.`;
-    assertFhirTypeList<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
-    this.{{edHbs.fieldIdentifierName}} = element;
+  public set{{upperFirst edHbs.fieldName}}Element(element: {{edHbs.type.code}}[] | undefined | null): this {
+     if (isDefinedList<{{edHbs.type.code}}>(element)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided value array has an element that is not an instance of {{edHbs.type.code}}.`;
+      assertFhirTypeList<{{edHbs.type.code}}>(element, {{edHbs.type.code}}, optErrMsg);
+      this.{{edHbs.fieldIdentifierName}} = element;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -322,15 +331,18 @@
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}[]): this {
-    assertIsDefinedList<fhir{{upperFirst edHbs.type.fhirDataType}}>(value, `{{edHbs.path}} is required`);
-    const {{edHbs.fieldName}}Elements = [] as {{edHbs.type.code}}[];
-    for (const {{edHbs.fieldName}}Value of value) {
-      const optErrMsg = `Invalid {{edHbs.path}} array item (${String({{edHbs.fieldName}}Value)})`;
-      const element = new {{edHbs.type.code}}(parseFhirPrimitiveData({{edHbs.fieldName}}Value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
-      {{edHbs.fieldName}}Elements.push(element);
+  public set{{upperFirst edHbs.fieldName}}(value: fhir{{upperFirst edHbs.type.fhirDataType}}[] | undefined | null): this {
+    if (isDefinedList<fhir{{upperFirst edHbs.type.fhirDataType}}>(value)) {
+      const {{edHbs.fieldName}}Elements = [] as {{edHbs.type.code}}[];
+      for (const {{edHbs.fieldName}}Value of value) {
+        const optErrMsg = `Invalid {{edHbs.path}} array item (${String({{edHbs.fieldName}}Value)})`;
+        const element = new {{edHbs.type.code}}(parseFhirPrimitiveData({{edHbs.fieldName}}Value, fhir{{upperFirst edHbs.type.fhirDataType}}Schema, optErrMsg));
+        {{edHbs.fieldName}}Elements.push(element);
+      }
+      this.{{edHbs.fieldIdentifierName}} = {{edHbs.fieldName}}Elements;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
     }
-    this.{{edHbs.fieldIdentifierName}} = {{edHbs.fieldName}}Elements;
     return this;
   }
 

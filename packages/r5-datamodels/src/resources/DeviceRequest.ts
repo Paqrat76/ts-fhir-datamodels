@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,18 +47,14 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   UriType,
   assertEnumCodeType,
@@ -86,6 +81,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -149,7 +145,6 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `DeviceRequest`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceRequest
    * @returns DeviceRequest data model or undefined for `DeviceRequest`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DeviceRequest | undefined {
@@ -172,8 +167,6 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = DeviceRequest[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for DeviceRequest`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -274,12 +267,12 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'priority';
@@ -306,12 +299,12 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'quantity';
@@ -342,12 +335,12 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'encounter';
@@ -475,12 +468,6 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1552,11 +1539,14 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DeviceRequest.intent is required`);
-    const errMsgPrefix = `Invalid DeviceRequest.intent`;
-    assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
-    this.intent = enumType;
+  public setIntentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DeviceRequest.intent`;
+      assertEnumCodeType<RequestIntentEnum>(enumType, RequestIntentEnum, errMsgPrefix);
+      this.intent = enumType;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1589,11 +1579,14 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DeviceRequest.intent is required`);
-    const optErrMsg = `Invalid DeviceRequest.intent; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intent = new EnumCodeType(element, this.requestIntentEnum);
+  public setIntentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DeviceRequest.intent; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intent = new EnumCodeType(element, this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1626,10 +1619,13 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link RequestIntentEnum }
    */
-  public setIntent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DeviceRequest.intent is required`);
-    const optErrMsg = `Invalid DeviceRequest.intent (${String(value)})`;
-    this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+  public setIntent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DeviceRequest.intent (${String(value)})`;
+      this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.requestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1821,10 +1817,10 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `code` property value as a CodeableReference object if defined; else null
+   * @returns the `code` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getCode(): CodeableReference | null {
-    return this.code;
+  public getCode(): CodeableReference {
+    return this.code ?? new CodeableReference();
   }
 
   /**
@@ -1834,11 +1830,14 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `DeviceRequest.code is required`);
-    const optErrMsg = `Invalid DeviceRequest.code; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid DeviceRequest.code; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1972,10 +1971,10 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -1996,10 +1995,13 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
   
     'Device',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `DeviceRequest.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -2747,6 +2749,16 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.intent, this.code, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2806,15 +2818,14 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2849,7 +2860,7 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getIntentElement()!, 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceRequest.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasPriorityElement()) {
@@ -2862,10 +2873,9 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceRequest.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasQuantityElement()) {
@@ -2877,10 +2887,9 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceRequest.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -2930,11 +2939,6 @@ export class DeviceRequest extends DomainResource implements IDomainResource {
 
     if (this.hasRelevantHistory()) {
       setFhirComplexListJson(this.getRelevantHistory(), 'relevantHistory', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3003,7 +3007,6 @@ export class DeviceRequestParameterComponent extends BackboneElement implements 
     );
     instance.setValue(value);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

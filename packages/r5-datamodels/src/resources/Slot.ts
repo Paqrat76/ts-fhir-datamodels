@@ -37,27 +37,21 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BooleanType,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -73,6 +67,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -139,7 +134,6 @@ export class Slot extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Slot`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Slot
    * @returns Slot data model or undefined for `Slot`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Slot | undefined {
@@ -158,8 +152,6 @@ export class Slot extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -232,12 +224,12 @@ export class Slot extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSchedule(null);
       } else {
         instance.setSchedule(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSchedule(null);
     }
 
     fieldName = 'status';
@@ -247,12 +239,12 @@ export class Slot extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'start';
@@ -262,12 +254,12 @@ export class Slot extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: InstantType | undefined = fhirParser.parseInstantType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStart(null);
       } else {
         instance.setStartElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStart(null);
     }
 
     fieldName = 'end';
@@ -277,12 +269,12 @@ export class Slot extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: InstantType | undefined = fhirParser.parseInstantType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setEnd(null);
       } else {
         instance.setEndElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setEnd(null);
     }
 
     fieldName = 'overbooked';
@@ -303,12 +295,6 @@ export class Slot extends DomainResource implements IDomainResource {
       instance.setCommentElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -775,10 +761,10 @@ export class Slot extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `schedule` property value as a Reference object if defined; else null
+   * @returns the `schedule` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSchedule(): Reference | null {
-    return this.schedule;
+  public getSchedule(): Reference {
+    return this.schedule ?? new Reference();
   }
 
   /**
@@ -793,10 +779,13 @@ export class Slot extends DomainResource implements IDomainResource {
   @ReferenceTargets('Slot.schedule', [
     'Schedule',
   ])
-  public setSchedule(value: Reference): this {
-    assertIsDefined<Reference>(value, `Slot.schedule is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.schedule = value;
+  public setSchedule(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.schedule = value;
+    } else {
+      this.schedule = null;
+    }
     return this;
   }
 
@@ -826,11 +815,14 @@ export class Slot extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link SlotstatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Slot.status is required`);
-    const errMsgPrefix = `Invalid Slot.status`;
-    assertEnumCodeType<SlotstatusEnum>(enumType, SlotstatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Slot.status`;
+      assertEnumCodeType<SlotstatusEnum>(enumType, SlotstatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -863,11 +855,14 @@ export class Slot extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link SlotstatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Slot.status is required`);
-    const optErrMsg = `Invalid Slot.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.slotstatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Slot.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.slotstatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -900,10 +895,13 @@ export class Slot extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link SlotstatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Slot.status is required`);
-    const optErrMsg = `Invalid Slot.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.slotstatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Slot.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.slotstatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -915,10 +913,10 @@ export class Slot extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `start` property value as a InstantType object if defined; else null
+   * @returns the `start` property value as a InstantType object if defined; else an empty InstantType object
    */
-  public getStartElement(): InstantType | null {
-    return this.start;
+  public getStartElement(): InstantType {
+    return this.start ?? new InstantType();
   }
 
   /**
@@ -929,11 +927,14 @@ export class Slot extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setStartElement(element: InstantType): this {
-    assertIsDefined<InstantType>(element, `Slot.start is required`);
-    const optErrMsg = `Invalid Slot.start; Provided value is not an instance of InstantType.`;
-    assertFhirType<InstantType>(element, InstantType, optErrMsg);
-    this.start = element;
+  public setStartElement(element: InstantType | undefined | null): this {
+    if (isDefined<InstantType>(element)) {
+      const optErrMsg = `Invalid Slot.start; Provided value is not an instance of InstantType.`;
+      assertFhirType<InstantType>(element, InstantType, optErrMsg);
+      this.start = element;
+    } else {
+      this.start = null;
+    }
     return this;
   }
 
@@ -962,10 +963,13 @@ export class Slot extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setStart(value: fhirInstant): this {
-    assertIsDefined<fhirInstant>(value, `Slot.start is required`);
-    const optErrMsg = `Invalid Slot.start (${String(value)})`;
-    this.start = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+  public setStart(value: fhirInstant | undefined | null): this {
+    if (isDefined<fhirInstant>(value)) {
+      const optErrMsg = `Invalid Slot.start (${String(value)})`;
+      this.start = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+    } else {
+      this.start = null;
+    }
     return this;
   }
 
@@ -977,10 +981,10 @@ export class Slot extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `end` property value as a InstantType object if defined; else null
+   * @returns the `end` property value as a InstantType object if defined; else an empty InstantType object
    */
-  public getEndElement(): InstantType | null {
-    return this.end;
+  public getEndElement(): InstantType {
+    return this.end ?? new InstantType();
   }
 
   /**
@@ -991,11 +995,14 @@ export class Slot extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEndElement(element: InstantType): this {
-    assertIsDefined<InstantType>(element, `Slot.end is required`);
-    const optErrMsg = `Invalid Slot.end; Provided value is not an instance of InstantType.`;
-    assertFhirType<InstantType>(element, InstantType, optErrMsg);
-    this.end = element;
+  public setEndElement(element: InstantType | undefined | null): this {
+    if (isDefined<InstantType>(element)) {
+      const optErrMsg = `Invalid Slot.end; Provided value is not an instance of InstantType.`;
+      assertFhirType<InstantType>(element, InstantType, optErrMsg);
+      this.end = element;
+    } else {
+      this.end = null;
+    }
     return this;
   }
 
@@ -1024,10 +1031,13 @@ export class Slot extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEnd(value: fhirInstant): this {
-    assertIsDefined<fhirInstant>(value, `Slot.end is required`);
-    const optErrMsg = `Invalid Slot.end (${String(value)})`;
-    this.end = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+  public setEnd(value: fhirInstant | undefined | null): this {
+    if (isDefined<fhirInstant>(value)) {
+      const optErrMsg = `Invalid Slot.end (${String(value)})`;
+      this.end = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+    } else {
+      this.end = null;
+    }
     return this;
   }
 
@@ -1195,6 +1205,16 @@ export class Slot extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.schedule, this.status, this.start, this.end, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1233,15 +1253,14 @@ export class Slot extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1264,31 +1283,28 @@ export class Slot extends DomainResource implements IDomainResource {
     }
 
     if (this.hasSchedule()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSchedule()!, 'schedule', jsonObj);
+      setFhirComplexJson(this.getSchedule(), 'schedule', jsonObj);
     } else {
-      missingReqdProperties.push(`Slot.schedule`);
+      jsonObj['schedule'] = null;
     }
 
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Slot.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStartElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInstant>(this.getStartElement()!, 'start', jsonObj);
+      setFhirPrimitiveJson<fhirInstant>(this.getStartElement(), 'start', jsonObj);
     } else {
-      missingReqdProperties.push(`Slot.start`);
+      jsonObj['start'] = null;
     }
 
     if (this.hasEndElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInstant>(this.getEndElement()!, 'end', jsonObj);
+      setFhirPrimitiveJson<fhirInstant>(this.getEndElement(), 'end', jsonObj);
     } else {
-      missingReqdProperties.push(`Slot.end`);
+      jsonObj['end'] = null;
     }
 
     if (this.hasOverbookedElement()) {
@@ -1297,11 +1313,6 @@ export class Slot extends DomainResource implements IDomainResource {
 
     if (this.hasCommentElement()) {
       setFhirPrimitiveJson<fhirString>(this.getCommentElement(), 'comment', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -68,6 +68,38 @@ export function isElementEmpty(...elements: (IBase | IBase[] | undefined | null)
 }
 
 /**
+ * Determine if any of the provided required elements (min cardinality > 0) are empty
+ *
+ * @param elements - FHIR instance's required data elements
+ * @returns `true` if any of the provided required elements are empty; `false` if all required elements are not empty
+ *
+ * @category Utilities
+ */
+export function isRequiredElementEmpty(...elements: (IBase | IBase[] | undefined | null)[]): boolean {
+  if (elements.length === 0) {
+    // Nothing to process therefore nothing required
+    return false;
+  } else {
+    for (const element of elements) {
+      if (Array.isArray(element)) {
+        // IBase[]
+        for (const item of element) {
+          if (item.isEmpty()) {
+            return true;
+          }
+        }
+      } else {
+        // IBase or undefined
+        if (!isDefined<IBase | IBase[]>(element) || element.isEmpty()) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+/**
  * Validate the provided url. The url must be a non-blank valid fhirUri.
  *
  * @param url - url to test

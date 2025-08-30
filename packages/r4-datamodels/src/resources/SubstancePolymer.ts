@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -45,7 +44,6 @@ import {
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   PrimitiveTypeJson,
@@ -101,7 +99,6 @@ export class SubstancePolymer extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `SubstancePolymer`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstancePolymer
    * @returns SubstancePolymer data model or undefined for `SubstancePolymer`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SubstancePolymer | undefined {
@@ -194,7 +191,6 @@ export class SubstancePolymer extends DomainResource implements IDomainResource 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -798,7 +794,6 @@ export class SubstancePolymerMonomerSetComponent extends BackboneElement impleme
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1061,7 +1056,6 @@ export class SubstancePolymerMonomerSetStartingMaterialComponent extends Backbon
       instance.setAmount(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1439,7 +1433,6 @@ export class SubstancePolymerRepeatComponent extends BackboneElement implements 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1888,7 +1881,6 @@ export class SubstancePolymerRepeatRepeatUnitComponent extends BackboneElement i
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2348,7 +2340,6 @@ export class SubstancePolymerRepeatRepeatUnitDegreeOfPolymerisationComponent ext
       instance.setAmount(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2576,7 +2567,6 @@ export class SubstancePolymerRepeatRepeatUnitStructuralRepresentationComponent e
       instance.setAttachment(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

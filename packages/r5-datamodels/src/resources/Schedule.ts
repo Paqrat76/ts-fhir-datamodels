@@ -37,23 +37,17 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BooleanType,
   DomainResource,
-  FhirError,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefinedList,
   copyListValues,
   fhirBoolean,
   fhirBooleanSchema,
@@ -66,6 +60,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -104,7 +99,6 @@ export class Schedule extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Schedule`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Schedule
    * @returns Schedule data model or undefined for `Schedule`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Schedule | undefined {
@@ -123,8 +117,6 @@ export class Schedule extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -204,13 +196,13 @@ export class Schedule extends DomainResource implements IDomainResource {
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setActor(null);
         } else {
           instance.addActor(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
     fieldName = 'planningHorizon';
@@ -230,12 +222,6 @@ export class Schedule extends DomainResource implements IDomainResource {
       instance.setCommentElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -777,10 +763,13 @@ export class Schedule extends DomainResource implements IDomainResource {
   
     'Location',
   ])
-  public setActor(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `Schedule.actor is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -958,6 +947,16 @@ export class Schedule extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -994,15 +993,14 @@ export class Schedule extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1031,7 +1029,7 @@ export class Schedule extends DomainResource implements IDomainResource {
     if (this.hasActor()) {
       setFhirComplexListJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`Schedule.actor`);
+      jsonObj['actor'] = null;
     }
 
     if (this.hasPlanningHorizon()) {
@@ -1040,11 +1038,6 @@ export class Schedule extends DomainResource implements IDomainResource {
 
     if (this.hasCommentElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getCommentElement(), 'comment', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
