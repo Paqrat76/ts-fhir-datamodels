@@ -66,3 +66,17 @@ This document will contain release notes for each release of these packages.
   - Choice data types
   - EnumCodeType
   - Resource
+
+### Release 2025-08-30/2
+
+**Summary:** This release fixes publication failures.
+
+**Released Packages:**
+
+- `@paq-ts-fhir/r4-datamodels@1.1.1`
+- `@paq-ts-fhir/r4b-datamodels@1.1.1`
+- `@paq-ts-fhir/r5-datamodels@1.1.1`
+
+**What Changed:**
+
+- Updated version and CHANGELOG.md files to resolve publication failures.
