@@ -109,3 +109,8 @@ These new releases will require a new major-level version number change.
 
 Any changes to data model packages requiring a new minor-level or major-level version number change will also require
 an update to the generated documentation site.
+
+## Release Notes
+
+[Release Notes](https://paqrat76.github.io/ts-fhir-datamodels/documents/Common_Documentation.Release_Notes.html)
+are available for all published FHIR data model libraries.
