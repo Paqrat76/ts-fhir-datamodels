@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.1.1]
+
+### Fixed
+
+- Publication failure
+
+
 ## [1.1.0] - 2025-08-30
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/r5-datamodels",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Generated FHIR R5 data model package",
   "keywords": [
     "node",
@@ -24,11 +24,11 @@
   ],
   "scripts": {
     "clean": "rm -rf tsconfig.tsbuildinfo lib",
-    "pregenerate": "npm run clean",
     "generate": "ts-node ../../app/generator/scripts/generate-fhir-datamodels.ts R5",
     "postgenerate": "npm run compile",
     "precompile": "npm run clean",
-    "compile": "tsc"
+    "compile": "tsc",
+    "prepublishOnly": "npm run compile"
   },
   "dependencies": {
     "@paq-ts-fhir/fhir-core": "~1.1.0"
