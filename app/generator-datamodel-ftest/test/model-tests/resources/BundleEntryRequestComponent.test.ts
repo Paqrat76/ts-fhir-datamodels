@@ -21,17 +21,16 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
 import {
   CodeType,
   EnumCodeType,
-  FhirError,
   IBackboneElement,
   InstantType,
   InvalidCodeError,
   InvalidTypeError,
   PrimitiveTypeError,
   StringType,
+  UriType,
 } from '@paq-ts-fhir/fhir-core';
 import { BundleEntryRequestComponent } from '../../../src/resources/Bundle';
 import { HttpVerbEnum } from '../../../src/code-systems/HttpVerbEnum';
@@ -70,13 +69,8 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        'The following required properties do not exist: Bundle.entry.request.method, Bundle.entry.request.url',
-      );
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
       expect(testInstance.hasMethodEnumType()).toBe(false);
@@ -86,7 +80,7 @@ describe('BundleEntryRequestComponent', () => {
       expect(testInstance.hasMethod()).toBe(false);
       expect(testInstance.getMethod()).toBeNull();
       expect(testInstance.hasUrlElement()).toBe(false);
-      expect(testInstance.getUrlElement()).toBeNull();
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
       expect(testInstance.hasUrl()).toBe(false);
       expect(testInstance.getUrl()).toBeNull();
       expect(testInstance.hasIfNoneMatchElement()).toBe(false);
@@ -117,6 +111,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -156,6 +151,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -195,6 +191,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -247,6 +244,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -281,17 +279,8 @@ describe('BundleEntryRequestComponent', () => {
 
       undefineBackboneElementProperties(testModel);
 
-      let t = () => {
-        testModel.setMethodEnumType(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.request.method is required');
-      t = () => {
-        testModel.setUrlElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.request.url is required');
-
+      testModel.setMethodEnumType(TestData.UNDEFINED_VALUE);
+      testModel.setUrlElement(TestData.UNDEFINED_VALUE);
       testModel.setIfNoneMatchElement(TestData.UNDEFINED_VALUE);
       testModel.setIfModifiedSinceElement(TestData.UNDEFINED_VALUE);
       testModel.setIfMatchElement(TestData.UNDEFINED_VALUE);
@@ -299,16 +288,27 @@ describe('BundleEntryRequestComponent', () => {
 
       testInstance = testModel.copy();
 
-      expect(testInstance.hasMethodEnumType()).toBe(true);
-      expect(testInstance.getMethodEnumType()).toEqual(VALID_HTTP_VERB_GET_ENUMCODE);
-      expect(testInstance.hasMethodElement()).toBe(true);
-      expect(testInstance.getMethodElement()).toEqual(VALID_HTTP_VERB_GET_ENUMCODE as CodeType);
-      expect(testInstance.hasMethod()).toBe(true);
-      expect(testInstance.getMethod()).toEqual(HttpVerbEnum.GET.code);
-      expect(testInstance.hasUrlElement()).toBe(true);
-      expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE);
-      expect(testInstance.hasUrl()).toBe(true);
-      expect(testInstance.getUrl()).toEqual(TestData.VALID_URI);
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryRequestComponent',
+        'Bundle.entry.request',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
+      expectUndefinedElementProperties(testInstance);
+
+      expect(testInstance.hasMethodEnumType()).toBe(false);
+      expect(testInstance.getMethodEnumType()).toBeNull();
+      expect(testInstance.hasMethodElement()).toBe(false);
+      expect(testInstance.getMethodElement()).toBeNull();
+      expect(testInstance.hasMethod()).toBe(false);
+      expect(testInstance.getMethod()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
       expect(testInstance.hasIfNoneMatchElement()).toBe(false);
       expect(testInstance.getIfNoneMatchElement()).toEqual(new StringType());
       expect(testInstance.hasIfNoneMatch()).toBe(false);
@@ -346,6 +346,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -394,6 +395,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -428,31 +430,34 @@ describe('BundleEntryRequestComponent', () => {
 
       undefineBackboneElementProperties(testInstance);
 
-      let t = () => {
-        testInstance.setMethod(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.request.method is required');
-      t = () => {
-        testInstance.setUrl(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.request.url is required');
+      testInstance.setMethod(TestData.UNDEFINED_VALUE);
+      testInstance.setUrl(TestData.UNDEFINED_VALUE);
       testInstance.setIfNoneMatch(TestData.UNDEFINED_VALUE);
       testInstance.setIfModifiedSince(TestData.UNDEFINED_VALUE);
       testInstance.setIfMatch(TestData.UNDEFINED_VALUE);
       testInstance.setIfNoneExist(TestData.UNDEFINED_VALUE);
 
-      expect(testInstance.hasMethodEnumType()).toBe(true);
-      expect(testInstance.getMethodEnumType()).toEqual(VALID_HTTP_VERB_HEAD_ENUMCODE);
-      expect(testInstance.hasMethodElement()).toBe(true);
-      expect(testInstance.getMethodElement()).toEqual(VALID_HTTP_VERB_HEAD_ENUMCODE as CodeType);
-      expect(testInstance.hasMethod()).toBe(true);
-      expect(testInstance.getMethod()).toEqual(HttpVerbEnum.HEAD.code);
-      expect(testInstance.hasUrlElement()).toBe(true);
-      expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE_2);
-      expect(testInstance.hasUrl()).toBe(true);
-      expect(testInstance.getUrl()).toEqual(TestData.VALID_URI_2);
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryRequestComponent',
+        'Bundle.entry.request',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
+      expectUndefinedElementProperties(testInstance);
+
+      expect(testInstance.hasMethodEnumType()).toBe(false);
+      expect(testInstance.getMethodEnumType()).toBeNull();
+      expect(testInstance.hasMethodElement()).toBe(false);
+      expect(testInstance.getMethodElement()).toBeNull();
+      expect(testInstance.hasMethod()).toBe(false);
+      expect(testInstance.getMethod()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
       expect(testInstance.hasIfNoneMatchElement()).toBe(false);
       expect(testInstance.getIfNoneMatchElement()).toEqual(new StringType());
       expect(testInstance.hasIfNoneMatch()).toBe(false);
@@ -490,6 +495,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -538,6 +544,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -572,31 +579,34 @@ describe('BundleEntryRequestComponent', () => {
 
       undefineBackboneElementProperties(testInstance);
 
-      let t = () => {
-        testInstance.setMethodElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.request.method is required');
-      t = () => {
-        testInstance.setUrlElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.request.url is required');
+      testInstance.setMethodElement(TestData.UNDEFINED_VALUE);
+      testInstance.setUrlElement(TestData.UNDEFINED_VALUE);
       testInstance.setIfNoneMatchElement(TestData.UNDEFINED_VALUE);
       testInstance.setIfModifiedSinceElement(TestData.UNDEFINED_VALUE);
       testInstance.setIfMatchElement(TestData.UNDEFINED_VALUE);
       testInstance.setIfNoneExistElement(TestData.UNDEFINED_VALUE);
 
-      expect(testInstance.hasMethodEnumType()).toBe(true);
-      expect(testInstance.getMethodEnumType()).toEqual(VALID_HTTP_VERB_HEAD_ENUMCODE);
-      expect(testInstance.hasMethodElement()).toBe(true);
-      expect(testInstance.getMethodElement()).toEqual(VALID_HTTP_VERB_HEAD_ENUMCODE as CodeType);
-      expect(testInstance.hasMethod()).toBe(true);
-      expect(testInstance.getMethod()).toEqual(HttpVerbEnum.HEAD.code);
-      expect(testInstance.hasUrlElement()).toBe(true);
-      expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE_2);
-      expect(testInstance.hasUrl()).toBe(true);
-      expect(testInstance.getUrl()).toEqual(TestData.VALID_URI_2);
+      expectBackboneElementBase(
+        BundleEntryRequestComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryRequestComponent',
+        'Bundle.entry.request',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
+      expectUndefinedElementProperties(testInstance);
+
+      expect(testInstance.hasMethodEnumType()).toBe(false);
+      expect(testInstance.getMethodEnumType()).toBeNull();
+      expect(testInstance.hasMethodElement()).toBe(false);
+      expect(testInstance.getMethodElement()).toBeNull();
+      expect(testInstance.hasMethod()).toBe(false);
+      expect(testInstance.getMethod()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
       expect(testInstance.hasIfNoneMatchElement()).toBe(false);
       expect(testInstance.getIfNoneMatchElement()).toEqual(new StringType());
       expect(testInstance.hasIfNoneMatch()).toBe(false);
@@ -659,20 +669,6 @@ describe('BundleEntryRequestComponent', () => {
       ifMatch: 'match',
       ifNoneExist: 'none exist',
     };
-    const INVALID_JSON = {
-      bogusField: 'bogus value',
-    };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new BundleEntryRequestComponent();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties do not exist: Bundle.entry.request.method, Bundle.entry.request.url`,
-      );
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleEntryRequestComponent(VALID_HTTP_VERB_GET_ENUMCODE, altUrl);
@@ -691,6 +687,8 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 2);
 
       expect(testInstance.hasMethodEnumType()).toBe(true);
@@ -724,7 +722,7 @@ describe('BundleEntryRequestComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: BundleEntryRequestComponent | undefined = undefined;
+      let testInstance: BundleEntryRequestComponent | undefined;
       testInstance = BundleEntryRequestComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -733,16 +731,6 @@ describe('BundleEntryRequestComponent', () => {
 
       testInstance = BundleEntryRequestComponent.parse(undefined);
       expect(testInstance).toBeUndefined();
-    });
-
-    it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        BundleEntryRequestComponent.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: BundleEntryRequestComponent.method, BundleEntryRequestComponent.url`,
-      );
     });
 
     it('should return parsed Bundle for valid json', () => {
@@ -755,6 +743,7 @@ describe('BundleEntryRequestComponent', () => {
         'Bundle.entry.request',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedElementProperties(testInstance, 2);
 
@@ -790,6 +779,7 @@ describe('BundleEntryRequestComponent', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleEntryRequestComponent(VALID_MOCK_COMPLEX_DATATYPE, null);
       };
       expect(t).toThrow(InvalidCodeError);
@@ -802,12 +792,14 @@ describe('BundleEntryRequestComponent', () => {
       expect(t).toThrow(`Invalid Bundle.entry.request.method; Unknown HttpVerbEnum 'code' value 'testCodeType'`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleEntryRequestComponent(null, VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.request.url ([object Object])`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleEntryRequestComponent(null, TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -824,12 +816,14 @@ describe('BundleEntryRequestComponent', () => {
       const testInstance = new BundleEntryRequestComponent();
 
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setMethodEnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.request.method; Provided type is not an instance of HttpVerbEnum.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setMethodElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -846,29 +840,12 @@ describe('BundleEntryRequestComponent', () => {
       };
       expect(t).toThrow(InvalidCodeError);
       expect(t).toThrow(`Unknown HttpVerbEnum 'code' value 'validUri'`);
-
-      t = () => {
-        testInstance.setMethodEnumType(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.request.method is required`);
-
-      t = () => {
-        testInstance.setMethodElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.request.method is required`);
-
-      t = () => {
-        testInstance.setMethod(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.request.method is required`);
     });
 
     it('url: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryRequestComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setUrlElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -879,29 +856,19 @@ describe('BundleEntryRequestComponent', () => {
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.request.url (Invalid datatype)`);
-
-      t = () => {
-        testInstance.setUrlElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.request.url is required`);
-
-      t = () => {
-        testInstance.setUrl(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.request.url is required`);
     });
 
     it('ifNoneMatch: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryRequestComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfNoneMatchElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.request.ifNoneMatch; Provided element is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfNoneMatch(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -911,6 +878,7 @@ describe('BundleEntryRequestComponent', () => {
     it('ifModifiedSince: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryRequestComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfModifiedSinceElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -928,12 +896,14 @@ describe('BundleEntryRequestComponent', () => {
     it('ifMatch: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryRequestComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfMatchElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.request.ifMatch; Provided element is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfMatch(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -943,12 +913,14 @@ describe('BundleEntryRequestComponent', () => {
     it('ifNoneExist: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryRequestComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfNoneExistElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.request.ifNoneExist; Provided element is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setIfNoneExist(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);

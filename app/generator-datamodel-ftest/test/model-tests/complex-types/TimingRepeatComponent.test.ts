@@ -27,6 +27,7 @@ import {
   EnumCodeType,
   fhirCode,
   fhirTime,
+  IElement,
   InvalidCodeError,
   InvalidTypeError,
   PositiveIntType,
@@ -71,8 +72,8 @@ describe('TimingRepeatComponent', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new TimingRepeatComponent();
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -186,8 +187,8 @@ describe('TimingRepeatComponent', () => {
 
       let testInstance: TimingRepeatComponent = testModel.copy();
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testModel,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -298,8 +299,8 @@ describe('TimingRepeatComponent', () => {
 
       testInstance = testModel.copy();
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -411,8 +412,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.setWhen([TestData.VALID_CODE]);
       testInstance.setOffset(0);
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -518,8 +519,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.addWhen(TestData.VALID_CODE_2);
       testInstance.setOffset(10);
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -628,8 +629,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.setWhen(TestData.UNDEFINED_VALUE);
       testInstance.setOffset(TestData.UNDEFINED_VALUE);
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -741,8 +742,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.setWhenElement([TestData.VALID_CODE_TYPE]);
       testInstance.setOffsetElement(new UnsignedIntType(0));
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -863,8 +864,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.addWhenElement(TestData.VALID_CODE_TYPE_2);
       testInstance.setOffsetElement(new UnsignedIntType(10));
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -1055,8 +1056,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.setWhenElement(TestData.UNDEFINED_VALUE);
       testInstance.setOffsetElement(TestData.UNDEFINED_VALUE);
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -1224,8 +1225,8 @@ describe('TimingRepeatComponent', () => {
       testInstance.setWhen([TestData.VALID_CODE]);
       testInstance.setOffsetElement(altOffset);
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -1317,7 +1318,7 @@ describe('TimingRepeatComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: TimingRepeatComponent | undefined = undefined;
+      let testInstance: TimingRepeatComponent | undefined;
       testInstance = TimingRepeatComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -1331,8 +1332,8 @@ describe('TimingRepeatComponent', () => {
     it('should return parsed Timing for valid json', () => {
       const testInstance: TimingRepeatComponent = TimingRepeatComponent.parse(VALID_JSON);
 
-      expectElementBase<TimingRepeatComponent>(
-        TimingRepeatComponent,
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
         testInstance,
         'TimingRepeatComponent',
         'Timing.repeat',
@@ -1438,18 +1439,21 @@ describe('TimingRepeatComponent', () => {
     it('count: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCountElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.count; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCountElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.count; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCount(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1459,18 +1463,21 @@ describe('TimingRepeatComponent', () => {
     it('countMax: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCountMaxElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.countMax; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCountMaxElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.countMax; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCountMax(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1480,18 +1487,21 @@ describe('TimingRepeatComponent', () => {
     it('duration: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.duration; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.duration; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDuration(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1501,18 +1511,21 @@ describe('TimingRepeatComponent', () => {
     it('durationMax: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationMaxElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.durationMax; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationMaxElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.durationMax; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationMax(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1522,18 +1535,21 @@ describe('TimingRepeatComponent', () => {
     it('durationUnit: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationUnitElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.durationUnit; Provided element is not an instance of CodeType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationUnitElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.durationUnit; Provided element is not an instance of CodeType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDurationUnit(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1543,18 +1559,21 @@ describe('TimingRepeatComponent', () => {
     it('frequency: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFrequencyElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.frequency; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFrequencyElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.frequency; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFrequency(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1564,18 +1583,21 @@ describe('TimingRepeatComponent', () => {
     it('frequencyMax: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFrequencyMaxElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.frequencyMax; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFrequencyMaxElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.frequencyMax; Provided element is not an instance of PositiveIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setFrequencyMax(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1585,18 +1607,21 @@ describe('TimingRepeatComponent', () => {
     it('period: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.period; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.period; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriod(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1606,18 +1631,21 @@ describe('TimingRepeatComponent', () => {
     it('periodMax: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodMaxElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.periodMax; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodMaxElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.periodMax; Provided element is not an instance of DecimalType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodMax(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1627,18 +1655,21 @@ describe('TimingRepeatComponent', () => {
     it('periodUnit: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodUnitElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.periodUnit; Provided element is not an instance of CodeType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodUnitElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.periodUnit; Provided element is not an instance of CodeType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPeriodUnit(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1648,6 +1679,7 @@ describe('TimingRepeatComponent', () => {
     it('dayOfWeek: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDayOfWeekEnumType([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1656,6 +1688,7 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDayOfWeekEnumType([TestData.INVALID_NON_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1664,12 +1697,14 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addDayOfWeekEnumType(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.dayOfWeek; Provided type is not an instance of DaysOfWeekEnum.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDayOfWeekElement([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1678,6 +1713,7 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setDayOfWeekElement([TestData.INVALID_NON_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1686,6 +1722,7 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addDayOfWeekElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1707,6 +1744,7 @@ describe('TimingRepeatComponent', () => {
     it('timeOfDay: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setTimeOfDayElement([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1715,6 +1753,7 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setTimeOfDayElement([TestData.INVALID_NON_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1723,18 +1762,21 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addTimeOfDayElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.timeOfDay; Provided element is not an instance of TimeType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setTimeOfDay([TestData.INVALID_STRING_TYPE_VALUE]);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.timeOfDay array item (12345)`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addTimeOfDay(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1744,6 +1786,7 @@ describe('TimingRepeatComponent', () => {
     it('when: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setWhenElement([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1752,6 +1795,7 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setWhenElement([TestData.INVALID_NON_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1760,18 +1804,21 @@ describe('TimingRepeatComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addWhenElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.when; Provided element is not an instance of CodeType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setWhen([TestData.INVALID_STRING_TYPE_VALUE]);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.when array item (12345`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addWhen(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1781,18 +1828,21 @@ describe('TimingRepeatComponent', () => {
     it('offset: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TimingRepeatComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setOffsetElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.offset; Provided element is not an instance of UnsignedIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setOffsetElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Timing.repeat.offset; Provided element is not an instance of UnsignedIntType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setOffset(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);

@@ -2,26 +2,15 @@
 {{!-- context is a HbsElementComponent --}}
   /**
    * @returns the JSON value or undefined if the instance is empty
-{{#if hasRequiredFields}}
-   * @throws {@link FhirError} if the instance is missing required properties
-{{/if}}
    */
   public override toJSON(): JSON.Value | undefined {
-{{#if hasRequiredFields}}
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
-{{else}}
     if (this.isEmpty()) {
       return undefined;
     }
-{{/if}}
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-{{#if hasRequiredFields}}
-    const missingReqdProperties: string[] = [];
-
-{{/if}}
 {{#each elementDefinitions}}
 {{#if this.isBackboneType}}
 {{#if this.isOptionalItem}}
@@ -32,10 +21,9 @@
 {{/if}}
 {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirBackboneElementJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+      setFhirBackboneElementJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -49,7 +37,7 @@
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirBackboneElementListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -63,10 +51,9 @@
 {{/if}}
 {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
+      setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -80,7 +67,7 @@
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveListJson(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -98,7 +85,7 @@
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -112,10 +99,9 @@
 {{/if}}
 {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+      setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -129,7 +115,7 @@
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -147,7 +133,7 @@
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -161,7 +147,7 @@
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveListJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -175,10 +161,9 @@
 {{/if}}
 {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
+      setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -192,7 +177,7 @@
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
-      missingReqdProperties.push(`{{this.path}}`);
+      jsonObj['{{this.fieldName}}'] = null;
     }
 
 {{/if}}
@@ -207,12 +192,5 @@
 {{/if}}
 {{/if}}
 {{/each}}
-{{#if hasRequiredFields}}
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-{{/if}}
     return jsonObj;
   }

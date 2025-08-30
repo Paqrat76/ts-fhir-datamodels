@@ -36,27 +36,33 @@ import { StringType } from '../../data-types/primitive/StringType';
 import { UriType } from '../../data-types/primitive/UriType';
 import { InvalidCodeError } from '../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../errors/InvalidTypeError';
-import { copyListValues, extractFieldName, isElementEmpty, validateUrl } from '../../utility/fhir-util';
+import {
+  copyListValues,
+  extractFieldName,
+  isElementEmpty,
+  isRequiredElementEmpty,
+  validateUrl,
+} from '../../utility/fhir-util';
 import { TestTypeEnum } from '../TestTypeEnum';
 import { MockCodeEnum, MockComplexDataType } from '../test-utils';
 import { TestData } from '../test-data';
 
 describe('fhir-util', () => {
+  const TEST_UNDEFINED = undefined;
+  const TEST_NULL = null;
+  const TEST_BOOLEAN_TYPE_UNDEF = new BooleanType();
+  const TEST_DATETIME_TYPE_UNDEF = new DateTimeType();
+  const TEST_STRING_TYPE_UNDEF = new StringType();
+  const TEST_URI_TYPE_UNDEF = new UriType();
+  const TEST_URI_TYPE_UNDEF_ARRAY = [new UriType()];
+
+  const TEST_BOOLEAN_TYPE = new BooleanType(true);
+  const TEST_DATETIME_TYPE = new DateTimeType('2024-07-03');
+  const TEST_STRING_TYPE = new StringType('stringValue');
+  const TEST_URI_TYPE = new UriType('uriValue');
+  const TEST_URI_TYPE_ARRAY = [new UriType('uriValue')];
+
   describe('isElementEmpty', () => {
-    const TEST_UNDEFINED = undefined;
-    const TEST_NULL = null;
-    const TEST_BOOLEAN_TYPE_UNDEF = new BooleanType();
-    const TEST_DATETIME_TYPE_UNDEF = new DateTimeType();
-    const TEST_STRING_TYPE_UNDEF = new StringType();
-    const TEST_URI_TYPE_UNDEF = new UriType();
-    const TEST_URI_TYPE_UNDEF_ARRAY = [new UriType()];
-
-    const TEST_BOOLEAN_TYPE = new BooleanType(true);
-    const TEST_DATETIME_TYPE = new DateTimeType('2024-07-03');
-    const TEST_STRING_TYPE = new StringType('stringValue');
-    const TEST_URI_TYPE = new UriType('uriValue');
-    const TEST_URI_TYPE_ARRAY = [new UriType('uriValue')];
-
     it('should return true for no elements', () => {
       let result = isElementEmpty(TEST_UNDEFINED);
       expect(result).toBe(true);
@@ -135,6 +141,86 @@ describe('fhir-util', () => {
 
     it('should return false for array of non-empty types', () => {
       const result = isElementEmpty(TEST_URI_TYPE_ARRAY);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('isRequiredElementEmpty', () => {
+    it('should return false for no elements', () => {
+      let result = isRequiredElementEmpty();
+      expect(result).toBe(false);
+
+      result = isRequiredElementEmpty([]);
+      expect(result).toBe(false);
+    });
+
+    it('should return true for all undefined/null types', () => {
+      let result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE_UNDEF);
+      expect(result).toBe(true);
+      result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE_UNDEF, TEST_DATETIME_TYPE_UNDEF);
+      expect(result).toBe(true);
+      result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE_UNDEF, TEST_DATETIME_TYPE_UNDEF, TEST_STRING_TYPE_UNDEF);
+      expect(result).toBe(true);
+      result = isRequiredElementEmpty(
+        TEST_BOOLEAN_TYPE_UNDEF,
+        TEST_DATETIME_TYPE_UNDEF,
+        TEST_STRING_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF,
+      );
+      expect(result).toBe(true);
+      result = isRequiredElementEmpty(
+        TEST_BOOLEAN_TYPE_UNDEF,
+        TEST_DATETIME_TYPE_UNDEF,
+        TEST_STRING_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF_ARRAY,
+      );
+      expect(result).toBe(true);
+      result = isRequiredElementEmpty(
+        TEST_BOOLEAN_TYPE_UNDEF,
+        TEST_DATETIME_TYPE_UNDEF,
+        TEST_STRING_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF_ARRAY,
+        TEST_NULL,
+      );
+      expect(result).toBe(true);
+    });
+
+    it('should return true for at least one defined types', () => {
+      const result = isRequiredElementEmpty(
+        TEST_BOOLEAN_TYPE_UNDEF,
+        TEST_DATETIME_TYPE_UNDEF,
+        TEST_STRING_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF,
+        TEST_URI_TYPE_UNDEF_ARRAY,
+        TEST_NULL,
+        TEST_STRING_TYPE,
+      );
+      expect(result).toBe(true);
+    });
+
+    it('should return false for all non-empty types', () => {
+      let result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE);
+      expect(result).toBe(false);
+      result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE, TEST_DATETIME_TYPE);
+      expect(result).toBe(false);
+      result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE, TEST_DATETIME_TYPE, TEST_STRING_TYPE);
+      expect(result).toBe(false);
+      result = isRequiredElementEmpty(TEST_BOOLEAN_TYPE, TEST_DATETIME_TYPE, TEST_STRING_TYPE, TEST_URI_TYPE);
+      expect(result).toBe(false);
+      result = isRequiredElementEmpty(
+        TEST_BOOLEAN_TYPE,
+        TEST_DATETIME_TYPE,
+        TEST_STRING_TYPE,
+        TEST_URI_TYPE,
+        TEST_URI_TYPE_ARRAY,
+      );
+      expect(result).toBe(false);
+    });
+
+    it('should return false for array of non-empty types', () => {
+      const result = isRequiredElementEmpty(TEST_URI_TYPE_ARRAY);
       expect(result).toBe(false);
     });
   });

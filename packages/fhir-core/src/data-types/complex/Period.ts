@@ -21,12 +21,10 @@
  *
  */
 
-import { strict as assert } from 'node:assert';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
 import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
-import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { DateTimeType } from '../primitive/DateTimeType';
 import { fhirDateTime, fhirDateTimeSchema, parseFhirPrimitiveData } from '../primitive/primitive-types';
 import { isEmpty } from '../../utility/common-util';
@@ -98,7 +96,6 @@ export class Period extends DataType implements IDataType {
       instance.setEndElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

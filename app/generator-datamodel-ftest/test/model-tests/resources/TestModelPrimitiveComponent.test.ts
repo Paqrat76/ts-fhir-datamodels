@@ -23,8 +23,8 @@
 
 import { AssertionError } from 'node:assert';
 import {
+  BooleanType,
   DateTimeType,
-  FhirError,
   fhirInteger,
   fhirString,
   IBackboneElement,
@@ -58,13 +58,8 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        'The following required properties do not exist: TestModel.primitive.primitive11, TestModel.primitive.primitive1x, TestModel.primitive.choice11[x]',
-      );
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasPrimitive01Element()).toBe(false);
@@ -76,7 +71,7 @@ describe('TestModelPrimitiveComponent', () => {
       expect(testInstance.hasPrimitive0x()).toBe(false);
       expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
       expect(testInstance.hasPrimitive11Element()).toBe(false);
-      expect(testInstance.getPrimitive11Element()).toBeNull();
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
       expect(testInstance.hasPrimitive11()).toBe(false);
       expect(testInstance.getPrimitive11()).toBeNull();
       expect(testInstance.hasPrimitive1xElement()).toBe(false);
@@ -105,6 +100,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
@@ -153,6 +149,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -206,6 +203,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -244,24 +242,21 @@ describe('TestModelPrimitiveComponent', () => {
 
       testModel.setPrimitive01(TestData.UNDEFINED_VALUE);
       testModel.setPrimitive0x(TestData.UNDEFINED_VALUE);
-      t = () => {
-        testModel.setPrimitive11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive11 is required');
-      t = () => {
-        testModel.setPrimitive1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-      t = () => {
-        testModel.setChoice11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.choice11[x] is required');
+      testModel.setPrimitive11(TestData.UNDEFINED_VALUE);
+      testModel.setPrimitive1x(TestData.UNDEFINED_VALUE);
+      testModel.setChoice11(TestData.UNDEFINED_VALUE);
 
       testInstance = testModel.copy();
 
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasPrimitive01Element()).toBe(false);
@@ -273,26 +268,20 @@ describe('TestModelPrimitiveComponent', () => {
       expect(testInstance.hasPrimitive0x()).toBe(false);
       expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
 
-      expect(testInstance.hasPrimitive11Element()).toBe(true);
-      expect(testInstance.getPrimitive11Element()).toEqual(TestData.VALID_BOOLEAN_TRUE_TYPE);
-      expect(testInstance.hasPrimitive11()).toBe(true);
-      expect(testInstance.getPrimitive11()).toEqual(TestData.VALID_BOOLEAN_TRUE);
-      expect(testInstance.hasPrimitive1xElement()).toBe(true);
-      expect(testInstance.getPrimitive1xElement()).toEqual([TestData.VALID_STRING_TYPE]);
-      expect(testInstance.hasPrimitive1x()).toBe(true);
-      expect(testInstance.getPrimitive1x()).toEqual([TestData.VALID_STRING]);
-      expect(testInstance.hasChoice11()).toBe(true);
-      expect(testInstance.getChoice11()).toEqual(TestData.VALID_URI_TYPE);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
       expect(testInstance.hasChoice11StringType()).toBe(false);
-      t = () => {
-        testInstance.getChoice11StringType();
-      };
-      expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(
-        `DataType mismatch for TestModel.primitive.choice11[x]: Expected StringType but encountered uri`,
-      );
-      expect(testInstance.hasChoice11UriType()).toBe(true);
-      expect(testInstance.getChoice11UriType()).toEqual(TestData.VALID_URI_TYPE);
+      expect(testInstance.getChoice11StringType()).toBeNull();
+      expect(testInstance.hasChoice11UriType()).toBe(false);
+      expect(testInstance.getChoice11UriType()).toBeNull();
     });
 
     it('should properly copy() with PrimitiveType elements', () => {
@@ -315,6 +304,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -353,24 +343,21 @@ describe('TestModelPrimitiveComponent', () => {
 
       testModel.setPrimitive01(TestData.UNDEFINED_VALUE);
       testModel.setPrimitive0x(TestData.UNDEFINED_VALUE);
-      t = () => {
-        testModel.setPrimitive11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive11 is required');
-      t = () => {
-        testModel.setPrimitive1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-      t = () => {
-        testModel.setChoice11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.choice11[x] is required');
+      testModel.setPrimitive11(TestData.UNDEFINED_VALUE);
+      testModel.setPrimitive1x(TestData.UNDEFINED_VALUE);
+      testModel.setChoice11(TestData.UNDEFINED_VALUE);
 
       testInstance = testModel.copy();
 
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasPrimitive01Element()).toBe(false);
@@ -382,26 +369,20 @@ describe('TestModelPrimitiveComponent', () => {
       expect(testInstance.hasPrimitive0x()).toBe(false);
       expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
 
-      expect(testInstance.hasPrimitive11Element()).toBe(true);
-      expect(testInstance.getPrimitive11Element()).toEqual(TestData.VALID_BOOLEAN_TRUE_TYPE);
-      expect(testInstance.hasPrimitive11()).toBe(true);
-      expect(testInstance.getPrimitive11()).toEqual(TestData.VALID_BOOLEAN_TRUE);
-      expect(testInstance.hasPrimitive1xElement()).toBe(true);
-      expect(testInstance.getPrimitive1xElement()).toEqual([TestData.VALID_STRING_TYPE]);
-      expect(testInstance.hasPrimitive1x()).toBe(true);
-      expect(testInstance.getPrimitive1x()).toEqual([TestData.VALID_STRING]);
-      expect(testInstance.hasChoice11()).toBe(true);
-      expect(testInstance.getChoice11()).toEqual(TestData.VALID_STRING_TYPE_2);
-      expect(testInstance.hasChoice11StringType()).toBe(true);
-      expect(testInstance.getChoice11StringType()).toEqual(TestData.VALID_STRING_TYPE_2);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
+      expect(testInstance.hasChoice11StringType()).toBe(false);
+      expect(testInstance.getChoice11StringType()).toBeNull();
       expect(testInstance.hasChoice11UriType()).toBe(false);
-      t = () => {
-        testInstance.getChoice11UriType();
-      };
-      expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(
-        `DataType mismatch for TestModel.primitive.choice11[x]: Expected UriType but encountered string`,
-      );
+      expect(testInstance.getChoice11UriType()).toBeNull();
     });
 
     it('should be properly reset by modifying/adding all properties with primitive elements', () => {
@@ -422,6 +403,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -471,6 +453,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetBackboneElementProperties(testInstance);
 
@@ -512,22 +495,19 @@ describe('TestModelPrimitiveComponent', () => {
 
       testInstance.setPrimitive01(TestData.UNDEFINED_VALUE);
       testInstance.setPrimitive0x(TestData.UNDEFINED_VALUE);
-      t = () => {
-        testInstance.setPrimitive11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive11 is required');
-      t = () => {
-        testInstance.setPrimitive1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-      t = () => {
-        testInstance.setChoice11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.choice11[x] is required');
+      testInstance.setPrimitive11(TestData.UNDEFINED_VALUE);
+      testInstance.setPrimitive1x(TestData.UNDEFINED_VALUE);
+      testInstance.setChoice11(TestData.UNDEFINED_VALUE);
 
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasPrimitive01Element()).toBe(false);
@@ -539,26 +519,20 @@ describe('TestModelPrimitiveComponent', () => {
       expect(testInstance.hasPrimitive0x()).toBe(false);
       expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
 
-      expect(testInstance.hasPrimitive11Element()).toBe(true);
-      expect(testInstance.getPrimitive11Element()).toEqual(TestData.VALID_BOOLEAN_FALSE_TYPE);
-      expect(testInstance.hasPrimitive11()).toBe(true);
-      expect(testInstance.getPrimitive11()).toEqual(TestData.VALID_BOOLEAN_FALSE);
-      expect(testInstance.hasPrimitive1xElement()).toBe(true);
-      expect(testInstance.getPrimitive1xElement()).toEqual([TestData.VALID_STRING_TYPE, TestData.VALID_STRING_TYPE_2]);
-      expect(testInstance.hasPrimitive1x()).toBe(true);
-      expect(testInstance.getPrimitive1x()).toEqual([TestData.VALID_STRING, TestData.VALID_STRING_2]);
-      expect(testInstance.hasChoice11()).toBe(true);
-      expect(testInstance.getChoice11()).toEqual(TestData.VALID_STRING_TYPE);
-      expect(testInstance.hasChoice11StringType()).toBe(true);
-      expect(testInstance.getChoice11StringType()).toEqual(TestData.VALID_STRING_TYPE);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
+      expect(testInstance.hasChoice11StringType()).toBe(false);
+      expect(testInstance.getChoice11StringType()).toBeNull();
       expect(testInstance.hasChoice11UriType()).toBe(false);
-      t = () => {
-        testInstance.getChoice11UriType();
-      };
-      expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(
-        `DataType mismatch for TestModel.primitive.choice11[x]: Expected UriType but encountered string`,
-      );
+      expect(testInstance.getChoice11UriType()).toBeNull();
     });
 
     it('should be properly reset by modifying/adding all properties with PrimitiveType elements', () => {
@@ -579,6 +553,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -628,6 +603,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetBackboneElementProperties(testInstance);
 
@@ -669,22 +645,19 @@ describe('TestModelPrimitiveComponent', () => {
 
       testInstance.setPrimitive01Element(TestData.UNDEFINED_VALUE);
       testInstance.setPrimitive0xElement(TestData.UNDEFINED_VALUE);
-      t = () => {
-        testInstance.setPrimitive11Element(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive11 is required');
-      t = () => {
-        testInstance.setPrimitive1xElement(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-      t = () => {
-        testInstance.setChoice11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.choice11[x] is required');
+      testInstance.setPrimitive11Element(TestData.UNDEFINED_VALUE);
+      testInstance.setPrimitive1xElement(TestData.UNDEFINED_VALUE);
+      testInstance.setChoice11(TestData.UNDEFINED_VALUE);
 
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasPrimitive01Element()).toBe(false);
@@ -696,26 +669,20 @@ describe('TestModelPrimitiveComponent', () => {
       expect(testInstance.hasPrimitive0x()).toBe(false);
       expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
 
-      expect(testInstance.hasPrimitive11Element()).toBe(true);
-      expect(testInstance.getPrimitive11Element()).toEqual(TestData.VALID_BOOLEAN_FALSE_TYPE);
-      expect(testInstance.hasPrimitive11()).toBe(true);
-      expect(testInstance.getPrimitive11()).toEqual(TestData.VALID_BOOLEAN_FALSE);
-      expect(testInstance.hasPrimitive1xElement()).toBe(true);
-      expect(testInstance.getPrimitive1xElement()).toEqual([TestData.VALID_STRING_TYPE, TestData.VALID_STRING_TYPE_2]);
-      expect(testInstance.hasPrimitive1x()).toBe(true);
-      expect(testInstance.getPrimitive1x()).toEqual([TestData.VALID_STRING, TestData.VALID_STRING_2]);
-      expect(testInstance.hasChoice11()).toBe(true);
-      expect(testInstance.getChoice11()).toEqual(TestData.VALID_STRING_TYPE);
-      expect(testInstance.hasChoice11StringType()).toBe(true);
-      expect(testInstance.getChoice11StringType()).toEqual(TestData.VALID_STRING_TYPE);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
+      expect(testInstance.hasChoice11StringType()).toBe(false);
+      expect(testInstance.getChoice11StringType()).toBeNull();
       expect(testInstance.hasChoice11UriType()).toBe(false);
-      t = () => {
-        testInstance.getChoice11UriType();
-      };
-      expect(t).toThrow(InvalidTypeError);
-      expect(t).toThrow(
-        `DataType mismatch for TestModel.primitive.choice11[x]: Expected UriType but encountered string`,
-      );
+      expect(testInstance.getChoice11UriType()).toBeNull();
     });
   });
 
@@ -761,20 +728,6 @@ describe('TestModelPrimitiveComponent', () => {
       primitive1x: ['This is a valid string.', 'This is another valid string.'],
       choice11Uri: 'validUri',
     };
-    const INVALID_JSON = {
-      bogusField: 'bogus value',
-    };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new TestModelPrimitiveComponent();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties do not exist: TestModel.primitive.primitive11, TestModel.primitive.primitive1x, TestModel.primitive.choice11[x]`,
-      );
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModelPrimitiveComponent(null, null, null);
@@ -796,6 +749,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedBackboneElementProperties(testInstance, 2);
 
       expect(testInstance.hasPrimitive01Element()).toBe(true);
@@ -834,7 +788,7 @@ describe('TestModelPrimitiveComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: TestModelPrimitiveComponent | undefined = undefined;
+      let testInstance: TestModelPrimitiveComponent | undefined;
       testInstance = TestModelPrimitiveComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -843,16 +797,6 @@ describe('TestModelPrimitiveComponent', () => {
 
       testInstance = TestModelPrimitiveComponent.parse(undefined);
       expect(testInstance).toBeUndefined();
-    });
-
-    it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        TestModelPrimitiveComponent.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: TestModelPrimitiveComponent.primitive11, TestModelPrimitiveComponent.primitive1x, TestModelPrimitiveComponent.choice11[x]`,
-      );
     });
 
     it('should return parsed TestModelPrimitiveComponent for valid json', () => {
@@ -865,6 +809,7 @@ describe('TestModelPrimitiveComponent', () => {
         'TestModel.primitive',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance?.toJSON()).toEqual(VALID_JSON);
       expectInitializedBackboneElementProperties(testInstance, 2);
 
@@ -905,18 +850,21 @@ describe('TestModelPrimitiveComponent', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelPrimitiveComponent(TestData.INVALID_NON_STRING_TYPE, null, null);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid TestModel.primitive.primitive11; Provided value is not an instance of BooleanType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelPrimitiveComponent(TestData.INVALID_NON_STRING_TYPE_VALUE, null, null);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid TestModel.primitive.primitive11 (Invalid datatype)`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelPrimitiveComponent(null, [TestData.INVALID_STRING_TYPE], null);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -925,6 +873,7 @@ describe('TestModelPrimitiveComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelPrimitiveComponent(null, [TestData.INVALID_STRING_TYPE_VALUE], null);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -947,6 +896,7 @@ describe('TestModelPrimitiveComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelPrimitiveComponent(null, null, TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(AssertionError);
@@ -958,6 +908,7 @@ describe('TestModelPrimitiveComponent', () => {
     it('primitive01: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelPrimitiveComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive01Element(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -975,6 +926,7 @@ describe('TestModelPrimitiveComponent', () => {
     it('primitive0x: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelPrimitiveComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive0xElement([TestData.INVALID_NON_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -983,18 +935,21 @@ describe('TestModelPrimitiveComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addPrimitive0xElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid TestModel.primitive.primitive0x; Provided element is not an instance of IntegerType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive0x([TestData.INVALID_NON_STRING_TYPE_VALUE]);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid TestModel.primitive.primitive0x array item (Invalid datatype)`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addPrimitive0x(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -1004,45 +959,24 @@ describe('TestModelPrimitiveComponent', () => {
     it('primitive11: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelPrimitiveComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive11Element(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid TestModel.primitive.primitive11; Provided value is not an instance of BooleanType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive11(TestData.INVALID_NON_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid TestModel.primitive.primitive11 (Invalid datatype)`);
-
-      t = () => {
-        testInstance.setPrimitive11Element(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.primitive.primitive11 is required`);
-
-      t = () => {
-        testInstance.setPrimitive11(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.primitive.primitive11 is required`);
-
-      t = () => {
-        testInstance.setPrimitive11Element(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.primitive.primitive11 is required`);
-
-      t = () => {
-        testInstance.setPrimitive11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.primitive.primitive11 is required`);
     });
 
     it('primitive1x: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelPrimitiveComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive1xElement([TestData.INVALID_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1051,69 +985,36 @@ describe('TestModelPrimitiveComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addPrimitive1xElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow('Invalid TestModel.primitive.primitive1x; Provided element is not an instance of StringType.');
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive1x([TestData.INVALID_STRING_TYPE_VALUE]);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow('Invalid TestModel.primitive.primitive1x array item (12345)');
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addPrimitive1x(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow('Invalid TestModel.primitive.primitive1x array item (12345)');
-
-      t = () => {
-        testInstance.setPrimitive1xElement(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-
-      t = () => {
-        testInstance.setPrimitive1x(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-
-      t = () => {
-        testInstance.setPrimitive1xElement(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
-
-      t = () => {
-        testInstance.setPrimitive1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.primitive.primitive1x is required');
     });
 
     it('choice11: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelPrimitiveComponent();
-      let t = () => {
+      const t = () => {
         testInstance.setChoice11(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(
         `ChoiceDataTypes decorator on setChoice11 (TestModel.primitive.choice11[x]) expects the 'value' argument type (MockComplexDataType) to be a supported DataType`,
       );
-
-      t = () => {
-        testInstance.setChoice11(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.primitive.choice11[x] is required`);
-
-      t = () => {
-        testInstance.setChoice11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.primitive.choice11[x] is required`);
     });
   });
 });

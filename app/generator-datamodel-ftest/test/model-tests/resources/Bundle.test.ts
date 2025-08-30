@@ -21,7 +21,6 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
 import {
   CodeType,
   EnumCodeType,
@@ -86,11 +85,8 @@ describe('Bundle', () => {
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('The following required properties do not exist: Bundle.type');
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedResourceProperties(testInstance);
 
       expect(testInstance.hasIdentifier()).toBe(false);
@@ -122,6 +118,7 @@ describe('Bundle', () => {
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedResourceProperties(testInstance);
 
@@ -227,6 +224,7 @@ describe('Bundle', () => {
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedResourceProperties(testInstance);
 
       expect(testInstance.hasIdentifier()).toBe(true);
@@ -257,11 +255,7 @@ describe('Bundle', () => {
       undefineResourceProperties(testModel);
 
       testModel.setIdentifier(TestData.UNDEFINED_VALUE);
-      const t = () => {
-        testModel.setTypeEnumType(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.type is required');
+      testModel.setTypeEnumType(TestData.UNDEFINED_VALUE);
       testModel.setTimestamp(TestData.UNDEFINED_VALUE);
       testModel.setTotal(TestData.UNDEFINED_VALUE);
       testModel.setLink(TestData.UNDEFINED_VALUE);
@@ -271,18 +265,19 @@ describe('Bundle', () => {
       testInstance = testModel.copy();
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedResourceProperties(testInstance);
 
       expect(testInstance.hasIdentifier()).toBe(false);
       expect(testInstance.getIdentifier()).toEqual(new Identifier());
-      expect(testInstance.hasTypeEnumType()).toBe(true);
-      expect(testInstance.getTypeEnumType()).toEqual(VALID_BUNDLETYPE_BATCH_ENUMCODE);
-      expect(testInstance.hasTypeElement()).toBe(true);
-      expect(testInstance.getTypeElement()).toEqual(VALID_BUNDLETYPE_BATCH_ENUMCODE as CodeType);
-      expect(testInstance.hasType()).toBe(true);
-      expect(testInstance.getType()).toStrictEqual(TestData.VALID_BUNDLETYPE_BATCH);
+      expect(testInstance.hasTypeEnumType()).toBe(false);
+      expect(testInstance.getTypeEnumType()).toBeNull();
+      expect(testInstance.hasTypeElement()).toBe(false);
+      expect(testInstance.getTypeElement()).toBeNull();
+      expect(testInstance.hasType()).toBe(false);
+      expect(testInstance.getType()).toBeNull();
       expect(testInstance.hasTimestampElement()).toBe(false);
       expect(testInstance.getTimestampElement()).toEqual(new InstantType());
       expect(testInstance.hasTimestamp()).toBe(false);
@@ -314,6 +309,7 @@ describe('Bundle', () => {
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedResourceProperties(testInstance);
 
@@ -354,6 +350,7 @@ describe('Bundle', () => {
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetResourceProperties(testInstance);
 
@@ -385,11 +382,7 @@ describe('Bundle', () => {
       undefineResourceProperties(testInstance);
 
       testInstance.setIdentifier(TestData.UNDEFINED_VALUE);
-      const t = () => {
-        testInstance.setType(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.type is required');
+      testInstance.setType(TestData.UNDEFINED_VALUE);
       testInstance.setTimestamp(TestData.UNDEFINED_VALUE);
       testInstance.setTotal(TestData.UNDEFINED_VALUE);
       testInstance.setLink(TestData.UNDEFINED_VALUE);
@@ -397,18 +390,19 @@ describe('Bundle', () => {
       testInstance.setSignature(TestData.UNDEFINED_VALUE);
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedResourceProperties(testInstance);
 
       expect(testInstance.hasIdentifier()).toBe(false);
       expect(testInstance.getIdentifier()).toEqual(new Identifier());
-      expect(testInstance.hasTypeEnumType()).toBe(true);
-      expect(testInstance.getTypeEnumType()).toEqual(VALID_BUNDLETYPE_COLLECTION_ENUMCODE);
-      expect(testInstance.hasTypeElement()).toBe(true);
-      expect(testInstance.getTypeElement()).toEqual(VALID_BUNDLETYPE_COLLECTION_ENUMCODE as CodeType);
-      expect(testInstance.hasType()).toBe(true);
-      expect(testInstance.getType()).toStrictEqual(TestData.VALID_BUNDLETYPE_COLLECTION);
+      expect(testInstance.hasTypeEnumType()).toBe(false);
+      expect(testInstance.getTypeEnumType()).toBeNull();
+      expect(testInstance.hasTypeElement()).toBe(false);
+      expect(testInstance.getTypeElement()).toBeNull();
+      expect(testInstance.hasType()).toBe(false);
+      expect(testInstance.getType()).toBeNull();
       expect(testInstance.hasTimestampElement()).toBe(false);
       expect(testInstance.getTimestampElement()).toEqual(new InstantType());
       expect(testInstance.hasTimestamp()).toBe(false);
@@ -440,6 +434,7 @@ describe('Bundle', () => {
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedResourceProperties(testInstance);
 
@@ -480,6 +475,7 @@ describe('Bundle', () => {
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetResourceProperties(testInstance);
 
@@ -511,13 +507,7 @@ describe('Bundle', () => {
       undefineResourceProperties(testInstance);
 
       testInstance.setIdentifier(TestData.UNDEFINED_VALUE);
-      const t = () => {
-        testInstance.setTypeElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.type is required');
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.type is required');
+      testInstance.setTypeElement(TestData.UNDEFINED_VALUE);
       testInstance.setTimestampElement(TestData.UNDEFINED_VALUE);
       testInstance.setTotalElement(TestData.UNDEFINED_VALUE);
       testInstance.setLink(TestData.UNDEFINED_VALUE);
@@ -525,18 +515,19 @@ describe('Bundle', () => {
       testInstance.setSignature(TestData.UNDEFINED_VALUE);
 
       expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedResourceProperties(testInstance);
 
       expect(testInstance.hasIdentifier()).toBe(false);
       expect(testInstance.getIdentifier()).toEqual(new Identifier());
-      expect(testInstance.hasTypeEnumType()).toBe(true);
-      expect(testInstance.getTypeEnumType()).toEqual(VALID_BUNDLETYPE_COLLECTION_ENUMCODE);
-      expect(testInstance.hasTypeElement()).toBe(true);
-      expect(testInstance.getTypeElement()).toEqual(VALID_BUNDLETYPE_COLLECTION_ENUMCODE as CodeType);
-      expect(testInstance.hasType()).toBe(true);
-      expect(testInstance.getType()).toStrictEqual(TestData.VALID_BUNDLETYPE_COLLECTION);
+      expect(testInstance.hasTypeEnumType()).toBe(false);
+      expect(testInstance.getTypeEnumType()).toBeNull();
+      expect(testInstance.hasTypeElement()).toBe(false);
+      expect(testInstance.getTypeElement()).toBeNull();
+      expect(testInstance.hasType()).toBe(false);
+      expect(testInstance.getType()).toBeNull();
       expect(testInstance.hasTimestampElement()).toBe(false);
       expect(testInstance.getTimestampElement()).toEqual(new InstantType());
       expect(testInstance.hasTimestamp()).toBe(false);
@@ -606,22 +597,9 @@ describe('Bundle', () => {
         },
       },
     };
-    const INVALID_BUNDLE_JSON = {
-      resourceType: 'Bundle',
-      bogusField: 'bogus value',
-    };
     const INVALID_JSON = {
       bogusField: 'bogus value',
     };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new Bundle();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties do not exist: Bundle.type`);
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new Bundle();
@@ -667,7 +645,7 @@ describe('Bundle', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: Bundle | undefined = undefined;
+      let testInstance: Bundle | undefined;
       testInstance = Bundle.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -679,13 +657,7 @@ describe('Bundle', () => {
     });
 
     it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      let t = () => {
-        Bundle.parse(INVALID_BUNDLE_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties must be included in the provided JSON: Bundle.type`);
-
-      t = () => {
+      const t = () => {
         Bundle.parse(INVALID_JSON);
       };
       expect(t).toThrow(FhirError);

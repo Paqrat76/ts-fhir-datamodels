@@ -21,9 +21,8 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
 import {
-  FhirError,
+  CodeType,
   IBackboneElement,
   InstantType,
   InvalidTypeError,
@@ -82,15 +81,12 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow('The following required properties do not exist: Bundle.entry.response.status');
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
       expect(testInstance.hasStatusElement()).toBe(false);
-      expect(testInstance.getStatusElement()).toBeNull();
+      expect(testInstance.getStatusElement()).toEqual(new StringType());
       expect(testInstance.hasStatus()).toBe(false);
       expect(testInstance.getStatus()).toBeNull();
       expect(testInstance.hasLocationElement()).toBe(false);
@@ -119,6 +115,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -150,6 +147,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedElementProperties(testInstance);
 
@@ -192,6 +190,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -218,12 +217,7 @@ describe('BundleEntryResponseComponent', () => {
 
       undefineBackboneElementProperties(testModel);
 
-      const t = () => {
-        testModel.setStatusElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.response.status is required');
-
+      testModel.setStatusElement(TestData.UNDEFINED_VALUE);
       testModel.setLocationElement(TestData.UNDEFINED_VALUE);
       testModel.setEtagElement(TestData.UNDEFINED_VALUE);
       testModel.setLastModifiedElement(TestData.UNDEFINED_VALUE);
@@ -237,14 +231,15 @@ describe('BundleEntryResponseComponent', () => {
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
-      expect(testInstance.hasStatusElement()).toBe(true);
-      expect(testInstance.getStatusElement()).toEqual(HTTP_STATUS_404_TYPE);
-      expect(testInstance.hasStatus()).toBe(true);
-      expect(testInstance.getStatus()).toEqual(HTTP_STATUS_404);
+      expect(testInstance.hasStatusElement()).toBe(false);
+      expect(testInstance.getStatusElement()).toEqual(new CodeType());
+      expect(testInstance.hasStatus()).toBe(false);
+      expect(testInstance.getStatus()).toBeNull();
       expect(testInstance.hasLocationElement()).toBe(false);
       expect(testInstance.getLocationElement()).toEqual(new UriType());
       expect(testInstance.hasLocation()).toBe(false);
@@ -279,6 +274,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -318,6 +314,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -344,12 +341,7 @@ describe('BundleEntryResponseComponent', () => {
 
       undefineBackboneElementProperties(testInstance);
 
-      const t = () => {
-        testInstance.setStatus(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.response.status is required');
-
+      testInstance.setStatus(TestData.UNDEFINED_VALUE);
       testInstance.setLocation(TestData.UNDEFINED_VALUE);
       testInstance.setEtag(TestData.UNDEFINED_VALUE);
       testInstance.setLastModified(TestData.UNDEFINED_VALUE);
@@ -361,14 +353,15 @@ describe('BundleEntryResponseComponent', () => {
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
-      expect(testInstance.hasStatusElement()).toBe(true);
-      expect(testInstance.getStatusElement()).toEqual(HTTP_STATUS_400_TYPE);
-      expect(testInstance.hasStatus()).toBe(true);
-      expect(testInstance.getStatus()).toEqual(HTTP_STATUS_400);
+      expect(testInstance.hasStatusElement()).toBe(false);
+      expect(testInstance.getStatusElement()).toEqual(new CodeType());
+      expect(testInstance.hasStatus()).toBe(false);
+      expect(testInstance.getStatus()).toBeNull();
       expect(testInstance.hasLocationElement()).toBe(false);
       expect(testInstance.getLocationElement()).toEqual(new UriType());
       expect(testInstance.hasLocation()).toBe(false);
@@ -403,6 +396,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedElementProperties(testInstance, 1);
 
@@ -442,6 +436,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetElementProperties(testInstance);
 
@@ -468,12 +463,7 @@ describe('BundleEntryResponseComponent', () => {
 
       undefineBackboneElementProperties(testInstance);
 
-      const t = () => {
-        testInstance.setStatusElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('Bundle.entry.response.status is required');
-
+      testInstance.setStatusElement(TestData.UNDEFINED_VALUE);
       testInstance.setLocationElement(TestData.UNDEFINED_VALUE);
       testInstance.setEtagElement(TestData.UNDEFINED_VALUE);
       testInstance.setLastModifiedElement(TestData.UNDEFINED_VALUE);
@@ -485,14 +475,15 @@ describe('BundleEntryResponseComponent', () => {
         'BundleEntryResponseComponent',
         'Bundle.entry.response',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedElementProperties(testInstance);
 
-      expect(testInstance.hasStatusElement()).toBe(true);
-      expect(testInstance.getStatusElement()).toEqual(HTTP_STATUS_400_TYPE);
-      expect(testInstance.hasStatus()).toBe(true);
-      expect(testInstance.getStatus()).toEqual(HTTP_STATUS_400);
+      expect(testInstance.hasStatusElement()).toBe(false);
+      expect(testInstance.getStatusElement()).toEqual(new CodeType());
+      expect(testInstance.hasStatus()).toBe(false);
+      expect(testInstance.getStatus()).toBeNull();
       expect(testInstance.hasLocationElement()).toBe(false);
       expect(testInstance.getLocationElement()).toEqual(new UriType());
       expect(testInstance.hasLocation()).toBe(false);
@@ -576,18 +567,6 @@ describe('BundleEntryResponseComponent', () => {
         ],
       },
     };
-    const INVALID_JSON = {
-      bogusField: 'bogus value',
-    };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new BundleEntryResponseComponent();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(`The following required properties do not exist: Bundle.entry.response.status`);
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleEntryResponseComponent();
@@ -607,6 +586,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedElementProperties(testInstance, 2);
 
       expect(testInstance.hasStatusElement()).toBe(true);
@@ -632,7 +612,7 @@ describe('BundleEntryResponseComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: BundleEntryResponseComponent | undefined = undefined;
+      let testInstance: BundleEntryResponseComponent | undefined;
       testInstance = BundleEntryResponseComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -641,16 +621,6 @@ describe('BundleEntryResponseComponent', () => {
 
       testInstance = BundleEntryResponseComponent.parse(undefined);
       expect(testInstance).toBeUndefined();
-    });
-
-    it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        BundleEntryResponseComponent.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: BundleEntryResponseComponent.status`,
-      );
     });
 
     it('should return parsed Bundle for valid json', () => {
@@ -663,6 +633,7 @@ describe('BundleEntryResponseComponent', () => {
         'Bundle.entry.response',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedElementProperties(testInstance, 2);
 
@@ -690,18 +661,21 @@ describe('BundleEntryResponseComponent', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleEntryResponseComponent(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.response.status ([object Object])`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleEntryResponseComponent(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.response.status; Provided value is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new BundleEntryResponseComponent(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -711,33 +685,24 @@ describe('BundleEntryResponseComponent', () => {
     it('status: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryResponseComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setStatusElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.response.status; Provided value is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setStatus(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.response.status (12345)`);
-
-      t = () => {
-        testInstance.setStatusElement(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.response.status is required`);
-
-      t = () => {
-        testInstance.setStatus(TestData.UNDEFINED_VALUE);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`Bundle.entry.response.status is required`);
     });
 
     it('location: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryResponseComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setLocationElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -753,12 +718,14 @@ describe('BundleEntryResponseComponent', () => {
     it('etag: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryResponseComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEtagElement(TestData.INVALID_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
       expect(t).toThrow(`Invalid Bundle.entry.response.etag; Provided element is not an instance of StringType.`);
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEtag(TestData.INVALID_STRING_TYPE_VALUE);
       };
       expect(t).toThrow(PrimitiveTypeError);
@@ -768,6 +735,7 @@ describe('BundleEntryResponseComponent', () => {
     it('lastModified: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryResponseComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setLastModifiedElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -785,6 +753,7 @@ describe('BundleEntryResponseComponent', () => {
     it('outcome: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new BundleEntryResponseComponent();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setOutcome(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);

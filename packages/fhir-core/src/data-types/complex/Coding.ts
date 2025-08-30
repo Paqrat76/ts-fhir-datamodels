@@ -21,12 +21,10 @@
  *
  */
 
-import { strict as assert } from 'node:assert';
 import { DataType, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
 import { IDataType } from '../../base-models/library-interfaces';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
-import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { BooleanType } from '../primitive/BooleanType';
 import { CodeType } from '../primitive/CodeType';
 import {
@@ -140,7 +138,6 @@ export class Coding extends DataType implements IDataType {
       instance.setUserSelectedElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

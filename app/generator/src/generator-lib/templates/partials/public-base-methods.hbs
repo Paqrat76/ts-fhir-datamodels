@@ -17,6 +17,18 @@
 {{/each}}
     );
   }
+{{#if hasRequiredFields}}
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      {{#each elementDefinitions}}{{#if isRequiredItem}}this.{{this.fieldIdentifierName}}, {{/if}}{{/each}}
+    );
+  }
+{{/if}}
 
   /**
    * Creates a copy of the current instance.

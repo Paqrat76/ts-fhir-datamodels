@@ -6,16 +6,6 @@
    * @param sourceJson - JSON representing FHIR `{{componentName}}`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to {{componentName}}
    * @returns {{componentName}} data model or undefined for `{{componentName}}`
-{{#if hasRequiredFields}}
-   * @throws {@link FhirError} if the provided JSON is missing required properties
-{{else}}
-{{#if isComponentResource}}
-   * @throws {@link FhirError} if the provided JSON is missing required properties
-{{/if}}
-{{#if isComponentDomainResource}}
-   * @throws {@link FhirError} if the provided JSON is missing required properties
-{{/if}}
-{{/if}}
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public {{staticParseKeywords isComponentResource isComponentDomainResource}} parse(sourceJson: JSON.Value, optSourceField?: string): {{componentName}} | undefined {
@@ -61,10 +51,6 @@
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
 {{/if}}
-{{#if hasRequiredFields}}
-    const missingReqdProperties: string[] = [];
-
-{{/if}}
 {{#each elementDefinitions}}
 {{#if this.isBackboneType}}
 {{#if this.isOptionalItem}}
@@ -84,12 +70,12 @@
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const component: {{this.type.code}} | undefined = {{this.type.code}}.parse(classJsonObj[fieldName]!, sourceField);
       if (component === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.set{{upperFirst this.fieldName}}(null);
       } else {
         instance.set{{upperFirst this.fieldName}}(component);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -117,13 +103,13 @@
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: {{this.type.code}} | undefined = {{this.type.code}}.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.set{{upperFirst this.fieldName}}(null);
         } else {
           instance.add{{upperFirst this.fieldName}}(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -151,7 +137,7 @@
       classMetadata,
     );
     if ({{this.fieldIdentifierName}} === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     } else {
       instance.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
@@ -176,12 +162,12 @@
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.set{{upperFirst this.fieldName}}(null);
       } else {
         instance.set{{upperFirst this.fieldName}}(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -209,13 +195,13 @@
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.set{{upperFirst this.fieldName}}(null);
         } else {
           instance.add{{upperFirst this.fieldName}}(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -240,12 +226,12 @@
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.set{{upperFirst this.fieldName}}(null);
       } else {
         instance.set{{upperFirst this.fieldName}}Element(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -280,16 +266,16 @@
         fieldName,
         primitiveJsonType,
       );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
         const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.set{{upperFirst this.fieldName}}(null);
         } else {
           instance.add{{upperFirst this.fieldName}}Element(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -314,12 +300,12 @@
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: {{this.type.code}} | undefined = fhirParser.parse{{this.type.code}}(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.set{{upperFirst this.fieldName}}(null);
       } else {
         instance.set{{upperFirst this.fieldName}}Element(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -354,16 +340,16 @@
         fieldName,
         primitiveJsonType,
       );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
         const datatype: {{this.type.code}} | undefined = fhirParser.parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.set{{upperFirst this.fieldName}}(null);
         } else {
           instance.add{{upperFirst this.fieldName}}Element(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -386,12 +372,12 @@
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.set{{upperFirst this.fieldName}}(null);
       } else {
         instance.set{{upperFirst this.fieldName}}(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -419,13 +405,13 @@
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.set{{upperFirst this.fieldName}}(null);
         } else {
           instance.add{{upperFirst this.fieldName}}(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.set{{upperFirst this.fieldName}}(null);
     }
 
 {{/if}}
@@ -442,13 +428,5 @@
 {{/if}}
 {{/if}}
 {{/each}}
-{{#if hasRequiredFields}}
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-{{/if}}
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }

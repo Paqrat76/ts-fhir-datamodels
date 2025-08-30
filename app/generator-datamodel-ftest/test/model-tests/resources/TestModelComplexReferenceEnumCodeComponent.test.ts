@@ -21,12 +21,10 @@
  *
  */
 
-import { AssertionError } from 'node:assert';
 import {
   CodeType,
   EnumCodeType,
   fhirCode,
-  FhirError,
   IBackboneElement,
   InvalidCodeError,
   InvalidTypeError,
@@ -96,13 +94,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(true);
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        'The following required properties do not exist: TestModel.complex.reference.enumCode.enumCode11, TestModel.complex.reference.enumCode.enumCode1x',
-      );
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasEnumCode01EnumType()).toBe(false);
@@ -147,6 +140,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
@@ -190,6 +184,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
@@ -235,6 +230,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
@@ -290,6 +286,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -330,16 +327,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testModel.setEnumCode01EnumType(TestData.UNDEFINED_VALUE);
       testModel.setEnumCode0xEnumType(TestData.UNDEFINED_VALUE);
-      let t = () => {
-        testModel.setEnumCode11EnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode11');
-      t = () => {
-        testModel.setEnumCode1xEnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
+      testModel.setEnumCode11EnumType(TestData.UNDEFINED_VALUE);
+      testModel.setEnumCode1xEnumType(TestData.UNDEFINED_VALUE);
       testModel.setPrimitive(TestData.UNDEFINED_VALUE);
 
       testInstance = testModel.copy();
@@ -350,8 +339,9 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasEnumCode01EnumType()).toBe(false);
@@ -368,19 +358,19 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(testInstance.hasEnumCode0x()).toBe(false);
       expect(testInstance.getEnumCode0x()).toEqual([] as fhirCode[]);
 
-      expect(testInstance.hasEnumCode11EnumType()).toBe(true);
-      expect(testInstance.getEnumCode11EnumType()).toEqual(enumCode11);
-      expect(testInstance.hasEnumCode11Element()).toBe(true);
-      expect(testInstance.getEnumCode11Element()).toEqual(enumCode11 as CodeType);
-      expect(testInstance.hasEnumCode11()).toBe(true);
-      expect(testInstance.getEnumCode11()).toStrictEqual(TestData.VALID_CONTRIBUTOR_AUTHOR);
+      expect(testInstance.hasEnumCode11EnumType()).toBe(false);
+      expect(testInstance.getEnumCode11EnumType()).toBeNull();
+      expect(testInstance.hasEnumCode11Element()).toBe(false);
+      expect(testInstance.getEnumCode11Element()).toBeNull();
+      expect(testInstance.hasEnumCode11()).toBe(false);
+      expect(testInstance.getEnumCode11()).toBeNull();
 
-      expect(testInstance.hasEnumCode1xEnumType()).toBe(true);
-      expect(testInstance.getEnumCode1xEnumType()).toEqual([enumCode1x]);
-      expect(testInstance.hasEnumCode1xElement()).toBe(true);
-      expect(testInstance.getEnumCode1xElement()).toEqual([enumCode1x as CodeType]);
-      expect(testInstance.hasEnumCode1x()).toBe(true);
-      expect(testInstance.getEnumCode1x()).toEqual([TestData.VALID_CONSENT_DRAFT]);
+      expect(testInstance.hasEnumCode1xEnumType()).toBe(false);
+      expect(testInstance.getEnumCode1xEnumType()).toEqual([] as EnumCodeType[]);
+      expect(testInstance.hasEnumCode1xElement()).toBe(false);
+      expect(testInstance.getEnumCode1xElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasEnumCode1x()).toBe(false);
+      expect(testInstance.getEnumCode1x()).toEqual([] as fhirCode[]);
 
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual(new TestModelPrimitiveComponent());
@@ -404,6 +394,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -455,6 +446,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetBackboneElementProperties(testInstance);
 
@@ -498,16 +490,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testInstance.setEnumCode01EnumType(TestData.UNDEFINED_VALUE);
       testInstance.setEnumCode0xEnumType(TestData.UNDEFINED_VALUE);
-      let t = () => {
-        testInstance.setEnumCode11EnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode11 is required');
-      t = () => {
-        testInstance.setEnumCode1xEnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
+      testInstance.setEnumCode11EnumType(TestData.UNDEFINED_VALUE);
+      testInstance.setEnumCode1xEnumType(TestData.UNDEFINED_VALUE);
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
 
       expectBackboneElementBase(
@@ -516,8 +500,9 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasEnumCode01EnumType()).toBe(false);
@@ -534,19 +519,19 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(testInstance.hasEnumCode0x()).toBe(false);
       expect(testInstance.getEnumCode0x()).toEqual([] as fhirCode[]);
 
-      expect(testInstance.hasEnumCode11EnumType()).toBe(true);
-      expect(testInstance.getEnumCode11EnumType()).toEqual(enumCode11_2);
-      expect(testInstance.hasEnumCode11Element()).toBe(true);
-      expect(testInstance.getEnumCode11Element()).toEqual(enumCode11_2 as CodeType);
-      expect(testInstance.hasEnumCode11()).toBe(true);
-      expect(testInstance.getEnumCode11()).toStrictEqual(TestData.VALID_CONTRIBUTOR_REVIEWER);
+      expect(testInstance.hasEnumCode11EnumType()).toBe(false);
+      expect(testInstance.getEnumCode11EnumType()).toBeNull();
+      expect(testInstance.hasEnumCode11Element()).toBe(false);
+      expect(testInstance.getEnumCode11Element()).toBeNull();
+      expect(testInstance.hasEnumCode11()).toBe(false);
+      expect(testInstance.getEnumCode11()).toBeNull();
 
-      expect(testInstance.hasEnumCode1xEnumType()).toBe(true);
-      expect(testInstance.getEnumCode1xEnumType()).toEqual([enumCode1x, enumCode1x_2]);
-      expect(testInstance.hasEnumCode1xElement()).toBe(true);
-      expect(testInstance.getEnumCode1xElement()).toEqual([enumCode1x as CodeType, enumCode1x_2 as CodeType]);
-      expect(testInstance.hasEnumCode1x()).toBe(true);
-      expect(testInstance.getEnumCode1x()).toEqual([TestData.VALID_CONSENT_DRAFT, TestData.VALID_CONSENT_ACTIVE]);
+      expect(testInstance.hasEnumCode1xEnumType()).toBe(false);
+      expect(testInstance.getEnumCode1xEnumType()).toEqual([] as EnumCodeType[]);
+      expect(testInstance.hasEnumCode1xElement()).toBe(false);
+      expect(testInstance.getEnumCode1xElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasEnumCode1x()).toBe(false);
+      expect(testInstance.getEnumCode1x()).toEqual([] as fhirCode[]);
 
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual(new TestModelPrimitiveComponent());
@@ -570,6 +555,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -621,6 +607,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetBackboneElementProperties(testInstance);
 
@@ -664,16 +651,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testInstance.setEnumCode01Element(TestData.UNDEFINED_VALUE);
       testInstance.setEnumCode0xElement(TestData.UNDEFINED_VALUE);
-      let t = () => {
-        testInstance.setEnumCode11Element(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode11 is required');
-      t = () => {
-        testInstance.setEnumCode1xElement(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
+      testInstance.setEnumCode11Element(TestData.UNDEFINED_VALUE);
+      testInstance.setEnumCode1xElement(TestData.UNDEFINED_VALUE);
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
 
       expectBackboneElementBase(
@@ -682,8 +661,9 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasEnumCode01EnumType()).toBe(false);
@@ -700,19 +680,19 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(testInstance.hasEnumCode0x()).toBe(false);
       expect(testInstance.getEnumCode0x()).toEqual([] as fhirCode[]);
 
-      expect(testInstance.hasEnumCode11EnumType()).toBe(true);
-      expect(testInstance.getEnumCode11EnumType()).toEqual(enumCode11_2);
-      expect(testInstance.hasEnumCode11Element()).toBe(true);
-      expect(testInstance.getEnumCode11Element()).toEqual(enumCode11_2 as CodeType);
-      expect(testInstance.hasEnumCode11()).toBe(true);
-      expect(testInstance.getEnumCode11()).toStrictEqual(TestData.VALID_CONTRIBUTOR_REVIEWER);
+      expect(testInstance.hasEnumCode11EnumType()).toBe(false);
+      expect(testInstance.getEnumCode11EnumType()).toBeNull();
+      expect(testInstance.hasEnumCode11Element()).toBe(false);
+      expect(testInstance.getEnumCode11Element()).toBeNull();
+      expect(testInstance.hasEnumCode11()).toBe(false);
+      expect(testInstance.getEnumCode11()).toBeNull();
 
-      expect(testInstance.hasEnumCode1xEnumType()).toBe(true);
-      expect(testInstance.getEnumCode1xEnumType()).toEqual([enumCode1x, enumCode1x_2]);
-      expect(testInstance.hasEnumCode1xElement()).toBe(true);
-      expect(testInstance.getEnumCode1xElement()).toEqual([enumCode1x as CodeType, enumCode1x_2 as CodeType]);
-      expect(testInstance.hasEnumCode1x()).toBe(true);
-      expect(testInstance.getEnumCode1x()).toEqual([TestData.VALID_CONSENT_DRAFT, TestData.VALID_CONSENT_ACTIVE]);
+      expect(testInstance.hasEnumCode1xEnumType()).toBe(false);
+      expect(testInstance.getEnumCode1xEnumType()).toEqual([] as EnumCodeType[]);
+      expect(testInstance.hasEnumCode1xElement()).toBe(false);
+      expect(testInstance.getEnumCode1xElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasEnumCode1x()).toBe(false);
+      expect(testInstance.getEnumCode1x()).toEqual([] as fhirCode[]);
 
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual(new TestModelPrimitiveComponent());
@@ -736,6 +716,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedBackboneElementProperties(testInstance, 1);
 
@@ -787,6 +768,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetBackboneElementProperties(testInstance);
 
@@ -830,16 +812,8 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testInstance.setEnumCode01(TestData.UNDEFINED_VALUE);
       testInstance.setEnumCode0x(TestData.UNDEFINED_VALUE);
-      let t = () => {
-        testInstance.setEnumCode11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode11 is required');
-      t = () => {
-        testInstance.setEnumCode1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow('TestModel.complex.reference.enumCode.enumCode1x is required');
+      testInstance.setEnumCode11(TestData.UNDEFINED_VALUE);
+      testInstance.setEnumCode1x(TestData.UNDEFINED_VALUE);
       testInstance.setPrimitive(TestData.UNDEFINED_VALUE);
 
       expectBackboneElementBase(
@@ -848,8 +822,9 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModelComplexReferenceEnumCodeComponent',
         'TestModel.complex.reference.enumCode',
       );
-      expect(testInstance.isEmpty()).toBe(false);
-      expect(testInstance.toJSON()).toBeDefined();
+      expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedBackboneElementProperties(testInstance);
 
       expect(testInstance.hasEnumCode01EnumType()).toBe(false);
@@ -866,19 +841,19 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       expect(testInstance.hasEnumCode0x()).toBe(false);
       expect(testInstance.getEnumCode0x()).toEqual([] as fhirCode[]);
 
-      expect(testInstance.hasEnumCode11EnumType()).toBe(true);
-      expect(testInstance.getEnumCode11EnumType()).toEqual(enumCode11_2);
-      expect(testInstance.hasEnumCode11Element()).toBe(true);
-      expect(testInstance.getEnumCode11Element()).toEqual(enumCode11_2 as CodeType);
-      expect(testInstance.hasEnumCode11()).toBe(true);
-      expect(testInstance.getEnumCode11()).toStrictEqual(TestData.VALID_CONTRIBUTOR_REVIEWER);
+      expect(testInstance.hasEnumCode11EnumType()).toBe(false);
+      expect(testInstance.getEnumCode11EnumType()).toBeNull();
+      expect(testInstance.hasEnumCode11Element()).toBe(false);
+      expect(testInstance.getEnumCode11Element()).toBeNull();
+      expect(testInstance.hasEnumCode11()).toBe(false);
+      expect(testInstance.getEnumCode11()).toBeNull();
 
-      expect(testInstance.hasEnumCode1xEnumType()).toBe(true);
-      expect(testInstance.getEnumCode1xEnumType()).toEqual([enumCode1x, enumCode1x_2]);
-      expect(testInstance.hasEnumCode1xElement()).toBe(true);
-      expect(testInstance.getEnumCode1xElement()).toEqual([enumCode1x as CodeType, enumCode1x_2 as CodeType]);
-      expect(testInstance.hasEnumCode1x()).toBe(true);
-      expect(testInstance.getEnumCode1x()).toEqual([TestData.VALID_CONSENT_DRAFT, TestData.VALID_CONSENT_ACTIVE]);
+      expect(testInstance.hasEnumCode1xEnumType()).toBe(false);
+      expect(testInstance.getEnumCode1xEnumType()).toEqual([] as EnumCodeType[]);
+      expect(testInstance.hasEnumCode1xElement()).toBe(false);
+      expect(testInstance.getEnumCode1xElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasEnumCode1x()).toBe(false);
+      expect(testInstance.getEnumCode1x()).toEqual([] as fhirCode[]);
 
       expect(testInstance.hasPrimitive()).toBe(false);
       expect(testInstance.getPrimitive()).toEqual(new TestModelPrimitiveComponent());
@@ -933,20 +908,6 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         choice11Uri: 'validUri',
       },
     };
-    const INVALID_JSON = {
-      bogusField: 'bogus value',
-    };
-
-    it('should throw FhirError from toJSON() when instantiated with missing required properties', () => {
-      const testInstance = new TestModelComplexReferenceEnumCodeComponent();
-      const t = () => {
-        testInstance.toJSON();
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties do not exist: TestModel.complex.reference.enumCode.enumCode11, TestModel.complex.reference.enumCode.enumCode1x`,
-      );
-    });
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
@@ -966,6 +927,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expectInitializedBackboneElementProperties(testInstance, 2);
 
       expect(testInstance.hasEnumCode01EnumType()).toBe(true);
@@ -1003,7 +965,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: TestModelComplexReferenceEnumCodeComponent | undefined = undefined;
+      let testInstance: TestModelComplexReferenceEnumCodeComponent | undefined;
       testInstance = TestModelComplexReferenceEnumCodeComponent.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -1012,16 +974,6 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
 
       testInstance = TestModelComplexReferenceEnumCodeComponent.parse(undefined);
       expect(testInstance).toBeUndefined();
-    });
-
-    it('should throw FhirError from parse() when JSON is missing required properties', () => {
-      const t = () => {
-        TestModelComplexReferenceEnumCodeComponent.parse(INVALID_JSON);
-      };
-      expect(t).toThrow(FhirError);
-      expect(t).toThrow(
-        `The following required properties must be included in the provided JSON: TestModelComplexReferenceEnumCodeComponent.enumCode11, TestModelComplexReferenceEnumCodeComponent.enumCode1x`,
-      );
     });
 
     it('should return parsed TestModelComplexComponent for valid json', () => {
@@ -1035,6 +987,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         'TestModel.complex.reference.enumCode',
       );
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
       expectInitializedBackboneElementProperties(testInstance, 2);
 
@@ -1074,6 +1027,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
   describe('Type Assertion Tests', () => {
     it('constructor: should throw appropriate errors when instantiated with an invalid required data elements', () => {
       let t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelComplexReferenceEnumCodeComponent(VALID_MOCK_COMPLEX_DATATYPE, null);
       };
       expect(t).toThrow(InvalidCodeError);
@@ -1090,6 +1044,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         new TestModelComplexReferenceEnumCodeComponent(null, [VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidCodeError);
@@ -1109,6 +1064,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
     it('enumCode01: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode01EnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1117,6 +1073,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode01Element(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1142,6 +1099,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
     it('enumCode0x: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode0xEnumType([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1150,6 +1108,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addEnumCode0xEnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1158,6 +1117,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode0xElement([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1166,6 +1126,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addEnumCode0xElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1205,6 +1166,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
     it('enumCode11: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode11EnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1213,6 +1175,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode11Element(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1231,47 +1194,12 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       };
       expect(t).toThrow(InvalidCodeError);
       expect(t).toThrow(`Unknown ContributorTypeEnum 'code' value 'validUri'`);
-
-      t = () => {
-        testInstance.setEnumCode11EnumType(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode11 is required`);
-
-      t = () => {
-        testInstance.setEnumCode11EnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode11 is required`);
-
-      t = () => {
-        testInstance.setEnumCode11Element(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode11 is required`);
-
-      t = () => {
-        testInstance.setEnumCode11Element(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode11 is required`);
-
-      t = () => {
-        testInstance.setEnumCode11(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode11 is required`);
-
-      t = () => {
-        testInstance.setEnumCode11(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode11 is required`);
     });
 
     it('enumCode1x: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode1xEnumType([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1279,6 +1207,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
         `Invalid TestModel.complex.reference.enumCode.enumCode1x; Provided instance array has an element that is not an instance of ConsentStateCodesEnum.`,
       );
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addEnumCode1xEnumType(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1287,6 +1216,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEnumCode1xElement([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1295,6 +1225,7 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addEnumCode1xElement(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -1329,47 +1260,12 @@ describe('TestModelComplexReferenceEnumCodeComponent', () => {
       };
       expect(t).toThrow(InvalidCodeError);
       expect(t).toThrow(`Unknown ConsentStateCodesEnum 'code' value 'validUri'`);
-
-      t = () => {
-        testInstance.setEnumCode1xEnumType(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode1x is required`);
-
-      t = () => {
-        testInstance.setEnumCode1xEnumType(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode1x is required`);
-
-      t = () => {
-        testInstance.setEnumCode1xElement(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode1x is required`);
-
-      t = () => {
-        testInstance.setEnumCode1xElement(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode1x is required`);
-
-      t = () => {
-        testInstance.setEnumCode1x(undefined);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode1x is required`);
-
-      t = () => {
-        testInstance.setEnumCode1x(null);
-      };
-      expect(t).toThrow(AssertionError);
-      expect(t).toThrow(`TestModel.complex.reference.enumCode.enumCode1x is required`);
     });
 
     it('primitive: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new TestModelComplexReferenceEnumCodeComponent();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setPrimitive(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);

@@ -34,10 +34,10 @@
 {{/if}}
 {{#if this.isRequiredItem}}
   /**
-   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} object if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a {{edHbs.type.code}} object if defined; else an empty {{edHbs.type.code}} object
    */
-  public get{{upperFirst edHbs.fieldName}}(): {{edHbs.type.code}} | null {
-    return this.{{edHbs.fieldIdentifierName}};
+  public get{{upperFirst edHbs.fieldName}}(): {{edHbs.type.code}} {
+    return this.{{edHbs.fieldIdentifierName}} ?? new {{edHbs.type.code}}();
   }
 
   /**
@@ -47,11 +47,14 @@
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}}): this {
-    assertIsDefined<{{edHbs.type.code}}>(value, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of {{edHbs.type.code}}.`;
-    assertFhirType<{{edHbs.type.code}}>(value, {{edHbs.type.code}}, optErrMsg);
-    this.{{edHbs.fieldIdentifierName}} = value;
+  public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}} | undefined | null): this {
+    if (isDefined<{{edHbs.type.code}}>(value)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided element is not an instance of {{edHbs.type.code}}.`;
+      assertFhirType<{{edHbs.type.code}}>(value, {{edHbs.type.code}}, optErrMsg);
+      this.{{edHbs.fieldIdentifierName}} = value;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -136,11 +139,14 @@
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}}[]): this {
-    assertIsDefinedList<{{edHbs.type.code}}>(value, `{{edHbs.path}} is required`);
-    const optErrMsg = `Invalid {{edHbs.path}}; Provided value array has an element that is not an instance of {{edHbs.type.code}}.`;
-    assertFhirTypeList<{{edHbs.type.code}}>(value, {{edHbs.type.code}}, optErrMsg);
-    this.{{edHbs.fieldIdentifierName}} = value;
+  public set{{upperFirst edHbs.fieldName}}(value: {{edHbs.type.code}}[] | undefined | null): this {
+    if (isDefinedList<{{edHbs.type.code}}>(value)) {
+      const optErrMsg = `Invalid {{edHbs.path}}; Provided value array has an element that is not an instance of {{edHbs.type.code}}.`;
+      assertFhirTypeList<{{edHbs.type.code}}>(value, {{edHbs.type.code}}, optErrMsg);
+      this.{{edHbs.fieldIdentifierName}} = value;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 

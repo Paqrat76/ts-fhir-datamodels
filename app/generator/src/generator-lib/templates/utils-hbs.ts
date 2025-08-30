@@ -752,7 +752,6 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
     importsSet.add('Extension as CoreExtension');
   } else {
     // Extension does not implement static parse()
-    importsSet.add('INSTANCE_EMPTY_ERROR_MSG');
     importsSet.add('isEmpty');
     importsSet.add('FhirParser');
   }
@@ -782,17 +781,11 @@ function getFhirCoreImports(componentProperties: HbsElementComponent): string[] 
     }
 
     if (ed.isRequired) {
-      importsSet.add('FhirError');
-      importsSet.add('REQUIRED_PROPERTIES_DO_NOT_EXIST');
-      if (componentProperties.parentType !== 'Extension') {
-        importsSet.add('REQUIRED_PROPERTIES_REQD_IN_JSON');
-      }
+      importsSet.add('isRequiredElementEmpty');
       if (ed.isArray) {
         importsSet.add('isDefinedList');
-        importsSet.add('assertIsDefinedList');
       } else {
         importsSet.add('isDefined');
-        importsSet.add('assertIsDefined');
       }
     }
 

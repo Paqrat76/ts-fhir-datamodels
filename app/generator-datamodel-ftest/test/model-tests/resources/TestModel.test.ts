@@ -144,6 +144,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
 
@@ -175,6 +176,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedDomainResourceProperties(testInstance, 1);
 
@@ -208,6 +210,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
 
@@ -237,6 +240,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectInitializedDomainResourceProperties(testInstance, 1);
 
@@ -268,6 +272,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeDefined();
       expectResetDomainResourceProperties(testInstance);
 
@@ -299,6 +304,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(true);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toBeUndefined();
       expectUndefinedDomainResourceProperties(testInstance);
 
@@ -476,6 +482,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
@@ -504,6 +511,7 @@ describe('TestModel', () => {
 
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance?.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance?.toJSON()).toEqual(VALID_JSON);
       expectInitializedDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
 

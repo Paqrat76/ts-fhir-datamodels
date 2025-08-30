@@ -81,10 +81,13 @@
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('{{edHbs.path}}')
-  public set{{upperFirst edHbs.fieldName}}(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `{{edHbs.path}} is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.{{edHbs.fieldIdentifierName}} = value;
+  public set{{upperFirst edHbs.fieldName}}(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.{{edHbs.fieldIdentifierName}} = value;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 

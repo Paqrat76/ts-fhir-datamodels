@@ -21,7 +21,13 @@
  *
  */
 
-import { DateTimeType, fhirDateTime, InvalidTypeError, PrimitiveTypeError } from '@paq-ts-fhir/fhir-core';
+import {
+  DateTimeType,
+  fhirDateTime,
+  IBackboneType,
+  InvalidTypeError,
+  PrimitiveTypeError,
+} from '@paq-ts-fhir/fhir-core';
 import { CodeableConcept, Timing, TimingRepeatComponent } from '../../../src/complex-types/complex-datatypes';
 import { TestData } from '../../ftest-data';
 import {
@@ -57,7 +63,7 @@ describe('Timing', () => {
     it('should be properly instantiated as empty', () => {
       const testInstance = new Timing();
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectUndefinedBackboneTypeProperties(testInstance);
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -84,7 +90,7 @@ describe('Timing', () => {
 
       let testInstance: Timing = testModel.copy();
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectInitializedBackboneTypeProperties(testInstance, 1);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -109,7 +115,7 @@ describe('Timing', () => {
 
       testInstance = testModel.copy();
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectUndefinedBackboneTypeProperties(testInstance);
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -134,7 +140,7 @@ describe('Timing', () => {
       testInstance.setRepeat(testTimingRepeatComponent);
       testInstance.setCode(VALID_CODEABLE_CONCEPT);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectInitializedBackboneTypeProperties(testInstance, 1);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -158,7 +164,7 @@ describe('Timing', () => {
       testInstance.setRepeat(testTimingRepeatComponent_2);
       testInstance.setCode(VALID_CODEABLE_CONCEPT_2);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectResetBackboneTypeProperties(testInstance);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -181,7 +187,7 @@ describe('Timing', () => {
       testInstance.setRepeat(TestData.UNDEFINED_VALUE);
       testInstance.setCode(TestData.UNDEFINED_VALUE);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectUndefinedBackboneTypeProperties(testInstance);
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -206,7 +212,7 @@ describe('Timing', () => {
       testInstance.setRepeat(testTimingRepeatComponent);
       testInstance.setCode(VALID_CODEABLE_CONCEPT);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectInitializedBackboneTypeProperties(testInstance, 1);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -230,7 +236,7 @@ describe('Timing', () => {
       testInstance.setRepeat(testTimingRepeatComponent_2);
       testInstance.setCode(VALID_CODEABLE_CONCEPT_2);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectResetBackboneTypeProperties(testInstance);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -253,7 +259,7 @@ describe('Timing', () => {
       testInstance.setRepeat(TestData.UNDEFINED_VALUE);
       testInstance.setCode(TestData.UNDEFINED_VALUE);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectUndefinedBackboneTypeProperties(testInstance);
       expect(testInstance.isEmpty()).toBe(true);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -336,7 +342,7 @@ describe('Timing', () => {
 
       let testInstance: Timing = testModel.copy();
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectInitializedBackboneTypeProperties(testInstance, 2);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -354,7 +360,7 @@ describe('Timing', () => {
     });
 
     it('should return undefined when parsed with no json', () => {
-      let testInstance: Timing | undefined = undefined;
+      let testInstance: Timing | undefined;
       testInstance = Timing.parse({});
       expect(testInstance).toBeUndefined();
 
@@ -368,7 +374,7 @@ describe('Timing', () => {
     it('should return parsed Timing for valid json', () => {
       const testInstance: Timing | undefined = Timing.parse(VALID_JSON);
 
-      expectBackboneTypeBase<Timing>(Timing, testInstance, 'Timing', 'Timing');
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectInitializedBackboneTypeProperties(testInstance, 2);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(true);
@@ -389,6 +395,7 @@ describe('Timing', () => {
     it('event: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Timing();
       let t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEventElement([VALID_MOCK_COMPLEX_DATATYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -397,6 +404,7 @@ describe('Timing', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setEventElement([TestData.INVALID_NON_STRING_TYPE]);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -405,6 +413,7 @@ describe('Timing', () => {
       );
 
       t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.addEventElement(TestData.INVALID_NON_STRING_TYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -426,6 +435,7 @@ describe('Timing', () => {
     it('repeat: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Timing();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setRepeat(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);
@@ -435,6 +445,7 @@ describe('Timing', () => {
     it('code: should throw appropriate errors for an invalid datatype', () => {
       const testInstance = new Timing();
       const t = () => {
+        // @ts-expect-error: Allow for testing
         testInstance.setCode(VALID_MOCK_COMPLEX_DATATYPE);
       };
       expect(t).toThrow(InvalidTypeError);

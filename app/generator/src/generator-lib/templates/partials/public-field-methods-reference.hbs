@@ -38,10 +38,10 @@
 {{/if}}
 {{#if this.isRequiredItem}}
   /**
-   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a Reference object if defined; else null
+   * @returns the `{{edHbs.fieldIdentifierName}}` property value as a Reference object if defined; else an empty Reference object
    */
-  public get{{upperFirst edHbs.fieldName}}(): Reference | null {
-    return this.{{edHbs.fieldIdentifierName}};
+  public get{{upperFirst edHbs.fieldName}}(): Reference {
+    return this.{{edHbs.fieldIdentifierName}} ?? new Reference();
   }
 
   /**
@@ -56,10 +56,13 @@
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
   {{/each}}])
-  public set{{upperFirst edHbs.fieldName}}(value: Reference): this {
-    assertIsDefined<Reference>(value, `{{edHbs.path}} is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.{{edHbs.fieldIdentifierName}} = value;
+  public set{{upperFirst edHbs.fieldName}}(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.{{edHbs.fieldIdentifierName}} = value;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 
@@ -157,10 +160,13 @@
   @ReferenceTargets('{{edHbs.path}}', [{{#each edHbs.type.targetResource}}
     '{{this}}',
   {{/each}}])
-  public set{{upperFirst edHbs.fieldName}}(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `{{edHbs.path}} is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.{{edHbs.fieldIdentifierName}} = value;
+  public set{{upperFirst edHbs.fieldName}}(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.{{edHbs.fieldIdentifierName}} = value;
+    } else {
+      this.{{edHbs.fieldIdentifierName}} = null;
+    }
     return this;
   }
 

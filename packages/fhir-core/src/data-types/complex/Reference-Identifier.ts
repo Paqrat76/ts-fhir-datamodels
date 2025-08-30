@@ -33,12 +33,10 @@
  * @module
  */
 
-import { strict as assert } from 'node:assert';
 import { DataType, setFhirComplexJson, setFhirPrimitiveJson } from '../../base-models/core-fhir-models';
 import { PARSABLE_DATATYPE_MAP } from '../../base-models/parsable-datatype-map';
 import { PARSABLE_RESOURCE_MAP } from '../../base-models/parsable-resource-map';
 import { IDataType } from '../../base-models/library-interfaces';
-import { INSTANCE_EMPTY_ERROR_MSG } from '../../constants';
 import { IdentifierUseEnum } from '../code-systems/IdentifierUseEnum';
 import { CodeableConcept } from './CodeableConcept';
 import { Period } from './Period';
@@ -141,7 +139,6 @@ export class Reference extends DataType implements IDataType {
       instance.setDisplayElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -604,7 +601,6 @@ export class Identifier extends DataType implements IDataType {
       instance.setAssigner(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

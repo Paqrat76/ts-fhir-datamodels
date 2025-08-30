@@ -151,6 +151,7 @@ describe('common-util', () => {
       expect(isEmpty(false)).toBe(false);
       expect(isEmpty(123)).toBe(false);
       expect(isEmpty(123.456)).toBe(false);
+      // @ts-expect-error: allow for testing
       expect(isEmpty(123n)).toBe(false);
       expect(isEmpty(BigInt(123))).toBe(false);
     });

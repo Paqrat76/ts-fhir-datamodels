@@ -54,7 +54,6 @@ import { strict as assert } from 'node:assert';
 import { InvalidTypeError } from '../errors/InvalidTypeError';
 import { FhirParser, getPrimitiveTypeJson, ParsableResource } from '../utility/FhirParser';
 import { PARSABLE_DATATYPE_MAP } from '../base-models/parsable-datatype-map';
-import { INSTANCE_EMPTY_ERROR_MSG } from '../constants';
 
 export {
   FHIR_MIN_INTEGER,
@@ -316,7 +315,6 @@ export class MockTask extends DomainResource implements IDomainResource {
       instance.mockPrimitive = fhirParser.parseStringType(dtJson, dtSiblingJson);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
