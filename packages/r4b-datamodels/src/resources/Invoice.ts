@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -47,18 +46,14 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PositiveIntType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -84,6 +79,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -133,7 +129,6 @@ export class Invoice extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Invoice`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Invoice
    * @returns Invoice data model or undefined for `Invoice`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Invoice | undefined {
@@ -152,8 +147,6 @@ export class Invoice extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -175,12 +168,12 @@ export class Invoice extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'cancelledReason';
@@ -318,12 +311,6 @@ export class Invoice extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -664,11 +651,14 @@ export class Invoice extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InvoiceStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Invoice.status is required`);
-    const errMsgPrefix = `Invalid Invoice.status`;
-    assertEnumCodeType<InvoiceStatusEnum>(enumType, InvoiceStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Invoice.status`;
+      assertEnumCodeType<InvoiceStatusEnum>(enumType, InvoiceStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -701,11 +691,14 @@ export class Invoice extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InvoiceStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Invoice.status is required`);
-    const optErrMsg = `Invalid Invoice.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.invoiceStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Invoice.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.invoiceStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -738,10 +731,13 @@ export class Invoice extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InvoiceStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Invoice.status is required`);
-    const optErrMsg = `Invalid Invoice.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.invoiceStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Invoice.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.invoiceStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1456,6 +1452,16 @@ export class Invoice extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1499,15 +1505,14 @@ export class Invoice extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1517,7 +1522,7 @@ export class Invoice extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Invoice.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCancelledReasonElement()) {
@@ -1576,11 +1581,6 @@ export class Invoice extends DomainResource implements IDomainResource {
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1612,7 +1612,6 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `InvoiceParticipantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InvoiceParticipantComponent
    * @returns InvoiceParticipantComponent data model or undefined for `InvoiceParticipantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InvoiceParticipantComponent | undefined {
@@ -1630,8 +1629,6 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'role';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -1646,20 +1643,14 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1734,10 +1725,10 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -1762,10 +1753,13 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
   
     'RelatedPerson',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `Invoice.participant.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -1796,6 +1790,16 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1820,30 +1824,23 @@ export class InvoiceParticipantComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRole()) {
       setFhirComplexJson(this.getRole(), 'role', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`Invoice.participant.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;
@@ -1877,7 +1874,6 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `InvoiceLineItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InvoiceLineItemComponent
    * @returns InvoiceLineItemComponent data model or undefined for `InvoiceLineItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InvoiceLineItemComponent | undefined {
@@ -1900,8 +1896,6 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
     const errorMessage = `DecoratorMetadataObject does not exist for InvoiceLineItemComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'sequence';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'number';
@@ -1920,7 +1914,7 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
       classMetadata,
     );
     if (chargeItem === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setChargeItem(null);
     } else {
       instance.setChargeItem(chargeItem);
     }
@@ -1938,12 +1932,6 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2080,10 +2068,13 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Invoice.lineItem.chargeItem[x]')
-  public setChargeItem(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Invoice.lineItem.chargeItem[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.chargeItem = value;
+  public setChargeItem(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.chargeItem = value;
+    } else {
+      this.chargeItem = null;
+    }
     return this;
   }
 
@@ -2222,6 +2213,16 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.chargeItem, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2248,15 +2249,14 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSequenceElement()) {
       setFhirPrimitiveJson<fhirPositiveInt>(this.getSequenceElement(), 'sequence', jsonObj);
@@ -2266,16 +2266,11 @@ export class InvoiceLineItemComponent extends BackboneElement implements IBackbo
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getChargeItem()!, 'chargeItem', jsonObj);
     } else {
-      missingReqdProperties.push(`Invoice.lineItem.chargeItem[x]`);
+      jsonObj['chargeItem'] = null;
     }
 
     if (this.hasPriceComponent()) {
       setFhirBackboneElementListJson(this.getPriceComponent(), 'priceComponent', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2312,7 +2307,6 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `InvoiceLineItemPriceComponentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InvoiceLineItemPriceComponentComponent
    * @returns InvoiceLineItemPriceComponentComponent data model or undefined for `InvoiceLineItemPriceComponentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InvoiceLineItemPriceComponentComponent | undefined {
@@ -2331,8 +2325,6 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2340,12 +2332,12 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'code';
@@ -2373,12 +2365,6 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
       instance.setAmount(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2470,11 +2456,14 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link InvoicePriceComponentTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Invoice.lineItem.priceComponent.type is required`);
-    const errMsgPrefix = `Invalid Invoice.lineItem.priceComponent.type`;
-    assertEnumCodeType<InvoicePriceComponentTypeEnum>(enumType, InvoicePriceComponentTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Invoice.lineItem.priceComponent.type`;
+      assertEnumCodeType<InvoicePriceComponentTypeEnum>(enumType, InvoicePriceComponentTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2507,11 +2496,14 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link InvoicePriceComponentTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Invoice.lineItem.priceComponent.type is required`);
-    const optErrMsg = `Invalid Invoice.lineItem.priceComponent.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.invoicePriceComponentTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Invoice.lineItem.priceComponent.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.invoicePriceComponentTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2544,10 +2536,13 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link InvoicePriceComponentTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Invoice.lineItem.priceComponent.type is required`);
-    const optErrMsg = `Invalid Invoice.lineItem.priceComponent.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.invoicePriceComponentTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Invoice.lineItem.priceComponent.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.invoicePriceComponentTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2708,6 +2703,16 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2734,21 +2739,20 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Invoice.lineItem.priceComponent.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCode()) {
@@ -2761,11 +2765,6 @@ export class InvoiceLineItemPriceComponentComponent extends BackboneElement impl
 
     if (this.hasAmount()) {
       setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

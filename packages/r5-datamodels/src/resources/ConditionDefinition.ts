@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,18 +46,14 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -86,6 +81,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -142,7 +138,6 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
    * @param sourceJson - JSON representing FHIR `ConditionDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConditionDefinition
    * @returns ConditionDefinition data model or undefined for `ConditionDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ConditionDefinition | undefined {
@@ -165,8 +160,6 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
     const classMetadata: DecoratorMetadataObject | null = ConditionDefinition[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ConditionDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -243,12 +236,12 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -332,12 +325,12 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'severity';
@@ -487,12 +480,6 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1428,11 +1415,14 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConditionDefinition.status is required`);
-    const errMsgPrefix = `Invalid ConditionDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConditionDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1465,11 +1455,14 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConditionDefinition.status is required`);
-    const optErrMsg = `Invalid ConditionDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConditionDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1502,10 +1495,13 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConditionDefinition.status is required`);
-    const optErrMsg = `Invalid ConditionDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConditionDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1947,10 +1943,10 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -1960,11 +1956,14 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ConditionDefinition.code is required`);
-    const optErrMsg = `Invalid ConditionDefinition.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ConditionDefinition.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2788,6 +2787,16 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2850,15 +2859,14 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2893,7 +2901,7 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2925,10 +2933,9 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasSeverity()) {
@@ -2981,11 +2988,6 @@ export class ConditionDefinition extends DomainResource implements IDomainResour
 
     if (this.hasPlan()) {
       setFhirBackboneElementListJson(this.getPlan(), 'plan', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3048,7 +3050,6 @@ export class ConditionDefinitionObservationComponent extends BackboneElement imp
       instance.setCode(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3266,7 +3267,6 @@ export class ConditionDefinitionMedicationComponent extends BackboneElement impl
       instance.setCode(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3464,7 +3464,6 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
    * @param sourceJson - JSON representing FHIR `ConditionDefinitionPreconditionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConditionDefinitionPreconditionComponent
    * @returns ConditionDefinitionPreconditionComponent data model or undefined for `ConditionDefinitionPreconditionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConditionDefinitionPreconditionComponent | undefined {
@@ -3487,8 +3486,6 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
     const errorMessage = `DecoratorMetadataObject does not exist for ConditionDefinitionPreconditionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -3496,12 +3493,12 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'code';
@@ -3510,12 +3507,12 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value[x]';
@@ -3528,12 +3525,6 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
     );
     instance.setValue(value);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3617,11 +3608,14 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
    *
    * @see CodeSystem Enumeration: {@link ConditionPreconditionTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConditionDefinition.precondition.type is required`);
-    const errMsgPrefix = `Invalid ConditionDefinition.precondition.type`;
-    assertEnumCodeType<ConditionPreconditionTypeEnum>(enumType, ConditionPreconditionTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConditionDefinition.precondition.type`;
+      assertEnumCodeType<ConditionPreconditionTypeEnum>(enumType, ConditionPreconditionTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3654,11 +3648,14 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
    *
    * @see CodeSystem Enumeration: {@link ConditionPreconditionTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConditionDefinition.precondition.type is required`);
-    const optErrMsg = `Invalid ConditionDefinition.precondition.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.conditionPreconditionTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConditionDefinition.precondition.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.conditionPreconditionTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3691,10 +3688,13 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
    *
    * @see CodeSystem Enumeration: {@link ConditionPreconditionTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConditionDefinition.precondition.type is required`);
-    const optErrMsg = `Invalid ConditionDefinition.precondition.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conditionPreconditionTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConditionDefinition.precondition.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conditionPreconditionTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3706,10 +3706,10 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
   }
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -3719,11 +3719,14 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ConditionDefinition.precondition.code is required`);
-    const optErrMsg = `Invalid ConditionDefinition.precondition.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ConditionDefinition.precondition.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3838,6 +3841,16 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3863,38 +3876,31 @@ export class ConditionDefinitionPreconditionComponent extends BackboneElement im
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.precondition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.precondition.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3936,7 +3942,6 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
    * @param sourceJson - JSON representing FHIR `ConditionDefinitionQuestionnaireComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConditionDefinitionQuestionnaireComponent
    * @returns ConditionDefinitionQuestionnaireComponent data model or undefined for `ConditionDefinitionQuestionnaireComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConditionDefinitionQuestionnaireComponent | undefined {
@@ -3955,8 +3960,6 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'purpose';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -3964,12 +3967,12 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPurpose(null);
       } else {
         instance.setPurposeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPurpose(null);
     }
 
     fieldName = 'reference';
@@ -3978,20 +3981,14 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReference(null);
       } else {
         instance.setReference(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4056,11 +4053,14 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
    *
    * @see CodeSystem Enumeration: {@link ConditionQuestionnairePurposeEnum }
    */
-  public setPurposeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConditionDefinition.questionnaire.purpose is required`);
-    const errMsgPrefix = `Invalid ConditionDefinition.questionnaire.purpose`;
-    assertEnumCodeType<ConditionQuestionnairePurposeEnum>(enumType, ConditionQuestionnairePurposeEnum, errMsgPrefix);
-    this.purpose = enumType;
+  public setPurposeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConditionDefinition.questionnaire.purpose`;
+      assertEnumCodeType<ConditionQuestionnairePurposeEnum>(enumType, ConditionQuestionnairePurposeEnum, errMsgPrefix);
+      this.purpose = enumType;
+    } else {
+      this.purpose = null;
+    }
     return this;
   }
 
@@ -4093,11 +4093,14 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
    *
    * @see CodeSystem Enumeration: {@link ConditionQuestionnairePurposeEnum }
    */
-  public setPurposeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConditionDefinition.questionnaire.purpose is required`);
-    const optErrMsg = `Invalid ConditionDefinition.questionnaire.purpose; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.purpose = new EnumCodeType(element, this.conditionQuestionnairePurposeEnum);
+  public setPurposeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConditionDefinition.questionnaire.purpose; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.purpose = new EnumCodeType(element, this.conditionQuestionnairePurposeEnum);
+    } else {
+      this.purpose = null;
+    }
     return this;
   }
 
@@ -4130,10 +4133,13 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
    *
    * @see CodeSystem Enumeration: {@link ConditionQuestionnairePurposeEnum }
    */
-  public setPurpose(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConditionDefinition.questionnaire.purpose is required`);
-    const optErrMsg = `Invalid ConditionDefinition.questionnaire.purpose (${String(value)})`;
-    this.purpose = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conditionQuestionnairePurposeEnum);
+  public setPurpose(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConditionDefinition.questionnaire.purpose (${String(value)})`;
+      this.purpose = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conditionQuestionnairePurposeEnum);
+    } else {
+      this.purpose = null;
+    }
     return this;
   }
 
@@ -4145,10 +4151,10 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
   }
 
   /**
-   * @returns the `reference` property value as a Reference object if defined; else null
+   * @returns the `reference` property value as a Reference object if defined; else an empty Reference object
    */
-  public getReference(): Reference | null {
-    return this.reference;
+  public getReference(): Reference {
+    return this.reference ?? new Reference();
   }
 
   /**
@@ -4163,10 +4169,13 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
   @ReferenceTargets('ConditionDefinition.questionnaire.reference', [
     'Questionnaire',
   ])
-  public setReference(value: Reference): this {
-    assertIsDefined<Reference>(value, `ConditionDefinition.questionnaire.reference is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -4197,6 +4206,16 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.purpose, this.reference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4221,33 +4240,26 @@ export class ConditionDefinitionQuestionnaireComponent extends BackboneElement i
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasPurposeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getPurposeElement()!, 'purpose', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.questionnaire.purpose`);
+      jsonObj['purpose'] = null;
     }
 
     if (this.hasReference()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getReference()!, 'reference', jsonObj);
+      setFhirComplexJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.questionnaire.reference`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['reference'] = null;
     }
 
     return jsonObj;
@@ -4280,7 +4292,6 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `ConditionDefinitionPlanComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConditionDefinitionPlanComponent
    * @returns ConditionDefinitionPlanComponent data model or undefined for `ConditionDefinitionPlanComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConditionDefinitionPlanComponent | undefined {
@@ -4298,8 +4309,6 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'role';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -4314,20 +4323,14 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReference(null);
       } else {
         instance.setReference(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4397,10 +4400,10 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
   }
 
   /**
-   * @returns the `reference` property value as a Reference object if defined; else null
+   * @returns the `reference` property value as a Reference object if defined; else an empty Reference object
    */
-  public getReference(): Reference | null {
-    return this.reference;
+  public getReference(): Reference {
+    return this.reference ?? new Reference();
   }
 
   /**
@@ -4415,10 +4418,13 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
   @ReferenceTargets('ConditionDefinition.plan.reference', [
     'PlanDefinition',
   ])
-  public setReference(value: Reference): this {
-    assertIsDefined<Reference>(value, `ConditionDefinition.plan.reference is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -4449,6 +4455,16 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.reference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4473,30 +4489,23 @@ export class ConditionDefinitionPlanComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRole()) {
       setFhirComplexJson(this.getRole(), 'role', jsonObj);
     }
 
     if (this.hasReference()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getReference()!, 'reference', jsonObj);
+      setFhirComplexJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`ConditionDefinition.plan.reference`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['reference'] = null;
     }
 
     return jsonObj;

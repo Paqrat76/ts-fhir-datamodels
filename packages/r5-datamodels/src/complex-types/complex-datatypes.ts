@@ -32,7 +32,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneType,
   Base64BinaryType,
@@ -48,11 +47,9 @@ import {
   DateType,
   DecimalType,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneType,
   IDataType,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   Identifier,
   InstantType,
@@ -69,8 +66,6 @@ import {
   PositiveIntType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   Reference,
   ReferenceTargets,
   StringType,
@@ -128,6 +123,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -315,7 +311,6 @@ export class Address extends DataType implements IDataType {
       instance.setPeriod(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1479,7 +1474,6 @@ export class Age extends DataType implements IDataType {
       instance.setCodeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2077,7 +2071,6 @@ export class Annotation extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Annotation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Annotation
    * @returns Annotation data model or undefined for `Annotation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Annotation | undefined {
@@ -2099,8 +2092,6 @@ export class Annotation extends DataType implements IDataType {
     const classMetadata: DecoratorMetadataObject | null = Annotation[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for Annotation`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'author[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -2128,20 +2119,14 @@ export class Annotation extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setText(null);
       } else {
         instance.setTextElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setText(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2346,10 +2331,10 @@ export class Annotation extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `text` property value as a MarkdownType object if defined; else null
+   * @returns the `text` property value as a MarkdownType object if defined; else an empty MarkdownType object
    */
-  public getTextElement(): MarkdownType | null {
-    return this.text;
+  public getTextElement(): MarkdownType {
+    return this.text ?? new MarkdownType();
   }
 
   /**
@@ -2360,11 +2345,14 @@ export class Annotation extends DataType implements IDataType {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTextElement(element: MarkdownType): this {
-    assertIsDefined<MarkdownType>(element, `Annotation.text is required`);
-    const optErrMsg = `Invalid Annotation.text; Provided value is not an instance of MarkdownType.`;
-    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
-    this.text = element;
+  public setTextElement(element: MarkdownType | undefined | null): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Annotation.text; Provided value is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.text = element;
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -2393,10 +2381,13 @@ export class Annotation extends DataType implements IDataType {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setText(value: fhirMarkdown): this {
-    assertIsDefined<fhirMarkdown>(value, `Annotation.text is required`);
-    const optErrMsg = `Invalid Annotation.text (${String(value)})`;
-    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+  public setText(value: fhirMarkdown | undefined | null): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Annotation.text (${String(value)})`;
+      this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -2424,6 +2415,16 @@ export class Annotation extends DataType implements IDataType {
       this.author,
       this.time,
       this.text,
+    );
+  }
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.text, 
     );
   }
 
@@ -2467,15 +2468,14 @@ export class Annotation extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasAuthor()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -2487,15 +2487,9 @@ export class Annotation extends DataType implements IDataType {
     }
 
     if (this.hasTextElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement(), 'text', jsonObj);
     } else {
-      missingReqdProperties.push(`Annotation.text`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['text'] = null;
     }
 
     return jsonObj;
@@ -2666,7 +2660,6 @@ export class Attachment extends DataType implements IDataType {
       instance.setPagesElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3915,7 +3908,6 @@ export class Availability extends DataType implements IDataType {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4235,7 +4227,6 @@ export class AvailabilityAvailableTimeComponent extends DataType implements IDat
       instance.setAvailableEndTimeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4842,7 +4833,6 @@ export class AvailabilityNotAvailableTimeComponent extends DataType implements I
       instance.setDuring(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5108,7 +5098,6 @@ export class CodeableReference extends DataType implements IDataType {
       instance.setReference(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5355,7 +5344,6 @@ export class ContactDetail extends DataType implements IDataType {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5684,7 +5672,6 @@ export class ContactPoint extends DataType implements IDataType {
       instance.setPeriod(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6320,7 +6307,6 @@ export class Contributor extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `Contributor`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Contributor
    * @returns Contributor data model or undefined for `Contributor`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): Contributor | undefined {
@@ -6339,8 +6325,6 @@ export class Contributor extends DataType implements IDataType {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -6348,12 +6332,12 @@ export class Contributor extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'name';
@@ -6363,12 +6347,12 @@ export class Contributor extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'contact';
@@ -6384,12 +6368,6 @@ export class Contributor extends DataType implements IDataType {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6465,11 +6443,14 @@ export class Contributor extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link ContributorTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Contributor.type is required`);
-    const errMsgPrefix = `Invalid Contributor.type`;
-    assertEnumCodeType<ContributorTypeEnum>(enumType, ContributorTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Contributor.type`;
+      assertEnumCodeType<ContributorTypeEnum>(enumType, ContributorTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6502,11 +6483,14 @@ export class Contributor extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link ContributorTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Contributor.type is required`);
-    const optErrMsg = `Invalid Contributor.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.contributorTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Contributor.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.contributorTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6539,10 +6523,13 @@ export class Contributor extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link ContributorTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Contributor.type is required`);
-    const optErrMsg = `Invalid Contributor.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.contributorTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Contributor.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.contributorTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6554,10 +6541,10 @@ export class Contributor extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -6568,11 +6555,14 @@ export class Contributor extends DataType implements IDataType {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Contributor.name is required`);
-    const optErrMsg = `Invalid Contributor.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Contributor.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -6601,10 +6591,13 @@ export class Contributor extends DataType implements IDataType {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Contributor.name is required`);
-    const optErrMsg = `Invalid Contributor.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Contributor.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -6694,6 +6687,16 @@ export class Contributor extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6734,37 +6737,30 @@ export class Contributor extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Contributor.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`Contributor.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasContact()) {
       setFhirComplexListJson(this.getContact(), 'contact', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6864,7 +6860,6 @@ export class Count extends DataType implements IDataType {
       instance.setCodeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7461,7 +7456,6 @@ export class DataRequirement extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `DataRequirement`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DataRequirement
    * @returns DataRequirement data model or undefined for `DataRequirement`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DataRequirement | undefined {
@@ -7484,8 +7478,6 @@ export class DataRequirement extends DataType implements IDataType {
     const errorMessage = `DecoratorMetadataObject does not exist for DataRequirement`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -7493,12 +7485,12 @@ export class DataRequirement extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'profile';
@@ -7608,12 +7600,6 @@ export class DataRequirement extends DataType implements IDataType {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7789,11 +7775,14 @@ export class DataRequirement extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link FhirTypesEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DataRequirement.type is required`);
-    const errMsgPrefix = `Invalid DataRequirement.type`;
-    assertEnumCodeType<FhirTypesEnum>(enumType, FhirTypesEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DataRequirement.type`;
+      assertEnumCodeType<FhirTypesEnum>(enumType, FhirTypesEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -7826,11 +7815,14 @@ export class DataRequirement extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link FhirTypesEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DataRequirement.type is required`);
-    const optErrMsg = `Invalid DataRequirement.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.fhirTypesEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DataRequirement.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.fhirTypesEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -7863,10 +7855,13 @@ export class DataRequirement extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link FhirTypesEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DataRequirement.type is required`);
-    const optErrMsg = `Invalid DataRequirement.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fhirTypesEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DataRequirement.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fhirTypesEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -8527,6 +8522,16 @@ export class DataRequirement extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -8578,21 +8583,20 @@ export class DataRequirement extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`DataRequirement.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasProfile()) {
@@ -8626,11 +8630,6 @@ export class DataRequirement extends DataType implements IDataType {
 
     if (this.hasSort()) {
       setFhirComplexListJson(this.getSort(), 'sort', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -8717,7 +8716,6 @@ export class DataRequirementCodeFilterComponent extends DataType implements IDat
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9190,7 +9188,6 @@ export class DataRequirementDateFilterComponent extends DataType implements IDat
     );
     instance.setValue(value);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9643,7 +9640,6 @@ export class DataRequirementValueFilterComponent extends DataType implements IDa
     );
     instance.setValue(value);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -10201,7 +10197,6 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
    * @param sourceJson - JSON representing FHIR `DataRequirementSortComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DataRequirementSortComponent
    * @returns DataRequirementSortComponent data model or undefined for `DataRequirementSortComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DataRequirementSortComponent | undefined {
@@ -10220,8 +10215,6 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'path';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -10229,12 +10222,12 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPath(null);
       } else {
         instance.setPathElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPath(null);
     }
 
     fieldName = 'direction';
@@ -10244,20 +10237,14 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDirection(null);
       } else {
         instance.setDirectionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDirection(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -10301,10 +10288,10 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `path` property value as a StringType object if defined; else null
+   * @returns the `path` property value as a StringType object if defined; else an empty StringType object
    */
-  public getPathElement(): StringType | null {
-    return this.path;
+  public getPathElement(): StringType {
+    return this.path ?? new StringType();
   }
 
   /**
@@ -10315,11 +10302,14 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPathElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `DataRequirement.sort.path is required`);
-    const optErrMsg = `Invalid DataRequirement.sort.path; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.path = element;
+  public setPathElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid DataRequirement.sort.path; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.path = element;
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -10348,10 +10338,13 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPath(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `DataRequirement.sort.path is required`);
-    const optErrMsg = `Invalid DataRequirement.sort.path (${String(value)})`;
-    this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setPath(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid DataRequirement.sort.path (${String(value)})`;
+      this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -10381,11 +10374,14 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
    *
    * @see CodeSystem Enumeration: {@link SortDirectionEnum }
    */
-  public setDirectionEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DataRequirement.sort.direction is required`);
-    const errMsgPrefix = `Invalid DataRequirement.sort.direction`;
-    assertEnumCodeType<SortDirectionEnum>(enumType, SortDirectionEnum, errMsgPrefix);
-    this.direction = enumType;
+  public setDirectionEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DataRequirement.sort.direction`;
+      assertEnumCodeType<SortDirectionEnum>(enumType, SortDirectionEnum, errMsgPrefix);
+      this.direction = enumType;
+    } else {
+      this.direction = null;
+    }
     return this;
   }
 
@@ -10418,11 +10414,14 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
    *
    * @see CodeSystem Enumeration: {@link SortDirectionEnum }
    */
-  public setDirectionElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DataRequirement.sort.direction is required`);
-    const optErrMsg = `Invalid DataRequirement.sort.direction; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.direction = new EnumCodeType(element, this.sortDirectionEnum);
+  public setDirectionElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DataRequirement.sort.direction; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.direction = new EnumCodeType(element, this.sortDirectionEnum);
+    } else {
+      this.direction = null;
+    }
     return this;
   }
 
@@ -10455,10 +10454,13 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
    *
    * @see CodeSystem Enumeration: {@link SortDirectionEnum }
    */
-  public setDirection(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DataRequirement.sort.direction is required`);
-    const optErrMsg = `Invalid DataRequirement.sort.direction (${String(value)})`;
-    this.direction = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.sortDirectionEnum);
+  public setDirection(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DataRequirement.sort.direction (${String(value)})`;
+      this.direction = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.sortDirectionEnum);
+    } else {
+      this.direction = null;
+    }
     return this;
   }
 
@@ -10485,6 +10487,16 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
     return super.isEmpty() && isElementEmpty(
       this.path,
       this.direction,
+    );
+  }
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.path, this.direction, 
     );
   }
 
@@ -10520,33 +10532,26 @@ export class DataRequirementSortComponent extends DataType implements IDataType 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasPathElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getPathElement()!, 'path', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getPathElement(), 'path', jsonObj);
     } else {
-      missingReqdProperties.push(`DataRequirement.sort.path`);
+      jsonObj['path'] = null;
     }
 
     if (this.hasDirectionElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getDirectionElement()!, 'direction', jsonObj);
     } else {
-      missingReqdProperties.push(`DataRequirement.sort.direction`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['direction'] = null;
     }
 
     return jsonObj;
@@ -10644,7 +10649,6 @@ export class Distance extends DataType implements IDataType {
       instance.setCodeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -11387,7 +11391,6 @@ export class Dosage extends BackboneType implements IBackboneType {
       instance.setMaxDosePerLifetime(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -12513,7 +12516,6 @@ export class DosageDoseAndRateComponent extends DataType implements IDataType {
     );
     instance.setRate(rate);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -12975,7 +12977,6 @@ export class Duration extends DataType implements IDataType {
       instance.setCodeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13574,7 +13575,6 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
    * @param sourceJson - JSON representing FHIR `ElementDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinition
    * @returns ElementDefinition data model or undefined for `ElementDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinition | undefined {
@@ -13597,8 +13597,6 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
     const errorMessage = `DecoratorMetadataObject does not exist for ElementDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'path';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -13606,12 +13604,12 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPath(null);
       } else {
         instance.setPathElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPath(null);
     }
 
     fieldName = 'representation';
@@ -13987,12 +13985,6 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -14938,10 +14930,10 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `path` property value as a StringType object if defined; else null
+   * @returns the `path` property value as a StringType object if defined; else an empty StringType object
    */
-  public getPathElement(): StringType | null {
-    return this.path;
+  public getPathElement(): StringType {
+    return this.path ?? new StringType();
   }
 
   /**
@@ -14952,11 +14944,14 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPathElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.path is required`);
-    const optErrMsg = `Invalid ElementDefinition.path; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.path = element;
+  public setPathElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.path; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.path = element;
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -14985,10 +14980,13 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPath(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.path is required`);
-    const optErrMsg = `Invalid ElementDefinition.path (${String(value)})`;
-    this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setPath(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.path (${String(value)})`;
+      this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -21351,6 +21349,16 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.path, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -21432,21 +21440,19 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasPathElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getPathElement()!, 'path', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getPathElement(), 'path', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.path`);
+      jsonObj['path'] = null;
     }
 
     if (this.hasRepresentationElement()) {
@@ -21594,11 +21600,6 @@ export class ElementDefinition extends BackboneType implements IBackboneType {
       setFhirComplexListJson(this.getMapping(), 'mapping', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -21634,7 +21635,6 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
    * @param sourceJson - JSON representing FHIR `ElementDefinitionSlicingComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionSlicingComponent
    * @returns ElementDefinitionSlicingComponent data model or undefined for `ElementDefinitionSlicingComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionSlicingComponent | undefined {
@@ -21652,8 +21652,6 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'discriminator';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -21693,20 +21691,14 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRules(null);
       } else {
         instance.setRulesElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRules(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -21986,11 +21978,14 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
    *
    * @see CodeSystem Enumeration: {@link ResourceSlicingRulesEnum }
    */
-  public setRulesEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ElementDefinition.slicing.rules is required`);
-    const errMsgPrefix = `Invalid ElementDefinition.slicing.rules`;
-    assertEnumCodeType<ResourceSlicingRulesEnum>(enumType, ResourceSlicingRulesEnum, errMsgPrefix);
-    this.rules = enumType;
+  public setRulesEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ElementDefinition.slicing.rules`;
+      assertEnumCodeType<ResourceSlicingRulesEnum>(enumType, ResourceSlicingRulesEnum, errMsgPrefix);
+      this.rules = enumType;
+    } else {
+      this.rules = null;
+    }
     return this;
   }
 
@@ -22023,11 +22018,14 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
    *
    * @see CodeSystem Enumeration: {@link ResourceSlicingRulesEnum }
    */
-  public setRulesElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ElementDefinition.slicing.rules is required`);
-    const optErrMsg = `Invalid ElementDefinition.slicing.rules; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.rules = new EnumCodeType(element, this.resourceSlicingRulesEnum);
+  public setRulesElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.slicing.rules; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.rules = new EnumCodeType(element, this.resourceSlicingRulesEnum);
+    } else {
+      this.rules = null;
+    }
     return this;
   }
 
@@ -22060,10 +22058,13 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
    *
    * @see CodeSystem Enumeration: {@link ResourceSlicingRulesEnum }
    */
-  public setRules(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ElementDefinition.slicing.rules is required`);
-    const optErrMsg = `Invalid ElementDefinition.slicing.rules (${String(value)})`;
-    this.rules = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceSlicingRulesEnum);
+  public setRules(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.slicing.rules (${String(value)})`;
+      this.rules = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceSlicingRulesEnum);
+    } else {
+      this.rules = null;
+    }
     return this;
   }
 
@@ -22092,6 +22093,16 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
       this.description,
       this.ordered,
       this.rules,
+    );
+  }
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.rules, 
     );
   }
 
@@ -22130,15 +22141,14 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasDiscriminator()) {
       setFhirComplexListJson(this.getDiscriminator(), 'discriminator', jsonObj);
@@ -22156,12 +22166,7 @@ export class ElementDefinitionSlicingComponent extends DataType implements IData
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRulesElement()!, 'rules', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.slicing.rules`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['rules'] = null;
     }
 
     return jsonObj;
@@ -22208,7 +22213,6 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
    * @param sourceJson - JSON representing FHIR `ElementDefinitionSlicingDiscriminatorComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionSlicingDiscriminatorComponent
    * @returns ElementDefinitionSlicingDiscriminatorComponent data model or undefined for `ElementDefinitionSlicingDiscriminatorComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionSlicingDiscriminatorComponent | undefined {
@@ -22227,8 +22231,6 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -22236,12 +22238,12 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'path';
@@ -22251,20 +22253,14 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPath(null);
       } else {
         instance.setPathElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPath(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -22327,11 +22323,14 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
    *
    * @see CodeSystem Enumeration: {@link DiscriminatorTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ElementDefinition.slicing.discriminator.type is required`);
-    const errMsgPrefix = `Invalid ElementDefinition.slicing.discriminator.type`;
-    assertEnumCodeType<DiscriminatorTypeEnum>(enumType, DiscriminatorTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ElementDefinition.slicing.discriminator.type`;
+      assertEnumCodeType<DiscriminatorTypeEnum>(enumType, DiscriminatorTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -22364,11 +22363,14 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
    *
    * @see CodeSystem Enumeration: {@link DiscriminatorTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ElementDefinition.slicing.discriminator.type is required`);
-    const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.discriminatorTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.discriminatorTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -22401,10 +22403,13 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
    *
    * @see CodeSystem Enumeration: {@link DiscriminatorTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ElementDefinition.slicing.discriminator.type is required`);
-    const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.discriminatorTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.discriminatorTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -22416,10 +22421,10 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
   }
 
   /**
-   * @returns the `path` property value as a StringType object if defined; else null
+   * @returns the `path` property value as a StringType object if defined; else an empty StringType object
    */
-  public getPathElement(): StringType | null {
-    return this.path;
+  public getPathElement(): StringType {
+    return this.path ?? new StringType();
   }
 
   /**
@@ -22430,11 +22435,14 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPathElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.slicing.discriminator.path is required`);
-    const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.path; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.path = element;
+  public setPathElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.path; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.path = element;
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -22463,10 +22471,13 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPath(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.slicing.discriminator.path is required`);
-    const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.path (${String(value)})`;
-    this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setPath(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.slicing.discriminator.path (${String(value)})`;
+      this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -22493,6 +22504,16 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
     return super.isEmpty() && isElementEmpty(
       this.type_,
       this.path,
+    );
+  }
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.path, 
     );
   }
 
@@ -22528,33 +22549,26 @@ export class ElementDefinitionSlicingDiscriminatorComponent extends DataType imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.slicing.discriminator.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasPathElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getPathElement()!, 'path', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getPathElement(), 'path', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.slicing.discriminator.path`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['path'] = null;
     }
 
     return jsonObj;
@@ -22610,7 +22624,6 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @param sourceJson - JSON representing FHIR `ElementDefinitionBaseComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionBaseComponent
    * @returns ElementDefinitionBaseComponent data model or undefined for `ElementDefinitionBaseComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionBaseComponent | undefined {
@@ -22629,8 +22642,6 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'path';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -22638,12 +22649,12 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPath(null);
       } else {
         instance.setPathElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPath(null);
     }
 
     fieldName = 'min';
@@ -22653,12 +22664,12 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UnsignedIntType | undefined = fhirParser.parseUnsignedIntType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMin(null);
       } else {
         instance.setMinElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMin(null);
     }
 
     fieldName = 'max';
@@ -22668,20 +22679,14 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMax(null);
       } else {
         instance.setMaxElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMax(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -22732,10 +22737,10 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `path` property value as a StringType object if defined; else null
+   * @returns the `path` property value as a StringType object if defined; else an empty StringType object
    */
-  public getPathElement(): StringType | null {
-    return this.path;
+  public getPathElement(): StringType {
+    return this.path ?? new StringType();
   }
 
   /**
@@ -22746,11 +22751,14 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPathElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.base.path is required`);
-    const optErrMsg = `Invalid ElementDefinition.base.path; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.path = element;
+  public setPathElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.base.path; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.path = element;
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -22779,10 +22787,13 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setPath(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.base.path is required`);
-    const optErrMsg = `Invalid ElementDefinition.base.path (${String(value)})`;
-    this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setPath(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.base.path (${String(value)})`;
+      this.path = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.path = null;
+    }
     return this;
   }
 
@@ -22794,10 +22805,10 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
   }
 
   /**
-   * @returns the `min` property value as a UnsignedIntType object if defined; else null
+   * @returns the `min` property value as a UnsignedIntType object if defined; else an empty UnsignedIntType object
    */
-  public getMinElement(): UnsignedIntType | null {
-    return this.min;
+  public getMinElement(): UnsignedIntType {
+    return this.min ?? new UnsignedIntType();
   }
 
   /**
@@ -22808,11 +22819,14 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMinElement(element: UnsignedIntType): this {
-    assertIsDefined<UnsignedIntType>(element, `ElementDefinition.base.min is required`);
-    const optErrMsg = `Invalid ElementDefinition.base.min; Provided value is not an instance of UnsignedIntType.`;
-    assertFhirType<UnsignedIntType>(element, UnsignedIntType, optErrMsg);
-    this.min = element;
+  public setMinElement(element: UnsignedIntType | undefined | null): this {
+    if (isDefined<UnsignedIntType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.base.min; Provided value is not an instance of UnsignedIntType.`;
+      assertFhirType<UnsignedIntType>(element, UnsignedIntType, optErrMsg);
+      this.min = element;
+    } else {
+      this.min = null;
+    }
     return this;
   }
 
@@ -22841,10 +22855,13 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMin(value: fhirUnsignedInt): this {
-    assertIsDefined<fhirUnsignedInt>(value, `ElementDefinition.base.min is required`);
-    const optErrMsg = `Invalid ElementDefinition.base.min (${String(value)})`;
-    this.min = new UnsignedIntType(parseFhirPrimitiveData(value, fhirUnsignedIntSchema, optErrMsg));
+  public setMin(value: fhirUnsignedInt | undefined | null): this {
+    if (isDefined<fhirUnsignedInt>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.base.min (${String(value)})`;
+      this.min = new UnsignedIntType(parseFhirPrimitiveData(value, fhirUnsignedIntSchema, optErrMsg));
+    } else {
+      this.min = null;
+    }
     return this;
   }
 
@@ -22856,10 +22873,10 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
   }
 
   /**
-   * @returns the `max` property value as a StringType object if defined; else null
+   * @returns the `max` property value as a StringType object if defined; else an empty StringType object
    */
-  public getMaxElement(): StringType | null {
-    return this.max;
+  public getMaxElement(): StringType {
+    return this.max ?? new StringType();
   }
 
   /**
@@ -22870,11 +22887,14 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMaxElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.base.max is required`);
-    const optErrMsg = `Invalid ElementDefinition.base.max; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.max = element;
+  public setMaxElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.base.max; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.max = element;
+    } else {
+      this.max = null;
+    }
     return this;
   }
 
@@ -22903,10 +22923,13 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMax(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.base.max is required`);
-    const optErrMsg = `Invalid ElementDefinition.base.max (${String(value)})`;
-    this.max = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setMax(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.base.max (${String(value)})`;
+      this.max = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.max = null;
+    }
     return this;
   }
 
@@ -22934,6 +22957,16 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
       this.path,
       this.min,
       this.max,
+    );
+  }
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.path, this.min, this.max, 
     );
   }
 
@@ -22970,40 +23003,31 @@ export class ElementDefinitionBaseComponent extends DataType implements IDataTyp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasPathElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getPathElement()!, 'path', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getPathElement(), 'path', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.base.path`);
+      jsonObj['path'] = null;
     }
 
     if (this.hasMinElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUnsignedInt>(this.getMinElement()!, 'min', jsonObj);
+      setFhirPrimitiveJson<fhirUnsignedInt>(this.getMinElement(), 'min', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.base.min`);
+      jsonObj['min'] = null;
     }
 
     if (this.hasMaxElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getMaxElement()!, 'max', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getMaxElement(), 'max', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.base.max`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['max'] = null;
     }
 
     return jsonObj;
@@ -23044,7 +23068,6 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
    * @param sourceJson - JSON representing FHIR `ElementDefinitionTypeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionTypeComponent
    * @returns ElementDefinitionTypeComponent data model or undefined for `ElementDefinitionTypeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionTypeComponent | undefined {
@@ -23063,8 +23086,6 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -23072,12 +23093,12 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'profile';
@@ -23143,12 +23164,6 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
       instance.setVersioningElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -23255,10 +23270,10 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a UriType object if defined; else null
+   * @returns the `code` property value as a UriType object if defined; else an empty UriType object
    */
-  public getCodeElement(): UriType | null {
-    return this.code;
+  public getCodeElement(): UriType {
+    return this.code ?? new UriType();
   }
 
   /**
@@ -23269,11 +23284,14 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `ElementDefinition.type.code is required`);
-    const optErrMsg = `Invalid ElementDefinition.type.code; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.type.code; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -23302,10 +23320,13 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `ElementDefinition.type.code is required`);
-    const optErrMsg = `Invalid ElementDefinition.type.code (${String(value)})`;
-    this.code = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setCode(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.type.code (${String(value)})`;
+      this.code = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -23894,6 +23915,16 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -23931,21 +23962,19 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.type.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasProfile()) {
@@ -23963,11 +23992,6 @@ export class ElementDefinitionTypeComponent extends DataType implements IDataTyp
     if (this.hasVersioningElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getVersioningElement()!, 'versioning', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -24011,7 +24035,6 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
    * @param sourceJson - JSON representing FHIR `ElementDefinitionExampleComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionExampleComponent
    * @returns ElementDefinitionExampleComponent data model or undefined for `ElementDefinitionExampleComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionExampleComponent | undefined {
@@ -24034,8 +24057,6 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
     const errorMessage = `DecoratorMetadataObject does not exist for ElementDefinitionExampleComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'label';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -24043,12 +24064,12 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLabel(null);
       } else {
         instance.setLabelElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLabel(null);
     }
 
     fieldName = 'value[x]';
@@ -24060,17 +24081,11 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -24217,10 +24232,10 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `label` property value as a StringType object if defined; else null
+   * @returns the `label` property value as a StringType object if defined; else an empty StringType object
    */
-  public getLabelElement(): StringType | null {
-    return this.label;
+  public getLabelElement(): StringType {
+    return this.label ?? new StringType();
   }
 
   /**
@@ -24231,11 +24246,14 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLabelElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.example.label is required`);
-    const optErrMsg = `Invalid ElementDefinition.example.label; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.label = element;
+  public setLabelElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.example.label; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.label = element;
+    } else {
+      this.label = null;
+    }
     return this;
   }
 
@@ -24264,10 +24282,13 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLabel(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.example.label is required`);
-    const optErrMsg = `Invalid ElementDefinition.example.label (${String(value)})`;
-    this.label = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setLabel(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.example.label (${String(value)})`;
+      this.label = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.label = null;
+    }
     return this;
   }
 
@@ -24295,10 +24316,13 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('ElementDefinition.example.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `ElementDefinition.example.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -25522,6 +25546,16 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.label, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -25553,33 +25587,26 @@ export class ElementDefinitionExampleComponent extends DataType implements IData
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasLabelElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getLabelElement()!, 'label', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getLabelElement(), 'label', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.example.label`);
+      jsonObj['label'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.example.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -25635,7 +25662,6 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    * @param sourceJson - JSON representing FHIR `ElementDefinitionConstraintComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionConstraintComponent
    * @returns ElementDefinitionConstraintComponent data model or undefined for `ElementDefinitionConstraintComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionConstraintComponent | undefined {
@@ -25654,8 +25680,6 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'key';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -25663,12 +25687,12 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKey(null);
       } else {
         instance.setKeyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKey(null);
     }
 
     fieldName = 'requirements';
@@ -25687,12 +25711,12 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSeverity(null);
       } else {
         instance.setSeverityElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSeverity(null);
     }
 
     fieldName = 'suppress';
@@ -25711,12 +25735,12 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setHuman(null);
       } else {
         instance.setHumanElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setHuman(null);
     }
 
     fieldName = 'expression';
@@ -25737,12 +25761,6 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
       instance.setSourceElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -25866,10 +25884,10 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `key` property value as a IdType object if defined; else null
+   * @returns the `key` property value as a IdType object if defined; else an empty IdType object
    */
-  public getKeyElement(): IdType | null {
-    return this.key;
+  public getKeyElement(): IdType {
+    return this.key ?? new IdType();
   }
 
   /**
@@ -25880,11 +25898,14 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKeyElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `ElementDefinition.constraint.key is required`);
-    const optErrMsg = `Invalid ElementDefinition.constraint.key; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.key = element;
+  public setKeyElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.constraint.key; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.key = element;
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -25913,10 +25934,13 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKey(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `ElementDefinition.constraint.key is required`);
-    const optErrMsg = `Invalid ElementDefinition.constraint.key (${String(value)})`;
-    this.key = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setKey(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.constraint.key (${String(value)})`;
+      this.key = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -26010,11 +26034,14 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    *
    * @see CodeSystem Enumeration: {@link ConstraintSeverityEnum }
    */
-  public setSeverityEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ElementDefinition.constraint.severity is required`);
-    const errMsgPrefix = `Invalid ElementDefinition.constraint.severity`;
-    assertEnumCodeType<ConstraintSeverityEnum>(enumType, ConstraintSeverityEnum, errMsgPrefix);
-    this.severity = enumType;
+  public setSeverityEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ElementDefinition.constraint.severity`;
+      assertEnumCodeType<ConstraintSeverityEnum>(enumType, ConstraintSeverityEnum, errMsgPrefix);
+      this.severity = enumType;
+    } else {
+      this.severity = null;
+    }
     return this;
   }
 
@@ -26047,11 +26074,14 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    *
    * @see CodeSystem Enumeration: {@link ConstraintSeverityEnum }
    */
-  public setSeverityElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ElementDefinition.constraint.severity is required`);
-    const optErrMsg = `Invalid ElementDefinition.constraint.severity; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.severity = new EnumCodeType(element, this.constraintSeverityEnum);
+  public setSeverityElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.constraint.severity; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.severity = new EnumCodeType(element, this.constraintSeverityEnum);
+    } else {
+      this.severity = null;
+    }
     return this;
   }
 
@@ -26084,10 +26114,13 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    *
    * @see CodeSystem Enumeration: {@link ConstraintSeverityEnum }
    */
-  public setSeverity(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ElementDefinition.constraint.severity is required`);
-    const optErrMsg = `Invalid ElementDefinition.constraint.severity (${String(value)})`;
-    this.severity = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.constraintSeverityEnum);
+  public setSeverity(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.constraint.severity (${String(value)})`;
+      this.severity = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.constraintSeverityEnum);
+    } else {
+      this.severity = null;
+    }
     return this;
   }
 
@@ -26163,10 +26196,10 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
   }
 
   /**
-   * @returns the `human` property value as a StringType object if defined; else null
+   * @returns the `human` property value as a StringType object if defined; else an empty StringType object
    */
-  public getHumanElement(): StringType | null {
-    return this.human;
+  public getHumanElement(): StringType {
+    return this.human ?? new StringType();
   }
 
   /**
@@ -26177,11 +26210,14 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setHumanElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.constraint.human is required`);
-    const optErrMsg = `Invalid ElementDefinition.constraint.human; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.human = element;
+  public setHumanElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.constraint.human; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.human = element;
+    } else {
+      this.human = null;
+    }
     return this;
   }
 
@@ -26210,10 +26246,13 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setHuman(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.constraint.human is required`);
-    const optErrMsg = `Invalid ElementDefinition.constraint.human (${String(value)})`;
-    this.human = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setHuman(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.constraint.human (${String(value)})`;
+      this.human = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.human = null;
+    }
     return this;
   }
 
@@ -26377,6 +26416,16 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.key, this.severity, this.human, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -26413,21 +26462,19 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasKeyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getKeyElement()!, 'key', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getKeyElement(), 'key', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.constraint.key`);
+      jsonObj['key'] = null;
     }
 
     if (this.hasRequirementsElement()) {
@@ -26438,7 +26485,7 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getSeverityElement()!, 'severity', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.constraint.severity`);
+      jsonObj['severity'] = null;
     }
 
     if (this.hasSuppressElement()) {
@@ -26446,10 +26493,9 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
     }
 
     if (this.hasHumanElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getHumanElement()!, 'human', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getHumanElement(), 'human', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.constraint.human`);
+      jsonObj['human'] = null;
     }
 
     if (this.hasExpressionElement()) {
@@ -26458,11 +26504,6 @@ export class ElementDefinitionConstraintComponent extends DataType implements ID
 
     if (this.hasSourceElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getSourceElement(), 'source', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -26500,7 +26541,6 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
    * @param sourceJson - JSON representing FHIR `ElementDefinitionBindingComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionBindingComponent
    * @returns ElementDefinitionBindingComponent data model or undefined for `ElementDefinitionBindingComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionBindingComponent | undefined {
@@ -26519,8 +26559,6 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'strength';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -26528,12 +26566,12 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStrength(null);
       } else {
         instance.setStrengthElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStrength(null);
     }
 
     fieldName = 'description';
@@ -26567,12 +26605,6 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -26667,11 +26699,14 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
    *
    * @see CodeSystem Enumeration: {@link BindingStrengthEnum }
    */
-  public setStrengthEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ElementDefinition.binding.strength is required`);
-    const errMsgPrefix = `Invalid ElementDefinition.binding.strength`;
-    assertEnumCodeType<BindingStrengthEnum>(enumType, BindingStrengthEnum, errMsgPrefix);
-    this.strength = enumType;
+  public setStrengthEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ElementDefinition.binding.strength`;
+      assertEnumCodeType<BindingStrengthEnum>(enumType, BindingStrengthEnum, errMsgPrefix);
+      this.strength = enumType;
+    } else {
+      this.strength = null;
+    }
     return this;
   }
 
@@ -26704,11 +26739,14 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
    *
    * @see CodeSystem Enumeration: {@link BindingStrengthEnum }
    */
-  public setStrengthElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ElementDefinition.binding.strength is required`);
-    const optErrMsg = `Invalid ElementDefinition.binding.strength; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.strength = new EnumCodeType(element, this.bindingStrengthEnum);
+  public setStrengthElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.binding.strength; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.strength = new EnumCodeType(element, this.bindingStrengthEnum);
+    } else {
+      this.strength = null;
+    }
     return this;
   }
 
@@ -26741,10 +26779,13 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
    *
    * @see CodeSystem Enumeration: {@link BindingStrengthEnum }
    */
-  public setStrength(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ElementDefinition.binding.strength is required`);
-    const optErrMsg = `Invalid ElementDefinition.binding.strength (${String(value)})`;
-    this.strength = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.bindingStrengthEnum);
+  public setStrength(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.binding.strength (${String(value)})`;
+      this.strength = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.bindingStrengthEnum);
+    } else {
+      this.strength = null;
+    }
     return this;
   }
 
@@ -26963,6 +27004,16 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.strength, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -26997,21 +27048,20 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasStrengthElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStrengthElement()!, 'strength', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.binding.strength`);
+      jsonObj['strength'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -27024,11 +27074,6 @@ export class ElementDefinitionBindingComponent extends DataType implements IData
 
     if (this.hasAdditional()) {
       setFhirComplexListJson(this.getAdditional(), 'additional', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -27074,7 +27119,6 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
    * @param sourceJson - JSON representing FHIR `ElementDefinitionBindingAdditionalComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionBindingAdditionalComponent
    * @returns ElementDefinitionBindingAdditionalComponent data model or undefined for `ElementDefinitionBindingAdditionalComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionBindingAdditionalComponent | undefined {
@@ -27093,8 +27137,6 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'purpose';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -27102,12 +27144,12 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPurpose(null);
       } else {
         instance.setPurposeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPurpose(null);
     }
 
     fieldName = 'valueSet';
@@ -27117,12 +27159,12 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValueSet(null);
       } else {
         instance.setValueSetElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValueSet(null);
     }
 
     fieldName = 'documentation';
@@ -27165,12 +27207,6 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
       instance.setAnyElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -27294,11 +27330,14 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
    *
    * @see CodeSystem Enumeration: {@link AdditionalBindingPurposeEnum }
    */
-  public setPurposeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ElementDefinition.binding.additional.purpose is required`);
-    const errMsgPrefix = `Invalid ElementDefinition.binding.additional.purpose`;
-    assertEnumCodeType<AdditionalBindingPurposeEnum>(enumType, AdditionalBindingPurposeEnum, errMsgPrefix);
-    this.purpose = enumType;
+  public setPurposeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ElementDefinition.binding.additional.purpose`;
+      assertEnumCodeType<AdditionalBindingPurposeEnum>(enumType, AdditionalBindingPurposeEnum, errMsgPrefix);
+      this.purpose = enumType;
+    } else {
+      this.purpose = null;
+    }
     return this;
   }
 
@@ -27331,11 +27370,14 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
    *
    * @see CodeSystem Enumeration: {@link AdditionalBindingPurposeEnum }
    */
-  public setPurposeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ElementDefinition.binding.additional.purpose is required`);
-    const optErrMsg = `Invalid ElementDefinition.binding.additional.purpose; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.purpose = new EnumCodeType(element, this.additionalBindingPurposeEnum);
+  public setPurposeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.binding.additional.purpose; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.purpose = new EnumCodeType(element, this.additionalBindingPurposeEnum);
+    } else {
+      this.purpose = null;
+    }
     return this;
   }
 
@@ -27368,10 +27410,13 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
    *
    * @see CodeSystem Enumeration: {@link AdditionalBindingPurposeEnum }
    */
-  public setPurpose(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ElementDefinition.binding.additional.purpose is required`);
-    const optErrMsg = `Invalid ElementDefinition.binding.additional.purpose (${String(value)})`;
-    this.purpose = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.additionalBindingPurposeEnum);
+  public setPurpose(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.binding.additional.purpose (${String(value)})`;
+      this.purpose = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.additionalBindingPurposeEnum);
+    } else {
+      this.purpose = null;
+    }
     return this;
   }
 
@@ -27383,10 +27428,10 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
   }
 
   /**
-   * @returns the `valueSet` property value as a CanonicalType object if defined; else null
+   * @returns the `valueSet` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getValueSetElement(): CanonicalType | null {
-    return this.valueSet;
+  public getValueSetElement(): CanonicalType {
+    return this.valueSet ?? new CanonicalType();
   }
 
   /**
@@ -27397,11 +27442,14 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueSetElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `ElementDefinition.binding.additional.valueSet is required`);
-    const optErrMsg = `Invalid ElementDefinition.binding.additional.valueSet; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.valueSet = element;
+  public setValueSetElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.binding.additional.valueSet; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.valueSet = element;
+    } else {
+      this.valueSet = null;
+    }
     return this;
   }
 
@@ -27430,10 +27478,13 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueSet(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `ElementDefinition.binding.additional.valueSet is required`);
-    const optErrMsg = `Invalid ElementDefinition.binding.additional.valueSet (${String(value)})`;
-    this.valueSet = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setValueSet(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.binding.additional.valueSet (${String(value)})`;
+      this.valueSet = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.valueSet = null;
+    }
     return this;
   }
 
@@ -27718,6 +27769,16 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.purpose, this.valueSet, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -27754,28 +27815,26 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasPurposeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getPurposeElement()!, 'purpose', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.binding.additional.purpose`);
+      jsonObj['purpose'] = null;
     }
 
     if (this.hasValueSetElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getValueSetElement()!, 'valueSet', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getValueSetElement(), 'valueSet', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.binding.additional.valueSet`);
+      jsonObj['valueSet'] = null;
     }
 
     if (this.hasDocumentationElement()) {
@@ -27792,11 +27851,6 @@ export class ElementDefinitionBindingAdditionalComponent extends DataType implem
 
     if (this.hasAnyElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getAnyElement(), 'any', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -27844,7 +27898,6 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
    * @param sourceJson - JSON representing FHIR `ElementDefinitionMappingComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ElementDefinitionMappingComponent
    * @returns ElementDefinitionMappingComponent data model or undefined for `ElementDefinitionMappingComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ElementDefinitionMappingComponent | undefined {
@@ -27863,8 +27916,6 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identity';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -27872,12 +27923,12 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIdentity(null);
       } else {
         instance.setIdentityElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIdentity(null);
     }
 
     fieldName = 'language';
@@ -27896,12 +27947,12 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMap(null);
       } else {
         instance.setMapElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMap(null);
     }
 
     fieldName = 'comment';
@@ -27913,12 +27964,6 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
       instance.setCommentElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -27983,10 +28028,10 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `identity` property value as a IdType object if defined; else null
+   * @returns the `identity` property value as a IdType object if defined; else an empty IdType object
    */
-  public getIdentityElement(): IdType | null {
-    return this.identity;
+  public getIdentityElement(): IdType {
+    return this.identity ?? new IdType();
   }
 
   /**
@@ -27997,11 +28042,14 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIdentityElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `ElementDefinition.mapping.identity is required`);
-    const optErrMsg = `Invalid ElementDefinition.mapping.identity; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.identity = element;
+  public setIdentityElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.mapping.identity; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.identity = element;
+    } else {
+      this.identity = null;
+    }
     return this;
   }
 
@@ -28030,10 +28078,13 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIdentity(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `ElementDefinition.mapping.identity is required`);
-    const optErrMsg = `Invalid ElementDefinition.mapping.identity (${String(value)})`;
-    this.identity = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setIdentity(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.mapping.identity (${String(value)})`;
+      this.identity = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.identity = null;
+    }
     return this;
   }
 
@@ -28109,10 +28160,10 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
   }
 
   /**
-   * @returns the `map` property value as a StringType object if defined; else null
+   * @returns the `map` property value as a StringType object if defined; else an empty StringType object
    */
-  public getMapElement(): StringType | null {
-    return this.map;
+  public getMapElement(): StringType {
+    return this.map ?? new StringType();
   }
 
   /**
@@ -28123,11 +28174,14 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMapElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ElementDefinition.mapping.map is required`);
-    const optErrMsg = `Invalid ElementDefinition.mapping.map; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.map = element;
+  public setMapElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ElementDefinition.mapping.map; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.map = element;
+    } else {
+      this.map = null;
+    }
     return this;
   }
 
@@ -28156,10 +28210,13 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMap(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ElementDefinition.mapping.map is required`);
-    const optErrMsg = `Invalid ElementDefinition.mapping.map (${String(value)})`;
-    this.map = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setMap(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ElementDefinition.mapping.map (${String(value)})`;
+      this.map = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.map = null;
+    }
     return this;
   }
 
@@ -28256,6 +28313,16 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.identity, this.map, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -28289,21 +28356,19 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasIdentityElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getIdentityElement()!, 'identity', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getIdentityElement(), 'identity', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.mapping.identity`);
+      jsonObj['identity'] = null;
     }
 
     if (this.hasLanguageElement()) {
@@ -28311,19 +28376,13 @@ export class ElementDefinitionMappingComponent extends DataType implements IData
     }
 
     if (this.hasMapElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getMapElement()!, 'map', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getMapElement(), 'map', jsonObj);
     } else {
-      missingReqdProperties.push(`ElementDefinition.mapping.map`);
+      jsonObj['map'] = null;
     }
 
     if (this.hasCommentElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getCommentElement(), 'comment', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -28419,7 +28478,6 @@ export class Expression extends DataType implements IDataType {
       instance.setReferenceElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -29019,7 +29077,6 @@ export class ExtendedContactDetail extends DataType implements IDataType {
       instance.setPeriod(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -29607,7 +29664,6 @@ export class HumanName extends DataType implements IDataType {
       instance.setPeriod(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -30513,7 +30569,6 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
    * @param sourceJson - JSON representing FHIR `MarketingStatus`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MarketingStatus
    * @returns MarketingStatus data model or undefined for `MarketingStatus`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MarketingStatus | undefined {
@@ -30531,8 +30586,6 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'country';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -30556,12 +30609,12 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'dateRange';
@@ -30581,12 +30634,6 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
       instance.setRestoreDateElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -30727,10 +30774,10 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
   }
 
   /**
-   * @returns the `status` property value as a CodeableConcept object if defined; else null
+   * @returns the `status` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getStatus(): CodeableConcept | null {
-    return this.status;
+  public getStatus(): CodeableConcept {
+    return this.status ?? new CodeableConcept();
   }
 
   /**
@@ -30740,11 +30787,14 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MarketingStatus.status is required`);
-    const optErrMsg = `Invalid MarketingStatus.status; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.status = value;
+  public setStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MarketingStatus.status; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.status = value;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -30874,6 +30924,16 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -30915,15 +30975,14 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCountry()) {
       setFhirComplexJson(this.getCountry(), 'country', jsonObj);
@@ -30934,10 +30993,9 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
     }
 
     if (this.hasStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getStatus()!, 'status', jsonObj);
+      setFhirComplexJson(this.getStatus(), 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`MarketingStatus.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasDateRange()) {
@@ -30946,11 +31004,6 @@ export class MarketingStatus extends BackboneType implements IBackboneType {
 
     if (this.hasRestoreDateElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getRestoreDateElement(), 'restoreDate', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -30991,7 +31044,6 @@ export class MonetaryComponent extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `MonetaryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MonetaryComponent
    * @returns MonetaryComponent data model or undefined for `MonetaryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MonetaryComponent | undefined {
@@ -31010,8 +31062,6 @@ export class MonetaryComponent extends DataType implements IDataType {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -31019,12 +31069,12 @@ export class MonetaryComponent extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'code';
@@ -31052,12 +31102,6 @@ export class MonetaryComponent extends DataType implements IDataType {
       instance.setAmount(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -31147,11 +31191,14 @@ export class MonetaryComponent extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link PriceComponentTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MonetaryComponent.type is required`);
-    const errMsgPrefix = `Invalid MonetaryComponent.type`;
-    assertEnumCodeType<PriceComponentTypeEnum>(enumType, PriceComponentTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MonetaryComponent.type`;
+      assertEnumCodeType<PriceComponentTypeEnum>(enumType, PriceComponentTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -31184,11 +31231,14 @@ export class MonetaryComponent extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link PriceComponentTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MonetaryComponent.type is required`);
-    const optErrMsg = `Invalid MonetaryComponent.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.priceComponentTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MonetaryComponent.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.priceComponentTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -31221,10 +31271,13 @@ export class MonetaryComponent extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link PriceComponentTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MonetaryComponent.type is required`);
-    const optErrMsg = `Invalid MonetaryComponent.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.priceComponentTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MonetaryComponent.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.priceComponentTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -31385,6 +31438,16 @@ export class MonetaryComponent extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -31425,21 +31488,20 @@ export class MonetaryComponent extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MonetaryComponent.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCode()) {
@@ -31452,11 +31514,6 @@ export class MonetaryComponent extends DataType implements IDataType {
 
     if (this.hasAmount()) {
       setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -31525,7 +31582,6 @@ export class Money extends DataType implements IDataType {
       instance.setCurrencyElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -31811,7 +31867,6 @@ export class ParameterDefinition extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `ParameterDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ParameterDefinition
    * @returns ParameterDefinition data model or undefined for `ParameterDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ParameterDefinition | undefined {
@@ -31830,8 +31885,6 @@ export class ParameterDefinition extends DataType implements IDataType {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -31848,12 +31901,12 @@ export class ParameterDefinition extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUse(null);
       } else {
         instance.setUseElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUse(null);
     }
 
     fieldName = 'min';
@@ -31890,12 +31943,12 @@ export class ParameterDefinition extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'profile';
@@ -31907,12 +31960,6 @@ export class ParameterDefinition extends DataType implements IDataType {
       instance.setProfileElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -32120,11 +32167,14 @@ export class ParameterDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link OperationParameterUseEnum }
    */
-  public setUseEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ParameterDefinition.use is required`);
-    const errMsgPrefix = `Invalid ParameterDefinition.use`;
-    assertEnumCodeType<OperationParameterUseEnum>(enumType, OperationParameterUseEnum, errMsgPrefix);
-    this.use = enumType;
+  public setUseEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ParameterDefinition.use`;
+      assertEnumCodeType<OperationParameterUseEnum>(enumType, OperationParameterUseEnum, errMsgPrefix);
+      this.use = enumType;
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -32157,11 +32207,14 @@ export class ParameterDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link OperationParameterUseEnum }
    */
-  public setUseElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ParameterDefinition.use is required`);
-    const optErrMsg = `Invalid ParameterDefinition.use; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.use = new EnumCodeType(element, this.operationParameterUseEnum);
+  public setUseElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ParameterDefinition.use; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.use = new EnumCodeType(element, this.operationParameterUseEnum);
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -32194,10 +32247,13 @@ export class ParameterDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link OperationParameterUseEnum }
    */
-  public setUse(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ParameterDefinition.use is required`);
-    const optErrMsg = `Invalid ParameterDefinition.use (${String(value)})`;
-    this.use = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.operationParameterUseEnum);
+  public setUse(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ParameterDefinition.use (${String(value)})`;
+      this.use = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.operationParameterUseEnum);
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -32419,11 +32475,14 @@ export class ParameterDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link FhirTypesEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ParameterDefinition.type is required`);
-    const errMsgPrefix = `Invalid ParameterDefinition.type`;
-    assertEnumCodeType<FhirTypesEnum>(enumType, FhirTypesEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ParameterDefinition.type`;
+      assertEnumCodeType<FhirTypesEnum>(enumType, FhirTypesEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -32456,11 +32515,14 @@ export class ParameterDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link FhirTypesEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ParameterDefinition.type is required`);
-    const optErrMsg = `Invalid ParameterDefinition.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.fhirTypesEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ParameterDefinition.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.fhirTypesEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -32493,10 +32555,13 @@ export class ParameterDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link FhirTypesEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ParameterDefinition.type is required`);
-    const optErrMsg = `Invalid ParameterDefinition.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fhirTypesEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ParameterDefinition.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fhirTypesEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -32596,6 +32661,16 @@ export class ParameterDefinition extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.use, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -32639,15 +32714,14 @@ export class ParameterDefinition extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getNameElement(), 'name', jsonObj);
@@ -32657,7 +32731,7 @@ export class ParameterDefinition extends DataType implements IDataType {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getUseElement()!, 'use', jsonObj);
     } else {
-      missingReqdProperties.push(`ParameterDefinition.use`);
+      jsonObj['use'] = null;
     }
 
     if (this.hasMinElement()) {
@@ -32676,16 +32750,11 @@ export class ParameterDefinition extends DataType implements IDataType {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ParameterDefinition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasProfileElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getProfileElement(), 'profile', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -32770,7 +32839,6 @@ export class ProductShelfLife extends BackboneType implements IBackboneType {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -33179,7 +33247,6 @@ export class Quantity extends DataType implements IDataType {
       instance.setCodeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -33804,7 +33871,6 @@ export class Range extends DataType implements IDataType {
       instance.setHigh(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -34045,7 +34111,6 @@ export class Ratio extends DataType implements IDataType {
       instance.setDenominator(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -34292,7 +34357,6 @@ export class RatioRange extends DataType implements IDataType {
       instance.setDenominator(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -34561,7 +34625,6 @@ export class RelatedArtifact extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `RelatedArtifact`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RelatedArtifact
    * @returns RelatedArtifact data model or undefined for `RelatedArtifact`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): RelatedArtifact | undefined {
@@ -34580,8 +34643,6 @@ export class RelatedArtifact extends DataType implements IDataType {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -34589,12 +34650,12 @@ export class RelatedArtifact extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'classifier';
@@ -34680,12 +34741,6 @@ export class RelatedArtifact extends DataType implements IDataType {
       instance.setPublicationDateElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -34878,11 +34933,14 @@ export class RelatedArtifact extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link RelatedArtifactTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `RelatedArtifact.type is required`);
-    const errMsgPrefix = `Invalid RelatedArtifact.type`;
-    assertEnumCodeType<RelatedArtifactTypeEnum>(enumType, RelatedArtifactTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid RelatedArtifact.type`;
+      assertEnumCodeType<RelatedArtifactTypeEnum>(enumType, RelatedArtifactTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -34915,11 +34973,14 @@ export class RelatedArtifact extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link RelatedArtifactTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `RelatedArtifact.type is required`);
-    const optErrMsg = `Invalid RelatedArtifact.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.relatedArtifactTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid RelatedArtifact.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.relatedArtifactTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -34952,10 +35013,13 @@ export class RelatedArtifact extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link RelatedArtifactTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `RelatedArtifact.type is required`);
-    const optErrMsg = `Invalid RelatedArtifact.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.relatedArtifactTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid RelatedArtifact.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.relatedArtifactTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -35556,6 +35620,16 @@ export class RelatedArtifact extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -35603,21 +35677,20 @@ export class RelatedArtifact extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`RelatedArtifact.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasClassifier()) {
@@ -35655,11 +35728,6 @@ export class RelatedArtifact extends DataType implements IDataType {
 
     if (this.hasPublicationDateElement()) {
       setFhirPrimitiveJson<fhirDate>(this.getPublicationDateElement(), 'publicationDate', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -35717,7 +35785,6 @@ export class SampledData extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `SampledData`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SampledData
    * @returns SampledData data model or undefined for `SampledData`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SampledData | undefined {
@@ -35736,20 +35803,18 @@ export class SampledData extends DataType implements IDataType {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'origin';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOrigin(null);
       } else {
         instance.setOrigin(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOrigin(null);
     }
 
     fieldName = 'interval';
@@ -35768,12 +35833,12 @@ export class SampledData extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntervalUnit(null);
       } else {
         instance.setIntervalUnitElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntervalUnit(null);
     }
 
     fieldName = 'factor';
@@ -35810,12 +35875,12 @@ export class SampledData extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: PositiveIntType | undefined = fhirParser.parsePositiveIntType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDimensions(null);
       } else {
         instance.setDimensionsElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDimensions(null);
     }
 
     fieldName = 'codeMap';
@@ -35845,12 +35910,6 @@ export class SampledData extends DataType implements IDataType {
       instance.setDataElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -36005,10 +36064,10 @@ export class SampledData extends DataType implements IDataType {
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `origin` property value as a Quantity object if defined; else null
+   * @returns the `origin` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getOrigin(): Quantity | null {
-    return this.origin;
+  public getOrigin(): Quantity {
+    return this.origin ?? new Quantity();
   }
 
   /**
@@ -36018,11 +36077,14 @@ export class SampledData extends DataType implements IDataType {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setOrigin(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `SampledData.origin is required`);
-    const optErrMsg = `Invalid SampledData.origin; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.origin = value;
+  public setOrigin(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid SampledData.origin; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.origin = value;
+    } else {
+      this.origin = null;
+    }
     return this;
   }
 
@@ -36098,10 +36160,10 @@ export class SampledData extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `intervalUnit` property value as a CodeType object if defined; else null
+   * @returns the `intervalUnit` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getIntervalUnitElement(): CodeType | null {
-    return this.intervalUnit;
+  public getIntervalUnitElement(): CodeType {
+    return this.intervalUnit ?? new CodeType();
   }
 
   /**
@@ -36112,11 +36174,14 @@ export class SampledData extends DataType implements IDataType {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIntervalUnitElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `SampledData.intervalUnit is required`);
-    const optErrMsg = `Invalid SampledData.intervalUnit; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intervalUnit = element;
+  public setIntervalUnitElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid SampledData.intervalUnit; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intervalUnit = element;
+    } else {
+      this.intervalUnit = null;
+    }
     return this;
   }
 
@@ -36145,10 +36210,13 @@ export class SampledData extends DataType implements IDataType {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIntervalUnit(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `SampledData.intervalUnit is required`);
-    const optErrMsg = `Invalid SampledData.intervalUnit (${String(value)})`;
-    this.intervalUnit = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setIntervalUnit(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid SampledData.intervalUnit (${String(value)})`;
+      this.intervalUnit = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.intervalUnit = null;
+    }
     return this;
   }
 
@@ -36352,10 +36420,10 @@ export class SampledData extends DataType implements IDataType {
   }
 
   /**
-   * @returns the `dimensions` property value as a PositiveIntType object if defined; else null
+   * @returns the `dimensions` property value as a PositiveIntType object if defined; else an empty PositiveIntType object
    */
-  public getDimensionsElement(): PositiveIntType | null {
-    return this.dimensions;
+  public getDimensionsElement(): PositiveIntType {
+    return this.dimensions ?? new PositiveIntType();
   }
 
   /**
@@ -36366,11 +36434,14 @@ export class SampledData extends DataType implements IDataType {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDimensionsElement(element: PositiveIntType): this {
-    assertIsDefined<PositiveIntType>(element, `SampledData.dimensions is required`);
-    const optErrMsg = `Invalid SampledData.dimensions; Provided value is not an instance of PositiveIntType.`;
-    assertFhirType<PositiveIntType>(element, PositiveIntType, optErrMsg);
-    this.dimensions = element;
+  public setDimensionsElement(element: PositiveIntType | undefined | null): this {
+    if (isDefined<PositiveIntType>(element)) {
+      const optErrMsg = `Invalid SampledData.dimensions; Provided value is not an instance of PositiveIntType.`;
+      assertFhirType<PositiveIntType>(element, PositiveIntType, optErrMsg);
+      this.dimensions = element;
+    } else {
+      this.dimensions = null;
+    }
     return this;
   }
 
@@ -36399,10 +36470,13 @@ export class SampledData extends DataType implements IDataType {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDimensions(value: fhirPositiveInt): this {
-    assertIsDefined<fhirPositiveInt>(value, `SampledData.dimensions is required`);
-    const optErrMsg = `Invalid SampledData.dimensions (${String(value)})`;
-    this.dimensions = new PositiveIntType(parseFhirPrimitiveData(value, fhirPositiveIntSchema, optErrMsg));
+  public setDimensions(value: fhirPositiveInt | undefined | null): this {
+    if (isDefined<fhirPositiveInt>(value)) {
+      const optErrMsg = `Invalid SampledData.dimensions (${String(value)})`;
+      this.dimensions = new PositiveIntType(parseFhirPrimitiveData(value, fhirPositiveIntSchema, optErrMsg));
+    } else {
+      this.dimensions = null;
+    }
     return this;
   }
 
@@ -36633,6 +36707,16 @@ export class SampledData extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.origin, this.intervalUnit, this.dimensions, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -36679,21 +36763,19 @@ export class SampledData extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasOrigin()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getOrigin()!, 'origin', jsonObj);
+      setFhirComplexJson(this.getOrigin(), 'origin', jsonObj);
     } else {
-      missingReqdProperties.push(`SampledData.origin`);
+      jsonObj['origin'] = null;
     }
 
     if (this.hasIntervalElement()) {
@@ -36701,10 +36783,9 @@ export class SampledData extends DataType implements IDataType {
     }
 
     if (this.hasIntervalUnitElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getIntervalUnitElement()!, 'intervalUnit', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getIntervalUnitElement(), 'intervalUnit', jsonObj);
     } else {
-      missingReqdProperties.push(`SampledData.intervalUnit`);
+      jsonObj['intervalUnit'] = null;
     }
 
     if (this.hasFactorElement()) {
@@ -36720,10 +36801,9 @@ export class SampledData extends DataType implements IDataType {
     }
 
     if (this.hasDimensionsElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirPositiveInt>(this.getDimensionsElement()!, 'dimensions', jsonObj);
+      setFhirPrimitiveJson<fhirPositiveInt>(this.getDimensionsElement(), 'dimensions', jsonObj);
     } else {
-      missingReqdProperties.push(`SampledData.dimensions`);
+      jsonObj['dimensions'] = null;
     }
 
     if (this.hasCodeMapElement()) {
@@ -36736,11 +36816,6 @@ export class SampledData extends DataType implements IDataType {
 
     if (this.hasDataElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDataElement(), 'data', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -36859,7 +36934,6 @@ export class Signature extends DataType implements IDataType {
       instance.setDataElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -37583,7 +37657,6 @@ export class Timing extends BackboneType implements IBackboneType {
       instance.setCode(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -38115,7 +38188,6 @@ export class TimingRepeatComponent extends DataType implements IDataType {
       instance.setOffsetElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -39797,7 +39869,6 @@ export class TriggerDefinition extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `TriggerDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TriggerDefinition
    * @returns TriggerDefinition data model or undefined for `TriggerDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TriggerDefinition | undefined {
@@ -39820,8 +39891,6 @@ export class TriggerDefinition extends DataType implements IDataType {
     const errorMessage = `DecoratorMetadataObject does not exist for TriggerDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -39829,12 +39898,12 @@ export class TriggerDefinition extends DataType implements IDataType {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'name';
@@ -39894,12 +39963,6 @@ export class TriggerDefinition extends DataType implements IDataType {
       instance.setCondition(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -40050,11 +40113,14 @@ export class TriggerDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link TriggerTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TriggerDefinition.type is required`);
-    const errMsgPrefix = `Invalid TriggerDefinition.type`;
-    assertEnumCodeType<TriggerTypeEnum>(enumType, TriggerTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TriggerDefinition.type`;
+      assertEnumCodeType<TriggerTypeEnum>(enumType, TriggerTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -40087,11 +40153,14 @@ export class TriggerDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link TriggerTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TriggerDefinition.type is required`);
-    const optErrMsg = `Invalid TriggerDefinition.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.triggerTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TriggerDefinition.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.triggerTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -40124,10 +40193,13 @@ export class TriggerDefinition extends DataType implements IDataType {
    *
    * @see CodeSystem Enumeration: {@link TriggerTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TriggerDefinition.type is required`);
-    const optErrMsg = `Invalid TriggerDefinition.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.triggerTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TriggerDefinition.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.triggerTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -40540,6 +40612,16 @@ export class TriggerDefinition extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -40584,21 +40666,20 @@ export class TriggerDefinition extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`TriggerDefinition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasNameElement()) {
@@ -40624,11 +40705,6 @@ export class TriggerDefinition extends DataType implements IDataType {
 
     if (this.hasCondition()) {
       setFhirComplexJson(this.getCondition(), 'condition', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -40673,7 +40749,6 @@ export class UsageContext extends DataType implements IDataType {
    * @param sourceJson - JSON representing FHIR `UsageContext`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to UsageContext
    * @returns UsageContext data model or undefined for `UsageContext`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): UsageContext | undefined {
@@ -40695,20 +40770,18 @@ export class UsageContext extends DataType implements IDataType {
     const errorMessage = `DecoratorMetadataObject does not exist for UsageContext`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value[x]';
@@ -40720,17 +40793,11 @@ export class UsageContext extends DataType implements IDataType {
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -40777,10 +40844,10 @@ export class UsageContext extends DataType implements IDataType {
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a Coding object if defined; else null
+   * @returns the `code` property value as a Coding object if defined; else an empty Coding object
    */
-  public getCode(): Coding | null {
-    return this.code;
+  public getCode(): Coding {
+    return this.code ?? new Coding();
   }
 
   /**
@@ -40790,11 +40857,14 @@ export class UsageContext extends DataType implements IDataType {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: Coding): this {
-    assertIsDefined<Coding>(value, `UsageContext.code is required`);
-    const optErrMsg = `Invalid UsageContext.code; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.code = value;
+  public setCode(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid UsageContext.code; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -40822,10 +40892,13 @@ export class UsageContext extends DataType implements IDataType {
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('UsageContext.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `UsageContext.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -40949,6 +41022,16 @@ export class UsageContext extends DataType implements IDataType {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -40987,33 +41070,26 @@ export class UsageContext extends DataType implements IDataType {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`UsageContext.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`UsageContext.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -41122,7 +41198,6 @@ export class VirtualServiceDetail extends DataType implements IDataType {
       instance.setSessionKeyElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

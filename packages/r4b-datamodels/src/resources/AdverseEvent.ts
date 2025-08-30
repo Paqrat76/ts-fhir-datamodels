@@ -37,27 +37,21 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -71,6 +65,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -120,7 +115,6 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `AdverseEvent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdverseEvent
    * @returns AdverseEvent data model or undefined for `AdverseEvent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): AdverseEvent | undefined {
@@ -140,8 +134,6 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -157,12 +149,12 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActuality(null);
       } else {
         instance.setActualityElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActuality(null);
     }
 
     fieldName = 'category';
@@ -192,12 +184,12 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'encounter';
@@ -353,12 +345,6 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -753,11 +739,14 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AdverseEventActualityEnum }
    */
-  public setActualityEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `AdverseEvent.actuality is required`);
-    const errMsgPrefix = `Invalid AdverseEvent.actuality`;
-    assertEnumCodeType<AdverseEventActualityEnum>(enumType, AdverseEventActualityEnum, errMsgPrefix);
-    this.actuality = enumType;
+  public setActualityEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid AdverseEvent.actuality`;
+      assertEnumCodeType<AdverseEventActualityEnum>(enumType, AdverseEventActualityEnum, errMsgPrefix);
+      this.actuality = enumType;
+    } else {
+      this.actuality = null;
+    }
     return this;
   }
 
@@ -790,11 +779,14 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AdverseEventActualityEnum }
    */
-  public setActualityElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `AdverseEvent.actuality is required`);
-    const optErrMsg = `Invalid AdverseEvent.actuality; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.actuality = new EnumCodeType(element, this.adverseEventActualityEnum);
+  public setActualityElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid AdverseEvent.actuality; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.actuality = new EnumCodeType(element, this.adverseEventActualityEnum);
+    } else {
+      this.actuality = null;
+    }
     return this;
   }
 
@@ -827,10 +819,13 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link AdverseEventActualityEnum }
    */
-  public setActuality(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `AdverseEvent.actuality is required`);
-    const optErrMsg = `Invalid AdverseEvent.actuality (${String(value)})`;
-    this.actuality = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.adverseEventActualityEnum);
+  public setActuality(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid AdverseEvent.actuality (${String(value)})`;
+      this.actuality = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.adverseEventActualityEnum);
+    } else {
+      this.actuality = null;
+    }
     return this;
   }
 
@@ -932,10 +927,10 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -956,10 +951,13 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
   
     'RelatedPerson',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `AdverseEvent.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -1834,6 +1832,16 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actuality, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1883,15 +1891,14 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1901,7 +1908,7 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getActualityElement()!, 'actuality', jsonObj);
     } else {
-      missingReqdProperties.push(`AdverseEvent.actuality`);
+      jsonObj['actuality'] = null;
     }
 
     if (this.hasCategory()) {
@@ -1913,10 +1920,9 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`AdverseEvent.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -1979,11 +1985,6 @@ export class AdverseEvent extends DomainResource implements IDomainResource {
       setFhirComplexListJson(this.getStudy(), 'study', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2015,7 +2016,6 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `AdverseEventSuspectEntityComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to AdverseEventSuspectEntityComponent
    * @returns AdverseEventSuspectEntityComponent data model or undefined for `AdverseEventSuspectEntityComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): AdverseEventSuspectEntityComponent | undefined {
@@ -2033,20 +2033,18 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'instance';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setInstance(null);
       } else {
         instance.setInstance(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setInstance(null);
     }
 
     fieldName = 'causality';
@@ -2062,12 +2060,6 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2111,10 +2103,10 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `instance_` property value as a Reference object if defined; else null
+   * @returns the `instance_` property value as a Reference object if defined; else an empty Reference object
    */
-  public getInstance(): Reference | null {
-    return this.instance_;
+  public getInstance(): Reference {
+    return this.instance_ ?? new Reference();
   }
 
   /**
@@ -2141,10 +2133,13 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
   
     'Device',
   ])
-  public setInstance(value: Reference): this {
-    assertIsDefined<Reference>(value, `AdverseEvent.suspectEntity.instance is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.instance_ = value;
+  public setInstance(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.instance_ = value;
+    } else {
+      this.instance_ = null;
+    }
     return this;
   }
 
@@ -2233,6 +2228,16 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.instance_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2258,30 +2263,23 @@ export class AdverseEventSuspectEntityComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasInstance()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getInstance()!, 'instance', jsonObj);
+      setFhirComplexJson(this.getInstance(), 'instance', jsonObj);
     } else {
-      missingReqdProperties.push(`AdverseEvent.suspectEntity.instance`);
+      jsonObj['instance'] = null;
     }
 
     if (this.hasCausality()) {
       setFhirBackboneElementListJson(this.getCausality(), 'causality', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2361,7 +2359,6 @@ export class AdverseEventSuspectEntityCausalityComponent extends BackboneElement
       instance.setMethod(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

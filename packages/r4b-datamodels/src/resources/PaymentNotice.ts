@@ -37,26 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   CodeType,
   DateTimeType,
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -70,6 +64,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -137,7 +132,6 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `PaymentNotice`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PaymentNotice
    * @returns PaymentNotice data model or undefined for `PaymentNotice`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): PaymentNotice | undefined {
@@ -156,8 +150,6 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -179,12 +171,12 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'request';
@@ -210,12 +202,12 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCreated(null);
       } else {
         instance.setCreatedElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCreated(null);
     }
 
     fieldName = 'provider';
@@ -232,12 +224,12 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPayment(null);
       } else {
         instance.setPayment(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPayment(null);
     }
 
     fieldName = 'paymentDate';
@@ -263,12 +255,12 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRecipient(null);
       } else {
         instance.setRecipient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRecipient(null);
     }
 
     fieldName = 'amount';
@@ -277,12 +269,12 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Money | undefined = Money.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAmount(null);
       } else {
         instance.setAmount(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAmount(null);
     }
 
     fieldName = 'paymentStatus';
@@ -293,12 +285,6 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       instance.setPaymentStatus(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -591,11 +577,14 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `PaymentNotice.status is required`);
-    const errMsgPrefix = `Invalid PaymentNotice.status`;
-    assertEnumCodeType<FmStatusEnum>(enumType, FmStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid PaymentNotice.status`;
+      assertEnumCodeType<FmStatusEnum>(enumType, FmStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -628,11 +617,14 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `PaymentNotice.status is required`);
-    const optErrMsg = `Invalid PaymentNotice.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.fmStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid PaymentNotice.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.fmStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -665,10 +657,13 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `PaymentNotice.status is required`);
-    const optErrMsg = `Invalid PaymentNotice.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fmStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid PaymentNotice.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fmStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -752,10 +747,10 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `created` property value as a DateTimeType object if defined; else null
+   * @returns the `created` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getCreatedElement(): DateTimeType | null {
-    return this.created;
+  public getCreatedElement(): DateTimeType {
+    return this.created ?? new DateTimeType();
   }
 
   /**
@@ -766,11 +761,14 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCreatedElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `PaymentNotice.created is required`);
-    const optErrMsg = `Invalid PaymentNotice.created; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.created = element;
+  public setCreatedElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid PaymentNotice.created; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.created = element;
+    } else {
+      this.created = null;
+    }
     return this;
   }
 
@@ -799,10 +797,13 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCreated(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `PaymentNotice.created is required`);
-    const optErrMsg = `Invalid PaymentNotice.created (${String(value)})`;
-    this.created = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setCreated(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid PaymentNotice.created (${String(value)})`;
+      this.created = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.created = null;
+    }
     return this;
   }
 
@@ -854,10 +855,10 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `payment` property value as a Reference object if defined; else null
+   * @returns the `payment` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPayment(): Reference | null {
-    return this.payment;
+  public getPayment(): Reference {
+    return this.payment ?? new Reference();
   }
 
   /**
@@ -872,10 +873,13 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   @ReferenceTargets('PaymentNotice.payment', [
     'PaymentReconciliation',
   ])
-  public setPayment(value: Reference): this {
-    assertIsDefined<Reference>(value, `PaymentNotice.payment is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.payment = value;
+  public setPayment(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.payment = value;
+    } else {
+      this.payment = null;
+    }
     return this;
   }
 
@@ -991,10 +995,10 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `recipient` property value as a Reference object if defined; else null
+   * @returns the `recipient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getRecipient(): Reference | null {
-    return this.recipient;
+  public getRecipient(): Reference {
+    return this.recipient ?? new Reference();
   }
 
   /**
@@ -1009,10 +1013,13 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   @ReferenceTargets('PaymentNotice.recipient', [
     'Organization',
   ])
-  public setRecipient(value: Reference): this {
-    assertIsDefined<Reference>(value, `PaymentNotice.recipient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.recipient = value;
+  public setRecipient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.recipient = value;
+    } else {
+      this.recipient = null;
+    }
     return this;
   }
 
@@ -1024,10 +1031,10 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `amount` property value as a Money object if defined; else null
+   * @returns the `amount` property value as a Money object if defined; else an empty Money object
    */
-  public getAmount(): Money | null {
-    return this.amount;
+  public getAmount(): Money {
+    return this.amount ?? new Money();
   }
 
   /**
@@ -1037,11 +1044,14 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAmount(value: Money): this {
-    assertIsDefined<Money>(value, `PaymentNotice.amount is required`);
-    const optErrMsg = `Invalid PaymentNotice.amount; Provided element is not an instance of Money.`;
-    assertFhirType<Money>(value, Money, optErrMsg);
-    this.amount = value;
+  public setAmount(value: Money | undefined | null): this {
+    if (isDefined<Money>(value)) {
+      const optErrMsg = `Invalid PaymentNotice.amount; Provided element is not an instance of Money.`;
+      assertFhirType<Money>(value, Money, optErrMsg);
+      this.amount = value;
+    } else {
+      this.amount = null;
+    }
     return this;
   }
 
@@ -1114,6 +1124,16 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.created, this.payment, this.recipient, this.amount, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1149,15 +1169,14 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1167,7 +1186,7 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`PaymentNotice.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasRequest()) {
@@ -1179,10 +1198,9 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
     }
 
     if (this.hasCreatedElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement()!, 'created', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement(), 'created', jsonObj);
     } else {
-      missingReqdProperties.push(`PaymentNotice.created`);
+      jsonObj['created'] = null;
     }
 
     if (this.hasProvider()) {
@@ -1190,10 +1208,9 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
     }
 
     if (this.hasPayment()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPayment()!, 'payment', jsonObj);
+      setFhirComplexJson(this.getPayment(), 'payment', jsonObj);
     } else {
-      missingReqdProperties.push(`PaymentNotice.payment`);
+      jsonObj['payment'] = null;
     }
 
     if (this.hasPaymentDateElement()) {
@@ -1205,26 +1222,19 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
     }
 
     if (this.hasRecipient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRecipient()!, 'recipient', jsonObj);
+      setFhirComplexJson(this.getRecipient(), 'recipient', jsonObj);
     } else {
-      missingReqdProperties.push(`PaymentNotice.recipient`);
+      jsonObj['recipient'] = null;
     }
 
     if (this.hasAmount()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getAmount()!, 'amount', jsonObj);
+      setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
     } else {
-      missingReqdProperties.push(`PaymentNotice.amount`);
+      jsonObj['amount'] = null;
     }
 
     if (this.hasPaymentStatus()) {
       setFhirComplexJson(this.getPaymentStatus(), 'paymentStatus', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

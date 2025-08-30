@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,17 +46,13 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   UnsignedIntType,
   assertEnumCodeType,
@@ -81,6 +76,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirComplexJson,
@@ -150,7 +146,6 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `MedicationRequest`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicationRequest
    * @returns MedicationRequest data model or undefined for `MedicationRequest`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicationRequest | undefined {
@@ -169,8 +164,6 @@ export class MedicationRequest extends DomainResource implements IDomainResource
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -221,12 +214,12 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -253,12 +246,12 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIntent(null);
       } else {
         instance.setIntentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIntent(null);
     }
 
     fieldName = 'category';
@@ -298,12 +291,12 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMedication(null);
       } else {
         instance.setMedication(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMedication(null);
     }
 
     fieldName = 'subject';
@@ -312,12 +305,12 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'informationSource';
@@ -528,12 +521,6 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1337,11 +1324,14 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link MedicationrequestStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MedicationRequest.status is required`);
-    const errMsgPrefix = `Invalid MedicationRequest.status`;
-    assertEnumCodeType<MedicationrequestStatusEnum>(enumType, MedicationrequestStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MedicationRequest.status`;
+      assertEnumCodeType<MedicationrequestStatusEnum>(enumType, MedicationrequestStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1374,11 +1364,14 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link MedicationrequestStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MedicationRequest.status is required`);
-    const optErrMsg = `Invalid MedicationRequest.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.medicationrequestStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MedicationRequest.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.medicationrequestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1411,10 +1404,13 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link MedicationrequestStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MedicationRequest.status is required`);
-    const optErrMsg = `Invalid MedicationRequest.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationrequestStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MedicationRequest.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationrequestStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1540,11 +1536,14 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link MedicationrequestIntentEnum }
    */
-  public setIntentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MedicationRequest.intent is required`);
-    const errMsgPrefix = `Invalid MedicationRequest.intent`;
-    assertEnumCodeType<MedicationrequestIntentEnum>(enumType, MedicationrequestIntentEnum, errMsgPrefix);
-    this.intent = enumType;
+  public setIntentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MedicationRequest.intent`;
+      assertEnumCodeType<MedicationrequestIntentEnum>(enumType, MedicationrequestIntentEnum, errMsgPrefix);
+      this.intent = enumType;
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1577,11 +1576,14 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link MedicationrequestIntentEnum }
    */
-  public setIntentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MedicationRequest.intent is required`);
-    const optErrMsg = `Invalid MedicationRequest.intent; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.intent = new EnumCodeType(element, this.medicationrequestIntentEnum);
+  public setIntentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MedicationRequest.intent; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.intent = new EnumCodeType(element, this.medicationrequestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1614,10 +1616,13 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link MedicationrequestIntentEnum }
    */
-  public setIntent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MedicationRequest.intent is required`);
-    const optErrMsg = `Invalid MedicationRequest.intent (${String(value)})`;
-    this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationrequestIntentEnum);
+  public setIntent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MedicationRequest.intent (${String(value)})`;
+      this.intent = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationrequestIntentEnum);
+    } else {
+      this.intent = null;
+    }
     return this;
   }
 
@@ -1867,10 +1872,10 @@ export class MedicationRequest extends DomainResource implements IDomainResource
   }
 
   /**
-   * @returns the `medication` property value as a CodeableReference object if defined; else null
+   * @returns the `medication` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getMedication(): CodeableReference | null {
-    return this.medication;
+  public getMedication(): CodeableReference {
+    return this.medication ?? new CodeableReference();
   }
 
   /**
@@ -1880,11 +1885,14 @@ export class MedicationRequest extends DomainResource implements IDomainResource
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setMedication(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `MedicationRequest.medication is required`);
-    const optErrMsg = `Invalid MedicationRequest.medication; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.medication = value;
+  public setMedication(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid MedicationRequest.medication; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.medication = value;
+    } else {
+      this.medication = null;
+    }
     return this;
   }
 
@@ -1896,10 +1904,10 @@ export class MedicationRequest extends DomainResource implements IDomainResource
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -1916,10 +1924,13 @@ export class MedicationRequest extends DomainResource implements IDomainResource
   
     'Group',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `MedicationRequest.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -3063,6 +3074,16 @@ export class MedicationRequest extends DomainResource implements IDomainResource
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.intent, this.medication, this.subject, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3130,15 +3151,14 @@ export class MedicationRequest extends DomainResource implements IDomainResource
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -3160,7 +3180,7 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationRequest.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -3175,7 +3195,7 @@ export class MedicationRequest extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getIntentElement()!, 'intent', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationRequest.intent`);
+      jsonObj['intent'] = null;
     }
 
     if (this.hasCategory()) {
@@ -3192,17 +3212,15 @@ export class MedicationRequest extends DomainResource implements IDomainResource
     }
 
     if (this.hasMedication()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getMedication()!, 'medication', jsonObj);
+      setFhirComplexJson(this.getMedication(), 'medication', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationRequest.medication`);
+      jsonObj['medication'] = null;
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationRequest.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasInformationSource()) {
@@ -3283,11 +3301,6 @@ export class MedicationRequest extends DomainResource implements IDomainResource
 
     if (this.hasEventHistory()) {
       setFhirComplexListJson(this.getEventHistory(), 'eventHistory', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3413,7 +3426,6 @@ export class MedicationRequestDispenseRequestComponent extends BackboneElement i
       instance.setDoseAdministrationAid(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4067,7 +4079,6 @@ export class MedicationRequestDispenseRequestInitialFillComponent extends Backbo
       instance.setDuration(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4257,7 +4268,6 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `MedicationRequestSubstitutionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicationRequestSubstitutionComponent
    * @returns MedicationRequestSubstitutionComponent data model or undefined for `MedicationRequestSubstitutionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicationRequestSubstitutionComponent | undefined {
@@ -4279,8 +4289,6 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
     const errorMessage = `DecoratorMetadataObject does not exist for MedicationRequestSubstitutionComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'allowed[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const allowed: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -4290,7 +4298,7 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
       classMetadata,
     );
     if (allowed === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setAllowed(null);
     } else {
       instance.setAllowed(allowed);
     }
@@ -4303,12 +4311,6 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
       instance.setReason(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4368,10 +4370,13 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MedicationRequest.substitution.allowed[x]')
-  public setAllowed(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MedicationRequest.substitution.allowed[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.allowed = value;
+  public setAllowed(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.allowed = value;
+    } else {
+      this.allowed = null;
+    }
     return this;
   }
 
@@ -4483,6 +4488,16 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.allowed, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4507,30 +4522,24 @@ export class MedicationRequestSubstitutionComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasAllowed()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getAllowed()!, 'allowed', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationRequest.substitution.allowed[x]`);
+      jsonObj['allowed'] = null;
     }
 
     if (this.hasReason()) {
       setFhirComplexJson(this.getReason(), 'reason', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

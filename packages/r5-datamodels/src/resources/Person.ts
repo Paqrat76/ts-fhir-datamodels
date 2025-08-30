@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,16 +47,12 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
@@ -75,6 +70,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -120,7 +116,6 @@ export class Person extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Person`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Person
    * @returns Person data model or undefined for `Person`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Person | undefined {
@@ -288,7 +283,6 @@ export class Person extends DomainResource implements IDomainResource {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1484,7 +1478,6 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `PersonCommunicationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PersonCommunicationComponent
    * @returns PersonCommunicationComponent data model or undefined for `PersonCommunicationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PersonCommunicationComponent | undefined {
@@ -1503,20 +1496,18 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'language';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLanguage(null);
       } else {
         instance.setLanguage(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLanguage(null);
     }
 
     fieldName = 'preferred';
@@ -1528,12 +1519,6 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
       instance.setPreferredElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1572,10 +1557,10 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `language` property value as a CodeableConcept object if defined; else null
+   * @returns the `language` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getLanguage(): CodeableConcept | null {
-    return this.language;
+  public getLanguage(): CodeableConcept {
+    return this.language ?? new CodeableConcept();
   }
 
   /**
@@ -1585,11 +1570,14 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setLanguage(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Person.communication.language is required`);
-    const optErrMsg = `Invalid Person.communication.language; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.language = value;
+  public setLanguage(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Person.communication.language; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.language = value;
+    } else {
+      this.language = null;
+    }
     return this;
   }
 
@@ -1684,6 +1672,16 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.language, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1708,30 +1706,23 @@ export class PersonCommunicationComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasLanguage()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getLanguage()!, 'language', jsonObj);
+      setFhirComplexJson(this.getLanguage(), 'language', jsonObj);
     } else {
-      missingReqdProperties.push(`Person.communication.language`);
+      jsonObj['language'] = null;
     }
 
     if (this.hasPreferredElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getPreferredElement(), 'preferred', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1766,7 +1757,6 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
    * @param sourceJson - JSON representing FHIR `PersonLinkComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to PersonLinkComponent
    * @returns PersonLinkComponent data model or undefined for `PersonLinkComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): PersonLinkComponent | undefined {
@@ -1785,20 +1775,18 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'target';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTarget(null);
       } else {
         instance.setTarget(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTarget(null);
     }
 
     fieldName = 'assurance';
@@ -1810,12 +1798,6 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
       instance.setAssuranceElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1865,10 +1847,10 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `target` property value as a Reference object if defined; else null
+   * @returns the `target` property value as a Reference object if defined; else an empty Reference object
    */
-  public getTarget(): Reference | null {
-    return this.target;
+  public getTarget(): Reference {
+    return this.target ?? new Reference();
   }
 
   /**
@@ -1889,10 +1871,13 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
   
     'Person',
   ])
-  public setTarget(value: Reference): this {
-    assertIsDefined<Reference>(value, `Person.link.target is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.target = value;
+  public setTarget(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.target = value;
+    } else {
+      this.target = null;
+    }
     return this;
   }
 
@@ -2039,6 +2024,16 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.target, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2063,31 +2058,24 @@ export class PersonLinkComponent extends BackboneElement implements IBackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTarget()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getTarget()!, 'target', jsonObj);
+      setFhirComplexJson(this.getTarget(), 'target', jsonObj);
     } else {
-      missingReqdProperties.push(`Person.link.target`);
+      jsonObj['target'] = null;
     }
 
     if (this.hasAssuranceElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getAssuranceElement()!, 'assurance', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

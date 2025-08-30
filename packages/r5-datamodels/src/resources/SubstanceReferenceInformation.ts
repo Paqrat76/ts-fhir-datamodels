@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -47,7 +46,6 @@ import {
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   ReferenceTargets,
@@ -102,7 +100,6 @@ export class SubstanceReferenceInformation extends DomainResource implements IDo
    * @param sourceJson - JSON representing FHIR `SubstanceReferenceInformation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubstanceReferenceInformation
    * @returns SubstanceReferenceInformation data model or undefined for `SubstanceReferenceInformation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SubstanceReferenceInformation | undefined {
@@ -170,7 +167,6 @@ export class SubstanceReferenceInformation extends DomainResource implements IDo
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -619,7 +615,6 @@ export class SubstanceReferenceInformationGeneComponent extends BackboneElement 
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -940,7 +935,6 @@ export class SubstanceReferenceInformationGeneElementComponent extends BackboneE
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1307,7 +1301,6 @@ export class SubstanceReferenceInformationTargetComponent extends BackboneElemen
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

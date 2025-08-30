@@ -37,27 +37,21 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -71,6 +65,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -125,7 +120,6 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
    * @param sourceJson - JSON representing FHIR `BiologicallyDerivedProductDispense`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to BiologicallyDerivedProductDispense
    * @returns BiologicallyDerivedProductDispense data model or undefined for `BiologicallyDerivedProductDispense`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): BiologicallyDerivedProductDispense | undefined {
@@ -144,8 +138,6 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -193,12 +185,12 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'originRelationshipType';
@@ -215,12 +207,12 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProduct(null);
       } else {
         instance.setProduct(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProduct(null);
     }
 
     fieldName = 'patient';
@@ -229,12 +221,12 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'matchStatus';
@@ -322,12 +314,6 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
       instance.setUsageInstructionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -793,11 +779,14 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
    *
    * @see CodeSystem Enumeration: {@link BiologicallyderivedproductdispenseStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `BiologicallyDerivedProductDispense.status is required`);
-    const errMsgPrefix = `Invalid BiologicallyDerivedProductDispense.status`;
-    assertEnumCodeType<BiologicallyderivedproductdispenseStatusEnum>(enumType, BiologicallyderivedproductdispenseStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid BiologicallyDerivedProductDispense.status`;
+      assertEnumCodeType<BiologicallyderivedproductdispenseStatusEnum>(enumType, BiologicallyderivedproductdispenseStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -830,11 +819,14 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
    *
    * @see CodeSystem Enumeration: {@link BiologicallyderivedproductdispenseStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `BiologicallyDerivedProductDispense.status is required`);
-    const optErrMsg = `Invalid BiologicallyDerivedProductDispense.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.biologicallyderivedproductdispenseStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid BiologicallyDerivedProductDispense.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.biologicallyderivedproductdispenseStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -867,10 +859,13 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
    *
    * @see CodeSystem Enumeration: {@link BiologicallyderivedproductdispenseStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `BiologicallyDerivedProductDispense.status is required`);
-    const optErrMsg = `Invalid BiologicallyDerivedProductDispense.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.biologicallyderivedproductdispenseStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid BiologicallyDerivedProductDispense.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.biologicallyderivedproductdispenseStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -914,10 +909,10 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
   }
 
   /**
-   * @returns the `product` property value as a Reference object if defined; else null
+   * @returns the `product` property value as a Reference object if defined; else an empty Reference object
    */
-  public getProduct(): Reference | null {
-    return this.product;
+  public getProduct(): Reference {
+    return this.product ?? new Reference();
   }
 
   /**
@@ -932,10 +927,13 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
   @ReferenceTargets('BiologicallyDerivedProductDispense.product', [
     'BiologicallyDerivedProduct',
   ])
-  public setProduct(value: Reference): this {
-    assertIsDefined<Reference>(value, `BiologicallyDerivedProductDispense.product is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.product = value;
+  public setProduct(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.product = value;
+    } else {
+      this.product = null;
+    }
     return this;
   }
 
@@ -947,10 +945,10 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -965,10 +963,13 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
   @ReferenceTargets('BiologicallyDerivedProductDispense.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `BiologicallyDerivedProductDispense.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -1457,6 +1458,16 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.product, this.patient, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1500,15 +1511,14 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1526,7 +1536,7 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`BiologicallyDerivedProductDispense.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasOriginRelationshipType()) {
@@ -1534,17 +1544,15 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
     }
 
     if (this.hasProduct()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProduct()!, 'product', jsonObj);
+      setFhirComplexJson(this.getProduct(), 'product', jsonObj);
     } else {
-      missingReqdProperties.push(`BiologicallyDerivedProductDispense.product`);
+      jsonObj['product'] = null;
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`BiologicallyDerivedProductDispense.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasMatchStatus()) {
@@ -1583,11 +1591,6 @@ export class BiologicallyDerivedProductDispense extends DomainResource implement
       setFhirPrimitiveJson<fhirString>(this.getUsageInstructionElement(), 'usageInstruction', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1619,7 +1622,6 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
    * @param sourceJson - JSON representing FHIR `BiologicallyDerivedProductDispensePerformerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to BiologicallyDerivedProductDispensePerformerComponent
    * @returns BiologicallyDerivedProductDispensePerformerComponent data model or undefined for `BiologicallyDerivedProductDispensePerformerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BiologicallyDerivedProductDispensePerformerComponent | undefined {
@@ -1637,8 +1639,6 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -1653,20 +1653,14 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1736,10 +1730,10 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
   }
 
   /**
-   * @returns the `actor` property value as a Reference object if defined; else null
+   * @returns the `actor` property value as a Reference object if defined; else an empty Reference object
    */
-  public getActor(): Reference | null {
-    return this.actor;
+  public getActor(): Reference {
+    return this.actor ?? new Reference();
   }
 
   /**
@@ -1754,10 +1748,13 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
   @ReferenceTargets('BiologicallyDerivedProductDispense.performer.actor', [
     'Practitioner',
   ])
-  public setActor(value: Reference): this {
-    assertIsDefined<Reference>(value, `BiologicallyDerivedProductDispense.performer.actor is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.actor = value;
+  public setActor(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -1788,6 +1785,16 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1812,30 +1819,23 @@ export class BiologicallyDerivedProductDispensePerformerComponent extends Backbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`BiologicallyDerivedProductDispense.performer.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;

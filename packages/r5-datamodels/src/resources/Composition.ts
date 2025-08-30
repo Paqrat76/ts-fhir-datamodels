@@ -37,30 +37,23 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -76,6 +69,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -151,7 +145,6 @@ export class Composition extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Composition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Composition
    * @returns Composition data model or undefined for `Composition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Composition | undefined {
@@ -170,8 +163,6 @@ export class Composition extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -211,12 +202,12 @@ export class Composition extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'type';
@@ -225,12 +216,12 @@ export class Composition extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'category';
@@ -274,12 +265,12 @@ export class Composition extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDate(null);
       } else {
         instance.setDateElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDate(null);
     }
 
     fieldName = 'useContext';
@@ -303,13 +294,13 @@ export class Composition extends DomainResource implements IDomainResource {
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAuthor(null);
         } else {
           instance.addAuthor(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAuthor(null);
     }
 
     fieldName = 'name';
@@ -328,12 +319,12 @@ export class Composition extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'note';
@@ -409,12 +400,6 @@ export class Composition extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -946,11 +931,14 @@ export class Composition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link CompositionStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Composition.status is required`);
-    const errMsgPrefix = `Invalid Composition.status`;
-    assertEnumCodeType<CompositionStatusEnum>(enumType, CompositionStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Composition.status`;
+      assertEnumCodeType<CompositionStatusEnum>(enumType, CompositionStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -983,11 +971,14 @@ export class Composition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link CompositionStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Composition.status is required`);
-    const optErrMsg = `Invalid Composition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.compositionStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Composition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.compositionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1020,10 +1011,13 @@ export class Composition extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link CompositionStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Composition.status is required`);
-    const optErrMsg = `Invalid Composition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.compositionStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Composition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.compositionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1035,10 +1029,10 @@ export class Composition extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -1048,11 +1042,14 @@ export class Composition extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Composition.type is required`);
-    const optErrMsg = `Invalid Composition.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Composition.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1224,10 +1221,10 @@ export class Composition extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `date` property value as a DateTimeType object if defined; else null
+   * @returns the `date` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateElement(): DateTimeType | null {
-    return this.date;
+  public getDateElement(): DateTimeType {
+    return this.date ?? new DateTimeType();
   }
 
   /**
@@ -1238,11 +1235,14 @@ export class Composition extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `Composition.date is required`);
-    const optErrMsg = `Invalid Composition.date; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.date = element;
+  public setDateElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid Composition.date; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.date = element;
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -1271,10 +1271,13 @@ export class Composition extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDate(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `Composition.date is required`);
-    const optErrMsg = `Invalid Composition.date (${String(value)})`;
-    this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDate(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid Composition.date (${String(value)})`;
+      this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -1372,10 +1375,13 @@ export class Composition extends DomainResource implements IDomainResource {
   
     'Organization',
   ])
-  public setAuthor(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `Composition.author is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.author = value;
+  public setAuthor(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.author = value;
+    } else {
+      this.author = null;
+    }
     return this;
   }
 
@@ -1491,10 +1497,10 @@ export class Composition extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -1505,11 +1511,14 @@ export class Composition extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Composition.title is required`);
-    const optErrMsg = `Invalid Composition.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Composition.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -1538,10 +1547,13 @@ export class Composition extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Composition.title is required`);
-    const optErrMsg = `Invalid Composition.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Composition.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -1915,6 +1927,16 @@ export class Composition extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.type_, this.date, this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1966,15 +1988,14 @@ export class Composition extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -1992,14 +2013,13 @@ export class Composition extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Composition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Composition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCategory()) {
@@ -2015,10 +2035,9 @@ export class Composition extends DomainResource implements IDomainResource {
     }
 
     if (this.hasDateElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement()!, 'date', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement(), 'date', jsonObj);
     } else {
-      missingReqdProperties.push(`Composition.date`);
+      jsonObj['date'] = null;
     }
 
     if (this.hasUseContext()) {
@@ -2028,7 +2047,7 @@ export class Composition extends DomainResource implements IDomainResource {
     if (this.hasAuthor()) {
       setFhirComplexListJson(this.getAuthor(), 'author', jsonObj);
     } else {
-      missingReqdProperties.push(`Composition.author`);
+      jsonObj['author'] = null;
     }
 
     if (this.hasNameElement()) {
@@ -2036,10 +2055,9 @@ export class Composition extends DomainResource implements IDomainResource {
     }
 
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`Composition.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasNote()) {
@@ -2064,11 +2082,6 @@ export class Composition extends DomainResource implements IDomainResource {
 
     if (this.hasSection()) {
       setFhirBackboneElementListJson(this.getSection(), 'section', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2104,7 +2117,6 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `CompositionAttesterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CompositionAttesterComponent
    * @returns CompositionAttesterComponent data model or undefined for `CompositionAttesterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CompositionAttesterComponent | undefined {
@@ -2123,20 +2135,18 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'mode';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMode(null);
       } else {
         instance.setMode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMode(null);
     }
 
     fieldName = 'time';
@@ -2156,12 +2166,6 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
       instance.setParty(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2220,10 +2224,10 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `mode` property value as a CodeableConcept object if defined; else null
+   * @returns the `mode` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getMode(): CodeableConcept | null {
-    return this.mode;
+  public getMode(): CodeableConcept {
+    return this.mode ?? new CodeableConcept();
   }
 
   /**
@@ -2233,11 +2237,14 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setMode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Composition.attester.mode is required`);
-    const optErrMsg = `Invalid Composition.attester.mode; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.mode = value;
+  public setMode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Composition.attester.mode; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.mode = value;
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -2377,6 +2384,16 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.mode, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2402,21 +2419,19 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasMode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getMode()!, 'mode', jsonObj);
+      setFhirComplexJson(this.getMode(), 'mode', jsonObj);
     } else {
-      missingReqdProperties.push(`Composition.attester.mode`);
+      jsonObj['mode'] = null;
     }
 
     if (this.hasTimeElement()) {
@@ -2425,11 +2440,6 @@ export class CompositionAttesterComponent extends BackboneElement implements IBa
 
     if (this.hasParty()) {
       setFhirComplexJson(this.getParty(), 'party', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2498,7 +2508,6 @@ export class CompositionEventComponent extends BackboneElement implements IBackb
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2820,7 +2829,6 @@ export class CompositionSectionComponent extends BackboneElement implements IBac
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

@@ -37,29 +37,22 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PositiveIntType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirCode,
   fhirCodeSchema,
@@ -73,6 +66,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -111,7 +105,6 @@ export class InsurancePlan extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `InsurancePlan`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InsurancePlan
    * @returns InsurancePlan data model or undefined for `InsurancePlan`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): InsurancePlan | undefined {
@@ -295,7 +288,6 @@ export class InsurancePlan extends DomainResource implements IDomainResource {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1603,7 +1595,6 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `InsurancePlanCoverageComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InsurancePlanCoverageComponent
    * @returns InsurancePlanCoverageComponent data model or undefined for `InsurancePlanCoverageComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InsurancePlanCoverageComponent | undefined {
@@ -1621,20 +1612,18 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'network';
@@ -1658,21 +1647,15 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: InsurancePlanCoverageBenefitComponent | undefined = InsurancePlanCoverageBenefitComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setBenefit(null);
         } else {
           instance.addBenefit(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setBenefit(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1725,10 +1708,10 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -1738,11 +1721,14 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InsurancePlan.coverage.type is required`);
-    const optErrMsg = `Invalid InsurancePlan.coverage.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InsurancePlan.coverage.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1833,11 +1819,14 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setBenefit(value: InsurancePlanCoverageBenefitComponent[]): this {
-    assertIsDefinedList<InsurancePlanCoverageBenefitComponent>(value, `InsurancePlan.coverage.benefit is required`);
-    const optErrMsg = `Invalid InsurancePlan.coverage.benefit; Provided value array has an element that is not an instance of InsurancePlanCoverageBenefitComponent.`;
-    assertFhirTypeList<InsurancePlanCoverageBenefitComponent>(value, InsurancePlanCoverageBenefitComponent, optErrMsg);
-    this.benefit = value;
+  public setBenefit(value: InsurancePlanCoverageBenefitComponent[] | undefined | null): this {
+    if (isDefinedList<InsurancePlanCoverageBenefitComponent>(value)) {
+      const optErrMsg = `Invalid InsurancePlan.coverage.benefit; Provided value array has an element that is not an instance of InsurancePlanCoverageBenefitComponent.`;
+      assertFhirTypeList<InsurancePlanCoverageBenefitComponent>(value, InsurancePlanCoverageBenefitComponent, optErrMsg);
+      this.benefit = value;
+    } else {
+      this.benefit = null;
+    }
     return this;
   }
 
@@ -1895,6 +1884,16 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1922,21 +1921,19 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`InsurancePlan.coverage.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasNetwork()) {
@@ -1946,12 +1943,7 @@ export class InsurancePlanCoverageComponent extends BackboneElement implements I
     if (this.hasBenefit()) {
       setFhirBackboneElementListJson(this.getBenefit(), 'benefit', jsonObj);
     } else {
-      missingReqdProperties.push(`InsurancePlan.coverage.benefit`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['benefit'] = null;
     }
 
     return jsonObj;
@@ -1984,7 +1976,6 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `InsurancePlanCoverageBenefitComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InsurancePlanCoverageBenefitComponent
    * @returns InsurancePlanCoverageBenefitComponent data model or undefined for `InsurancePlanCoverageBenefitComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InsurancePlanCoverageBenefitComponent | undefined {
@@ -2003,20 +1994,18 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'requirement';
@@ -2041,12 +2030,6 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2095,10 +2078,10 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -2108,11 +2091,14 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InsurancePlan.coverage.benefit.type is required`);
-    const optErrMsg = `Invalid InsurancePlan.coverage.benefit.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InsurancePlan.coverage.benefit.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2266,6 +2252,16 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2292,21 +2288,19 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`InsurancePlan.coverage.benefit.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasRequirementElement()) {
@@ -2315,11 +2309,6 @@ export class InsurancePlanCoverageBenefitComponent extends BackboneElement imple
 
     if (this.hasLimit()) {
       setFhirBackboneElementListJson(this.getLimit(), 'limit', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2381,7 +2370,6 @@ export class InsurancePlanCoverageBenefitLimitComponent extends BackboneElement 
       instance.setCode(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2658,7 +2646,6 @@ export class InsurancePlanPlanComponent extends BackboneElement implements IBack
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3261,7 +3248,6 @@ export class InsurancePlanPlanGeneralCostComponent extends BackboneElement imple
       instance.setCommentElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3618,7 +3604,6 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `InsurancePlanPlanSpecificCostComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InsurancePlanPlanSpecificCostComponent
    * @returns InsurancePlanPlanSpecificCostComponent data model or undefined for `InsurancePlanPlanSpecificCostComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InsurancePlanPlanSpecificCostComponent | undefined {
@@ -3636,20 +3621,18 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'category';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCategory(null);
       } else {
         instance.setCategory(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCategory(null);
     }
 
     fieldName = 'benefit';
@@ -3665,12 +3648,6 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3705,10 +3682,10 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `category` property value as a CodeableConcept object if defined; else null
+   * @returns the `category` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCategory(): CodeableConcept | null {
-    return this.category;
+  public getCategory(): CodeableConcept {
+    return this.category ?? new CodeableConcept();
   }
 
   /**
@@ -3718,11 +3695,14 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCategory(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InsurancePlan.plan.specificCost.category is required`);
-    const optErrMsg = `Invalid InsurancePlan.plan.specificCost.category; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.category = value;
+  public setCategory(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InsurancePlan.plan.specificCost.category; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.category = value;
+    } else {
+      this.category = null;
+    }
     return this;
   }
 
@@ -3811,6 +3791,16 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.category, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3836,30 +3826,23 @@ export class InsurancePlanPlanSpecificCostComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCategory()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCategory()!, 'category', jsonObj);
+      setFhirComplexJson(this.getCategory(), 'category', jsonObj);
     } else {
-      missingReqdProperties.push(`InsurancePlan.plan.specificCost.category`);
+      jsonObj['category'] = null;
     }
 
     if (this.hasBenefit()) {
       setFhirBackboneElementListJson(this.getBenefit(), 'benefit', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3892,7 +3875,6 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `InsurancePlanPlanSpecificCostBenefitComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InsurancePlanPlanSpecificCostBenefitComponent
    * @returns InsurancePlanPlanSpecificCostBenefitComponent data model or undefined for `InsurancePlanPlanSpecificCostBenefitComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InsurancePlanPlanSpecificCostBenefitComponent | undefined {
@@ -3910,20 +3892,18 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'cost';
@@ -3939,12 +3919,6 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3979,10 +3953,10 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -3992,11 +3966,14 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InsurancePlan.plan.specificCost.benefit.type is required`);
-    const optErrMsg = `Invalid InsurancePlan.plan.specificCost.benefit.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InsurancePlan.plan.specificCost.benefit.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4085,6 +4062,16 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4110,30 +4097,23 @@ export class InsurancePlanPlanSpecificCostBenefitComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`InsurancePlan.plan.specificCost.benefit.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasCost()) {
       setFhirBackboneElementListJson(this.getCost(), 'cost', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4166,7 +4146,6 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `InsurancePlanPlanSpecificCostBenefitCostComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InsurancePlanPlanSpecificCostBenefitCostComponent
    * @returns InsurancePlanPlanSpecificCostBenefitCostComponent data model or undefined for `InsurancePlanPlanSpecificCostBenefitCostComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InsurancePlanPlanSpecificCostBenefitCostComponent | undefined {
@@ -4184,20 +4163,18 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'applicability';
@@ -4229,12 +4206,6 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
       instance.setValue(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4297,10 +4268,10 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -4310,11 +4281,14 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InsurancePlan.plan.specificCost.benefit.cost.type is required`);
-    const optErrMsg = `Invalid InsurancePlan.plan.specificCost.benefit.cost.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InsurancePlan.plan.specificCost.benefit.cost.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4469,6 +4443,16 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4496,21 +4480,19 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`InsurancePlan.plan.specificCost.benefit.cost.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasApplicability()) {
@@ -4523,11 +4505,6 @@ export class InsurancePlanPlanSpecificCostBenefitCostComponent extends BackboneE
 
     if (this.hasValue()) {
       setFhirComplexJson(this.getValue(), 'value', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   CodeType,
   DateTimeType,
@@ -45,7 +44,6 @@ import {
   EnumCodeType,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   ReferenceTargets,
   StringType,
@@ -102,7 +100,6 @@ export class EnrollmentResponse extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `EnrollmentResponse`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EnrollmentResponse
    * @returns EnrollmentResponse data model or undefined for `EnrollmentResponse`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): EnrollmentResponse | undefined {
@@ -195,7 +192,6 @@ export class EnrollmentResponse extends DomainResource implements IDomainResourc
       instance.setRequestProvider(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

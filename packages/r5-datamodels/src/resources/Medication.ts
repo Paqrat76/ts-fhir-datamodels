@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,16 +46,12 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -77,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -119,7 +115,6 @@ export class Medication extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Medication`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Medication
    * @returns Medication data model or undefined for `Medication`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Medication | undefined {
@@ -222,7 +217,6 @@ export class Medication extends DomainResource implements IDomainResource {
       instance.setDefinition(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -945,7 +939,6 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
    * @param sourceJson - JSON representing FHIR `MedicationIngredientComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicationIngredientComponent
    * @returns MedicationIngredientComponent data model or undefined for `MedicationIngredientComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicationIngredientComponent | undefined {
@@ -968,20 +961,18 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
     const errorMessage = `DecoratorMetadataObject does not exist for MedicationIngredientComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'item';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setItem(null);
       } else {
         instance.setItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     }
 
     fieldName = 'isActive';
@@ -1003,12 +994,6 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
     );
     instance.setStrength(strength);
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1073,10 +1058,10 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `item` property value as a CodeableReference object if defined; else null
+   * @returns the `item` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getItem(): CodeableReference | null {
-    return this.item;
+  public getItem(): CodeableReference {
+    return this.item ?? new CodeableReference();
   }
 
   /**
@@ -1086,11 +1071,14 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setItem(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `Medication.ingredient.item is required`);
-    const optErrMsg = `Invalid Medication.ingredient.item; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.item = value;
+  public setItem(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid Medication.ingredient.item; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -1291,6 +1279,16 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1316,21 +1314,19 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getItem()!, 'item', jsonObj);
+      setFhirComplexJson(this.getItem(), 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`Medication.ingredient.item`);
+      jsonObj['item'] = null;
     }
 
     if (this.hasIsActiveElement()) {
@@ -1340,11 +1336,6 @@ export class MedicationIngredientComponent extends BackboneElement implements IB
     if (this.hasStrength()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getStrength()!, 'strength', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1409,7 +1400,6 @@ export class MedicationBatchComponent extends BackboneElement implements IBackbo
       instance.setExpirationDateElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

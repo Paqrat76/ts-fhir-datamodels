@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -51,7 +50,6 @@ import {
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
@@ -121,7 +119,6 @@ export class BiologicallyDerivedProduct extends DomainResource implements IDomai
    * @param sourceJson - JSON representing FHIR `BiologicallyDerivedProduct`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to BiologicallyDerivedProduct
    * @returns BiologicallyDerivedProduct data model or undefined for `BiologicallyDerivedProduct`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): BiologicallyDerivedProduct | undefined {
@@ -257,7 +254,6 @@ export class BiologicallyDerivedProduct extends DomainResource implements IDomai
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1336,7 +1332,6 @@ export class BiologicallyDerivedProductCollectionComponent extends BackboneEleme
     );
     instance.setCollected(collected);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1710,7 +1705,6 @@ export class BiologicallyDerivedProductProcessingComponent extends BackboneEleme
     );
     instance.setTime(time);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2139,7 +2133,6 @@ export class BiologicallyDerivedProductManipulationComponent extends BackboneEle
     );
     instance.setTime(time);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2470,7 +2463,6 @@ export class BiologicallyDerivedProductStorageComponent extends BackboneElement 
       instance.setDuration(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

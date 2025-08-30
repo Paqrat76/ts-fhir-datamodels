@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,17 +45,13 @@ import {
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UnsignedIntType,
@@ -79,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -137,7 +133,6 @@ export class Group extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Group`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Group
    * @returns Group data model or undefined for `Group`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Group | undefined {
@@ -156,8 +151,6 @@ export class Group extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -188,12 +181,12 @@ export class Group extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'actual';
@@ -203,12 +196,12 @@ export class Group extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActual(null);
       } else {
         instance.setActualElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActual(null);
     }
 
     fieldName = 'code';
@@ -271,12 +264,6 @@ export class Group extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -591,11 +578,14 @@ export class Group extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link GroupTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Group.type is required`);
-    const errMsgPrefix = `Invalid Group.type`;
-    assertEnumCodeType<GroupTypeEnum>(enumType, GroupTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Group.type`;
+      assertEnumCodeType<GroupTypeEnum>(enumType, GroupTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -628,11 +618,14 @@ export class Group extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link GroupTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Group.type is required`);
-    const optErrMsg = `Invalid Group.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.groupTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Group.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.groupTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -665,10 +658,13 @@ export class Group extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link GroupTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Group.type is required`);
-    const optErrMsg = `Invalid Group.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.groupTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Group.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.groupTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -680,10 +676,10 @@ export class Group extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `actual` property value as a BooleanType object if defined; else null
+   * @returns the `actual` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getActualElement(): BooleanType | null {
-    return this.actual;
+  public getActualElement(): BooleanType {
+    return this.actual ?? new BooleanType();
   }
 
   /**
@@ -694,11 +690,14 @@ export class Group extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setActualElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `Group.actual is required`);
-    const optErrMsg = `Invalid Group.actual; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.actual = element;
+  public setActualElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Group.actual; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.actual = element;
+    } else {
+      this.actual = null;
+    }
     return this;
   }
 
@@ -727,10 +726,13 @@ export class Group extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setActual(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `Group.actual is required`);
-    const optErrMsg = `Invalid Group.actual (${String(value)})`;
-    this.actual = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setActual(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Group.actual (${String(value)})`;
+      this.actual = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.actual = null;
+    }
     return this;
   }
 
@@ -1087,6 +1089,16 @@ export class Group extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.actual, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1122,15 +1134,14 @@ export class Group extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1144,14 +1155,13 @@ export class Group extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Group.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasActualElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getActualElement()!, 'actual', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getActualElement(), 'actual', jsonObj);
     } else {
-      missingReqdProperties.push(`Group.actual`);
+      jsonObj['actual'] = null;
     }
 
     if (this.hasCode()) {
@@ -1176,11 +1186,6 @@ export class Group extends DomainResource implements IDomainResource {
 
     if (this.hasMember()) {
       setFhirBackboneElementListJson(this.getMember(), 'member', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1231,7 +1236,6 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `GroupCharacteristicComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to GroupCharacteristicComponent
    * @returns GroupCharacteristicComponent data model or undefined for `GroupCharacteristicComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): GroupCharacteristicComponent | undefined {
@@ -1254,20 +1258,18 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
     const errorMessage = `DecoratorMetadataObject does not exist for GroupCharacteristicComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value[x]';
@@ -1279,7 +1281,7 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
@@ -1291,12 +1293,12 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setExclude(null);
       } else {
         instance.setExcludeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setExclude(null);
     }
 
     fieldName = 'period';
@@ -1307,12 +1309,6 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
       instance.setPeriod(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1394,10 +1390,10 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -1407,11 +1403,14 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Group.characteristic.code is required`);
-    const optErrMsg = `Invalid Group.characteristic.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Group.characteristic.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1439,10 +1438,13 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Group.characteristic.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Group.characteristic.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -1569,10 +1571,10 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `exclude` property value as a BooleanType object if defined; else null
+   * @returns the `exclude` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getExcludeElement(): BooleanType | null {
-    return this.exclude;
+  public getExcludeElement(): BooleanType {
+    return this.exclude ?? new BooleanType();
   }
 
   /**
@@ -1583,11 +1585,14 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setExcludeElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `Group.characteristic.exclude is required`);
-    const optErrMsg = `Invalid Group.characteristic.exclude; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.exclude = element;
+  public setExcludeElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid Group.characteristic.exclude; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.exclude = element;
+    } else {
+      this.exclude = null;
+    }
     return this;
   }
 
@@ -1616,10 +1621,13 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setExclude(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `Group.characteristic.exclude is required`);
-    const optErrMsg = `Invalid Group.characteristic.exclude (${String(value)})`;
-    this.exclude = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setExclude(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid Group.characteristic.exclude (${String(value)})`;
+      this.exclude = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.exclude = null;
+    }
     return this;
   }
 
@@ -1684,6 +1692,16 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, this.exclude, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1710,44 +1728,36 @@ export class GroupCharacteristicComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`Group.characteristic.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Group.characteristic.value[x]`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasExcludeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getExcludeElement()!, 'exclude', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getExcludeElement(), 'exclude', jsonObj);
     } else {
-      missingReqdProperties.push(`Group.characteristic.exclude`);
+      jsonObj['exclude'] = null;
     }
 
     if (this.hasPeriod()) {
       setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1781,7 +1791,6 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
    * @param sourceJson - JSON representing FHIR `GroupMemberComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to GroupMemberComponent
    * @returns GroupMemberComponent data model or undefined for `GroupMemberComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): GroupMemberComponent | undefined {
@@ -1800,20 +1809,18 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'entity';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setEntity(null);
       } else {
         instance.setEntity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setEntity(null);
     }
 
     fieldName = 'period';
@@ -1833,12 +1840,6 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
       instance.setInactiveElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1898,10 +1899,10 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `entity` property value as a Reference object if defined; else null
+   * @returns the `entity` property value as a Reference object if defined; else an empty Reference object
    */
-  public getEntity(): Reference | null {
-    return this.entity;
+  public getEntity(): Reference {
+    return this.entity ?? new Reference();
   }
 
   /**
@@ -1928,10 +1929,13 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
   
     'Group',
   ])
-  public setEntity(value: Reference): this {
-    assertIsDefined<Reference>(value, `Group.member.entity is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.entity = value;
+  public setEntity(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.entity = value;
+    } else {
+      this.entity = null;
+    }
     return this;
   }
 
@@ -2059,6 +2063,16 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.entity, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2084,21 +2098,19 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasEntity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getEntity()!, 'entity', jsonObj);
+      setFhirComplexJson(this.getEntity(), 'entity', jsonObj);
     } else {
-      missingReqdProperties.push(`Group.member.entity`);
+      jsonObj['entity'] = null;
     }
 
     if (this.hasPeriod()) {
@@ -2107,11 +2119,6 @@ export class GroupMemberComponent extends BackboneElement implements IBackboneEl
 
     if (this.hasInactiveElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getInactiveElement(), 'inactive', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

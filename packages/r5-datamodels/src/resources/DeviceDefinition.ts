@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,20 +45,16 @@ import {
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -88,6 +83,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -135,7 +131,6 @@ export class DeviceDefinition extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `DeviceDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinition
    * @returns DeviceDefinition data model or undefined for `DeviceDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinition | undefined {
@@ -466,7 +461,6 @@ export class DeviceDefinition extends DomainResource implements IDomainResource 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2701,7 +2695,6 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionUdiDeviceIdentifierComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionUdiDeviceIdentifierComponent
    * @returns DeviceDefinitionUdiDeviceIdentifierComponent data model or undefined for `DeviceDefinitionUdiDeviceIdentifierComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionUdiDeviceIdentifierComponent | undefined {
@@ -2720,8 +2713,6 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'deviceIdentifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2729,12 +2720,12 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDeviceIdentifier(null);
       } else {
         instance.setDeviceIdentifierElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDeviceIdentifier(null);
     }
 
     fieldName = 'issuer';
@@ -2744,12 +2735,12 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIssuer(null);
       } else {
         instance.setIssuerElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIssuer(null);
     }
 
     fieldName = 'jurisdiction';
@@ -2759,12 +2750,12 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setJurisdiction(null);
       } else {
         instance.setJurisdictionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setJurisdiction(null);
     }
 
     fieldName = 'marketDistribution';
@@ -2780,12 +2771,6 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2848,10 +2833,10 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `deviceIdentifier` property value as a StringType object if defined; else null
+   * @returns the `deviceIdentifier` property value as a StringType object if defined; else an empty StringType object
    */
-  public getDeviceIdentifierElement(): StringType | null {
-    return this.deviceIdentifier;
+  public getDeviceIdentifierElement(): StringType {
+    return this.deviceIdentifier ?? new StringType();
   }
 
   /**
@@ -2862,11 +2847,14 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDeviceIdentifierElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `DeviceDefinition.udiDeviceIdentifier.deviceIdentifier is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.deviceIdentifier; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.deviceIdentifier = element;
+  public setDeviceIdentifierElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.deviceIdentifier; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.deviceIdentifier = element;
+    } else {
+      this.deviceIdentifier = null;
+    }
     return this;
   }
 
@@ -2895,10 +2883,13 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDeviceIdentifier(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `DeviceDefinition.udiDeviceIdentifier.deviceIdentifier is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.deviceIdentifier (${String(value)})`;
-    this.deviceIdentifier = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setDeviceIdentifier(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.deviceIdentifier (${String(value)})`;
+      this.deviceIdentifier = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.deviceIdentifier = null;
+    }
     return this;
   }
 
@@ -2910,10 +2901,10 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `issuer` property value as a UriType object if defined; else null
+   * @returns the `issuer` property value as a UriType object if defined; else an empty UriType object
    */
-  public getIssuerElement(): UriType | null {
-    return this.issuer;
+  public getIssuerElement(): UriType {
+    return this.issuer ?? new UriType();
   }
 
   /**
@@ -2924,11 +2915,14 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIssuerElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `DeviceDefinition.udiDeviceIdentifier.issuer is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.issuer; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.issuer = element;
+  public setIssuerElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.issuer; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.issuer = element;
+    } else {
+      this.issuer = null;
+    }
     return this;
   }
 
@@ -2957,10 +2951,13 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIssuer(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `DeviceDefinition.udiDeviceIdentifier.issuer is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.issuer (${String(value)})`;
-    this.issuer = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setIssuer(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.issuer (${String(value)})`;
+      this.issuer = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.issuer = null;
+    }
     return this;
   }
 
@@ -2972,10 +2969,10 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `jurisdiction` property value as a UriType object if defined; else null
+   * @returns the `jurisdiction` property value as a UriType object if defined; else an empty UriType object
    */
-  public getJurisdictionElement(): UriType | null {
-    return this.jurisdiction;
+  public getJurisdictionElement(): UriType {
+    return this.jurisdiction ?? new UriType();
   }
 
   /**
@@ -2986,11 +2983,14 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setJurisdictionElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `DeviceDefinition.udiDeviceIdentifier.jurisdiction is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.jurisdiction; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.jurisdiction = element;
+  public setJurisdictionElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.jurisdiction; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.jurisdiction = element;
+    } else {
+      this.jurisdiction = null;
+    }
     return this;
   }
 
@@ -3019,10 +3019,13 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setJurisdiction(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `DeviceDefinition.udiDeviceIdentifier.jurisdiction is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.jurisdiction (${String(value)})`;
-    this.jurisdiction = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setJurisdiction(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.jurisdiction (${String(value)})`;
+      this.jurisdiction = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.jurisdiction = null;
+    }
     return this;
   }
 
@@ -3113,6 +3116,16 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.deviceIdentifier, this.issuer, this.jurisdiction, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3140,44 +3153,35 @@ export class DeviceDefinitionUdiDeviceIdentifierComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasDeviceIdentifierElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getDeviceIdentifierElement()!, 'deviceIdentifier', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getDeviceIdentifierElement(), 'deviceIdentifier', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.udiDeviceIdentifier.deviceIdentifier`);
+      jsonObj['deviceIdentifier'] = null;
     }
 
     if (this.hasIssuerElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getIssuerElement()!, 'issuer', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getIssuerElement(), 'issuer', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.udiDeviceIdentifier.issuer`);
+      jsonObj['issuer'] = null;
     }
 
     if (this.hasJurisdictionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getJurisdictionElement()!, 'jurisdiction', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getJurisdictionElement(), 'jurisdiction', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.udiDeviceIdentifier.jurisdiction`);
+      jsonObj['jurisdiction'] = null;
     }
 
     if (this.hasMarketDistribution()) {
       setFhirBackboneElementListJson(this.getMarketDistribution(), 'marketDistribution', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3219,7 +3223,6 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent
    * @returns DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent data model or undefined for `DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent | undefined {
@@ -3238,20 +3241,18 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'marketPeriod';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMarketPeriod(null);
       } else {
         instance.setMarketPeriod(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMarketPeriod(null);
     }
 
     fieldName = 'subJurisdiction';
@@ -3261,20 +3262,14 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubJurisdiction(null);
       } else {
         instance.setSubJurisdictionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubJurisdiction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3309,10 +3304,10 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `marketPeriod` property value as a Period object if defined; else null
+   * @returns the `marketPeriod` property value as a Period object if defined; else an empty Period object
    */
-  public getMarketPeriod(): Period | null {
-    return this.marketPeriod;
+  public getMarketPeriod(): Period {
+    return this.marketPeriod ?? new Period();
   }
 
   /**
@@ -3322,11 +3317,14 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setMarketPeriod(value: Period): this {
-    assertIsDefined<Period>(value, `DeviceDefinition.udiDeviceIdentifier.marketDistribution.marketPeriod is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.marketDistribution.marketPeriod; Provided element is not an instance of Period.`;
-    assertFhirType<Period>(value, Period, optErrMsg);
-    this.marketPeriod = value;
+  public setMarketPeriod(value: Period | undefined | null): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.marketDistribution.marketPeriod; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.marketPeriod = value;
+    } else {
+      this.marketPeriod = null;
+    }
     return this;
   }
 
@@ -3338,10 +3336,10 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
   }
 
   /**
-   * @returns the `subJurisdiction` property value as a UriType object if defined; else null
+   * @returns the `subJurisdiction` property value as a UriType object if defined; else an empty UriType object
    */
-  public getSubJurisdictionElement(): UriType | null {
-    return this.subJurisdiction;
+  public getSubJurisdictionElement(): UriType {
+    return this.subJurisdiction ?? new UriType();
   }
 
   /**
@@ -3352,11 +3350,14 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setSubJurisdictionElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.subJurisdiction = element;
+  public setSubJurisdictionElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.subJurisdiction = element;
+    } else {
+      this.subJurisdiction = null;
+    }
     return this;
   }
 
@@ -3385,10 +3386,13 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setSubJurisdiction(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction is required`);
-    const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction (${String(value)})`;
-    this.subJurisdiction = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setSubJurisdiction(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction (${String(value)})`;
+      this.subJurisdiction = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.subJurisdiction = null;
+    }
     return this;
   }
 
@@ -3419,6 +3423,16 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.marketPeriod, this.subJurisdiction, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3443,33 +3457,25 @@ export class DeviceDefinitionUdiDeviceIdentifierMarketDistributionComponent exte
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasMarketPeriod()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getMarketPeriod()!, 'marketPeriod', jsonObj);
+      setFhirComplexJson(this.getMarketPeriod(), 'marketPeriod', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.udiDeviceIdentifier.marketDistribution.marketPeriod`);
+      jsonObj['marketPeriod'] = null;
     }
 
     if (this.hasSubJurisdictionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getSubJurisdictionElement()!, 'subJurisdiction', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getSubJurisdictionElement(), 'subJurisdiction', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.udiDeviceIdentifier.marketDistribution.subJurisdiction`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['subJurisdiction'] = null;
     }
 
     return jsonObj;
@@ -3534,7 +3540,6 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionRegulatoryIdentifierComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionRegulatoryIdentifierComponent
    * @returns DeviceDefinitionRegulatoryIdentifierComponent data model or undefined for `DeviceDefinitionRegulatoryIdentifierComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionRegulatoryIdentifierComponent | undefined {
@@ -3553,8 +3558,6 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3562,12 +3565,12 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'deviceIdentifier';
@@ -3577,12 +3580,12 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDeviceIdentifier(null);
       } else {
         instance.setDeviceIdentifierElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDeviceIdentifier(null);
     }
 
     fieldName = 'issuer';
@@ -3592,12 +3595,12 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIssuer(null);
       } else {
         instance.setIssuerElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIssuer(null);
     }
 
     fieldName = 'jurisdiction';
@@ -3607,20 +3610,14 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UriType | undefined = fhirParser.parseUriType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setJurisdiction(null);
       } else {
         instance.setJurisdictionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setJurisdiction(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3710,11 +3707,14 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link DevicedefinitionRegulatoryIdentifierTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DeviceDefinition.regulatoryIdentifier.type is required`);
-    const errMsgPrefix = `Invalid DeviceDefinition.regulatoryIdentifier.type`;
-    assertEnumCodeType<DevicedefinitionRegulatoryIdentifierTypeEnum>(enumType, DevicedefinitionRegulatoryIdentifierTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DeviceDefinition.regulatoryIdentifier.type`;
+      assertEnumCodeType<DevicedefinitionRegulatoryIdentifierTypeEnum>(enumType, DevicedefinitionRegulatoryIdentifierTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3747,11 +3747,14 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link DevicedefinitionRegulatoryIdentifierTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DeviceDefinition.regulatoryIdentifier.type is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.devicedefinitionRegulatoryIdentifierTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.devicedefinitionRegulatoryIdentifierTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3784,10 +3787,13 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    *
    * @see CodeSystem Enumeration: {@link DevicedefinitionRegulatoryIdentifierTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DeviceDefinition.regulatoryIdentifier.type is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.devicedefinitionRegulatoryIdentifierTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.devicedefinitionRegulatoryIdentifierTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3799,10 +3805,10 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
   }
 
   /**
-   * @returns the `deviceIdentifier` property value as a StringType object if defined; else null
+   * @returns the `deviceIdentifier` property value as a StringType object if defined; else an empty StringType object
    */
-  public getDeviceIdentifierElement(): StringType | null {
-    return this.deviceIdentifier;
+  public getDeviceIdentifierElement(): StringType {
+    return this.deviceIdentifier ?? new StringType();
   }
 
   /**
@@ -3813,11 +3819,14 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDeviceIdentifierElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `DeviceDefinition.regulatoryIdentifier.deviceIdentifier is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.deviceIdentifier; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.deviceIdentifier = element;
+  public setDeviceIdentifierElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.deviceIdentifier; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.deviceIdentifier = element;
+    } else {
+      this.deviceIdentifier = null;
+    }
     return this;
   }
 
@@ -3846,10 +3855,13 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDeviceIdentifier(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `DeviceDefinition.regulatoryIdentifier.deviceIdentifier is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.deviceIdentifier (${String(value)})`;
-    this.deviceIdentifier = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setDeviceIdentifier(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.deviceIdentifier (${String(value)})`;
+      this.deviceIdentifier = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.deviceIdentifier = null;
+    }
     return this;
   }
 
@@ -3861,10 +3873,10 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
   }
 
   /**
-   * @returns the `issuer` property value as a UriType object if defined; else null
+   * @returns the `issuer` property value as a UriType object if defined; else an empty UriType object
    */
-  public getIssuerElement(): UriType | null {
-    return this.issuer;
+  public getIssuerElement(): UriType {
+    return this.issuer ?? new UriType();
   }
 
   /**
@@ -3875,11 +3887,14 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIssuerElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `DeviceDefinition.regulatoryIdentifier.issuer is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.issuer; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.issuer = element;
+  public setIssuerElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.issuer; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.issuer = element;
+    } else {
+      this.issuer = null;
+    }
     return this;
   }
 
@@ -3908,10 +3923,13 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIssuer(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `DeviceDefinition.regulatoryIdentifier.issuer is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.issuer (${String(value)})`;
-    this.issuer = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setIssuer(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.issuer (${String(value)})`;
+      this.issuer = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.issuer = null;
+    }
     return this;
   }
 
@@ -3923,10 +3941,10 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
   }
 
   /**
-   * @returns the `jurisdiction` property value as a UriType object if defined; else null
+   * @returns the `jurisdiction` property value as a UriType object if defined; else an empty UriType object
    */
-  public getJurisdictionElement(): UriType | null {
-    return this.jurisdiction;
+  public getJurisdictionElement(): UriType {
+    return this.jurisdiction ?? new UriType();
   }
 
   /**
@@ -3937,11 +3955,14 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setJurisdictionElement(element: UriType): this {
-    assertIsDefined<UriType>(element, `DeviceDefinition.regulatoryIdentifier.jurisdiction is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.jurisdiction; Provided value is not an instance of UriType.`;
-    assertFhirType<UriType>(element, UriType, optErrMsg);
-    this.jurisdiction = element;
+  public setJurisdictionElement(element: UriType | undefined | null): this {
+    if (isDefined<UriType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.jurisdiction; Provided value is not an instance of UriType.`;
+      assertFhirType<UriType>(element, UriType, optErrMsg);
+      this.jurisdiction = element;
+    } else {
+      this.jurisdiction = null;
+    }
     return this;
   }
 
@@ -3970,10 +3991,13 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setJurisdiction(value: fhirUri): this {
-    assertIsDefined<fhirUri>(value, `DeviceDefinition.regulatoryIdentifier.jurisdiction is required`);
-    const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.jurisdiction (${String(value)})`;
-    this.jurisdiction = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+  public setJurisdiction(value: fhirUri | undefined | null): this {
+    if (isDefined<fhirUri>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.regulatoryIdentifier.jurisdiction (${String(value)})`;
+      this.jurisdiction = new UriType(parseFhirPrimitiveData(value, fhirUriSchema, optErrMsg));
+    } else {
+      this.jurisdiction = null;
+    }
     return this;
   }
 
@@ -4006,6 +4030,16 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.deviceIdentifier, this.issuer, this.jurisdiction, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4032,47 +4066,38 @@ export class DeviceDefinitionRegulatoryIdentifierComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.regulatoryIdentifier.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasDeviceIdentifierElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getDeviceIdentifierElement()!, 'deviceIdentifier', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getDeviceIdentifierElement(), 'deviceIdentifier', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.regulatoryIdentifier.deviceIdentifier`);
+      jsonObj['deviceIdentifier'] = null;
     }
 
     if (this.hasIssuerElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getIssuerElement()!, 'issuer', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getIssuerElement(), 'issuer', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.regulatoryIdentifier.issuer`);
+      jsonObj['issuer'] = null;
     }
 
     if (this.hasJurisdictionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUri>(this.getJurisdictionElement()!, 'jurisdiction', jsonObj);
+      setFhirPrimitiveJson<fhirUri>(this.getJurisdictionElement(), 'jurisdiction', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.regulatoryIdentifier.jurisdiction`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['jurisdiction'] = null;
     }
 
     return jsonObj;
@@ -4118,7 +4143,6 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionDeviceNameComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionDeviceNameComponent
    * @returns DeviceDefinitionDeviceNameComponent data model or undefined for `DeviceDefinitionDeviceNameComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionDeviceNameComponent | undefined {
@@ -4137,8 +4161,6 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4146,12 +4168,12 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'type';
@@ -4161,20 +4183,14 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4218,10 +4234,10 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -4232,11 +4248,14 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `DeviceDefinition.deviceName.name is required`);
-    const optErrMsg = `Invalid DeviceDefinition.deviceName.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.deviceName.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -4265,10 +4284,13 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `DeviceDefinition.deviceName.name is required`);
-    const optErrMsg = `Invalid DeviceDefinition.deviceName.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.deviceName.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -4298,11 +4320,14 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link DeviceNametypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DeviceDefinition.deviceName.type is required`);
-    const errMsgPrefix = `Invalid DeviceDefinition.deviceName.type`;
-    assertEnumCodeType<DeviceNametypeEnum>(enumType, DeviceNametypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DeviceDefinition.deviceName.type`;
+      assertEnumCodeType<DeviceNametypeEnum>(enumType, DeviceNametypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4335,11 +4360,14 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link DeviceNametypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DeviceDefinition.deviceName.type is required`);
-    const optErrMsg = `Invalid DeviceDefinition.deviceName.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.deviceNametypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.deviceName.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.deviceNametypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4372,10 +4400,13 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link DeviceNametypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DeviceDefinition.deviceName.type is required`);
-    const optErrMsg = `Invalid DeviceDefinition.deviceName.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.deviceNametypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.deviceName.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.deviceNametypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4406,6 +4437,16 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4430,33 +4471,26 @@ export class DeviceDefinitionDeviceNameComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.deviceName.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.deviceName.type`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['type'] = null;
     }
 
     return jsonObj;
@@ -4490,7 +4524,6 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionClassificationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionClassificationComponent
    * @returns DeviceDefinitionClassificationComponent data model or undefined for `DeviceDefinitionClassificationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionClassificationComponent | undefined {
@@ -4508,20 +4541,18 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'justification';
@@ -4537,12 +4568,6 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4577,10 +4602,10 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -4590,11 +4615,14 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceDefinition.classification.type is required`);
-    const optErrMsg = `Invalid DeviceDefinition.classification.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.classification.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4683,6 +4711,16 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4708,30 +4746,23 @@ export class DeviceDefinitionClassificationComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.classification.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasJustification()) {
       setFhirComplexListJson(this.getJustification(), 'justification', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4764,7 +4795,6 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionConformsToComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionConformsToComponent
    * @returns DeviceDefinitionConformsToComponent data model or undefined for `DeviceDefinitionConformsToComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionConformsToComponent | undefined {
@@ -4783,8 +4813,6 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'category';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -4799,12 +4827,12 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSpecification(null);
       } else {
         instance.setSpecification(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSpecification(null);
     }
 
     fieldName = 'version';
@@ -4838,12 +4866,6 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4938,10 +4960,10 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `specification` property value as a CodeableConcept object if defined; else null
+   * @returns the `specification` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getSpecification(): CodeableConcept | null {
-    return this.specification;
+  public getSpecification(): CodeableConcept {
+    return this.specification ?? new CodeableConcept();
   }
 
   /**
@@ -4951,11 +4973,14 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSpecification(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceDefinition.conformsTo.specification is required`);
-    const optErrMsg = `Invalid DeviceDefinition.conformsTo.specification; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.specification = value;
+  public setSpecification(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.conformsTo.specification; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.specification = value;
+    } else {
+      this.specification = null;
+    }
     return this;
   }
 
@@ -5168,6 +5193,16 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.specification, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5196,25 +5231,23 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCategory()) {
       setFhirComplexJson(this.getCategory(), 'category', jsonObj);
     }
 
     if (this.hasSpecification()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSpecification()!, 'specification', jsonObj);
+      setFhirComplexJson(this.getSpecification(), 'specification', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.conformsTo.specification`);
+      jsonObj['specification'] = null;
     }
 
     if (this.hasVersion()) {
@@ -5223,11 +5256,6 @@ export class DeviceDefinitionConformsToComponent extends BackboneElement impleme
 
     if (this.hasSource()) {
       setFhirComplexListJson(this.getSource(), 'source', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5260,7 +5288,6 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionHasPartComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionHasPartComponent
    * @returns DeviceDefinitionHasPartComponent data model or undefined for `DeviceDefinitionHasPartComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionHasPartComponent | undefined {
@@ -5279,20 +5306,18 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'reference';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReference(null);
       } else {
         instance.setReference(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReference(null);
     }
 
     fieldName = 'count';
@@ -5304,12 +5329,6 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
       instance.setCountElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5347,10 +5366,10 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `reference` property value as a Reference object if defined; else null
+   * @returns the `reference` property value as a Reference object if defined; else an empty Reference object
    */
-  public getReference(): Reference | null {
-    return this.reference;
+  public getReference(): Reference {
+    return this.reference ?? new Reference();
   }
 
   /**
@@ -5365,10 +5384,13 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
   @ReferenceTargets('DeviceDefinition.hasPart.reference', [
     'DeviceDefinition',
   ])
-  public setReference(value: Reference): this {
-    assertIsDefined<Reference>(value, `DeviceDefinition.hasPart.reference is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.reference = value;
+  public setReference(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.reference = value;
+    } else {
+      this.reference = null;
+    }
     return this;
   }
 
@@ -5463,6 +5485,16 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.reference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5487,30 +5519,23 @@ export class DeviceDefinitionHasPartComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasReference()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getReference()!, 'reference', jsonObj);
+      setFhirComplexJson(this.getReference(), 'reference', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.hasPart.reference`);
+      jsonObj['reference'] = null;
     }
 
     if (this.hasCountElement()) {
       setFhirPrimitiveJson<fhirInteger>(this.getCountElement(), 'count', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5621,7 +5646,6 @@ export class DeviceDefinitionPackagingComponent extends BackboneElement implemen
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6167,7 +6191,6 @@ export class DeviceDefinitionPackagingDistributorComponent extends BackboneEleme
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6430,7 +6453,6 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionVersionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionVersionComponent
    * @returns DeviceDefinitionVersionComponent data model or undefined for `DeviceDefinitionVersionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionVersionComponent | undefined {
@@ -6448,8 +6470,6 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -6474,20 +6494,14 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6601,10 +6615,10 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -6615,11 +6629,14 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `DeviceDefinition.version.value is required`);
-    const optErrMsg = `Invalid DeviceDefinition.version.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.version.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -6648,10 +6665,13 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `DeviceDefinition.version.value is required`);
-    const optErrMsg = `Invalid DeviceDefinition.version.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.version.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -6683,6 +6703,16 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6708,15 +6738,14 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -6727,15 +6756,9 @@ export class DeviceDefinitionVersionComponent extends BackboneElement implements
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.version.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -6775,7 +6798,6 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionPropertyComponent
    * @returns DeviceDefinitionPropertyComponent data model or undefined for `DeviceDefinitionPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionPropertyComponent | undefined {
@@ -6797,20 +6819,18 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
     const errorMessage = `DecoratorMetadataObject does not exist for DeviceDefinitionPropertyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'value[x]';
@@ -6822,17 +6842,11 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6886,10 +6900,10 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -6899,11 +6913,14 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceDefinition.property.type is required`);
-    const optErrMsg = `Invalid DeviceDefinition.property.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.property.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6931,10 +6948,13 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('DeviceDefinition.property.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `DeviceDefinition.property.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -7124,6 +7144,16 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7148,33 +7178,26 @@ export class DeviceDefinitionPropertyComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.property.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.property.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -7212,7 +7235,6 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionLinkComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionLinkComponent
    * @returns DeviceDefinitionLinkComponent data model or undefined for `DeviceDefinitionLinkComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionLinkComponent | undefined {
@@ -7230,20 +7252,18 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'relation';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelation(null);
       } else {
         instance.setRelation(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelation(null);
     }
 
     fieldName = 'relatedDevice';
@@ -7252,20 +7272,14 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelatedDevice(null);
       } else {
         instance.setRelatedDevice(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelatedDevice(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7303,10 +7317,10 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `relation` property value as a Coding object if defined; else null
+   * @returns the `relation` property value as a Coding object if defined; else an empty Coding object
    */
-  public getRelation(): Coding | null {
-    return this.relation;
+  public getRelation(): Coding {
+    return this.relation ?? new Coding();
   }
 
   /**
@@ -7316,11 +7330,14 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRelation(value: Coding): this {
-    assertIsDefined<Coding>(value, `DeviceDefinition.link.relation is required`);
-    const optErrMsg = `Invalid DeviceDefinition.link.relation; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.relation = value;
+  public setRelation(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.link.relation; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.relation = value;
+    } else {
+      this.relation = null;
+    }
     return this;
   }
 
@@ -7332,10 +7349,10 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
   }
 
   /**
-   * @returns the `relatedDevice` property value as a CodeableReference object if defined; else null
+   * @returns the `relatedDevice` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getRelatedDevice(): CodeableReference | null {
-    return this.relatedDevice;
+  public getRelatedDevice(): CodeableReference {
+    return this.relatedDevice ?? new CodeableReference();
   }
 
   /**
@@ -7345,11 +7362,14 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRelatedDevice(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `DeviceDefinition.link.relatedDevice is required`);
-    const optErrMsg = `Invalid DeviceDefinition.link.relatedDevice; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.relatedDevice = value;
+  public setRelatedDevice(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.link.relatedDevice; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.relatedDevice = value;
+    } else {
+      this.relatedDevice = null;
+    }
     return this;
   }
 
@@ -7380,6 +7400,16 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.relation, this.relatedDevice, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7404,33 +7434,25 @@ export class DeviceDefinitionLinkComponent extends BackboneElement implements IB
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRelation()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelation()!, 'relation', jsonObj);
+      setFhirComplexJson(this.getRelation(), 'relation', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.link.relation`);
+      jsonObj['relation'] = null;
     }
 
     if (this.hasRelatedDevice()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelatedDevice()!, 'relatedDevice', jsonObj);
+      setFhirComplexJson(this.getRelatedDevice(), 'relatedDevice', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.link.relatedDevice`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['relatedDevice'] = null;
     }
 
     return jsonObj;
@@ -7463,7 +7485,6 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionMaterialComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionMaterialComponent
    * @returns DeviceDefinitionMaterialComponent data model or undefined for `DeviceDefinitionMaterialComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionMaterialComponent | undefined {
@@ -7482,20 +7503,18 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'substance';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubstance(null);
       } else {
         instance.setSubstance(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubstance(null);
     }
 
     fieldName = 'alternate';
@@ -7516,12 +7535,6 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
       instance.setAllergenicIndicatorElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7570,10 +7583,10 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `substance` property value as a CodeableConcept object if defined; else null
+   * @returns the `substance` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getSubstance(): CodeableConcept | null {
-    return this.substance;
+  public getSubstance(): CodeableConcept {
+    return this.substance ?? new CodeableConcept();
   }
 
   /**
@@ -7583,11 +7596,14 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSubstance(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `DeviceDefinition.material.substance is required`);
-    const optErrMsg = `Invalid DeviceDefinition.material.substance; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.substance = value;
+  public setSubstance(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.material.substance; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.substance = value;
+    } else {
+      this.substance = null;
+    }
     return this;
   }
 
@@ -7747,6 +7763,16 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.substance, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7772,21 +7798,19 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasSubstance()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubstance()!, 'substance', jsonObj);
+      setFhirComplexJson(this.getSubstance(), 'substance', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.material.substance`);
+      jsonObj['substance'] = null;
     }
 
     if (this.hasAlternateElement()) {
@@ -7795,11 +7819,6 @@ export class DeviceDefinitionMaterialComponent extends BackboneElement implement
 
     if (this.hasAllergenicIndicatorElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getAllergenicIndicatorElement(), 'allergenicIndicator', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -7930,7 +7949,6 @@ export class DeviceDefinitionGuidelineComponent extends BackboneElement implemen
       instance.setIntendedUseElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -8592,7 +8610,6 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionCorrectiveActionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionCorrectiveActionComponent
    * @returns DeviceDefinitionCorrectiveActionComponent data model or undefined for `DeviceDefinitionCorrectiveActionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionCorrectiveActionComponent | undefined {
@@ -8611,8 +8628,6 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'recall';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'boolean';
@@ -8620,12 +8635,12 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRecall(null);
       } else {
         instance.setRecallElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRecall(null);
     }
 
     fieldName = 'scope';
@@ -8643,20 +8658,14 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPeriod(null);
       } else {
         instance.setPeriod(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPeriod(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -8715,10 +8724,10 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `recall` property value as a BooleanType object if defined; else null
+   * @returns the `recall` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getRecallElement(): BooleanType | null {
-    return this.recall;
+  public getRecallElement(): BooleanType {
+    return this.recall ?? new BooleanType();
   }
 
   /**
@@ -8729,11 +8738,14 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRecallElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `DeviceDefinition.correctiveAction.recall is required`);
-    const optErrMsg = `Invalid DeviceDefinition.correctiveAction.recall; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.recall = element;
+  public setRecallElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid DeviceDefinition.correctiveAction.recall; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.recall = element;
+    } else {
+      this.recall = null;
+    }
     return this;
   }
 
@@ -8762,10 +8774,13 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRecall(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `DeviceDefinition.correctiveAction.recall is required`);
-    const optErrMsg = `Invalid DeviceDefinition.correctiveAction.recall (${String(value)})`;
-    this.recall = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setRecall(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.correctiveAction.recall (${String(value)})`;
+      this.recall = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.recall = null;
+    }
     return this;
   }
 
@@ -8893,10 +8908,10 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
   }
 
   /**
-   * @returns the `period` property value as a Period object if defined; else null
+   * @returns the `period` property value as a Period object if defined; else an empty Period object
    */
-  public getPeriod(): Period | null {
-    return this.period;
+  public getPeriod(): Period {
+    return this.period ?? new Period();
   }
 
   /**
@@ -8906,11 +8921,14 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setPeriod(value: Period): this {
-    assertIsDefined<Period>(value, `DeviceDefinition.correctiveAction.period is required`);
-    const optErrMsg = `Invalid DeviceDefinition.correctiveAction.period; Provided element is not an instance of Period.`;
-    assertFhirType<Period>(value, Period, optErrMsg);
-    this.period = value;
+  public setPeriod(value: Period | undefined | null): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.correctiveAction.period; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.period = value;
+    } else {
+      this.period = null;
+    }
     return this;
   }
 
@@ -8942,6 +8960,16 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.recall, this.period, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -8967,21 +8995,19 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRecallElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getRecallElement()!, 'recall', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getRecallElement(), 'recall', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.correctiveAction.recall`);
+      jsonObj['recall'] = null;
     }
 
     if (this.hasScopeElement()) {
@@ -8990,15 +9016,9 @@ export class DeviceDefinitionCorrectiveActionComponent extends BackboneElement i
     }
 
     if (this.hasPeriod()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+      setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.correctiveAction.period`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['period'] = null;
     }
 
     return jsonObj;
@@ -9036,7 +9056,6 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `DeviceDefinitionChargeItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DeviceDefinitionChargeItemComponent
    * @returns DeviceDefinitionChargeItemComponent data model or undefined for `DeviceDefinitionChargeItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DeviceDefinitionChargeItemComponent | undefined {
@@ -9054,20 +9073,18 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'chargeItemCode';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setChargeItemCode(null);
       } else {
         instance.setChargeItemCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setChargeItemCode(null);
     }
 
     fieldName = 'count';
@@ -9076,12 +9093,12 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCount(null);
       } else {
         instance.setCount(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCount(null);
     }
 
     fieldName = 'effectivePeriod';
@@ -9105,12 +9122,6 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9176,10 +9187,10 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `chargeItemCode` property value as a CodeableReference object if defined; else null
+   * @returns the `chargeItemCode` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getChargeItemCode(): CodeableReference | null {
-    return this.chargeItemCode;
+  public getChargeItemCode(): CodeableReference {
+    return this.chargeItemCode ?? new CodeableReference();
   }
 
   /**
@@ -9189,11 +9200,14 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setChargeItemCode(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `DeviceDefinition.chargeItem.chargeItemCode is required`);
-    const optErrMsg = `Invalid DeviceDefinition.chargeItem.chargeItemCode; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.chargeItemCode = value;
+  public setChargeItemCode(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.chargeItem.chargeItemCode; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.chargeItemCode = value;
+    } else {
+      this.chargeItemCode = null;
+    }
     return this;
   }
 
@@ -9205,10 +9219,10 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `count` property value as a Quantity object if defined; else null
+   * @returns the `count` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getCount(): Quantity | null {
-    return this.count;
+  public getCount(): Quantity {
+    return this.count ?? new Quantity();
   }
 
   /**
@@ -9218,11 +9232,14 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCount(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `DeviceDefinition.chargeItem.count is required`);
-    const optErrMsg = `Invalid DeviceDefinition.chargeItem.count; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.count = value;
+  public setCount(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid DeviceDefinition.chargeItem.count; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.count = value;
+    } else {
+      this.count = null;
+    }
     return this;
   }
 
@@ -9345,6 +9362,16 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.chargeItemCode, this.count, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -9372,28 +9399,25 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasChargeItemCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getChargeItemCode()!, 'chargeItemCode', jsonObj);
+      setFhirComplexJson(this.getChargeItemCode(), 'chargeItemCode', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.chargeItem.chargeItemCode`);
+      jsonObj['chargeItemCode'] = null;
     }
 
     if (this.hasCount()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCount()!, 'count', jsonObj);
+      setFhirComplexJson(this.getCount(), 'count', jsonObj);
     } else {
-      missingReqdProperties.push(`DeviceDefinition.chargeItem.count`);
+      jsonObj['count'] = null;
     }
 
     if (this.hasEffectivePeriod()) {
@@ -9402,11 +9426,6 @@ export class DeviceDefinitionChargeItemComponent extends BackboneElement impleme
 
     if (this.hasUseContext()) {
       setFhirComplexListJson(this.getUseContext(), 'useContext', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

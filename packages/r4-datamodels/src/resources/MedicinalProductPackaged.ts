@@ -37,24 +37,17 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirString,
   fhirStringSchema,
@@ -63,6 +56,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -102,7 +96,6 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
    * @param sourceJson - JSON representing FHIR `MedicinalProductPackaged`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductPackaged
    * @returns MedicinalProductPackaged data model or undefined for `MedicinalProductPackaged`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductPackaged | undefined {
@@ -121,8 +114,6 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -222,21 +213,15 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: MedicinalProductPackagedPackageItemComponent | undefined = MedicinalProductPackagedPackageItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setPackageItem(null);
         } else {
           instance.addPackageItem(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPackageItem(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -829,11 +814,14 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setPackageItem(value: MedicinalProductPackagedPackageItemComponent[]): this {
-    assertIsDefinedList<MedicinalProductPackagedPackageItemComponent>(value, `MedicinalProductPackaged.packageItem is required`);
-    const optErrMsg = `Invalid MedicinalProductPackaged.packageItem; Provided value array has an element that is not an instance of MedicinalProductPackagedPackageItemComponent.`;
-    assertFhirTypeList<MedicinalProductPackagedPackageItemComponent>(value, MedicinalProductPackagedPackageItemComponent, optErrMsg);
-    this.packageItem = value;
+  public setPackageItem(value: MedicinalProductPackagedPackageItemComponent[] | undefined | null): this {
+    if (isDefinedList<MedicinalProductPackagedPackageItemComponent>(value)) {
+      const optErrMsg = `Invalid MedicinalProductPackaged.packageItem; Provided value array has an element that is not an instance of MedicinalProductPackagedPackageItemComponent.`;
+      assertFhirTypeList<MedicinalProductPackagedPackageItemComponent>(value, MedicinalProductPackagedPackageItemComponent, optErrMsg);
+      this.packageItem = value;
+    } else {
+      this.packageItem = null;
+    }
     return this;
   }
 
@@ -897,6 +885,16 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -934,15 +932,14 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -979,12 +976,7 @@ export class MedicinalProductPackaged extends DomainResource implements IDomainR
     if (this.hasPackageItem()) {
       setFhirBackboneElementListJson(this.getPackageItem(), 'packageItem', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductPackaged.packageItem`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['packageItem'] = null;
     }
 
     return jsonObj;
@@ -1018,7 +1010,6 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
    * @param sourceJson - JSON representing FHIR `MedicinalProductPackagedBatchIdentifierComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductPackagedBatchIdentifierComponent
    * @returns MedicinalProductPackagedBatchIdentifierComponent data model or undefined for `MedicinalProductPackagedBatchIdentifierComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductPackagedBatchIdentifierComponent | undefined {
@@ -1036,20 +1027,18 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'outerPackaging';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Identifier | undefined = Identifier.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOuterPackaging(null);
       } else {
         instance.setOuterPackaging(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOuterPackaging(null);
     }
 
     fieldName = 'immediatePackaging';
@@ -1060,12 +1049,6 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
       instance.setImmediatePackaging(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1100,10 +1083,10 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `outerPackaging` property value as a Identifier object if defined; else null
+   * @returns the `outerPackaging` property value as a Identifier object if defined; else an empty Identifier object
    */
-  public getOuterPackaging(): Identifier | null {
-    return this.outerPackaging;
+  public getOuterPackaging(): Identifier {
+    return this.outerPackaging ?? new Identifier();
   }
 
   /**
@@ -1113,11 +1096,14 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setOuterPackaging(value: Identifier): this {
-    assertIsDefined<Identifier>(value, `MedicinalProductPackaged.batchIdentifier.outerPackaging is required`);
-    const optErrMsg = `Invalid MedicinalProductPackaged.batchIdentifier.outerPackaging; Provided element is not an instance of Identifier.`;
-    assertFhirType<Identifier>(value, Identifier, optErrMsg);
-    this.outerPackaging = value;
+  public setOuterPackaging(value: Identifier | undefined | null): this {
+    if (isDefined<Identifier>(value)) {
+      const optErrMsg = `Invalid MedicinalProductPackaged.batchIdentifier.outerPackaging; Provided element is not an instance of Identifier.`;
+      assertFhirType<Identifier>(value, Identifier, optErrMsg);
+      this.outerPackaging = value;
+    } else {
+      this.outerPackaging = null;
+    }
     return this;
   }
 
@@ -1180,6 +1166,16 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.outerPackaging, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1204,30 +1200,23 @@ export class MedicinalProductPackagedBatchIdentifierComponent extends BackboneEl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasOuterPackaging()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getOuterPackaging()!, 'outerPackaging', jsonObj);
+      setFhirComplexJson(this.getOuterPackaging(), 'outerPackaging', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductPackaged.batchIdentifier.outerPackaging`);
+      jsonObj['outerPackaging'] = null;
     }
 
     if (this.hasImmediatePackaging()) {
       setFhirComplexJson(this.getImmediatePackaging(), 'immediatePackaging', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1265,7 +1254,6 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `MedicinalProductPackagedPackageItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductPackagedPackageItemComponent
    * @returns MedicinalProductPackagedPackageItemComponent data model or undefined for `MedicinalProductPackagedPackageItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductPackagedPackageItemComponent | undefined {
@@ -1282,8 +1270,6 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
 
     let fieldName = '';
     let sourceField = '';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -1304,12 +1290,12 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'quantity';
@@ -1318,12 +1304,12 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Quantity | undefined = Quantity.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setQuantity(null);
       } else {
         instance.setQuantity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setQuantity(null);
     }
 
     fieldName = 'material';
@@ -1438,12 +1424,6 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1685,10 +1665,10 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -1698,11 +1678,14 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MedicinalProductPackaged.packageItem.type is required`);
-    const optErrMsg = `Invalid MedicinalProductPackaged.packageItem.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MedicinalProductPackaged.packageItem.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1714,10 +1697,10 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `quantity` property value as a Quantity object if defined; else null
+   * @returns the `quantity` property value as a Quantity object if defined; else an empty Quantity object
    */
-  public getQuantity(): Quantity | null {
-    return this.quantity;
+  public getQuantity(): Quantity {
+    return this.quantity ?? new Quantity();
   }
 
   /**
@@ -1727,11 +1710,14 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setQuantity(value: Quantity): this {
-    assertIsDefined<Quantity>(value, `MedicinalProductPackaged.packageItem.quantity is required`);
-    const optErrMsg = `Invalid MedicinalProductPackaged.packageItem.quantity; Provided element is not an instance of Quantity.`;
-    assertFhirType<Quantity>(value, Quantity, optErrMsg);
-    this.quantity = value;
+  public setQuantity(value: Quantity | undefined | null): this {
+    if (isDefined<Quantity>(value)) {
+      const optErrMsg = `Invalid MedicinalProductPackaged.packageItem.quantity; Provided element is not an instance of Quantity.`;
+      assertFhirType<Quantity>(value, Quantity, optErrMsg);
+      this.quantity = value;
+    } else {
+      this.quantity = null;
+    }
     return this;
   }
 
@@ -2292,6 +2278,16 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.quantity, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2335,32 +2331,29 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
     }
 
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductPackaged.packageItem.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasQuantity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getQuantity()!, 'quantity', jsonObj);
+      setFhirComplexJson(this.getQuantity(), 'quantity', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductPackaged.packageItem.quantity`);
+      jsonObj['quantity'] = null;
     }
 
     if (this.hasMaterial()) {
@@ -2397,11 +2390,6 @@ export class MedicinalProductPackagedPackageItemComponent extends BackboneElemen
 
     if (this.hasManufacturer()) {
       setFhirComplexListJson(this.getManufacturer(), 'manufacturer', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

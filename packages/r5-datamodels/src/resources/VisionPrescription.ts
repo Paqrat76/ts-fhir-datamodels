@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
@@ -45,23 +44,17 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -79,6 +72,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -158,7 +152,6 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `VisionPrescription`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to VisionPrescription
    * @returns VisionPrescription data model or undefined for `VisionPrescription`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): VisionPrescription | undefined {
@@ -177,8 +170,6 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -200,12 +191,12 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'created';
@@ -215,12 +206,12 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCreated(null);
       } else {
         instance.setCreatedElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCreated(null);
     }
 
     fieldName = 'patient';
@@ -229,12 +220,12 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'encounter';
@@ -252,12 +243,12 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDateWritten(null);
       } else {
         instance.setDateWrittenElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDateWritten(null);
     }
 
     fieldName = 'prescriber';
@@ -266,12 +257,12 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPrescriber(null);
       } else {
         instance.setPrescriber(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPrescriber(null);
     }
 
     fieldName = 'lensSpecification';
@@ -282,21 +273,15 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: VisionPrescriptionLensSpecificationComponent | undefined = VisionPrescriptionLensSpecificationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setLensSpecification(null);
         } else {
           instance.addLensSpecification(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLensSpecification(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -520,11 +505,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `VisionPrescription.status is required`);
-    const errMsgPrefix = `Invalid VisionPrescription.status`;
-    assertEnumCodeType<FmStatusEnum>(enumType, FmStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid VisionPrescription.status`;
+      assertEnumCodeType<FmStatusEnum>(enumType, FmStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -557,11 +545,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `VisionPrescription.status is required`);
-    const optErrMsg = `Invalid VisionPrescription.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.fmStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid VisionPrescription.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.fmStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -594,10 +585,13 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link FmStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `VisionPrescription.status is required`);
-    const optErrMsg = `Invalid VisionPrescription.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fmStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.fmStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -609,10 +603,10 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   }
 
   /**
-   * @returns the `created` property value as a DateTimeType object if defined; else null
+   * @returns the `created` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getCreatedElement(): DateTimeType | null {
-    return this.created;
+  public getCreatedElement(): DateTimeType {
+    return this.created ?? new DateTimeType();
   }
 
   /**
@@ -623,11 +617,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCreatedElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `VisionPrescription.created is required`);
-    const optErrMsg = `Invalid VisionPrescription.created; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.created = element;
+  public setCreatedElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid VisionPrescription.created; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.created = element;
+    } else {
+      this.created = null;
+    }
     return this;
   }
 
@@ -656,10 +653,13 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCreated(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `VisionPrescription.created is required`);
-    const optErrMsg = `Invalid VisionPrescription.created (${String(value)})`;
-    this.created = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setCreated(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.created (${String(value)})`;
+      this.created = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.created = null;
+    }
     return this;
   }
 
@@ -671,10 +671,10 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -689,10 +689,13 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   @ReferenceTargets('VisionPrescription.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `VisionPrescription.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -740,10 +743,10 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   }
 
   /**
-   * @returns the `dateWritten` property value as a DateTimeType object if defined; else null
+   * @returns the `dateWritten` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateWrittenElement(): DateTimeType | null {
-    return this.dateWritten;
+  public getDateWrittenElement(): DateTimeType {
+    return this.dateWritten ?? new DateTimeType();
   }
 
   /**
@@ -754,11 +757,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateWrittenElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `VisionPrescription.dateWritten is required`);
-    const optErrMsg = `Invalid VisionPrescription.dateWritten; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.dateWritten = element;
+  public setDateWrittenElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid VisionPrescription.dateWritten; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.dateWritten = element;
+    } else {
+      this.dateWritten = null;
+    }
     return this;
   }
 
@@ -787,10 +793,13 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateWritten(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `VisionPrescription.dateWritten is required`);
-    const optErrMsg = `Invalid VisionPrescription.dateWritten (${String(value)})`;
-    this.dateWritten = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDateWritten(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.dateWritten (${String(value)})`;
+      this.dateWritten = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.dateWritten = null;
+    }
     return this;
   }
 
@@ -802,10 +811,10 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   }
 
   /**
-   * @returns the `prescriber` property value as a Reference object if defined; else null
+   * @returns the `prescriber` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPrescriber(): Reference | null {
-    return this.prescriber;
+  public getPrescriber(): Reference {
+    return this.prescriber ?? new Reference();
   }
 
   /**
@@ -822,10 +831,13 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   
     'PractitionerRole',
   ])
-  public setPrescriber(value: Reference): this {
-    assertIsDefined<Reference>(value, `VisionPrescription.prescriber is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.prescriber = value;
+  public setPrescriber(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.prescriber = value;
+    } else {
+      this.prescriber = null;
+    }
     return this;
   }
 
@@ -850,11 +862,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setLensSpecification(value: VisionPrescriptionLensSpecificationComponent[]): this {
-    assertIsDefinedList<VisionPrescriptionLensSpecificationComponent>(value, `VisionPrescription.lensSpecification is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification; Provided value array has an element that is not an instance of VisionPrescriptionLensSpecificationComponent.`;
-    assertFhirTypeList<VisionPrescriptionLensSpecificationComponent>(value, VisionPrescriptionLensSpecificationComponent, optErrMsg);
-    this.lensSpecification = value;
+  public setLensSpecification(value: VisionPrescriptionLensSpecificationComponent[] | undefined | null): this {
+    if (isDefinedList<VisionPrescriptionLensSpecificationComponent>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification; Provided value array has an element that is not an instance of VisionPrescriptionLensSpecificationComponent.`;
+      assertFhirTypeList<VisionPrescriptionLensSpecificationComponent>(value, VisionPrescriptionLensSpecificationComponent, optErrMsg);
+      this.lensSpecification = value;
+    } else {
+      this.lensSpecification = null;
+    }
     return this;
   }
 
@@ -917,6 +932,16 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.created, this.patient, this.dateWritten, this.prescriber, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -949,15 +974,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -967,21 +991,19 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCreatedElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement()!, 'created', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement(), 'created', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.created`);
+      jsonObj['created'] = null;
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -989,28 +1011,21 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
     }
 
     if (this.hasDateWrittenElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateWrittenElement()!, 'dateWritten', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateWrittenElement(), 'dateWritten', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.dateWritten`);
+      jsonObj['dateWritten'] = null;
     }
 
     if (this.hasPrescriber()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPrescriber()!, 'prescriber', jsonObj);
+      setFhirComplexJson(this.getPrescriber(), 'prescriber', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.prescriber`);
+      jsonObj['prescriber'] = null;
     }
 
     if (this.hasLensSpecification()) {
       setFhirBackboneElementListJson(this.getLensSpecification(), 'lensSpecification', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.lensSpecification`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['lensSpecification'] = null;
     }
 
     return jsonObj;
@@ -1053,7 +1068,6 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `VisionPrescriptionLensSpecificationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to VisionPrescriptionLensSpecificationComponent
    * @returns VisionPrescriptionLensSpecificationComponent data model or undefined for `VisionPrescriptionLensSpecificationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): VisionPrescriptionLensSpecificationComponent | undefined {
@@ -1072,20 +1086,18 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'product';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setProduct(null);
       } else {
         instance.setProduct(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setProduct(null);
     }
 
     fieldName = 'eye';
@@ -1095,12 +1107,12 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setEye(null);
       } else {
         instance.setEyeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setEye(null);
     }
 
     fieldName = 'sphere';
@@ -1218,12 +1230,6 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1452,10 +1458,10 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `product` property value as a CodeableConcept object if defined; else null
+   * @returns the `product` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getProduct(): CodeableConcept | null {
-    return this.product;
+  public getProduct(): CodeableConcept {
+    return this.product ?? new CodeableConcept();
   }
 
   /**
@@ -1465,11 +1471,14 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setProduct(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `VisionPrescription.lensSpecification.product is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.product; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.product = value;
+  public setProduct(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.product; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.product = value;
+    } else {
+      this.product = null;
+    }
     return this;
   }
 
@@ -1499,11 +1508,14 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link VisionEyeCodesEnum }
    */
-  public setEyeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `VisionPrescription.lensSpecification.eye is required`);
-    const errMsgPrefix = `Invalid VisionPrescription.lensSpecification.eye`;
-    assertEnumCodeType<VisionEyeCodesEnum>(enumType, VisionEyeCodesEnum, errMsgPrefix);
-    this.eye = enumType;
+  public setEyeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid VisionPrescription.lensSpecification.eye`;
+      assertEnumCodeType<VisionEyeCodesEnum>(enumType, VisionEyeCodesEnum, errMsgPrefix);
+      this.eye = enumType;
+    } else {
+      this.eye = null;
+    }
     return this;
   }
 
@@ -1536,11 +1548,14 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link VisionEyeCodesEnum }
    */
-  public setEyeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `VisionPrescription.lensSpecification.eye is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.eye; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.eye = new EnumCodeType(element, this.visionEyeCodesEnum);
+  public setEyeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.eye; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.eye = new EnumCodeType(element, this.visionEyeCodesEnum);
+    } else {
+      this.eye = null;
+    }
     return this;
   }
 
@@ -1573,10 +1588,13 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link VisionEyeCodesEnum }
    */
-  public setEye(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `VisionPrescription.lensSpecification.eye is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.eye (${String(value)})`;
-    this.eye = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.visionEyeCodesEnum);
+  public setEye(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.eye (${String(value)})`;
+      this.eye = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.visionEyeCodesEnum);
+    } else {
+      this.eye = null;
+    }
     return this;
   }
 
@@ -2343,6 +2361,16 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.product, this.eye, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2381,28 +2409,26 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasProduct()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getProduct()!, 'product', jsonObj);
+      setFhirComplexJson(this.getProduct(), 'product', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.lensSpecification.product`);
+      jsonObj['product'] = null;
     }
 
     if (this.hasEyeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getEyeElement()!, 'eye', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.lensSpecification.eye`);
+      jsonObj['eye'] = null;
     }
 
     if (this.hasSphereElement()) {
@@ -2453,11 +2479,6 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
       setFhirComplexListJson(this.getNote(), 'note', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2502,7 +2523,6 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `VisionPrescriptionLensSpecificationPrismComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to VisionPrescriptionLensSpecificationPrismComponent
    * @returns VisionPrescriptionLensSpecificationPrismComponent data model or undefined for `VisionPrescriptionLensSpecificationPrismComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): VisionPrescriptionLensSpecificationPrismComponent | undefined {
@@ -2521,8 +2541,6 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'amount';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
@@ -2530,12 +2548,12 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAmount(null);
       } else {
         instance.setAmountElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAmount(null);
     }
 
     fieldName = 'base';
@@ -2545,20 +2563,14 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setBase(null);
       } else {
         instance.setBaseElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setBase(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2604,10 +2616,10 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `amount` property value as a DecimalType object if defined; else null
+   * @returns the `amount` property value as a DecimalType object if defined; else an empty DecimalType object
    */
-  public getAmountElement(): DecimalType | null {
-    return this.amount;
+  public getAmountElement(): DecimalType {
+    return this.amount ?? new DecimalType();
   }
 
   /**
@@ -2618,11 +2630,14 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAmountElement(element: DecimalType): this {
-    assertIsDefined<DecimalType>(element, `VisionPrescription.lensSpecification.prism.amount is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.amount; Provided value is not an instance of DecimalType.`;
-    assertFhirType<DecimalType>(element, DecimalType, optErrMsg);
-    this.amount = element;
+  public setAmountElement(element: DecimalType | undefined | null): this {
+    if (isDefined<DecimalType>(element)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.amount; Provided value is not an instance of DecimalType.`;
+      assertFhirType<DecimalType>(element, DecimalType, optErrMsg);
+      this.amount = element;
+    } else {
+      this.amount = null;
+    }
     return this;
   }
 
@@ -2651,10 +2666,13 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAmount(value: fhirDecimal): this {
-    assertIsDefined<fhirDecimal>(value, `VisionPrescription.lensSpecification.prism.amount is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.amount (${String(value)})`;
-    this.amount = new DecimalType(parseFhirPrimitiveData(value, fhirDecimalSchema, optErrMsg));
+  public setAmount(value: fhirDecimal | undefined | null): this {
+    if (isDefined<fhirDecimal>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.amount (${String(value)})`;
+      this.amount = new DecimalType(parseFhirPrimitiveData(value, fhirDecimalSchema, optErrMsg));
+    } else {
+      this.amount = null;
+    }
     return this;
   }
 
@@ -2684,11 +2702,14 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
    *
    * @see CodeSystem Enumeration: {@link VisionBaseCodesEnum }
    */
-  public setBaseEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `VisionPrescription.lensSpecification.prism.base is required`);
-    const errMsgPrefix = `Invalid VisionPrescription.lensSpecification.prism.base`;
-    assertEnumCodeType<VisionBaseCodesEnum>(enumType, VisionBaseCodesEnum, errMsgPrefix);
-    this.base = enumType;
+  public setBaseEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid VisionPrescription.lensSpecification.prism.base`;
+      assertEnumCodeType<VisionBaseCodesEnum>(enumType, VisionBaseCodesEnum, errMsgPrefix);
+      this.base = enumType;
+    } else {
+      this.base = null;
+    }
     return this;
   }
 
@@ -2721,11 +2742,14 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
    *
    * @see CodeSystem Enumeration: {@link VisionBaseCodesEnum }
    */
-  public setBaseElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `VisionPrescription.lensSpecification.prism.base is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.base; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.base = new EnumCodeType(element, this.visionBaseCodesEnum);
+  public setBaseElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.base; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.base = new EnumCodeType(element, this.visionBaseCodesEnum);
+    } else {
+      this.base = null;
+    }
     return this;
   }
 
@@ -2758,10 +2782,13 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
    *
    * @see CodeSystem Enumeration: {@link VisionBaseCodesEnum }
    */
-  public setBase(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `VisionPrescription.lensSpecification.prism.base is required`);
-    const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.base (${String(value)})`;
-    this.base = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.visionBaseCodesEnum);
+  public setBase(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid VisionPrescription.lensSpecification.prism.base (${String(value)})`;
+      this.base = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.visionBaseCodesEnum);
+    } else {
+      this.base = null;
+    }
     return this;
   }
 
@@ -2792,6 +2819,16 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.amount, this.base, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2816,33 +2853,26 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAmountElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDecimal>(this.getAmountElement()!, 'amount', jsonObj);
+      setFhirPrimitiveJson<fhirDecimal>(this.getAmountElement(), 'amount', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.lensSpecification.prism.amount`);
+      jsonObj['amount'] = null;
     }
 
     if (this.hasBaseElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getBaseElement()!, 'base', jsonObj);
     } else {
-      missingReqdProperties.push(`VisionPrescription.lensSpecification.prism.base`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['base'] = null;
     }
 
     return jsonObj;

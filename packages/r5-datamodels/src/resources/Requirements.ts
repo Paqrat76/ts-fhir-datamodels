@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,20 +47,16 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -97,6 +92,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexListJson,
@@ -146,7 +142,6 @@ export class Requirements extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Requirements`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Requirements
    * @returns Requirements data model or undefined for `Requirements`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Requirements | undefined {
@@ -169,8 +164,6 @@ export class Requirements extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = Requirements[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for Requirements`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -238,12 +231,12 @@ export class Requirements extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -415,12 +408,6 @@ export class Requirements extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1186,11 +1173,14 @@ export class Requirements extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Requirements.status is required`);
-    const errMsgPrefix = `Invalid Requirements.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Requirements.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1223,11 +1213,14 @@ export class Requirements extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Requirements.status is required`);
-    const optErrMsg = `Invalid Requirements.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Requirements.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1260,10 +1253,13 @@ export class Requirements extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Requirements.status is required`);
-    const optErrMsg = `Invalid Requirements.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Requirements.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2359,6 +2355,16 @@ export class Requirements extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2410,15 +2416,14 @@ export class Requirements extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2449,7 +2454,7 @@ export class Requirements extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Requirements.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2508,11 +2513,6 @@ export class Requirements extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getStatement(), 'statement', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2559,7 +2559,6 @@ export class RequirementsStatementComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `RequirementsStatementComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to RequirementsStatementComponent
    * @returns RequirementsStatementComponent data model or undefined for `RequirementsStatementComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): RequirementsStatementComponent | undefined {
@@ -2578,8 +2577,6 @@ export class RequirementsStatementComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'key';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2587,12 +2584,12 @@ export class RequirementsStatementComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKey(null);
       } else {
         instance.setKeyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKey(null);
     }
 
     fieldName = 'label';
@@ -2638,12 +2635,12 @@ export class RequirementsStatementComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRequirement(null);
       } else {
         instance.setRequirementElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRequirement(null);
     }
 
     fieldName = 'derivedFrom';
@@ -2713,12 +2710,6 @@ export class RequirementsStatementComponent extends BackboneElement implements I
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2894,10 +2885,10 @@ export class RequirementsStatementComponent extends BackboneElement implements I
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `key` property value as a IdType object if defined; else null
+   * @returns the `key` property value as a IdType object if defined; else an empty IdType object
    */
-  public getKeyElement(): IdType | null {
-    return this.key;
+  public getKeyElement(): IdType {
+    return this.key ?? new IdType();
   }
 
   /**
@@ -2908,11 +2899,14 @@ export class RequirementsStatementComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKeyElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `Requirements.statement.key is required`);
-    const optErrMsg = `Invalid Requirements.statement.key; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.key = element;
+  public setKeyElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid Requirements.statement.key; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.key = element;
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -2941,10 +2935,13 @@ export class RequirementsStatementComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKey(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `Requirements.statement.key is required`);
-    const optErrMsg = `Invalid Requirements.statement.key (${String(value)})`;
-    this.key = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setKey(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid Requirements.statement.key (${String(value)})`;
+      this.key = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -3279,10 +3276,10 @@ export class RequirementsStatementComponent extends BackboneElement implements I
   }
 
   /**
-   * @returns the `requirement` property value as a MarkdownType object if defined; else null
+   * @returns the `requirement` property value as a MarkdownType object if defined; else an empty MarkdownType object
    */
-  public getRequirementElement(): MarkdownType | null {
-    return this.requirement;
+  public getRequirementElement(): MarkdownType {
+    return this.requirement ?? new MarkdownType();
   }
 
   /**
@@ -3293,11 +3290,14 @@ export class RequirementsStatementComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRequirementElement(element: MarkdownType): this {
-    assertIsDefined<MarkdownType>(element, `Requirements.statement.requirement is required`);
-    const optErrMsg = `Invalid Requirements.statement.requirement; Provided value is not an instance of MarkdownType.`;
-    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
-    this.requirement = element;
+  public setRequirementElement(element: MarkdownType | undefined | null): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Requirements.statement.requirement; Provided value is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.requirement = element;
+    } else {
+      this.requirement = null;
+    }
     return this;
   }
 
@@ -3326,10 +3326,13 @@ export class RequirementsStatementComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRequirement(value: fhirMarkdown): this {
-    assertIsDefined<fhirMarkdown>(value, `Requirements.statement.requirement is required`);
-    const optErrMsg = `Invalid Requirements.statement.requirement (${String(value)})`;
-    this.requirement = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+  public setRequirement(value: fhirMarkdown | undefined | null): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Requirements.statement.requirement (${String(value)})`;
+      this.requirement = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.requirement = null;
+    }
     return this;
   }
 
@@ -3838,6 +3841,16 @@ export class RequirementsStatementComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.key, this.requirement, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3874,21 +3887,19 @@ export class RequirementsStatementComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasKeyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getKeyElement()!, 'key', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getKeyElement(), 'key', jsonObj);
     } else {
-      missingReqdProperties.push(`Requirements.statement.key`);
+      jsonObj['key'] = null;
     }
 
     if (this.hasLabelElement()) {
@@ -3904,10 +3915,9 @@ export class RequirementsStatementComponent extends BackboneElement implements I
     }
 
     if (this.hasRequirementElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirMarkdown>(this.getRequirementElement()!, 'requirement', jsonObj);
+      setFhirPrimitiveJson<fhirMarkdown>(this.getRequirementElement(), 'requirement', jsonObj);
     } else {
-      missingReqdProperties.push(`Requirements.statement.requirement`);
+      jsonObj['requirement'] = null;
     }
 
     if (this.hasDerivedFromElement()) {
@@ -3928,11 +3938,6 @@ export class RequirementsStatementComponent extends BackboneElement implements I
 
     if (this.hasSource()) {
       setFhirComplexListJson(this.getSource(), 'source', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   CanonicalType,
   ChoiceDataTypes,
@@ -46,15 +45,11 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   UriType,
   assertEnumCodeType,
@@ -72,6 +67,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -127,7 +123,6 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `GuidanceResponse`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to GuidanceResponse
    * @returns GuidanceResponse data model or undefined for `GuidanceResponse`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): GuidanceResponse | undefined {
@@ -150,8 +145,6 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
     const classMetadata: DecoratorMetadataObject | null = GuidanceResponse[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for GuidanceResponse`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'requestIdentifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -183,7 +176,7 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
       classMetadata,
     );
     if (module_ === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setModule(null);
     } else {
       instance.setModule(module_);
     }
@@ -195,12 +188,12 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'subject';
@@ -317,12 +310,6 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -693,10 +680,13 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('GuidanceResponse.module[x]')
-  public setModule(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `GuidanceResponse.module[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.module_ = value;
+  public setModule(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.module_ = value;
+    } else {
+      this.module_ = null;
+    }
     return this;
   }
 
@@ -797,11 +787,14 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link GuidanceResponseStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `GuidanceResponse.status is required`);
-    const errMsgPrefix = `Invalid GuidanceResponse.status`;
-    assertEnumCodeType<GuidanceResponseStatusEnum>(enumType, GuidanceResponseStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid GuidanceResponse.status`;
+      assertEnumCodeType<GuidanceResponseStatusEnum>(enumType, GuidanceResponseStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -834,11 +827,14 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link GuidanceResponseStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `GuidanceResponse.status is required`);
-    const optErrMsg = `Invalid GuidanceResponse.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.guidanceResponseStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid GuidanceResponse.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.guidanceResponseStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -871,10 +867,13 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
    *
    * @see CodeSystem Enumeration: {@link GuidanceResponseStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `GuidanceResponse.status is required`);
-    const optErrMsg = `Invalid GuidanceResponse.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.guidanceResponseStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid GuidanceResponse.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.guidanceResponseStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1484,6 +1483,16 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.module_, this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1527,15 +1536,14 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRequestIdentifier()) {
       setFhirComplexJson(this.getRequestIdentifier(), 'requestIdentifier', jsonObj);
@@ -1549,14 +1557,14 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getModule()!, 'module', jsonObj);
     } else {
-      missingReqdProperties.push(`GuidanceResponse.module[x]`);
+      jsonObj['module'] = null;
     }
 
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`GuidanceResponse.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasSubject()) {
@@ -1601,11 +1609,6 @@ export class GuidanceResponse extends DomainResource implements IDomainResource 
 
     if (this.hasDataRequirement()) {
       setFhirComplexListJson(this.getDataRequirement(), 'dataRequirement', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

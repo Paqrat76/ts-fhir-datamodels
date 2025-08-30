@@ -37,24 +37,19 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   TimeType,
@@ -62,7 +57,6 @@ import {
   assertEnumCodeTypeList,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   copyListValues,
   fhirBoolean,
   fhirBooleanSchema,
@@ -80,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -117,7 +112,6 @@ export class HealthcareService extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `HealthcareService`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to HealthcareService
    * @returns HealthcareService data model or undefined for `HealthcareService`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): HealthcareService | undefined {
@@ -415,7 +409,6 @@ export class HealthcareService extends DomainResource implements IDomainResource
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2456,7 +2449,6 @@ export class HealthcareServiceEligibilityComponent extends BackboneElement imple
       instance.setCommentElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2739,7 +2731,6 @@ export class HealthcareServiceAvailableTimeComponent extends BackboneElement imp
       instance.setAvailableEndTimeElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3307,7 +3298,6 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `HealthcareServiceNotAvailableComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to HealthcareServiceNotAvailableComponent
    * @returns HealthcareServiceNotAvailableComponent data model or undefined for `HealthcareServiceNotAvailableComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): HealthcareServiceNotAvailableComponent | undefined {
@@ -3326,8 +3316,6 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'description';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -3335,12 +3323,12 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDescription(null);
       } else {
         instance.setDescriptionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDescription(null);
     }
 
     fieldName = 'during';
@@ -3351,12 +3339,6 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
       instance.setDuring(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3391,10 +3373,10 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `description` property value as a StringType object if defined; else null
+   * @returns the `description` property value as a StringType object if defined; else an empty StringType object
    */
-  public getDescriptionElement(): StringType | null {
-    return this.description;
+  public getDescriptionElement(): StringType {
+    return this.description ?? new StringType();
   }
 
   /**
@@ -3405,11 +3387,14 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDescriptionElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `HealthcareService.notAvailable.description is required`);
-    const optErrMsg = `Invalid HealthcareService.notAvailable.description; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.description = element;
+  public setDescriptionElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid HealthcareService.notAvailable.description; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.description = element;
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -3438,10 +3423,13 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDescription(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `HealthcareService.notAvailable.description is required`);
-    const optErrMsg = `Invalid HealthcareService.notAvailable.description (${String(value)})`;
-    this.description = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setDescription(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid HealthcareService.notAvailable.description (${String(value)})`;
+      this.description = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -3504,6 +3492,16 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.description, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3528,30 +3526,23 @@ export class HealthcareServiceNotAvailableComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasDescriptionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getDescriptionElement()!, 'description', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
     } else {
-      missingReqdProperties.push(`HealthcareService.notAvailable.description`);
+      jsonObj['description'] = null;
     }
 
     if (this.hasDuring()) {
       setFhirComplexJson(this.getDuring(), 'during', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

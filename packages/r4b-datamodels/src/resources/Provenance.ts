@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -46,26 +45,21 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   InvalidTypeError,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -80,6 +74,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -140,7 +135,6 @@ export class Provenance extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Provenance`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Provenance
    * @returns Provenance data model or undefined for `Provenance`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Provenance | undefined {
@@ -164,8 +158,6 @@ export class Provenance extends DomainResource implements IDomainResource {
     const errorMessage = `DecoratorMetadataObject does not exist for Provenance`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'target';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -174,13 +166,13 @@ export class Provenance extends DomainResource implements IDomainResource {
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setTarget(null);
         } else {
           instance.addTarget(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTarget(null);
     }
 
     fieldName = 'occurred[x]';
@@ -200,12 +192,12 @@ export class Provenance extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: InstantType | undefined = fhirParser.parseInstantType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRecorded(null);
       } else {
         instance.setRecordedElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRecorded(null);
     }
 
     fieldName = 'policy';
@@ -263,13 +255,13 @@ export class Provenance extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: ProvenanceAgentComponent | undefined = ProvenanceAgentComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setAgent(null);
         } else {
           instance.addAgent(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAgent(null);
     }
 
     fieldName = 'entity';
@@ -298,12 +290,6 @@ export class Provenance extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -488,10 +474,13 @@ export class Provenance extends DomainResource implements IDomainResource {
   @ReferenceTargets('Provenance.target', [
     'Resource',
   ])
-  public setTarget(value: Reference[]): this {
-    assertIsDefinedList<Reference>(value, `Provenance.target is required`);
-    // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.target = value;
+  public setTarget(value: Reference[] | undefined | null): this {
+    if (isDefinedList<Reference>(value)) {
+      // assertFhirTypeList<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.target = value;
+    } else {
+      this.target = null;
+    }
     return this;
   }
 
@@ -616,10 +605,10 @@ export class Provenance extends DomainResource implements IDomainResource {
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `recorded` property value as a InstantType object if defined; else null
+   * @returns the `recorded` property value as a InstantType object if defined; else an empty InstantType object
    */
-  public getRecordedElement(): InstantType | null {
-    return this.recorded;
+  public getRecordedElement(): InstantType {
+    return this.recorded ?? new InstantType();
   }
 
   /**
@@ -630,11 +619,14 @@ export class Provenance extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRecordedElement(element: InstantType): this {
-    assertIsDefined<InstantType>(element, `Provenance.recorded is required`);
-    const optErrMsg = `Invalid Provenance.recorded; Provided value is not an instance of InstantType.`;
-    assertFhirType<InstantType>(element, InstantType, optErrMsg);
-    this.recorded = element;
+  public setRecordedElement(element: InstantType | undefined | null): this {
+    if (isDefined<InstantType>(element)) {
+      const optErrMsg = `Invalid Provenance.recorded; Provided value is not an instance of InstantType.`;
+      assertFhirType<InstantType>(element, InstantType, optErrMsg);
+      this.recorded = element;
+    } else {
+      this.recorded = null;
+    }
     return this;
   }
 
@@ -663,10 +655,13 @@ export class Provenance extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setRecorded(value: fhirInstant): this {
-    assertIsDefined<fhirInstant>(value, `Provenance.recorded is required`);
-    const optErrMsg = `Invalid Provenance.recorded (${String(value)})`;
-    this.recorded = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+  public setRecorded(value: fhirInstant | undefined | null): this {
+    if (isDefined<fhirInstant>(value)) {
+      const optErrMsg = `Invalid Provenance.recorded (${String(value)})`;
+      this.recorded = new InstantType(parseFhirPrimitiveData(value, fhirInstantSchema, optErrMsg));
+    } else {
+      this.recorded = null;
+    }
     return this;
   }
 
@@ -939,11 +934,14 @@ export class Provenance extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAgent(value: ProvenanceAgentComponent[]): this {
-    assertIsDefinedList<ProvenanceAgentComponent>(value, `Provenance.agent is required`);
-    const optErrMsg = `Invalid Provenance.agent; Provided value array has an element that is not an instance of ProvenanceAgentComponent.`;
-    assertFhirTypeList<ProvenanceAgentComponent>(value, ProvenanceAgentComponent, optErrMsg);
-    this.agent = value;
+  public setAgent(value: ProvenanceAgentComponent[] | undefined | null): this {
+    if (isDefinedList<ProvenanceAgentComponent>(value)) {
+      const optErrMsg = `Invalid Provenance.agent; Provided value array has an element that is not an instance of ProvenanceAgentComponent.`;
+      assertFhirTypeList<ProvenanceAgentComponent>(value, ProvenanceAgentComponent, optErrMsg);
+      this.agent = value;
+    } else {
+      this.agent = null;
+    }
     return this;
   }
 
@@ -1124,6 +1122,16 @@ export class Provenance extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.recorded, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1162,20 +1170,19 @@ export class Provenance extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTarget()) {
       setFhirComplexListJson(this.getTarget(), 'target', jsonObj);
     } else {
-      missingReqdProperties.push(`Provenance.target`);
+      jsonObj['target'] = null;
     }
 
     if (this.hasOccurred()) {
@@ -1184,10 +1191,9 @@ export class Provenance extends DomainResource implements IDomainResource {
     }
 
     if (this.hasRecordedElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInstant>(this.getRecordedElement()!, 'recorded', jsonObj);
+      setFhirPrimitiveJson<fhirInstant>(this.getRecordedElement(), 'recorded', jsonObj);
     } else {
-      missingReqdProperties.push(`Provenance.recorded`);
+      jsonObj['recorded'] = null;
     }
 
     if (this.hasPolicy()) {
@@ -1209,7 +1215,7 @@ export class Provenance extends DomainResource implements IDomainResource {
     if (this.hasAgent()) {
       setFhirBackboneElementListJson(this.getAgent(), 'agent', jsonObj);
     } else {
-      missingReqdProperties.push(`Provenance.agent`);
+      jsonObj['agent'] = null;
     }
 
     if (this.hasEntity()) {
@@ -1218,11 +1224,6 @@ export class Provenance extends DomainResource implements IDomainResource {
 
     if (this.hasSignature()) {
       setFhirComplexListJson(this.getSignature(), 'signature', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1258,7 +1259,6 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `ProvenanceAgentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ProvenanceAgentComponent
    * @returns ProvenanceAgentComponent data model or undefined for `ProvenanceAgentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ProvenanceAgentComponent | undefined {
@@ -1275,8 +1275,6 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
 
     let fieldName = '';
     let sourceField = '';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -1305,12 +1303,12 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setWho(null);
       } else {
         instance.setWho(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setWho(null);
     }
 
     fieldName = 'onBehalfOf';
@@ -1321,12 +1319,6 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
       instance.setOnBehalfOf(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1499,10 +1491,10 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
   }
 
   /**
-   * @returns the `who` property value as a Reference object if defined; else null
+   * @returns the `who` property value as a Reference object if defined; else an empty Reference object
    */
-  public getWho(): Reference | null {
-    return this.who;
+  public getWho(): Reference {
+    return this.who ?? new Reference();
   }
 
   /**
@@ -1527,10 +1519,13 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
   
     'Organization',
   ])
-  public setWho(value: Reference): this {
-    assertIsDefined<Reference>(value, `Provenance.agent.who is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.who = value;
+  public setWho(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.who = value;
+    } else {
+      this.who = null;
+    }
     return this;
   }
 
@@ -1609,6 +1604,16 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.who, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1636,15 +1641,14 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -1655,19 +1659,13 @@ export class ProvenanceAgentComponent extends BackboneElement implements IBackbo
     }
 
     if (this.hasWho()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getWho()!, 'who', jsonObj);
+      setFhirComplexJson(this.getWho(), 'who', jsonObj);
     } else {
-      missingReqdProperties.push(`Provenance.agent.who`);
+      jsonObj['who'] = null;
     }
 
     if (this.hasOnBehalfOf()) {
       setFhirComplexJson(this.getOnBehalfOf(), 'onBehalfOf', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1709,7 +1707,6 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
    * @param sourceJson - JSON representing FHIR `ProvenanceEntityComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ProvenanceEntityComponent
    * @returns ProvenanceEntityComponent data model or undefined for `ProvenanceEntityComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ProvenanceEntityComponent | undefined {
@@ -1728,8 +1725,6 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'role';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -1737,12 +1732,12 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRole(null);
       } else {
         instance.setRoleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRole(null);
     }
 
     fieldName = 'what';
@@ -1751,12 +1746,12 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setWhat(null);
       } else {
         instance.setWhat(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setWhat(null);
     }
 
     fieldName = 'agent';
@@ -1772,12 +1767,6 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1858,11 +1847,14 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
    *
    * @see CodeSystem Enumeration: {@link ProvenanceEntityRoleEnum }
    */
-  public setRoleEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Provenance.entity.role is required`);
-    const errMsgPrefix = `Invalid Provenance.entity.role`;
-    assertEnumCodeType<ProvenanceEntityRoleEnum>(enumType, ProvenanceEntityRoleEnum, errMsgPrefix);
-    this.role = enumType;
+  public setRoleEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Provenance.entity.role`;
+      assertEnumCodeType<ProvenanceEntityRoleEnum>(enumType, ProvenanceEntityRoleEnum, errMsgPrefix);
+      this.role = enumType;
+    } else {
+      this.role = null;
+    }
     return this;
   }
 
@@ -1895,11 +1887,14 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
    *
    * @see CodeSystem Enumeration: {@link ProvenanceEntityRoleEnum }
    */
-  public setRoleElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Provenance.entity.role is required`);
-    const optErrMsg = `Invalid Provenance.entity.role; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.role = new EnumCodeType(element, this.provenanceEntityRoleEnum);
+  public setRoleElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Provenance.entity.role; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.role = new EnumCodeType(element, this.provenanceEntityRoleEnum);
+    } else {
+      this.role = null;
+    }
     return this;
   }
 
@@ -1932,10 +1927,13 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
    *
    * @see CodeSystem Enumeration: {@link ProvenanceEntityRoleEnum }
    */
-  public setRole(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Provenance.entity.role is required`);
-    const optErrMsg = `Invalid Provenance.entity.role (${String(value)})`;
-    this.role = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.provenanceEntityRoleEnum);
+  public setRole(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Provenance.entity.role (${String(value)})`;
+      this.role = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.provenanceEntityRoleEnum);
+    } else {
+      this.role = null;
+    }
     return this;
   }
 
@@ -1947,10 +1945,10 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
   }
 
   /**
-   * @returns the `what` property value as a Reference object if defined; else null
+   * @returns the `what` property value as a Reference object if defined; else an empty Reference object
    */
-  public getWhat(): Reference | null {
-    return this.what;
+  public getWhat(): Reference {
+    return this.what ?? new Reference();
   }
 
   /**
@@ -1965,10 +1963,13 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
   @ReferenceTargets('Provenance.entity.what', [
     'Resource',
   ])
-  public setWhat(value: Reference): this {
-    assertIsDefined<Reference>(value, `Provenance.entity.what is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.what = value;
+  public setWhat(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.what = value;
+    } else {
+      this.what = null;
+    }
     return this;
   }
 
@@ -2058,6 +2059,16 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.role, this.what, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2084,37 +2095,30 @@ export class ProvenanceEntityComponent extends BackboneElement implements IBackb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRoleElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRoleElement()!, 'role', jsonObj);
     } else {
-      missingReqdProperties.push(`Provenance.entity.role`);
+      jsonObj['role'] = null;
     }
 
     if (this.hasWhat()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getWhat()!, 'what', jsonObj);
+      setFhirComplexJson(this.getWhat(), 'what', jsonObj);
     } else {
-      missingReqdProperties.push(`Provenance.entity.what`);
+      jsonObj['what'] = null;
     }
 
     if (this.hasAgent()) {
       setFhirBackboneElementListJson(this.getAgent(), 'agent', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -50,7 +49,6 @@ import {
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   ReferenceTargets,
@@ -113,7 +111,6 @@ export class Specimen extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Specimen`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Specimen
    * @returns Specimen data model or undefined for `Specimen`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Specimen | undefined {
@@ -274,7 +271,6 @@ export class Specimen extends DomainResource implements IDomainResource {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1477,7 +1473,6 @@ export class SpecimenCollectionComponent extends BackboneElement implements IBac
     );
     instance.setFastingStatus(fastingStatus);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2117,7 +2112,6 @@ export class SpecimenProcessingComponent extends BackboneElement implements IBac
     );
     instance.setTime(time);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2614,7 +2608,6 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
     );
     instance.setAdditive(additive);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

@@ -37,27 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -70,6 +63,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -112,7 +106,6 @@ export class OperationOutcome extends DomainResource implements IDomainResource 
    * @param sourceJson - JSON representing FHIR `OperationOutcome`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OperationOutcome
    * @returns OperationOutcome data model or undefined for `OperationOutcome`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): OperationOutcome | undefined {
@@ -131,8 +124,6 @@ export class OperationOutcome extends DomainResource implements IDomainResource 
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'issue';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -141,21 +132,15 @@ export class OperationOutcome extends DomainResource implements IDomainResource 
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: OperationOutcomeIssueComponent | undefined = OperationOutcomeIssueComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setIssue(null);
         } else {
           instance.addIssue(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIssue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -189,11 +174,14 @@ export class OperationOutcome extends DomainResource implements IDomainResource 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setIssue(value: OperationOutcomeIssueComponent[]): this {
-    assertIsDefinedList<OperationOutcomeIssueComponent>(value, `OperationOutcome.issue is required`);
-    const optErrMsg = `Invalid OperationOutcome.issue; Provided value array has an element that is not an instance of OperationOutcomeIssueComponent.`;
-    assertFhirTypeList<OperationOutcomeIssueComponent>(value, OperationOutcomeIssueComponent, optErrMsg);
-    this.issue = value;
+  public setIssue(value: OperationOutcomeIssueComponent[] | undefined | null): this {
+    if (isDefinedList<OperationOutcomeIssueComponent>(value)) {
+      const optErrMsg = `Invalid OperationOutcome.issue; Provided value array has an element that is not an instance of OperationOutcomeIssueComponent.`;
+      assertFhirTypeList<OperationOutcomeIssueComponent>(value, OperationOutcomeIssueComponent, optErrMsg);
+      this.issue = value;
+    } else {
+      this.issue = null;
+    }
     return this;
   }
 
@@ -249,6 +237,16 @@ export class OperationOutcome extends DomainResource implements IDomainResource 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -273,25 +271,19 @@ export class OperationOutcome extends DomainResource implements IDomainResource 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasIssue()) {
       setFhirBackboneElementListJson(this.getIssue(), 'issue', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationOutcome.issue`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['issue'] = null;
     }
 
     return jsonObj;
@@ -337,7 +329,6 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `OperationOutcomeIssueComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OperationOutcomeIssueComponent
    * @returns OperationOutcomeIssueComponent data model or undefined for `OperationOutcomeIssueComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): OperationOutcomeIssueComponent | undefined {
@@ -356,8 +347,6 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'severity';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -365,12 +354,12 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSeverity(null);
       } else {
         instance.setSeverityElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSeverity(null);
     }
 
     fieldName = 'code';
@@ -380,12 +369,12 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'details';
@@ -441,12 +430,6 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -582,11 +565,14 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link IssueSeverityEnum }
    */
-  public setSeverityEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `OperationOutcome.issue.severity is required`);
-    const errMsgPrefix = `Invalid OperationOutcome.issue.severity`;
-    assertEnumCodeType<IssueSeverityEnum>(enumType, IssueSeverityEnum, errMsgPrefix);
-    this.severity = enumType;
+  public setSeverityEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid OperationOutcome.issue.severity`;
+      assertEnumCodeType<IssueSeverityEnum>(enumType, IssueSeverityEnum, errMsgPrefix);
+      this.severity = enumType;
+    } else {
+      this.severity = null;
+    }
     return this;
   }
 
@@ -619,11 +605,14 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link IssueSeverityEnum }
    */
-  public setSeverityElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationOutcome.issue.severity is required`);
-    const optErrMsg = `Invalid OperationOutcome.issue.severity; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.severity = new EnumCodeType(element, this.issueSeverityEnum);
+  public setSeverityElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationOutcome.issue.severity; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.severity = new EnumCodeType(element, this.issueSeverityEnum);
+    } else {
+      this.severity = null;
+    }
     return this;
   }
 
@@ -656,10 +645,13 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link IssueSeverityEnum }
    */
-  public setSeverity(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationOutcome.issue.severity is required`);
-    const optErrMsg = `Invalid OperationOutcome.issue.severity (${String(value)})`;
-    this.severity = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.issueSeverityEnum);
+  public setSeverity(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationOutcome.issue.severity (${String(value)})`;
+      this.severity = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.issueSeverityEnum);
+    } else {
+      this.severity = null;
+    }
     return this;
   }
 
@@ -689,11 +681,14 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link IssueTypeEnum }
    */
-  public setCodeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `OperationOutcome.issue.code is required`);
-    const errMsgPrefix = `Invalid OperationOutcome.issue.code`;
-    assertEnumCodeType<IssueTypeEnum>(enumType, IssueTypeEnum, errMsgPrefix);
-    this.code = enumType;
+  public setCodeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid OperationOutcome.issue.code`;
+      assertEnumCodeType<IssueTypeEnum>(enumType, IssueTypeEnum, errMsgPrefix);
+      this.code = enumType;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -726,11 +721,14 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link IssueTypeEnum }
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationOutcome.issue.code is required`);
-    const optErrMsg = `Invalid OperationOutcome.issue.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = new EnumCodeType(element, this.issueTypeEnum);
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationOutcome.issue.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = new EnumCodeType(element, this.issueTypeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -763,10 +761,13 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link IssueTypeEnum }
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationOutcome.issue.code is required`);
-    const optErrMsg = `Invalid OperationOutcome.issue.code (${String(value)})`;
-    this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.issueTypeEnum);
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationOutcome.issue.code (${String(value)})`;
+      this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.issueTypeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1141,6 +1142,16 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.severity, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1171,28 +1182,27 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSeverityElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getSeverityElement()!, 'severity', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationOutcome.issue.severity`);
+      jsonObj['severity'] = null;
     }
 
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationOutcome.issue.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDetails()) {
@@ -1209,11 +1219,6 @@ export class OperationOutcomeIssueComponent extends BackboneElement implements I
 
     if (this.hasExpression()) {
       setFhirPrimitiveListJson(this.getExpressionElement(), 'expression', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

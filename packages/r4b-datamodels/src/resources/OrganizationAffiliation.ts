@@ -37,13 +37,11 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BooleanType,
   DomainResource,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   ReferenceTargets,
   assertFhirType,
@@ -92,7 +90,6 @@ export class OrganizationAffiliation extends DomainResource implements IDomainRe
    * @param sourceJson - JSON representing FHIR `OrganizationAffiliation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OrganizationAffiliation
    * @returns OrganizationAffiliation data model or undefined for `OrganizationAffiliation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): OrganizationAffiliation | undefined {
@@ -249,7 +246,6 @@ export class OrganizationAffiliation extends DomainResource implements IDomainRe
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,19 +47,15 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   UrlType,
@@ -68,7 +63,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -93,6 +87,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -163,7 +158,6 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilities`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilities
    * @returns TerminologyCapabilities data model or undefined for `TerminologyCapabilities`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilities | undefined {
@@ -186,8 +180,6 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
     const classMetadata: DecoratorMetadataObject | null = TerminologyCapabilities[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for TerminologyCapabilities`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -255,12 +247,12 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -279,12 +271,12 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDate(null);
       } else {
         instance.setDateElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDate(null);
     }
 
     fieldName = 'publisher';
@@ -378,12 +370,12 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKind(null);
       } else {
         instance.setKindElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKind(null);
     }
 
     fieldName = 'software';
@@ -465,12 +457,6 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       instance.setClosure(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1333,11 +1319,14 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TerminologyCapabilities.status is required`);
-    const errMsgPrefix = `Invalid TerminologyCapabilities.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TerminologyCapabilities.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1370,11 +1359,14 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TerminologyCapabilities.status is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1407,10 +1399,13 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TerminologyCapabilities.status is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1486,10 +1481,10 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
   }
 
   /**
-   * @returns the `date` property value as a DateTimeType object if defined; else null
+   * @returns the `date` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateElement(): DateTimeType | null {
-    return this.date;
+  public getDateElement(): DateTimeType {
+    return this.date ?? new DateTimeType();
   }
 
   /**
@@ -1500,11 +1495,14 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `TerminologyCapabilities.date is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.date; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.date = element;
+  public setDateElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.date; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.date = element;
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -1533,10 +1531,13 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDate(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `TerminologyCapabilities.date is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.date (${String(value)})`;
-    this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDate(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.date (${String(value)})`;
+      this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -2060,11 +2061,14 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link CapabilityStatementKindEnum }
    */
-  public setKindEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TerminologyCapabilities.kind is required`);
-    const errMsgPrefix = `Invalid TerminologyCapabilities.kind`;
-    assertEnumCodeType<CapabilityStatementKindEnum>(enumType, CapabilityStatementKindEnum, errMsgPrefix);
-    this.kind = enumType;
+  public setKindEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TerminologyCapabilities.kind`;
+      assertEnumCodeType<CapabilityStatementKindEnum>(enumType, CapabilityStatementKindEnum, errMsgPrefix);
+      this.kind = enumType;
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -2097,11 +2101,14 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link CapabilityStatementKindEnum }
    */
-  public setKindElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TerminologyCapabilities.kind is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.kind; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.kind = new EnumCodeType(element, this.capabilityStatementKindEnum);
+  public setKindElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.kind; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.kind = new EnumCodeType(element, this.capabilityStatementKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -2134,10 +2141,13 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
    *
    * @see CodeSystem Enumeration: {@link CapabilityStatementKindEnum }
    */
-  public setKind(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TerminologyCapabilities.kind is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.kind (${String(value)})`;
-    this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.capabilityStatementKindEnum);
+  public setKind(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.kind (${String(value)})`;
+      this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.capabilityStatementKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -2623,6 +2633,16 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.date, this.kind, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2677,15 +2697,14 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2716,7 +2735,7 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2724,10 +2743,9 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
     }
 
     if (this.hasDateElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement()!, 'date', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement(), 'date', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.date`);
+      jsonObj['date'] = null;
     }
 
     if (this.hasPublisherElement()) {
@@ -2766,7 +2784,7 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getKindElement()!, 'kind', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.kind`);
+      jsonObj['kind'] = null;
     }
 
     if (this.hasSoftware()) {
@@ -2806,11 +2824,6 @@ export class TerminologyCapabilities extends DomainResource implements IDomainRe
       setFhirBackboneElementJson(this.getClosure(), 'closure', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2846,7 +2859,6 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesSoftwareComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesSoftwareComponent
    * @returns TerminologyCapabilitiesSoftwareComponent data model or undefined for `TerminologyCapabilitiesSoftwareComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesSoftwareComponent | undefined {
@@ -2865,8 +2877,6 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2874,12 +2884,12 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'version';
@@ -2891,12 +2901,6 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
       instance.setVersionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2932,10 +2936,10 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -2946,11 +2950,14 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `TerminologyCapabilities.software.name is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.software.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.software.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -2979,10 +2986,13 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `TerminologyCapabilities.software.name is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.software.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.software.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -3077,6 +3087,16 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3101,30 +3121,23 @@ export class TerminologyCapabilitiesSoftwareComponent extends BackboneElement im
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.software.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasVersionElement()) {
       setFhirPrimitiveJson<fhirString>(this.getVersionElement(), 'version', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3161,7 +3174,6 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesImplementationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesImplementationComponent
    * @returns TerminologyCapabilitiesImplementationComponent data model or undefined for `TerminologyCapabilitiesImplementationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesImplementationComponent | undefined {
@@ -3180,8 +3192,6 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'description';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3189,12 +3199,12 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDescription(null);
       } else {
         instance.setDescriptionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDescription(null);
     }
 
     fieldName = 'url';
@@ -3206,12 +3216,6 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
       instance.setUrlElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3246,10 +3250,10 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `description` property value as a StringType object if defined; else null
+   * @returns the `description` property value as a StringType object if defined; else an empty StringType object
    */
-  public getDescriptionElement(): StringType | null {
-    return this.description;
+  public getDescriptionElement(): StringType {
+    return this.description ?? new StringType();
   }
 
   /**
@@ -3260,11 +3264,14 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDescriptionElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `TerminologyCapabilities.implementation.description is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.implementation.description; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.description = element;
+  public setDescriptionElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.implementation.description; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.description = element;
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -3293,10 +3300,13 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDescription(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `TerminologyCapabilities.implementation.description is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.implementation.description (${String(value)})`;
-    this.description = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setDescription(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.implementation.description (${String(value)})`;
+      this.description = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -3391,6 +3401,16 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.description, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3415,30 +3435,23 @@ export class TerminologyCapabilitiesImplementationComponent extends BackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasDescriptionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getDescriptionElement()!, 'description', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.implementation.description`);
+      jsonObj['description'] = null;
     }
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUrl>(this.getUrlElement(), 'url', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3476,7 +3489,6 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesCodeSystemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesCodeSystemComponent
    * @returns TerminologyCapabilitiesCodeSystemComponent data model or undefined for `TerminologyCapabilitiesCodeSystemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesCodeSystemComponent | undefined {
@@ -3494,8 +3506,6 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'uri';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3526,12 +3536,12 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setContent(null);
       } else {
         instance.setContentElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     }
 
     fieldName = 'subsumption';
@@ -3543,12 +3553,6 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
       instance.setSubsumptionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3764,11 +3768,14 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
    *
    * @see CodeSystem Enumeration: {@link CodesystemContentModeEnum }
    */
-  public setContentEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `TerminologyCapabilities.codeSystem.content is required`);
-    const errMsgPrefix = `Invalid TerminologyCapabilities.codeSystem.content`;
-    assertEnumCodeType<CodesystemContentModeEnum>(enumType, CodesystemContentModeEnum, errMsgPrefix);
-    this.content = enumType;
+  public setContentEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid TerminologyCapabilities.codeSystem.content`;
+      assertEnumCodeType<CodesystemContentModeEnum>(enumType, CodesystemContentModeEnum, errMsgPrefix);
+      this.content = enumType;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -3801,11 +3808,14 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
    *
    * @see CodeSystem Enumeration: {@link CodesystemContentModeEnum }
    */
-  public setContentElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TerminologyCapabilities.codeSystem.content is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.content; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.content = new EnumCodeType(element, this.codesystemContentModeEnum);
+  public setContentElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.content; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.content = new EnumCodeType(element, this.codesystemContentModeEnum);
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -3838,10 +3848,13 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
    *
    * @see CodeSystem Enumeration: {@link CodesystemContentModeEnum }
    */
-  public setContent(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TerminologyCapabilities.codeSystem.content is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.content (${String(value)})`;
-    this.content = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.codesystemContentModeEnum);
+  public setContent(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.content (${String(value)})`;
+      this.content = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.codesystemContentModeEnum);
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -3938,6 +3951,16 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.content, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3965,15 +3988,14 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUriElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getUriElement(), 'uri', jsonObj);
@@ -3987,16 +4009,11 @@ export class TerminologyCapabilitiesCodeSystemComponent extends BackboneElement 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getContentElement()!, 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.codeSystem.content`);
+      jsonObj['content'] = null;
     }
 
     if (this.hasSubsumptionElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getSubsumptionElement(), 'subsumption', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4120,7 +4137,6 @@ export class TerminologyCapabilitiesCodeSystemVersionComponent extends BackboneE
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4835,7 +4851,6 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesCodeSystemVersionFilterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesCodeSystemVersionFilterComponent
    * @returns TerminologyCapabilitiesCodeSystemVersionFilterComponent data model or undefined for `TerminologyCapabilitiesCodeSystemVersionFilterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesCodeSystemVersionFilterComponent | undefined {
@@ -4854,8 +4869,6 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4863,12 +4876,12 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'op';
@@ -4881,24 +4894,18 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
         fieldName,
         primitiveJsonType,
       );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson, idx) => {
+      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
         const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setOp(null);
         } else {
           instance.addOpElement(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOp(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4933,10 +4940,10 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -4947,11 +4954,14 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TerminologyCapabilities.codeSystem.version.filter.code is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -4980,10 +4990,13 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TerminologyCapabilities.codeSystem.version.filter.code is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -5009,11 +5022,14 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setOpElement(element: CodeType[]): this {
-    assertIsDefinedList<CodeType>(element, `TerminologyCapabilities.codeSystem.version.filter.op is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.op; Provided value array has an element that is not an instance of CodeType.`;
-    assertFhirTypeList<CodeType>(element, CodeType, optErrMsg);
-    this.op = element;
+  public setOpElement(element: CodeType[] | undefined | null): this {
+     if (isDefinedList<CodeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.op; Provided value array has an element that is not an instance of CodeType.`;
+      assertFhirTypeList<CodeType>(element, CodeType, optErrMsg);
+      this.op = element;
+    } else {
+      this.op = null;
+    }
     return this;
   }
 
@@ -5065,15 +5081,18 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setOp(value: fhirCode[]): this {
-    assertIsDefinedList<fhirCode>(value, `TerminologyCapabilities.codeSystem.version.filter.op is required`);
-    const opElements = [] as CodeType[];
-    for (const opValue of value) {
-      const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.op array item (${String(opValue)})`;
-      const element = new CodeType(parseFhirPrimitiveData(opValue, fhirCodeSchema, optErrMsg));
-      opElements.push(element);
+  public setOp(value: fhirCode[] | undefined | null): this {
+    if (isDefinedList<fhirCode>(value)) {
+      const opElements = [] as CodeType[];
+      for (const opValue of value) {
+        const optErrMsg = `Invalid TerminologyCapabilities.codeSystem.version.filter.op array item (${String(opValue)})`;
+        const element = new CodeType(parseFhirPrimitiveData(opValue, fhirCodeSchema, optErrMsg));
+        opElements.push(element);
+      }
+      this.op = opElements;
+    } else {
+      this.op = null;
     }
-    this.op = opElements;
     return this;
   }
 
@@ -5130,6 +5149,16 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5155,32 +5184,25 @@ export class TerminologyCapabilitiesCodeSystemVersionFilterComponent extends Bac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.codeSystem.version.filter.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasOpElement()) {
       setFhirPrimitiveListJson(this.getOpElement(), 'op', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.codeSystem.version.filter.op`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['op'] = null;
     }
 
     return jsonObj;
@@ -5276,7 +5298,6 @@ export class TerminologyCapabilitiesExpansionComponent extends BackboneElement i
       instance.setTextFilterElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5781,7 +5802,6 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesExpansionParameterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesExpansionParameterComponent
    * @returns TerminologyCapabilitiesExpansionParameterComponent data model or undefined for `TerminologyCapabilitiesExpansionParameterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesExpansionParameterComponent | undefined {
@@ -5800,8 +5820,6 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -5809,12 +5827,12 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'documentation';
@@ -5826,12 +5844,6 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
       instance.setDocumentationElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5866,10 +5878,10 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a CodeType object if defined; else null
+   * @returns the `name` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getNameElement(): CodeType | null {
-    return this.name;
+  public getNameElement(): CodeType {
+    return this.name ?? new CodeType();
   }
 
   /**
@@ -5880,11 +5892,14 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `TerminologyCapabilities.expansion.parameter.name is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.expansion.parameter.name; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.expansion.parameter.name; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -5913,10 +5928,13 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `TerminologyCapabilities.expansion.parameter.name is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.expansion.parameter.name (${String(value)})`;
-    this.name = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setName(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.expansion.parameter.name (${String(value)})`;
+      this.name = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -6011,6 +6029,16 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6035,30 +6063,23 @@ export class TerminologyCapabilitiesExpansionParameterComponent extends Backbone
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.expansion.parameter.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasDocumentationElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDocumentationElement(), 'documentation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6095,7 +6116,6 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesValidateCodeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesValidateCodeComponent
    * @returns TerminologyCapabilitiesValidateCodeComponent data model or undefined for `TerminologyCapabilitiesValidateCodeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesValidateCodeComponent | undefined {
@@ -6114,8 +6134,6 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'translations';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'boolean';
@@ -6123,20 +6141,14 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTranslations(null);
       } else {
         instance.setTranslationsElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTranslations(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6157,10 +6169,10 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `translations` property value as a BooleanType object if defined; else null
+   * @returns the `translations` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getTranslationsElement(): BooleanType | null {
-    return this.translations;
+  public getTranslationsElement(): BooleanType {
+    return this.translations ?? new BooleanType();
   }
 
   /**
@@ -6171,11 +6183,14 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTranslationsElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TerminologyCapabilities.validateCode.translations is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.validateCode.translations; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.translations = element;
+  public setTranslationsElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.validateCode.translations; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.translations = element;
+    } else {
+      this.translations = null;
+    }
     return this;
   }
 
@@ -6204,10 +6219,13 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTranslations(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TerminologyCapabilities.validateCode.translations is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.validateCode.translations (${String(value)})`;
-    this.translations = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setTranslations(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.validateCode.translations (${String(value)})`;
+      this.translations = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.translations = null;
+    }
     return this;
   }
 
@@ -6237,6 +6255,16 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.translations, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6260,26 +6288,19 @@ export class TerminologyCapabilitiesValidateCodeComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTranslationsElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getTranslationsElement()!, 'translations', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getTranslationsElement(), 'translations', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.validateCode.translations`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['translations'] = null;
     }
 
     return jsonObj;
@@ -6316,7 +6337,6 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
    * @param sourceJson - JSON representing FHIR `TerminologyCapabilitiesTranslationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to TerminologyCapabilitiesTranslationComponent
    * @returns TerminologyCapabilitiesTranslationComponent data model or undefined for `TerminologyCapabilitiesTranslationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): TerminologyCapabilitiesTranslationComponent | undefined {
@@ -6335,8 +6355,6 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'needsMap';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'boolean';
@@ -6344,20 +6362,14 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setNeedsMap(null);
       } else {
         instance.setNeedsMapElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setNeedsMap(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6378,10 +6390,10 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `needsMap` property value as a BooleanType object if defined; else null
+   * @returns the `needsMap` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getNeedsMapElement(): BooleanType | null {
-    return this.needsMap;
+  public getNeedsMapElement(): BooleanType {
+    return this.needsMap ?? new BooleanType();
   }
 
   /**
@@ -6392,11 +6404,14 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNeedsMapElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `TerminologyCapabilities.translation.needsMap is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.translation.needsMap; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.needsMap = element;
+  public setNeedsMapElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.translation.needsMap; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.needsMap = element;
+    } else {
+      this.needsMap = null;
+    }
     return this;
   }
 
@@ -6425,10 +6440,13 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNeedsMap(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `TerminologyCapabilities.translation.needsMap is required`);
-    const optErrMsg = `Invalid TerminologyCapabilities.translation.needsMap (${String(value)})`;
-    this.needsMap = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setNeedsMap(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid TerminologyCapabilities.translation.needsMap (${String(value)})`;
+      this.needsMap = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.needsMap = null;
+    }
     return this;
   }
 
@@ -6458,6 +6476,16 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.needsMap, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6481,26 +6509,19 @@ export class TerminologyCapabilitiesTranslationComponent extends BackboneElement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNeedsMapElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getNeedsMapElement()!, 'needsMap', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getNeedsMapElement(), 'needsMap', jsonObj);
     } else {
-      missingReqdProperties.push(`TerminologyCapabilities.translation.needsMap`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['needsMap'] = null;
     }
 
     return jsonObj;
@@ -6556,7 +6577,6 @@ export class TerminologyCapabilitiesClosureComponent extends BackboneElement imp
       instance.setTranslationElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

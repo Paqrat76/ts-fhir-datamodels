@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -45,20 +44,15 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -72,6 +66,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -124,7 +119,6 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `CatalogEntry`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CatalogEntry
    * @returns CatalogEntry data model or undefined for `CatalogEntry`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): CatalogEntry | undefined {
@@ -143,8 +137,6 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -174,12 +166,12 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOrderable(null);
       } else {
         instance.setOrderableElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOrderable(null);
     }
 
     fieldName = 'referencedItem';
@@ -188,12 +180,12 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setReferencedItem(null);
       } else {
         instance.setReferencedItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setReferencedItem(null);
     }
 
     fieldName = 'additionalIdentifier';
@@ -296,12 +288,6 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -603,10 +589,10 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `orderable` property value as a BooleanType object if defined; else null
+   * @returns the `orderable` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getOrderableElement(): BooleanType | null {
-    return this.orderable;
+  public getOrderableElement(): BooleanType {
+    return this.orderable ?? new BooleanType();
   }
 
   /**
@@ -617,11 +603,14 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setOrderableElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `CatalogEntry.orderable is required`);
-    const optErrMsg = `Invalid CatalogEntry.orderable; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.orderable = element;
+  public setOrderableElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid CatalogEntry.orderable; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.orderable = element;
+    } else {
+      this.orderable = null;
+    }
     return this;
   }
 
@@ -650,10 +639,13 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setOrderable(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `CatalogEntry.orderable is required`);
-    const optErrMsg = `Invalid CatalogEntry.orderable (${String(value)})`;
-    this.orderable = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setOrderable(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid CatalogEntry.orderable (${String(value)})`;
+      this.orderable = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.orderable = null;
+    }
     return this;
   }
 
@@ -665,10 +657,10 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `referencedItem` property value as a Reference object if defined; else null
+   * @returns the `referencedItem` property value as a Reference object if defined; else an empty Reference object
    */
-  public getReferencedItem(): Reference | null {
-    return this.referencedItem;
+  public getReferencedItem(): Reference {
+    return this.referencedItem ?? new Reference();
   }
 
   /**
@@ -703,10 +695,13 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
   
     'Binary',
   ])
-  public setReferencedItem(value: Reference): this {
-    assertIsDefined<Reference>(value, `CatalogEntry.referencedItem is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.referencedItem = value;
+  public setReferencedItem(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.referencedItem = value;
+    } else {
+      this.referencedItem = null;
+    }
     return this;
   }
 
@@ -1314,6 +1309,16 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.orderable, this.referencedItem, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1355,15 +1360,14 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1374,17 +1378,15 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
     }
 
     if (this.hasOrderableElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getOrderableElement()!, 'orderable', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getOrderableElement(), 'orderable', jsonObj);
     } else {
-      missingReqdProperties.push(`CatalogEntry.orderable`);
+      jsonObj['orderable'] = null;
     }
 
     if (this.hasReferencedItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getReferencedItem()!, 'referencedItem', jsonObj);
+      setFhirComplexJson(this.getReferencedItem(), 'referencedItem', jsonObj);
     } else {
-      missingReqdProperties.push(`CatalogEntry.referencedItem`);
+      jsonObj['referencedItem'] = null;
     }
 
     if (this.hasAdditionalIdentifier()) {
@@ -1422,11 +1424,6 @@ export class CatalogEntry extends DomainResource implements IDomainResource {
 
     if (this.hasRelatedEntry()) {
       setFhirBackboneElementListJson(this.getRelatedEntry(), 'relatedEntry', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1469,7 +1466,6 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `CatalogEntryRelatedEntryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CatalogEntryRelatedEntryComponent
    * @returns CatalogEntryRelatedEntryComponent data model or undefined for `CatalogEntryRelatedEntryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CatalogEntryRelatedEntryComponent | undefined {
@@ -1488,8 +1484,6 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'relationtype';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -1497,12 +1491,12 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationtype(null);
       } else {
         instance.setRelationtypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationtype(null);
     }
 
     fieldName = 'item';
@@ -1511,20 +1505,14 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setItem(null);
       } else {
         instance.setItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1589,11 +1577,14 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
    *
    * @see CodeSystem Enumeration: {@link RelationTypeEnum }
    */
-  public setRelationtypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `CatalogEntry.relatedEntry.relationtype is required`);
-    const errMsgPrefix = `Invalid CatalogEntry.relatedEntry.relationtype`;
-    assertEnumCodeType<RelationTypeEnum>(enumType, RelationTypeEnum, errMsgPrefix);
-    this.relationtype = enumType;
+  public setRelationtypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid CatalogEntry.relatedEntry.relationtype`;
+      assertEnumCodeType<RelationTypeEnum>(enumType, RelationTypeEnum, errMsgPrefix);
+      this.relationtype = enumType;
+    } else {
+      this.relationtype = null;
+    }
     return this;
   }
 
@@ -1626,11 +1617,14 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
    *
    * @see CodeSystem Enumeration: {@link RelationTypeEnum }
    */
-  public setRelationtypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `CatalogEntry.relatedEntry.relationtype is required`);
-    const optErrMsg = `Invalid CatalogEntry.relatedEntry.relationtype; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.relationtype = new EnumCodeType(element, this.relationTypeEnum);
+  public setRelationtypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid CatalogEntry.relatedEntry.relationtype; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.relationtype = new EnumCodeType(element, this.relationTypeEnum);
+    } else {
+      this.relationtype = null;
+    }
     return this;
   }
 
@@ -1663,10 +1657,13 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
    *
    * @see CodeSystem Enumeration: {@link RelationTypeEnum }
    */
-  public setRelationtype(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `CatalogEntry.relatedEntry.relationtype is required`);
-    const optErrMsg = `Invalid CatalogEntry.relatedEntry.relationtype (${String(value)})`;
-    this.relationtype = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.relationTypeEnum);
+  public setRelationtype(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid CatalogEntry.relatedEntry.relationtype (${String(value)})`;
+      this.relationtype = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.relationTypeEnum);
+    } else {
+      this.relationtype = null;
+    }
     return this;
   }
 
@@ -1678,10 +1675,10 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
   }
 
   /**
-   * @returns the `item` property value as a Reference object if defined; else null
+   * @returns the `item` property value as a Reference object if defined; else an empty Reference object
    */
-  public getItem(): Reference | null {
-    return this.item;
+  public getItem(): Reference {
+    return this.item ?? new Reference();
   }
 
   /**
@@ -1696,10 +1693,13 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
   @ReferenceTargets('CatalogEntry.relatedEntry.item', [
     'CatalogEntry',
   ])
-  public setItem(value: Reference): this {
-    assertIsDefined<Reference>(value, `CatalogEntry.relatedEntry.item is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.item = value;
+  public setItem(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -1730,6 +1730,16 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.relationtype, this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1754,33 +1764,26 @@ export class CatalogEntryRelatedEntryComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasRelationtypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRelationtypeElement()!, 'relationtype', jsonObj);
     } else {
-      missingReqdProperties.push(`CatalogEntry.relatedEntry.relationtype`);
+      jsonObj['relationtype'] = null;
     }
 
     if (this.hasItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getItem()!, 'item', jsonObj);
+      setFhirComplexJson(this.getItem(), 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`CatalogEntry.relatedEntry.item`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['item'] = null;
     }
 
     return jsonObj;

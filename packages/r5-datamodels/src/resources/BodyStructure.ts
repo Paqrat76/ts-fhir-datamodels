@@ -37,25 +37,18 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirBoolean,
   fhirBooleanSchema,
@@ -66,6 +59,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -110,7 +104,6 @@ export class BodyStructure extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `BodyStructure`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to BodyStructure
    * @returns BodyStructure data model or undefined for `BodyStructure`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): BodyStructure | undefined {
@@ -129,8 +122,6 @@ export class BodyStructure extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -170,13 +161,13 @@ export class BodyStructure extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: BodyStructureIncludedStructureComponent | undefined = BodyStructureIncludedStructureComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setIncludedStructure(null);
         } else {
           instance.addIncludedStructure(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIncludedStructure(null);
     }
 
     fieldName = 'excludedStructure';
@@ -220,20 +211,14 @@ export class BodyStructure extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -527,11 +512,14 @@ export class BodyStructure extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setIncludedStructure(value: BodyStructureIncludedStructureComponent[]): this {
-    assertIsDefinedList<BodyStructureIncludedStructureComponent>(value, `BodyStructure.includedStructure is required`);
-    const optErrMsg = `Invalid BodyStructure.includedStructure; Provided value array has an element that is not an instance of BodyStructureIncludedStructureComponent.`;
-    assertFhirTypeList<BodyStructureIncludedStructureComponent>(value, BodyStructureIncludedStructureComponent, optErrMsg);
-    this.includedStructure = value;
+  public setIncludedStructure(value: BodyStructureIncludedStructureComponent[] | undefined | null): this {
+    if (isDefinedList<BodyStructureIncludedStructureComponent>(value)) {
+      const optErrMsg = `Invalid BodyStructure.includedStructure; Provided value array has an element that is not an instance of BodyStructureIncludedStructureComponent.`;
+      assertFhirTypeList<BodyStructureIncludedStructureComponent>(value, BodyStructureIncludedStructureComponent, optErrMsg);
+      this.includedStructure = value;
+    } else {
+      this.includedStructure = null;
+    }
     return this;
   }
 
@@ -749,10 +737,10 @@ export class BodyStructure extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -767,10 +755,13 @@ export class BodyStructure extends DomainResource implements IDomainResource {
   @ReferenceTargets('BodyStructure.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `BodyStructure.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -803,6 +794,16 @@ export class BodyStructure extends DomainResource implements IDomainResource {
       this.description,
       this.image,
       this.patient,
+    );
+  }
+
+  /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.patient, 
     );
   }
 
@@ -841,15 +842,14 @@ export class BodyStructure extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -866,7 +866,7 @@ export class BodyStructure extends DomainResource implements IDomainResource {
     if (this.hasIncludedStructure()) {
       setFhirBackboneElementListJson(this.getIncludedStructure(), 'includedStructure', jsonObj);
     } else {
-      missingReqdProperties.push(`BodyStructure.includedStructure`);
+      jsonObj['includedStructure'] = null;
     }
 
     if (this.hasExcludedStructure()) {
@@ -882,15 +882,9 @@ export class BodyStructure extends DomainResource implements IDomainResource {
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`BodyStructure.patient`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['patient'] = null;
     }
 
     return jsonObj;
@@ -924,7 +918,6 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `BodyStructureIncludedStructureComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to BodyStructureIncludedStructureComponent
    * @returns BodyStructureIncludedStructureComponent data model or undefined for `BodyStructureIncludedStructureComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): BodyStructureIncludedStructureComponent | undefined {
@@ -942,20 +935,18 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'structure';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStructure(null);
       } else {
         instance.setStructure(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStructure(null);
     }
 
     fieldName = 'laterality';
@@ -1005,12 +996,6 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1090,10 +1075,10 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `structure` property value as a CodeableConcept object if defined; else null
+   * @returns the `structure` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getStructure(): CodeableConcept | null {
-    return this.structure;
+  public getStructure(): CodeableConcept {
+    return this.structure ?? new CodeableConcept();
   }
 
   /**
@@ -1103,11 +1088,14 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setStructure(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `BodyStructure.includedStructure.structure is required`);
-    const optErrMsg = `Invalid BodyStructure.includedStructure.structure; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.structure = value;
+  public setStructure(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid BodyStructure.includedStructure.structure; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.structure = value;
+    } else {
+      this.structure = null;
+    }
     return this;
   }
 
@@ -1355,6 +1343,16 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.structure, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1385,21 +1383,19 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasStructure()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getStructure()!, 'structure', jsonObj);
+      setFhirComplexJson(this.getStructure(), 'structure', jsonObj);
     } else {
-      missingReqdProperties.push(`BodyStructure.includedStructure.structure`);
+      jsonObj['structure'] = null;
     }
 
     if (this.hasLaterality()) {
@@ -1416,11 +1412,6 @@ export class BodyStructureIncludedStructureComponent extends BackboneElement imp
 
     if (this.hasQualifier()) {
       setFhirComplexListJson(this.getQualifier(), 'qualifier', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1518,7 +1509,6 @@ export class BodyStructureIncludedStructureBodyLandmarkOrientationComponent exte
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1958,7 +1948,6 @@ export class BodyStructureIncludedStructureBodyLandmarkOrientationDistanceFromLa
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

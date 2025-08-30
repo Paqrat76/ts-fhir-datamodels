@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -50,26 +49,21 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -93,6 +87,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -146,7 +141,6 @@ export class ConceptMap extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `ConceptMap`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMap
    * @returns ConceptMap data model or undefined for `ConceptMap`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMap | undefined {
@@ -169,8 +163,6 @@ export class ConceptMap extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = ConceptMap[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ConceptMap`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -238,12 +230,12 @@ export class ConceptMap extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -511,12 +503,6 @@ export class ConceptMap extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1446,11 +1432,14 @@ export class ConceptMap extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConceptMap.status is required`);
-    const errMsgPrefix = `Invalid ConceptMap.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConceptMap.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1483,11 +1472,14 @@ export class ConceptMap extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.status is required`);
-    const optErrMsg = `Invalid ConceptMap.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1520,10 +1512,13 @@ export class ConceptMap extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.status is required`);
-    const optErrMsg = `Invalid ConceptMap.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -3053,6 +3048,16 @@ export class ConceptMap extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3119,15 +3124,14 @@ export class ConceptMap extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -3158,7 +3162,7 @@ export class ConceptMap extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -3259,11 +3263,6 @@ export class ConceptMap extends DomainResource implements IDomainResource {
       setFhirBackboneElementListJson(this.getGroup(), 'group', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -3309,7 +3308,6 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `ConceptMapPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapPropertyComponent
    * @returns ConceptMapPropertyComponent data model or undefined for `ConceptMapPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapPropertyComponent | undefined {
@@ -3328,8 +3326,6 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3337,12 +3333,12 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'uri';
@@ -3370,12 +3366,12 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'system';
@@ -3387,12 +3383,6 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
       instance.setSystemElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3481,10 +3471,10 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -3495,11 +3485,14 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.property.code is required`);
-    const optErrMsg = `Invalid ConceptMap.property.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.property.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3528,10 +3521,13 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.property.code is required`);
-    const optErrMsg = `Invalid ConceptMap.property.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.property.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3689,11 +3685,14 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
    *
    * @see CodeSystem Enumeration: {@link ConceptmapPropertyTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConceptMap.property.type is required`);
-    const errMsgPrefix = `Invalid ConceptMap.property.type`;
-    assertEnumCodeType<ConceptmapPropertyTypeEnum>(enumType, ConceptmapPropertyTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConceptMap.property.type`;
+      assertEnumCodeType<ConceptmapPropertyTypeEnum>(enumType, ConceptmapPropertyTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3726,11 +3725,14 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
    *
    * @see CodeSystem Enumeration: {@link ConceptmapPropertyTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.property.type is required`);
-    const optErrMsg = `Invalid ConceptMap.property.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.conceptmapPropertyTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.property.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.conceptmapPropertyTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3763,10 +3765,13 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
    *
    * @see CodeSystem Enumeration: {@link ConceptmapPropertyTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.property.type is required`);
-    const optErrMsg = `Invalid ConceptMap.property.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptmapPropertyTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.property.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptmapPropertyTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3864,6 +3869,16 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3891,21 +3906,19 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.property.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasUriElement()) {
@@ -3920,16 +3933,11 @@ export class ConceptMapPropertyComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.property.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasSystemElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getSystemElement(), 'system', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3976,7 +3984,6 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `ConceptMapAdditionalAttributeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapAdditionalAttributeComponent
    * @returns ConceptMapAdditionalAttributeComponent data model or undefined for `ConceptMapAdditionalAttributeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapAdditionalAttributeComponent | undefined {
@@ -3995,8 +4002,6 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4004,12 +4009,12 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'uri';
@@ -4037,20 +4042,14 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4123,10 +4122,10 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -4137,11 +4136,14 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.additionalAttribute.code is required`);
-    const optErrMsg = `Invalid ConceptMap.additionalAttribute.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.additionalAttribute.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -4170,10 +4172,13 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.additionalAttribute.code is required`);
-    const optErrMsg = `Invalid ConceptMap.additionalAttribute.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.additionalAttribute.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -4331,11 +4336,14 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link ConceptmapAttributeTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConceptMap.additionalAttribute.type is required`);
-    const errMsgPrefix = `Invalid ConceptMap.additionalAttribute.type`;
-    assertEnumCodeType<ConceptmapAttributeTypeEnum>(enumType, ConceptmapAttributeTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConceptMap.additionalAttribute.type`;
+      assertEnumCodeType<ConceptmapAttributeTypeEnum>(enumType, ConceptmapAttributeTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4368,11 +4376,14 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link ConceptmapAttributeTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.additionalAttribute.type is required`);
-    const optErrMsg = `Invalid ConceptMap.additionalAttribute.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.conceptmapAttributeTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.additionalAttribute.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.conceptmapAttributeTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4405,10 +4416,13 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
    *
    * @see CodeSystem Enumeration: {@link ConceptmapAttributeTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.additionalAttribute.type is required`);
-    const optErrMsg = `Invalid ConceptMap.additionalAttribute.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptmapAttributeTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.additionalAttribute.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptmapAttributeTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4441,6 +4455,16 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4467,21 +4491,19 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.additionalAttribute.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasUriElement()) {
@@ -4496,12 +4518,7 @@ export class ConceptMapAdditionalAttributeComponent extends BackboneElement impl
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.additionalAttribute.type`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['type'] = null;
     }
 
     return jsonObj;
@@ -4534,7 +4551,6 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `ConceptMapGroupComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapGroupComponent
    * @returns ConceptMapGroupComponent data model or undefined for `ConceptMapGroupComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapGroupComponent | undefined {
@@ -4552,8 +4568,6 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'source';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -4581,13 +4595,13 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: ConceptMapGroupElementComponent | undefined = ConceptMapGroupElementComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setElement(null);
         } else {
           instance.addElement(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setElement(null);
     }
 
     fieldName = 'unmapped';
@@ -4598,12 +4612,6 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
       instance.setUnmapped(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4817,11 +4825,14 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setElement(value: ConceptMapGroupElementComponent[]): this {
-    assertIsDefinedList<ConceptMapGroupElementComponent>(value, `ConceptMap.group.element is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element; Provided value array has an element that is not an instance of ConceptMapGroupElementComponent.`;
-    assertFhirTypeList<ConceptMapGroupElementComponent>(value, ConceptMapGroupElementComponent, optErrMsg);
-    this.element = value;
+  public setElement(value: ConceptMapGroupElementComponent[] | undefined | null): this {
+    if (isDefinedList<ConceptMapGroupElementComponent>(value)) {
+      const optErrMsg = `Invalid ConceptMap.group.element; Provided value array has an element that is not an instance of ConceptMapGroupElementComponent.`;
+      assertFhirTypeList<ConceptMapGroupElementComponent>(value, ConceptMapGroupElementComponent, optErrMsg);
+      this.element = value;
+    } else {
+      this.element = null;
+    }
     return this;
   }
 
@@ -4912,6 +4923,16 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4939,15 +4960,14 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasSourceElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getSourceElement(), 'source', jsonObj);
@@ -4960,16 +4980,11 @@ export class ConceptMapGroupComponent extends BackboneElement implements IBackbo
     if (this.hasElement()) {
       setFhirBackboneElementListJson(this.getElement(), 'element', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.group.element`);
+      jsonObj['element'] = null;
     }
 
     if (this.hasUnmapped()) {
       setFhirBackboneElementJson(this.getUnmapped(), 'unmapped', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5066,7 +5081,6 @@ export class ConceptMapGroupElementComponent extends BackboneElement implements 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5578,7 +5592,6 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `ConceptMapGroupElementTargetComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapGroupElementTargetComponent
    * @returns ConceptMapGroupElementTargetComponent data model or undefined for `ConceptMapGroupElementTargetComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapGroupElementTargetComponent | undefined {
@@ -5596,8 +5609,6 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -5633,12 +5644,12 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationship(null);
       } else {
         instance.setRelationshipElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationship(null);
     }
 
     fieldName = 'comment';
@@ -5689,12 +5700,6 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6039,11 +6044,14 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link ConceptMapRelationshipEnum }
    */
-  public setRelationshipEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConceptMap.group.element.target.relationship is required`);
-    const errMsgPrefix = `Invalid ConceptMap.group.element.target.relationship`;
-    assertEnumCodeType<ConceptMapRelationshipEnum>(enumType, ConceptMapRelationshipEnum, errMsgPrefix);
-    this.relationship = enumType;
+  public setRelationshipEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConceptMap.group.element.target.relationship`;
+      assertEnumCodeType<ConceptMapRelationshipEnum>(enumType, ConceptMapRelationshipEnum, errMsgPrefix);
+      this.relationship = enumType;
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -6076,11 +6084,14 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link ConceptMapRelationshipEnum }
    */
-  public setRelationshipElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.group.element.target.relationship is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element.target.relationship; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.relationship = new EnumCodeType(element, this.conceptMapRelationshipEnum);
+  public setRelationshipElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.group.element.target.relationship; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.relationship = new EnumCodeType(element, this.conceptMapRelationshipEnum);
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -6113,10 +6124,13 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link ConceptMapRelationshipEnum }
    */
-  public setRelationship(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.group.element.target.relationship is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element.target.relationship (${String(value)})`;
-    this.relationship = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptMapRelationshipEnum);
+  public setRelationship(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.group.element.target.relationship (${String(value)})`;
+      this.relationship = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptMapRelationshipEnum);
+    } else {
+      this.relationship = null;
+    }
     return this;
   }
 
@@ -6391,6 +6405,16 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.relationship, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6424,15 +6448,14 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCodeElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
@@ -6450,7 +6473,7 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRelationshipElement()!, 'relationship', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.group.element.target.relationship`);
+      jsonObj['relationship'] = null;
     }
 
     if (this.hasCommentElement()) {
@@ -6467,11 +6490,6 @@ export class ConceptMapGroupElementTargetComponent extends BackboneElement imple
 
     if (this.hasProduct()) {
       setFhirBackboneElementListJson(this.getProduct(), 'product', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6514,7 +6532,6 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `ConceptMapGroupElementTargetPropertyComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapGroupElementTargetPropertyComponent
    * @returns ConceptMapGroupElementTargetPropertyComponent data model or undefined for `ConceptMapGroupElementTargetPropertyComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapGroupElementTargetPropertyComponent | undefined {
@@ -6537,8 +6554,6 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
     const errorMessage = `DecoratorMetadataObject does not exist for ConceptMapGroupElementTargetPropertyComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -6546,12 +6561,12 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value[x]';
@@ -6563,17 +6578,11 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6626,10 +6635,10 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -6640,11 +6649,14 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.group.element.target.property.code is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element.target.property.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.group.element.target.property.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -6673,10 +6685,13 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.group.element.target.property.code is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element.target.property.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.group.element.target.property.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -6704,10 +6719,13 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('ConceptMap.group.element.target.property.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `ConceptMap.group.element.target.property.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -6897,6 +6915,16 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6921,33 +6949,26 @@ export class ConceptMapGroupElementTargetPropertyComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.group.element.target.property.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.group.element.target.property.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -6984,7 +7005,6 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
    * @param sourceJson - JSON representing FHIR `ConceptMapGroupElementTargetDependsOnComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapGroupElementTargetDependsOnComponent
    * @returns ConceptMapGroupElementTargetDependsOnComponent data model or undefined for `ConceptMapGroupElementTargetDependsOnComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapGroupElementTargetDependsOnComponent | undefined {
@@ -7007,8 +7027,6 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
     const errorMessage = `DecoratorMetadataObject does not exist for ConceptMapGroupElementTargetDependsOnComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'attribute';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -7016,12 +7034,12 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAttribute(null);
       } else {
         instance.setAttributeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAttribute(null);
     }
 
     fieldName = 'value[x]';
@@ -7043,12 +7061,6 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
       instance.setValueSetElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7115,10 +7127,10 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `attribute` property value as a CodeType object if defined; else null
+   * @returns the `attribute` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getAttributeElement(): CodeType | null {
-    return this.attribute;
+  public getAttributeElement(): CodeType {
+    return this.attribute ?? new CodeType();
   }
 
   /**
@@ -7129,11 +7141,14 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAttributeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.group.element.target.dependsOn.attribute is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element.target.dependsOn.attribute; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.attribute = element;
+  public setAttributeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.group.element.target.dependsOn.attribute; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.attribute = element;
+    } else {
+      this.attribute = null;
+    }
     return this;
   }
 
@@ -7162,10 +7177,13 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAttribute(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.group.element.target.dependsOn.attribute is required`);
-    const optErrMsg = `Invalid ConceptMap.group.element.target.dependsOn.attribute (${String(value)})`;
-    this.attribute = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setAttribute(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.group.element.target.dependsOn.attribute (${String(value)})`;
+      this.attribute = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.attribute = null;
+    }
     return this;
   }
 
@@ -7410,6 +7428,16 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.attribute, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7435,21 +7463,19 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAttributeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getAttributeElement()!, 'attribute', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getAttributeElement(), 'attribute', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.group.element.target.dependsOn.attribute`);
+      jsonObj['attribute'] = null;
     }
 
     if (this.hasValue()) {
@@ -7459,11 +7485,6 @@ export class ConceptMapGroupElementTargetDependsOnComponent extends BackboneElem
 
     if (this.hasValueSetElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getValueSetElement(), 'valueSet', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -7502,7 +7523,6 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `ConceptMapGroupUnmappedComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ConceptMapGroupUnmappedComponent
    * @returns ConceptMapGroupUnmappedComponent data model or undefined for `ConceptMapGroupUnmappedComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ConceptMapGroupUnmappedComponent | undefined {
@@ -7521,8 +7541,6 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'mode';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -7530,12 +7548,12 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMode(null);
       } else {
         instance.setModeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMode(null);
     }
 
     fieldName = 'code';
@@ -7583,12 +7601,6 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
       instance.setOtherMapElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7724,11 +7736,14 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
    *
    * @see CodeSystem Enumeration: {@link ConceptmapUnmappedModeEnum }
    */
-  public setModeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ConceptMap.group.unmapped.mode is required`);
-    const errMsgPrefix = `Invalid ConceptMap.group.unmapped.mode`;
-    assertEnumCodeType<ConceptmapUnmappedModeEnum>(enumType, ConceptmapUnmappedModeEnum, errMsgPrefix);
-    this.mode = enumType;
+  public setModeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ConceptMap.group.unmapped.mode`;
+      assertEnumCodeType<ConceptmapUnmappedModeEnum>(enumType, ConceptmapUnmappedModeEnum, errMsgPrefix);
+      this.mode = enumType;
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -7761,11 +7776,14 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
    *
    * @see CodeSystem Enumeration: {@link ConceptmapUnmappedModeEnum }
    */
-  public setModeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ConceptMap.group.unmapped.mode is required`);
-    const optErrMsg = `Invalid ConceptMap.group.unmapped.mode; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.mode = new EnumCodeType(element, this.conceptmapUnmappedModeEnum);
+  public setModeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ConceptMap.group.unmapped.mode; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.mode = new EnumCodeType(element, this.conceptmapUnmappedModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -7798,10 +7816,13 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
    *
    * @see CodeSystem Enumeration: {@link ConceptmapUnmappedModeEnum }
    */
-  public setMode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ConceptMap.group.unmapped.mode is required`);
-    const optErrMsg = `Invalid ConceptMap.group.unmapped.mode (${String(value)})`;
-    this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptmapUnmappedModeEnum);
+  public setMode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ConceptMap.group.unmapped.mode (${String(value)})`;
+      this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.conceptmapUnmappedModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -8208,6 +8229,16 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.mode, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -8236,21 +8267,20 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasModeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getModeElement()!, 'mode', jsonObj);
     } else {
-      missingReqdProperties.push(`ConceptMap.group.unmapped.mode`);
+      jsonObj['mode'] = null;
     }
 
     if (this.hasCodeElement()) {
@@ -8272,11 +8302,6 @@ export class ConceptMapGroupUnmappedComponent extends BackboneElement implements
 
     if (this.hasOtherMapElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getOtherMapElement(), 'otherMap', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

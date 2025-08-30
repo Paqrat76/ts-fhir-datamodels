@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -45,24 +44,19 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -83,6 +77,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -135,7 +130,6 @@ export class MolecularSequence extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `MolecularSequence`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MolecularSequence
    * @returns MolecularSequence data model or undefined for `MolecularSequence`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MolecularSequence | undefined {
@@ -154,8 +148,6 @@ export class MolecularSequence extends DomainResource implements IDomainResource
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -186,12 +178,12 @@ export class MolecularSequence extends DomainResource implements IDomainResource
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IntegerType | undefined = fhirParser.parseIntegerType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCoordinateSystem(null);
       } else {
         instance.setCoordinateSystemElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCoordinateSystem(null);
     }
 
     fieldName = 'patient';
@@ -325,12 +317,6 @@ export class MolecularSequence extends DomainResource implements IDomainResource
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -760,10 +746,10 @@ export class MolecularSequence extends DomainResource implements IDomainResource
   }
 
   /**
-   * @returns the `coordinateSystem` property value as a IntegerType object if defined; else null
+   * @returns the `coordinateSystem` property value as a IntegerType object if defined; else an empty IntegerType object
    */
-  public getCoordinateSystemElement(): IntegerType | null {
-    return this.coordinateSystem;
+  public getCoordinateSystemElement(): IntegerType {
+    return this.coordinateSystem ?? new IntegerType();
   }
 
   /**
@@ -774,11 +760,14 @@ export class MolecularSequence extends DomainResource implements IDomainResource
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCoordinateSystemElement(element: IntegerType): this {
-    assertIsDefined<IntegerType>(element, `MolecularSequence.coordinateSystem is required`);
-    const optErrMsg = `Invalid MolecularSequence.coordinateSystem; Provided value is not an instance of IntegerType.`;
-    assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
-    this.coordinateSystem = element;
+  public setCoordinateSystemElement(element: IntegerType | undefined | null): this {
+    if (isDefined<IntegerType>(element)) {
+      const optErrMsg = `Invalid MolecularSequence.coordinateSystem; Provided value is not an instance of IntegerType.`;
+      assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
+      this.coordinateSystem = element;
+    } else {
+      this.coordinateSystem = null;
+    }
     return this;
   }
 
@@ -807,10 +796,13 @@ export class MolecularSequence extends DomainResource implements IDomainResource
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCoordinateSystem(value: fhirInteger): this {
-    assertIsDefined<fhirInteger>(value, `MolecularSequence.coordinateSystem is required`);
-    const optErrMsg = `Invalid MolecularSequence.coordinateSystem (${String(value)})`;
-    this.coordinateSystem = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+  public setCoordinateSystem(value: fhirInteger | undefined | null): this {
+    if (isDefined<fhirInteger>(value)) {
+      const optErrMsg = `Invalid MolecularSequence.coordinateSystem (${String(value)})`;
+      this.coordinateSystem = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+    } else {
+      this.coordinateSystem = null;
+    }
     return this;
   }
 
@@ -1489,6 +1481,16 @@ export class MolecularSequence extends DomainResource implements IDomainResource
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.coordinateSystem, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1533,15 +1535,14 @@ export class MolecularSequence extends DomainResource implements IDomainResource
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1553,10 +1554,9 @@ export class MolecularSequence extends DomainResource implements IDomainResource
     }
 
     if (this.hasCoordinateSystemElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInteger>(this.getCoordinateSystemElement()!, 'coordinateSystem', jsonObj);
+      setFhirPrimitiveJson<fhirInteger>(this.getCoordinateSystemElement(), 'coordinateSystem', jsonObj);
     } else {
-      missingReqdProperties.push(`MolecularSequence.coordinateSystem`);
+      jsonObj['coordinateSystem'] = null;
     }
 
     if (this.hasPatient()) {
@@ -1609,11 +1609,6 @@ export class MolecularSequence extends DomainResource implements IDomainResource
 
     if (this.hasStructureVariant()) {
       setFhirBackboneElementListJson(this.getStructureVariant(), 'structureVariant', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1741,7 +1736,6 @@ export class MolecularSequenceReferenceSeqComponent extends BackboneElement impl
       instance.setWindowEndElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2684,7 +2678,6 @@ export class MolecularSequenceVariantComponent extends BackboneElement implement
       instance.setVariantPointer(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3252,7 +3245,6 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `MolecularSequenceQualityComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MolecularSequenceQualityComponent
    * @returns MolecularSequenceQualityComponent data model or undefined for `MolecularSequenceQualityComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MolecularSequenceQualityComponent | undefined {
@@ -3271,8 +3263,6 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3280,12 +3270,12 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'standardSequence';
@@ -3410,12 +3400,6 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
       instance.setRoc(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3659,11 +3643,14 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
    *
    * @see CodeSystem Enumeration: {@link QualityTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MolecularSequence.quality.type is required`);
-    const errMsgPrefix = `Invalid MolecularSequence.quality.type`;
-    assertEnumCodeType<QualityTypeEnum>(enumType, QualityTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MolecularSequence.quality.type`;
+      assertEnumCodeType<QualityTypeEnum>(enumType, QualityTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3696,11 +3683,14 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
    *
    * @see CodeSystem Enumeration: {@link QualityTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MolecularSequence.quality.type is required`);
-    const optErrMsg = `Invalid MolecularSequence.quality.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.qualityTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MolecularSequence.quality.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.qualityTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3733,10 +3723,13 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
    *
    * @see CodeSystem Enumeration: {@link QualityTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MolecularSequence.quality.type is required`);
-    const optErrMsg = `Invalid MolecularSequence.quality.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.qualityTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MolecularSequence.quality.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.qualityTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -4548,6 +4541,16 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4585,21 +4588,20 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MolecularSequence.quality.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasStandardSequence()) {
@@ -4656,11 +4658,6 @@ export class MolecularSequenceQualityComponent extends BackboneElement implement
 
     if (this.hasRoc()) {
       setFhirBackboneElementJson(this.getRoc(), 'roc', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4833,7 +4830,6 @@ export class MolecularSequenceQualityRocComponent extends BackboneElement implem
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5923,7 +5919,6 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `MolecularSequenceRepositoryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MolecularSequenceRepositoryComponent
    * @returns MolecularSequenceRepositoryComponent data model or undefined for `MolecularSequenceRepositoryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MolecularSequenceRepositoryComponent | undefined {
@@ -5942,8 +5937,6 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -5951,12 +5944,12 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'url';
@@ -6004,12 +5997,6 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
       instance.setReadsetIdElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6127,11 +6114,14 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link RepositoryTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MolecularSequence.repository.type is required`);
-    const errMsgPrefix = `Invalid MolecularSequence.repository.type`;
-    assertEnumCodeType<RepositoryTypeEnum>(enumType, RepositoryTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MolecularSequence.repository.type`;
+      assertEnumCodeType<RepositoryTypeEnum>(enumType, RepositoryTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6164,11 +6154,14 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link RepositoryTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MolecularSequence.repository.type is required`);
-    const optErrMsg = `Invalid MolecularSequence.repository.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.repositoryTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MolecularSequence.repository.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.repositoryTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6201,10 +6194,13 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
    *
    * @see CodeSystem Enumeration: {@link RepositoryTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MolecularSequence.repository.type is required`);
-    const optErrMsg = `Invalid MolecularSequence.repository.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.repositoryTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MolecularSequence.repository.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.repositoryTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -6559,6 +6555,16 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6587,21 +6593,20 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`MolecularSequence.repository.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasUrlElement()) {
@@ -6622,11 +6627,6 @@ export class MolecularSequenceRepositoryComponent extends BackboneElement implem
 
     if (this.hasReadsetIdElement()) {
       setFhirPrimitiveJson<fhirString>(this.getReadsetIdElement(), 'readsetId', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6715,7 +6715,6 @@ export class MolecularSequenceStructureVariantComponent extends BackboneElement 
       instance.setInner(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7156,7 +7155,6 @@ export class MolecularSequenceStructureVariantOuterComponent extends BackboneEle
       instance.setEndElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7441,7 +7439,6 @@ export class MolecularSequenceStructureVariantInnerComponent extends BackboneEle
       instance.setEndElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

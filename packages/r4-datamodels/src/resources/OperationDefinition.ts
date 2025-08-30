@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -46,25 +45,20 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertEnumCodeTypeList,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -89,6 +83,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -193,7 +188,6 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @param sourceJson - JSON representing FHIR `OperationDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OperationDefinition
    * @returns OperationDefinition data model or undefined for `OperationDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): OperationDefinition | undefined {
@@ -212,8 +206,6 @@ export class OperationDefinition extends DomainResource implements IDomainResour
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -240,12 +232,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'title';
@@ -264,12 +256,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'kind';
@@ -279,12 +271,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKind(null);
       } else {
         instance.setKindElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKind(null);
     }
 
     fieldName = 'experimental';
@@ -387,12 +379,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'comment';
@@ -438,12 +430,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSystem(null);
       } else {
         instance.setSystemElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSystem(null);
     }
 
     fieldName = 'type';
@@ -453,12 +445,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'instance';
@@ -468,12 +460,12 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: BooleanType | undefined = fhirParser.parseBooleanType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setInstance(null);
       } else {
         instance.setInstanceElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setInstance(null);
     }
 
     fieldName = 'inputProfile';
@@ -520,12 +512,6 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1087,10 +1073,10 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -1101,11 +1087,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `OperationDefinition.name is required`);
-    const optErrMsg = `Invalid OperationDefinition.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1134,10 +1123,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `OperationDefinition.name is required`);
-    const optErrMsg = `Invalid OperationDefinition.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1231,11 +1223,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `OperationDefinition.status is required`);
-    const errMsgPrefix = `Invalid OperationDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid OperationDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1268,11 +1263,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationDefinition.status is required`);
-    const optErrMsg = `Invalid OperationDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1305,10 +1303,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationDefinition.status is required`);
-    const optErrMsg = `Invalid OperationDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1338,11 +1339,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link OperationKindEnum }
    */
-  public setKindEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `OperationDefinition.kind is required`);
-    const errMsgPrefix = `Invalid OperationDefinition.kind`;
-    assertEnumCodeType<OperationKindEnum>(enumType, OperationKindEnum, errMsgPrefix);
-    this.kind = enumType;
+  public setKindEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid OperationDefinition.kind`;
+      assertEnumCodeType<OperationKindEnum>(enumType, OperationKindEnum, errMsgPrefix);
+      this.kind = enumType;
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -1375,11 +1379,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link OperationKindEnum }
    */
-  public setKindElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationDefinition.kind is required`);
-    const optErrMsg = `Invalid OperationDefinition.kind; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.kind = new EnumCodeType(element, this.operationKindEnum);
+  public setKindElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.kind; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.kind = new EnumCodeType(element, this.operationKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -1412,10 +1419,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    *
    * @see CodeSystem Enumeration: {@link OperationKindEnum }
    */
-  public setKind(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationDefinition.kind is required`);
-    const optErrMsg = `Invalid OperationDefinition.kind (${String(value)})`;
-    this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.operationKindEnum);
+  public setKind(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.kind (${String(value)})`;
+      this.kind = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.operationKindEnum);
+    } else {
+      this.kind = null;
+    }
     return this;
   }
 
@@ -1985,10 +1995,10 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `code` property value as a CodeType object if defined; else null
+   * @returns the `code` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getCodeElement(): CodeType | null {
-    return this.code;
+  public getCodeElement(): CodeType {
+    return this.code ?? new CodeType();
   }
 
   /**
@@ -1999,11 +2009,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationDefinition.code is required`);
-    const optErrMsg = `Invalid OperationDefinition.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = element;
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = element;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2032,10 +2045,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationDefinition.code is required`);
-    const optErrMsg = `Invalid OperationDefinition.code (${String(value)})`;
-    this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.code (${String(value)})`;
+      this.code = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2370,10 +2386,10 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `system` property value as a BooleanType object if defined; else null
+   * @returns the `system` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getSystemElement(): BooleanType | null {
-    return this.system;
+  public getSystemElement(): BooleanType {
+    return this.system ?? new BooleanType();
   }
 
   /**
@@ -2384,11 +2400,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setSystemElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `OperationDefinition.system is required`);
-    const optErrMsg = `Invalid OperationDefinition.system; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.system = element;
+  public setSystemElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.system; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.system = element;
+    } else {
+      this.system = null;
+    }
     return this;
   }
 
@@ -2417,10 +2436,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setSystem(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `OperationDefinition.system is required`);
-    const optErrMsg = `Invalid OperationDefinition.system (${String(value)})`;
-    this.system = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setSystem(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.system (${String(value)})`;
+      this.system = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.system = null;
+    }
     return this;
   }
 
@@ -2432,10 +2454,10 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `type_` property value as a BooleanType object if defined; else null
+   * @returns the `type_` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getTypeElement(): BooleanType | null {
-    return this.type_;
+  public getTypeElement(): BooleanType {
+    return this.type_ ?? new BooleanType();
   }
 
   /**
@@ -2446,11 +2468,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTypeElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `OperationDefinition.type is required`);
-    const optErrMsg = `Invalid OperationDefinition.type; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.type_ = element;
+  public setTypeElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.type; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.type_ = element;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2479,10 +2504,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setType(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `OperationDefinition.type is required`);
-    const optErrMsg = `Invalid OperationDefinition.type (${String(value)})`;
-    this.type_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setType(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.type (${String(value)})`;
+      this.type_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2494,10 +2522,10 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
-   * @returns the `instance_` property value as a BooleanType object if defined; else null
+   * @returns the `instance_` property value as a BooleanType object if defined; else an empty BooleanType object
    */
-  public getInstanceElement(): BooleanType | null {
-    return this.instance_;
+  public getInstanceElement(): BooleanType {
+    return this.instance_ ?? new BooleanType();
   }
 
   /**
@@ -2508,11 +2536,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setInstanceElement(element: BooleanType): this {
-    assertIsDefined<BooleanType>(element, `OperationDefinition.instance is required`);
-    const optErrMsg = `Invalid OperationDefinition.instance; Provided value is not an instance of BooleanType.`;
-    assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
-    this.instance_ = element;
+  public setInstanceElement(element: BooleanType | undefined | null): this {
+    if (isDefined<BooleanType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.instance; Provided value is not an instance of BooleanType.`;
+      assertFhirType<BooleanType>(element, BooleanType, optErrMsg);
+      this.instance_ = element;
+    } else {
+      this.instance_ = null;
+    }
     return this;
   }
 
@@ -2541,10 +2572,13 @@ export class OperationDefinition extends DomainResource implements IDomainResour
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setInstance(value: fhirBoolean): this {
-    assertIsDefined<fhirBoolean>(value, `OperationDefinition.instance is required`);
-    const optErrMsg = `Invalid OperationDefinition.instance (${String(value)})`;
-    this.instance_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+  public setInstance(value: fhirBoolean | undefined | null): this {
+    if (isDefined<fhirBoolean>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.instance (${String(value)})`;
+      this.instance_ = new BooleanType(parseFhirPrimitiveData(value, fhirBooleanSchema, optErrMsg));
+    } else {
+      this.instance_ = null;
+    }
     return this;
   }
 
@@ -2843,6 +2877,16 @@ export class OperationDefinition extends DomainResource implements IDomainResour
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.status, this.kind, this.code, this.system, this.type_, this.instance_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2897,15 +2941,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2916,10 +2959,9 @@ export class OperationDefinition extends DomainResource implements IDomainResour
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -2930,14 +2972,14 @@ export class OperationDefinition extends DomainResource implements IDomainResour
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasKindElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getKindElement()!, 'kind', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.kind`);
+      jsonObj['kind'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2977,10 +3019,9 @@ export class OperationDefinition extends DomainResource implements IDomainResour
     }
 
     if (this.hasCodeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasCommentElement()) {
@@ -2996,24 +3037,21 @@ export class OperationDefinition extends DomainResource implements IDomainResour
     }
 
     if (this.hasSystemElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getSystemElement()!, 'system', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getSystemElement(), 'system', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.system`);
+      jsonObj['system'] = null;
     }
 
     if (this.hasTypeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getTypeElement()!, 'type', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getTypeElement(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasInstanceElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirBoolean>(this.getInstanceElement()!, 'instance', jsonObj);
+      setFhirPrimitiveJson<fhirBoolean>(this.getInstanceElement(), 'instance', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.instance`);
+      jsonObj['instance'] = null;
     }
 
     if (this.hasInputProfileElement()) {
@@ -3030,11 +3068,6 @@ export class OperationDefinition extends DomainResource implements IDomainResour
 
     if (this.hasOverload()) {
       setFhirBackboneElementListJson(this.getOverload(), 'overload', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3101,7 +3134,6 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `OperationDefinitionParameterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OperationDefinitionParameterComponent
    * @returns OperationDefinitionParameterComponent data model or undefined for `OperationDefinitionParameterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): OperationDefinitionParameterComponent | undefined {
@@ -3120,8 +3152,6 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3129,12 +3159,12 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'use';
@@ -3144,12 +3174,12 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setUse(null);
       } else {
         instance.setUseElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setUse(null);
     }
 
     fieldName = 'min';
@@ -3159,12 +3189,12 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IntegerType | undefined = fhirParser.parseIntegerType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMin(null);
       } else {
         instance.setMinElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMin(null);
     }
 
     fieldName = 'max';
@@ -3174,12 +3204,12 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMax(null);
       } else {
         instance.setMaxElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMax(null);
     }
 
     fieldName = 'documentation';
@@ -3261,12 +3291,6 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3454,10 +3478,10 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a CodeType object if defined; else null
+   * @returns the `name` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getNameElement(): CodeType | null {
-    return this.name;
+  public getNameElement(): CodeType {
+    return this.name ?? new CodeType();
   }
 
   /**
@@ -3468,11 +3492,14 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationDefinition.parameter.name is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.name; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.name; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -3501,10 +3528,13 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationDefinition.parameter.name is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.name (${String(value)})`;
-    this.name = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setName(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.name (${String(value)})`;
+      this.name = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -3534,11 +3564,14 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link OperationParameterUseEnum }
    */
-  public setUseEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `OperationDefinition.parameter.use is required`);
-    const errMsgPrefix = `Invalid OperationDefinition.parameter.use`;
-    assertEnumCodeType<OperationParameterUseEnum>(enumType, OperationParameterUseEnum, errMsgPrefix);
-    this.use = enumType;
+  public setUseEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid OperationDefinition.parameter.use`;
+      assertEnumCodeType<OperationParameterUseEnum>(enumType, OperationParameterUseEnum, errMsgPrefix);
+      this.use = enumType;
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -3571,11 +3604,14 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link OperationParameterUseEnum }
    */
-  public setUseElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationDefinition.parameter.use is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.use; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.use = new EnumCodeType(element, this.operationParameterUseEnum);
+  public setUseElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.use; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.use = new EnumCodeType(element, this.operationParameterUseEnum);
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -3608,10 +3644,13 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link OperationParameterUseEnum }
    */
-  public setUse(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationDefinition.parameter.use is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.use (${String(value)})`;
-    this.use = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.operationParameterUseEnum);
+  public setUse(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.use (${String(value)})`;
+      this.use = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.operationParameterUseEnum);
+    } else {
+      this.use = null;
+    }
     return this;
   }
 
@@ -3623,10 +3662,10 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
   }
 
   /**
-   * @returns the `min` property value as a IntegerType object if defined; else null
+   * @returns the `min` property value as a IntegerType object if defined; else an empty IntegerType object
    */
-  public getMinElement(): IntegerType | null {
-    return this.min;
+  public getMinElement(): IntegerType {
+    return this.min ?? new IntegerType();
   }
 
   /**
@@ -3637,11 +3676,14 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMinElement(element: IntegerType): this {
-    assertIsDefined<IntegerType>(element, `OperationDefinition.parameter.min is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.min; Provided value is not an instance of IntegerType.`;
-    assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
-    this.min = element;
+  public setMinElement(element: IntegerType | undefined | null): this {
+    if (isDefined<IntegerType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.min; Provided value is not an instance of IntegerType.`;
+      assertFhirType<IntegerType>(element, IntegerType, optErrMsg);
+      this.min = element;
+    } else {
+      this.min = null;
+    }
     return this;
   }
 
@@ -3670,10 +3712,13 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMin(value: fhirInteger): this {
-    assertIsDefined<fhirInteger>(value, `OperationDefinition.parameter.min is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.min (${String(value)})`;
-    this.min = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+  public setMin(value: fhirInteger | undefined | null): this {
+    if (isDefined<fhirInteger>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.min (${String(value)})`;
+      this.min = new IntegerType(parseFhirPrimitiveData(value, fhirIntegerSchema, optErrMsg));
+    } else {
+      this.min = null;
+    }
     return this;
   }
 
@@ -3685,10 +3730,10 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
   }
 
   /**
-   * @returns the `max` property value as a StringType object if defined; else null
+   * @returns the `max` property value as a StringType object if defined; else an empty StringType object
    */
-  public getMaxElement(): StringType | null {
-    return this.max;
+  public getMaxElement(): StringType {
+    return this.max ?? new StringType();
   }
 
   /**
@@ -3699,11 +3744,14 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMaxElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `OperationDefinition.parameter.max is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.max; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.max = element;
+  public setMaxElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.max; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.max = element;
+    } else {
+      this.max = null;
+    }
     return this;
   }
 
@@ -3732,10 +3780,13 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMax(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `OperationDefinition.parameter.max is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.max (${String(value)})`;
-    this.max = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setMax(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.max (${String(value)})`;
+      this.max = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.max = null;
+    }
     return this;
   }
 
@@ -4289,6 +4340,16 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.use, this.min, this.max, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4325,42 +4386,38 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasUseElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getUseElement()!, 'use', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.use`);
+      jsonObj['use'] = null;
     }
 
     if (this.hasMinElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirInteger>(this.getMinElement()!, 'min', jsonObj);
+      setFhirPrimitiveJson<fhirInteger>(this.getMinElement(), 'min', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.min`);
+      jsonObj['min'] = null;
     }
 
     if (this.hasMaxElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getMaxElement()!, 'max', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getMaxElement(), 'max', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.max`);
+      jsonObj['max'] = null;
     }
 
     if (this.hasDocumentationElement()) {
@@ -4390,11 +4447,6 @@ export class OperationDefinitionParameterComponent extends BackboneElement imple
 
     if (this.hasPart()) {
       setFhirBackboneElementListJson(this.getPart(), 'part', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4440,7 +4492,6 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `OperationDefinitionParameterBindingComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OperationDefinitionParameterBindingComponent
    * @returns OperationDefinitionParameterBindingComponent data model or undefined for `OperationDefinitionParameterBindingComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): OperationDefinitionParameterBindingComponent | undefined {
@@ -4459,8 +4510,6 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'strength';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4468,12 +4517,12 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStrength(null);
       } else {
         instance.setStrengthElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStrength(null);
     }
 
     fieldName = 'valueSet';
@@ -4483,20 +4532,14 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValueSet(null);
       } else {
         instance.setValueSetElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValueSet(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4563,11 +4606,14 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link BindingStrengthEnum }
    */
-  public setStrengthEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `OperationDefinition.parameter.binding.strength is required`);
-    const errMsgPrefix = `Invalid OperationDefinition.parameter.binding.strength`;
-    assertEnumCodeType<BindingStrengthEnum>(enumType, BindingStrengthEnum, errMsgPrefix);
-    this.strength = enumType;
+  public setStrengthEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid OperationDefinition.parameter.binding.strength`;
+      assertEnumCodeType<BindingStrengthEnum>(enumType, BindingStrengthEnum, errMsgPrefix);
+      this.strength = enumType;
+    } else {
+      this.strength = null;
+    }
     return this;
   }
 
@@ -4600,11 +4646,14 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link BindingStrengthEnum }
    */
-  public setStrengthElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `OperationDefinition.parameter.binding.strength is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.binding.strength; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.strength = new EnumCodeType(element, this.bindingStrengthEnum);
+  public setStrengthElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.binding.strength; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.strength = new EnumCodeType(element, this.bindingStrengthEnum);
+    } else {
+      this.strength = null;
+    }
     return this;
   }
 
@@ -4637,10 +4686,13 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
    *
    * @see CodeSystem Enumeration: {@link BindingStrengthEnum }
    */
-  public setStrength(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `OperationDefinition.parameter.binding.strength is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.binding.strength (${String(value)})`;
-    this.strength = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.bindingStrengthEnum);
+  public setStrength(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.binding.strength (${String(value)})`;
+      this.strength = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.bindingStrengthEnum);
+    } else {
+      this.strength = null;
+    }
     return this;
   }
 
@@ -4652,10 +4704,10 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `valueSet` property value as a CanonicalType object if defined; else null
+   * @returns the `valueSet` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getValueSetElement(): CanonicalType | null {
-    return this.valueSet;
+  public getValueSetElement(): CanonicalType {
+    return this.valueSet ?? new CanonicalType();
   }
 
   /**
@@ -4666,11 +4718,14 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueSetElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `OperationDefinition.parameter.binding.valueSet is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.binding.valueSet; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.valueSet = element;
+  public setValueSetElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.binding.valueSet; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.valueSet = element;
+    } else {
+      this.valueSet = null;
+    }
     return this;
   }
 
@@ -4699,10 +4754,13 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueSet(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `OperationDefinition.parameter.binding.valueSet is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.binding.valueSet (${String(value)})`;
-    this.valueSet = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setValueSet(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.binding.valueSet (${String(value)})`;
+      this.valueSet = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.valueSet = null;
+    }
     return this;
   }
 
@@ -4733,6 +4791,16 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.strength, this.valueSet, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4757,33 +4825,26 @@ export class OperationDefinitionParameterBindingComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasStrengthElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStrengthElement()!, 'strength', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.binding.strength`);
+      jsonObj['strength'] = null;
     }
 
     if (this.hasValueSetElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getValueSetElement()!, 'valueSet', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getValueSetElement(), 'valueSet', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.binding.valueSet`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['valueSet'] = null;
     }
 
     return jsonObj;
@@ -4821,7 +4882,6 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
    * @param sourceJson - JSON representing FHIR `OperationDefinitionParameterReferencedFromComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to OperationDefinitionParameterReferencedFromComponent
    * @returns OperationDefinitionParameterReferencedFromComponent data model or undefined for `OperationDefinitionParameterReferencedFromComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): OperationDefinitionParameterReferencedFromComponent | undefined {
@@ -4840,8 +4900,6 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'source';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4849,12 +4907,12 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSource(null);
       } else {
         instance.setSourceElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSource(null);
     }
 
     fieldName = 'sourceId';
@@ -4866,12 +4924,6 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
       instance.setSourceIdElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4906,10 +4958,10 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `source` property value as a StringType object if defined; else null
+   * @returns the `source` property value as a StringType object if defined; else an empty StringType object
    */
-  public getSourceElement(): StringType | null {
-    return this.source;
+  public getSourceElement(): StringType {
+    return this.source ?? new StringType();
   }
 
   /**
@@ -4920,11 +4972,14 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setSourceElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `OperationDefinition.parameter.referencedFrom.source is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.referencedFrom.source; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.source = element;
+  public setSourceElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.referencedFrom.source; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.source = element;
+    } else {
+      this.source = null;
+    }
     return this;
   }
 
@@ -4953,10 +5008,13 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setSource(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `OperationDefinition.parameter.referencedFrom.source is required`);
-    const optErrMsg = `Invalid OperationDefinition.parameter.referencedFrom.source (${String(value)})`;
-    this.source = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setSource(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid OperationDefinition.parameter.referencedFrom.source (${String(value)})`;
+      this.source = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.source = null;
+    }
     return this;
   }
 
@@ -5051,6 +5109,16 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.source, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5075,30 +5143,23 @@ export class OperationDefinitionParameterReferencedFromComponent extends Backbon
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasSourceElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getSourceElement()!, 'source', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getSourceElement(), 'source', jsonObj);
     } else {
-      missingReqdProperties.push(`OperationDefinition.parameter.referencedFrom.source`);
+      jsonObj['source'] = null;
     }
 
     if (this.hasSourceIdElement()) {
       setFhirPrimitiveJson<fhirString>(this.getSourceIdElement(), 'sourceId', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5173,7 +5234,6 @@ export class OperationDefinitionOverloadComponent extends BackboneElement implem
       instance.setCommentElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

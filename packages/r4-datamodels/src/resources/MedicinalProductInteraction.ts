@@ -37,22 +37,17 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
   ChoiceDataTypesMeta,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
@@ -66,6 +61,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -105,7 +101,6 @@ export class MedicinalProductInteraction extends DomainResource implements IDoma
    * @param sourceJson - JSON representing FHIR `MedicinalProductInteraction`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductInteraction
    * @returns MedicinalProductInteraction data model or undefined for `MedicinalProductInteraction`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductInteraction | undefined {
@@ -192,7 +187,6 @@ export class MedicinalProductInteraction extends DomainResource implements IDoma
       instance.setManagement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -750,7 +744,6 @@ export class MedicinalProductInteractionInteractantComponent extends BackboneEle
    * @param sourceJson - JSON representing FHIR `MedicinalProductInteractionInteractantComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductInteractionInteractantComponent
    * @returns MedicinalProductInteractionInteractantComponent data model or undefined for `MedicinalProductInteractionInteractantComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductInteractionInteractantComponent | undefined {
@@ -772,8 +765,6 @@ export class MedicinalProductInteractionInteractantComponent extends BackboneEle
     const errorMessage = `DecoratorMetadataObject does not exist for MedicinalProductInteractionInteractantComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'item[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const item: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -783,17 +774,11 @@ export class MedicinalProductInteractionInteractantComponent extends BackboneEle
       classMetadata,
     );
     if (item === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     } else {
       instance.setItem(item);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -838,10 +823,13 @@ export class MedicinalProductInteractionInteractantComponent extends BackboneEle
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MedicinalProductInteraction.interactant.item[x]')
-  public setItem(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MedicinalProductInteraction.interactant.item[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.item = value;
+  public setItem(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -920,6 +908,16 @@ export class MedicinalProductInteractionInteractantComponent extends BackboneEle
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -943,26 +941,20 @@ export class MedicinalProductInteractionInteractantComponent extends BackboneEle
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasItem()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getItem()!, 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicinalProductInteraction.interactant.item[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['item'] = null;
     }
 
     return jsonObj;

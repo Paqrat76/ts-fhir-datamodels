@@ -37,27 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -69,6 +62,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -108,7 +102,6 @@ export class Linkage extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Linkage`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Linkage
    * @returns Linkage data model or undefined for `Linkage`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Linkage | undefined {
@@ -127,8 +120,6 @@ export class Linkage extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'active';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -155,21 +146,15 @@ export class Linkage extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: LinkageItemComponent | undefined = LinkageItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setItem(null);
         } else {
           instance.addItem(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -343,11 +328,14 @@ export class Linkage extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setItem(value: LinkageItemComponent[]): this {
-    assertIsDefinedList<LinkageItemComponent>(value, `Linkage.item is required`);
-    const optErrMsg = `Invalid Linkage.item; Provided value array has an element that is not an instance of LinkageItemComponent.`;
-    assertFhirTypeList<LinkageItemComponent>(value, LinkageItemComponent, optErrMsg);
-    this.item = value;
+  public setItem(value: LinkageItemComponent[] | undefined | null): this {
+    if (isDefinedList<LinkageItemComponent>(value)) {
+      const optErrMsg = `Invalid Linkage.item; Provided value array has an element that is not an instance of LinkageItemComponent.`;
+      assertFhirTypeList<LinkageItemComponent>(value, LinkageItemComponent, optErrMsg);
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -405,6 +393,16 @@ export class Linkage extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -431,15 +429,14 @@ export class Linkage extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasActiveElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getActiveElement(), 'active', jsonObj);
@@ -452,12 +449,7 @@ export class Linkage extends DomainResource implements IDomainResource {
     if (this.hasItem()) {
       setFhirBackboneElementListJson(this.getItem(), 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`Linkage.item`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['item'] = null;
     }
 
     return jsonObj;
@@ -500,7 +492,6 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
    * @param sourceJson - JSON representing FHIR `LinkageItemComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to LinkageItemComponent
    * @returns LinkageItemComponent data model or undefined for `LinkageItemComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): LinkageItemComponent | undefined {
@@ -519,8 +510,6 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -528,12 +517,12 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'resource';
@@ -542,20 +531,14 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setResource(null);
       } else {
         instance.setResource(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setResource(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -620,11 +603,14 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
    *
    * @see CodeSystem Enumeration: {@link LinkageTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Linkage.item.type is required`);
-    const errMsgPrefix = `Invalid Linkage.item.type`;
-    assertEnumCodeType<LinkageTypeEnum>(enumType, LinkageTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Linkage.item.type`;
+      assertEnumCodeType<LinkageTypeEnum>(enumType, LinkageTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -657,11 +643,14 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
    *
    * @see CodeSystem Enumeration: {@link LinkageTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Linkage.item.type is required`);
-    const optErrMsg = `Invalid Linkage.item.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.linkageTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Linkage.item.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.linkageTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -694,10 +683,13 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
    *
    * @see CodeSystem Enumeration: {@link LinkageTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Linkage.item.type is required`);
-    const optErrMsg = `Invalid Linkage.item.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.linkageTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Linkage.item.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.linkageTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -709,10 +701,10 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
   }
 
   /**
-   * @returns the `resource` property value as a Reference object if defined; else null
+   * @returns the `resource` property value as a Reference object if defined; else an empty Reference object
    */
-  public getResource(): Reference | null {
-    return this.resource;
+  public getResource(): Reference {
+    return this.resource ?? new Reference();
   }
 
   /**
@@ -727,10 +719,13 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
   @ReferenceTargets('Linkage.item.resource', [
     'Resource',
   ])
-  public setResource(value: Reference): this {
-    assertIsDefined<Reference>(value, `Linkage.item.resource is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.resource = value;
+  public setResource(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.resource = value;
+    } else {
+      this.resource = null;
+    }
     return this;
   }
 
@@ -761,6 +756,16 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.resource, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -785,33 +790,26 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Linkage.item.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasResource()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getResource()!, 'resource', jsonObj);
+      setFhirComplexJson(this.getResource(), 'resource', jsonObj);
     } else {
-      missingReqdProperties.push(`Linkage.item.resource`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['resource'] = null;
     }
 
     return jsonObj;

@@ -37,31 +37,25 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
   ChoiceDataTypesMeta,
   DateTimeType,
   DomainResource,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PositiveIntType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   copyListValues,
   fhirDateTime,
   fhirDateTimeSchema,
@@ -72,6 +66,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -129,7 +124,6 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
    * @param sourceJson - JSON representing FHIR `ImmunizationRecommendation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationRecommendation
    * @returns ImmunizationRecommendation data model or undefined for `ImmunizationRecommendation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationRecommendation | undefined {
@@ -148,8 +142,6 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -170,12 +162,12 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'date';
@@ -185,12 +177,12 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDate(null);
       } else {
         instance.setDateElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDate(null);
     }
 
     fieldName = 'authority';
@@ -209,21 +201,15 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: ImmunizationRecommendationRecommendationComponent | undefined = ImmunizationRecommendationRecommendationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setRecommendation(null);
         } else {
           instance.addRecommendation(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRecommendation(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -364,10 +350,10 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -382,10 +368,13 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
   @ReferenceTargets('ImmunizationRecommendation.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `ImmunizationRecommendation.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -397,10 +386,10 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
   }
 
   /**
-   * @returns the `date` property value as a DateTimeType object if defined; else null
+   * @returns the `date` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateElement(): DateTimeType | null {
-    return this.date;
+  public getDateElement(): DateTimeType {
+    return this.date ?? new DateTimeType();
   }
 
   /**
@@ -411,11 +400,14 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `ImmunizationRecommendation.date is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.date; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.date = element;
+  public setDateElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.date; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.date = element;
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -444,10 +436,13 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDate(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `ImmunizationRecommendation.date is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.date (${String(value)})`;
-    this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDate(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.date (${String(value)})`;
+      this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -508,11 +503,14 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRecommendation(value: ImmunizationRecommendationRecommendationComponent[]): this {
-    assertIsDefinedList<ImmunizationRecommendationRecommendationComponent>(value, `ImmunizationRecommendation.recommendation is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.recommendation; Provided value array has an element that is not an instance of ImmunizationRecommendationRecommendationComponent.`;
-    assertFhirTypeList<ImmunizationRecommendationRecommendationComponent>(value, ImmunizationRecommendationRecommendationComponent, optErrMsg);
-    this.recommendation = value;
+  public setRecommendation(value: ImmunizationRecommendationRecommendationComponent[] | undefined | null): this {
+    if (isDefinedList<ImmunizationRecommendationRecommendationComponent>(value)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.recommendation; Provided value array has an element that is not an instance of ImmunizationRecommendationRecommendationComponent.`;
+      assertFhirTypeList<ImmunizationRecommendationRecommendationComponent>(value, ImmunizationRecommendationRecommendationComponent, optErrMsg);
+      this.recommendation = value;
+    } else {
+      this.recommendation = null;
+    }
     return this;
   }
 
@@ -572,6 +570,16 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.patient, this.date, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -601,32 +609,29 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationRecommendation.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasDateElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement()!, 'date', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement(), 'date', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationRecommendation.date`);
+      jsonObj['date'] = null;
     }
 
     if (this.hasAuthority()) {
@@ -636,12 +641,7 @@ export class ImmunizationRecommendation extends DomainResource implements IDomai
     if (this.hasRecommendation()) {
       setFhirBackboneElementListJson(this.getRecommendation(), 'recommendation', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationRecommendation.recommendation`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['recommendation'] = null;
     }
 
     return jsonObj;
@@ -675,7 +675,6 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `ImmunizationRecommendationRecommendationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationRecommendationRecommendationComponent
    * @returns ImmunizationRecommendationRecommendationComponent data model or undefined for `ImmunizationRecommendationRecommendationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationRecommendationRecommendationComponent | undefined {
@@ -697,8 +696,6 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
     const classMetadata: DecoratorMetadataObject | null = ImmunizationRecommendationRecommendationComponent[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ImmunizationRecommendationRecommendationComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'vaccineCode';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -740,12 +737,12 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setForecastStatus(null);
       } else {
         instance.setForecastStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setForecastStatus(null);
     }
 
     fieldName = 'forecastReason';
@@ -838,12 +835,6 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1192,10 +1183,10 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
   }
 
   /**
-   * @returns the `forecastStatus` property value as a CodeableConcept object if defined; else null
+   * @returns the `forecastStatus` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getForecastStatus(): CodeableConcept | null {
-    return this.forecastStatus;
+  public getForecastStatus(): CodeableConcept {
+    return this.forecastStatus ?? new CodeableConcept();
   }
 
   /**
@@ -1205,11 +1196,14 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setForecastStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ImmunizationRecommendation.recommendation.forecastStatus is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.forecastStatus; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.forecastStatus = value;
+  public setForecastStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.forecastStatus; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.forecastStatus = value;
+    } else {
+      this.forecastStatus = null;
+    }
     return this;
   }
 
@@ -1796,6 +1790,16 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.forecastStatus, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1836,15 +1840,14 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasVaccineCode()) {
       setFhirComplexListJson(this.getVaccineCode(), 'vaccineCode', jsonObj);
@@ -1859,10 +1862,9 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
     }
 
     if (this.hasForecastStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getForecastStatus()!, 'forecastStatus', jsonObj);
+      setFhirComplexJson(this.getForecastStatus(), 'forecastStatus', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationRecommendation.recommendation.forecastStatus`);
+      jsonObj['forecastStatus'] = null;
     }
 
     if (this.hasForecastReason()) {
@@ -1897,11 +1899,6 @@ export class ImmunizationRecommendationRecommendationComponent extends BackboneE
 
     if (this.hasSupportingPatientInformation()) {
       setFhirComplexListJson(this.getSupportingPatientInformation(), 'supportingPatientInformation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1943,7 +1940,6 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
    * @param sourceJson - JSON representing FHIR `ImmunizationRecommendationRecommendationDateCriterionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationRecommendationRecommendationDateCriterionComponent
    * @returns ImmunizationRecommendationRecommendationDateCriterionComponent data model or undefined for `ImmunizationRecommendationRecommendationDateCriterionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationRecommendationRecommendationDateCriterionComponent | undefined {
@@ -1962,20 +1958,18 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value';
@@ -1985,20 +1979,14 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2033,10 +2021,10 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -2046,11 +2034,14 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ImmunizationRecommendation.recommendation.dateCriterion.code is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.dateCriterion.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.dateCriterion.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2062,10 +2053,10 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
   }
 
   /**
-   * @returns the `value` property value as a DateTimeType object if defined; else null
+   * @returns the `value` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getValueElement(): DateTimeType | null {
-    return this.value;
+  public getValueElement(): DateTimeType {
+    return this.value ?? new DateTimeType();
   }
 
   /**
@@ -2076,11 +2067,14 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `ImmunizationRecommendation.recommendation.dateCriterion.value is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.dateCriterion.value; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.dateCriterion.value; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2109,10 +2103,13 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `ImmunizationRecommendation.recommendation.dateCriterion.value is required`);
-    const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.dateCriterion.value (${String(value)})`;
-    this.value = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setValue(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid ImmunizationRecommendation.recommendation.dateCriterion.value (${String(value)})`;
+      this.value = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2143,6 +2140,16 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2167,33 +2174,25 @@ export class ImmunizationRecommendationRecommendationDateCriterionComponent exte
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationRecommendation.recommendation.dateCriterion.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationRecommendation.recommendation.dateCriterion.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

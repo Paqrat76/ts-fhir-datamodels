@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,19 +47,15 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PositiveIntType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -91,6 +86,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -140,7 +136,6 @@ export class Citation extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Citation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Citation
    * @returns Citation data model or undefined for `Citation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Citation | undefined {
@@ -159,8 +154,6 @@ export class Citation extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -218,12 +211,12 @@ export class Citation extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -483,12 +476,6 @@ export class Citation extends DomainResource implements IDomainResource {
       instance.setCitedArtifact(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1269,11 +1256,14 @@ export class Citation extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Citation.status is required`);
-    const errMsgPrefix = `Invalid Citation.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Citation.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1306,11 +1296,14 @@ export class Citation extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Citation.status is required`);
-    const optErrMsg = `Invalid Citation.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Citation.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1343,10 +1336,13 @@ export class Citation extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Citation.status is required`);
-    const optErrMsg = `Invalid Citation.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Citation.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2734,6 +2730,16 @@ export class Citation extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2799,15 +2805,14 @@ export class Citation extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2833,7 +2838,7 @@ export class Citation extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2928,11 +2933,6 @@ export class Citation extends DomainResource implements IDomainResource {
       setFhirBackboneElementJson(this.getCitedArtifact(), 'citedArtifact', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2968,7 +2968,6 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `CitationSummaryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationSummaryComponent
    * @returns CitationSummaryComponent data model or undefined for `CitationSummaryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationSummaryComponent | undefined {
@@ -2987,8 +2986,6 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'style';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -3004,20 +3001,14 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setText(null);
       } else {
         instance.setTextElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setText(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3084,10 +3075,10 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
   }
 
   /**
-   * @returns the `text` property value as a MarkdownType object if defined; else null
+   * @returns the `text` property value as a MarkdownType object if defined; else an empty MarkdownType object
    */
-  public getTextElement(): MarkdownType | null {
-    return this.text;
+  public getTextElement(): MarkdownType {
+    return this.text ?? new MarkdownType();
   }
 
   /**
@@ -3098,11 +3089,14 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTextElement(element: MarkdownType): this {
-    assertIsDefined<MarkdownType>(element, `Citation.summary.text is required`);
-    const optErrMsg = `Invalid Citation.summary.text; Provided value is not an instance of MarkdownType.`;
-    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
-    this.text = element;
+  public setTextElement(element: MarkdownType | undefined | null): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.summary.text; Provided value is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.text = element;
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -3131,10 +3125,13 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setText(value: fhirMarkdown): this {
-    assertIsDefined<fhirMarkdown>(value, `Citation.summary.text is required`);
-    const optErrMsg = `Invalid Citation.summary.text (${String(value)})`;
-    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+  public setText(value: fhirMarkdown | undefined | null): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.summary.text (${String(value)})`;
+      this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -3165,6 +3162,16 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.text, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3189,30 +3196,23 @@ export class CitationSummaryComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasStyle()) {
       setFhirComplexJson(this.getStyle(), 'style', jsonObj);
     }
 
     if (this.hasTextElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement(), 'text', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.summary.text`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['text'] = null;
     }
 
     return jsonObj;
@@ -3279,7 +3279,6 @@ export class CitationClassificationComponent extends BackboneElement implements 
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3500,7 +3499,6 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
    * @param sourceJson - JSON representing FHIR `CitationStatusDateComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationStatusDateComponent
    * @returns CitationStatusDateComponent data model or undefined for `CitationStatusDateComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationStatusDateComponent | undefined {
@@ -3519,20 +3517,18 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'activity';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActivity(null);
       } else {
         instance.setActivity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActivity(null);
     }
 
     fieldName = 'actual';
@@ -3550,20 +3546,14 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPeriod(null);
       } else {
         instance.setPeriod(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPeriod(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3613,10 +3603,10 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `activity` property value as a CodeableConcept object if defined; else null
+   * @returns the `activity` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getActivity(): CodeableConcept | null {
-    return this.activity;
+  public getActivity(): CodeableConcept {
+    return this.activity ?? new CodeableConcept();
   }
 
   /**
@@ -3626,11 +3616,14 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setActivity(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Citation.statusDate.activity is required`);
-    const optErrMsg = `Invalid Citation.statusDate.activity; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.activity = value;
+  public setActivity(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.statusDate.activity; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.activity = value;
+    } else {
+      this.activity = null;
+    }
     return this;
   }
 
@@ -3706,10 +3699,10 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
   }
 
   /**
-   * @returns the `period` property value as a Period object if defined; else null
+   * @returns the `period` property value as a Period object if defined; else an empty Period object
    */
-  public getPeriod(): Period | null {
-    return this.period;
+  public getPeriod(): Period {
+    return this.period ?? new Period();
   }
 
   /**
@@ -3719,11 +3712,14 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setPeriod(value: Period): this {
-    assertIsDefined<Period>(value, `Citation.statusDate.period is required`);
-    const optErrMsg = `Invalid Citation.statusDate.period; Provided element is not an instance of Period.`;
-    assertFhirType<Period>(value, Period, optErrMsg);
-    this.period = value;
+  public setPeriod(value: Period | undefined | null): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid Citation.statusDate.period; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.period = value;
+    } else {
+      this.period = null;
+    }
     return this;
   }
 
@@ -3755,6 +3751,16 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.activity, this.period, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3780,21 +3786,19 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasActivity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActivity()!, 'activity', jsonObj);
+      setFhirComplexJson(this.getActivity(), 'activity', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.statusDate.activity`);
+      jsonObj['activity'] = null;
     }
 
     if (this.hasActualElement()) {
@@ -3802,15 +3806,9 @@ export class CitationStatusDateComponent extends BackboneElement implements IBac
     }
 
     if (this.hasPeriod()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+      setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.statusDate.period`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['period'] = null;
     }
 
     return jsonObj;
@@ -3849,7 +3847,6 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `CitationRelatesToComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationRelatesToComponent
    * @returns CitationRelatesToComponent data model or undefined for `CitationRelatesToComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationRelatesToComponent | undefined {
@@ -3871,20 +3868,18 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
     const errorMessage = `DecoratorMetadataObject does not exist for CitationRelatesToComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'relationshipType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationshipType(null);
       } else {
         instance.setRelationshipType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationshipType(null);
     }
 
     fieldName = 'targetClassifier';
@@ -3909,17 +3904,11 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
       classMetadata,
     );
     if (target === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setTarget(null);
     } else {
       instance.setTarget(target);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3980,10 +3969,10 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `relationshipType` property value as a CodeableConcept object if defined; else null
+   * @returns the `relationshipType` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getRelationshipType(): CodeableConcept | null {
-    return this.relationshipType;
+  public getRelationshipType(): CodeableConcept {
+    return this.relationshipType ?? new CodeableConcept();
   }
 
   /**
@@ -3993,11 +3982,14 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRelationshipType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Citation.relatesTo.relationshipType is required`);
-    const optErrMsg = `Invalid Citation.relatesTo.relationshipType; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.relationshipType = value;
+  public setRelationshipType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.relatesTo.relationshipType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.relationshipType = value;
+    } else {
+      this.relationshipType = null;
+    }
     return this;
   }
 
@@ -4083,10 +4075,13 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Citation.relatesTo.target[x]')
-  public setTarget(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Citation.relatesTo.target[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.target = value;
+  public setTarget(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.target = value;
+    } else {
+      this.target = null;
+    }
     return this;
   }
 
@@ -4211,6 +4206,16 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.relationshipType, this.target, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4237,21 +4242,19 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRelationshipType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelationshipType()!, 'relationshipType', jsonObj);
+      setFhirComplexJson(this.getRelationshipType(), 'relationshipType', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.relatesTo.relationshipType`);
+      jsonObj['relationshipType'] = null;
     }
 
     if (this.hasTargetClassifier()) {
@@ -4262,12 +4265,7 @@ export class CitationRelatesToComponent extends BackboneElement implements IBack
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getTarget()!, 'target', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.relatesTo.target[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['target'] = null;
     }
 
     return jsonObj;
@@ -4490,7 +4488,6 @@ export class CitationCitedArtifactComponent extends BackboneElement implements I
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5694,7 +5691,6 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactVersionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactVersionComponent
    * @returns CitationCitedArtifactVersionComponent data model or undefined for `CitationCitedArtifactVersionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactVersionComponent | undefined {
@@ -5713,8 +5709,6 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'value';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -5722,12 +5716,12 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
     fieldName = 'baseCitation';
@@ -5738,12 +5732,6 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
       instance.setBaseCitation(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5781,10 +5769,10 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -5795,11 +5783,14 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Citation.citedArtifact.version.value is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.version.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.version.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5828,10 +5819,13 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Citation.citedArtifact.version.value is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.version.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.version.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -5898,6 +5892,16 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5922,30 +5926,23 @@ export class CitationCitedArtifactVersionComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.version.value`);
+      jsonObj['value'] = null;
     }
 
     if (this.hasBaseCitation()) {
       setFhirComplexJson(this.getBaseCitation(), 'baseCitation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5983,7 +5980,6 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactStatusDateComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactStatusDateComponent
    * @returns CitationCitedArtifactStatusDateComponent data model or undefined for `CitationCitedArtifactStatusDateComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactStatusDateComponent | undefined {
@@ -6002,20 +5998,18 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'activity';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActivity(null);
       } else {
         instance.setActivity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActivity(null);
     }
 
     fieldName = 'actual';
@@ -6033,20 +6027,14 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Period | undefined = Period.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPeriod(null);
       } else {
         instance.setPeriod(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPeriod(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6096,10 +6084,10 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `activity` property value as a CodeableConcept object if defined; else null
+   * @returns the `activity` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getActivity(): CodeableConcept | null {
-    return this.activity;
+  public getActivity(): CodeableConcept {
+    return this.activity ?? new CodeableConcept();
   }
 
   /**
@@ -6109,11 +6097,14 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setActivity(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Citation.citedArtifact.statusDate.activity is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.statusDate.activity; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.activity = value;
+  public setActivity(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.statusDate.activity; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.activity = value;
+    } else {
+      this.activity = null;
+    }
     return this;
   }
 
@@ -6189,10 +6180,10 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
   }
 
   /**
-   * @returns the `period` property value as a Period object if defined; else null
+   * @returns the `period` property value as a Period object if defined; else an empty Period object
    */
-  public getPeriod(): Period | null {
-    return this.period;
+  public getPeriod(): Period {
+    return this.period ?? new Period();
   }
 
   /**
@@ -6202,11 +6193,14 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setPeriod(value: Period): this {
-    assertIsDefined<Period>(value, `Citation.citedArtifact.statusDate.period is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.statusDate.period; Provided element is not an instance of Period.`;
-    assertFhirType<Period>(value, Period, optErrMsg);
-    this.period = value;
+  public setPeriod(value: Period | undefined | null): this {
+    if (isDefined<Period>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.statusDate.period; Provided element is not an instance of Period.`;
+      assertFhirType<Period>(value, Period, optErrMsg);
+      this.period = value;
+    } else {
+      this.period = null;
+    }
     return this;
   }
 
@@ -6238,6 +6232,16 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.activity, this.period, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6263,21 +6267,19 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasActivity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActivity()!, 'activity', jsonObj);
+      setFhirComplexJson(this.getActivity(), 'activity', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.statusDate.activity`);
+      jsonObj['activity'] = null;
     }
 
     if (this.hasActualElement()) {
@@ -6285,15 +6287,9 @@ export class CitationCitedArtifactStatusDateComponent extends BackboneElement im
     }
 
     if (this.hasPeriod()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPeriod()!, 'period', jsonObj);
+      setFhirComplexJson(this.getPeriod(), 'period', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.statusDate.period`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['period'] = null;
     }
 
     return jsonObj;
@@ -6330,7 +6326,6 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactTitleComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactTitleComponent
    * @returns CitationCitedArtifactTitleComponent data model or undefined for `CitationCitedArtifactTitleComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactTitleComponent | undefined {
@@ -6348,8 +6343,6 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -6379,20 +6372,14 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setText(null);
       } else {
         instance.setTextElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setText(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6531,10 +6518,10 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `text` property value as a MarkdownType object if defined; else null
+   * @returns the `text` property value as a MarkdownType object if defined; else an empty MarkdownType object
    */
-  public getTextElement(): MarkdownType | null {
-    return this.text;
+  public getTextElement(): MarkdownType {
+    return this.text ?? new MarkdownType();
   }
 
   /**
@@ -6545,11 +6532,14 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTextElement(element: MarkdownType): this {
-    assertIsDefined<MarkdownType>(element, `Citation.citedArtifact.title.text is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.title.text; Provided value is not an instance of MarkdownType.`;
-    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
-    this.text = element;
+  public setTextElement(element: MarkdownType | undefined | null): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title.text; Provided value is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.text = element;
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -6578,10 +6568,13 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setText(value: fhirMarkdown): this {
-    assertIsDefined<fhirMarkdown>(value, `Citation.citedArtifact.title.text is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.title.text (${String(value)})`;
-    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+  public setText(value: fhirMarkdown | undefined | null): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.title.text (${String(value)})`;
+      this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -6613,6 +6606,16 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.text, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6639,15 +6642,14 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexListJson(this.getType(), 'type', jsonObj);
@@ -6658,15 +6660,9 @@ export class CitationCitedArtifactTitleComponent extends BackboneElement impleme
     }
 
     if (this.hasTextElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement(), 'text', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.title.text`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['text'] = null;
     }
 
     return jsonObj;
@@ -6703,7 +6699,6 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactAbstractComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactAbstractComponent
    * @returns CitationCitedArtifactAbstractComponent data model or undefined for `CitationCitedArtifactAbstractComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactAbstractComponent | undefined {
@@ -6721,8 +6716,6 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -6747,12 +6740,12 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setText(null);
       } else {
         instance.setTextElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setText(null);
     }
 
     fieldName = 'copyright';
@@ -6764,12 +6757,6 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
       instance.setCopyrightElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6896,10 +6883,10 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
   }
 
   /**
-   * @returns the `text` property value as a MarkdownType object if defined; else null
+   * @returns the `text` property value as a MarkdownType object if defined; else an empty MarkdownType object
    */
-  public getTextElement(): MarkdownType | null {
-    return this.text;
+  public getTextElement(): MarkdownType {
+    return this.text ?? new MarkdownType();
   }
 
   /**
@@ -6910,11 +6897,14 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTextElement(element: MarkdownType): this {
-    assertIsDefined<MarkdownType>(element, `Citation.citedArtifact.abstract.text is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.abstract.text; Provided value is not an instance of MarkdownType.`;
-    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
-    this.text = element;
+  public setTextElement(element: MarkdownType | undefined | null): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract.text; Provided value is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.text = element;
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -6943,10 +6933,13 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setText(value: fhirMarkdown): this {
-    assertIsDefined<fhirMarkdown>(value, `Citation.citedArtifact.abstract.text is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.abstract.text (${String(value)})`;
-    this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+  public setText(value: fhirMarkdown | undefined | null): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.abstract.text (${String(value)})`;
+      this.text = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.text = null;
+    }
     return this;
   }
 
@@ -7043,6 +7036,16 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.text, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7069,15 +7072,14 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -7088,19 +7090,13 @@ export class CitationCitedArtifactAbstractComponent extends BackboneElement impl
     }
 
     if (this.hasTextElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement()!, 'text', jsonObj);
+      setFhirPrimitiveJson<fhirMarkdown>(this.getTextElement(), 'text', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.abstract.text`);
+      jsonObj['text'] = null;
     }
 
     if (this.hasCopyrightElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getCopyrightElement(), 'copyright', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -7172,7 +7168,6 @@ export class CitationCitedArtifactPartComponent extends BackboneElement implemen
       instance.setBaseCitation(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7458,7 +7453,6 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactRelatesToComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactRelatesToComponent
    * @returns CitationCitedArtifactRelatesToComponent data model or undefined for `CitationCitedArtifactRelatesToComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactRelatesToComponent | undefined {
@@ -7480,20 +7474,18 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
     const errorMessage = `DecoratorMetadataObject does not exist for CitationCitedArtifactRelatesToComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'relationshipType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelationshipType(null);
       } else {
         instance.setRelationshipType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelationshipType(null);
     }
 
     fieldName = 'targetClassifier';
@@ -7518,17 +7510,11 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
       classMetadata,
     );
     if (target === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setTarget(null);
     } else {
       instance.setTarget(target);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -7589,10 +7575,10 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `relationshipType` property value as a CodeableConcept object if defined; else null
+   * @returns the `relationshipType` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getRelationshipType(): CodeableConcept | null {
-    return this.relationshipType;
+  public getRelationshipType(): CodeableConcept {
+    return this.relationshipType ?? new CodeableConcept();
   }
 
   /**
@@ -7602,11 +7588,14 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRelationshipType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Citation.citedArtifact.relatesTo.relationshipType is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.relationshipType; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.relationshipType = value;
+  public setRelationshipType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.relatesTo.relationshipType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.relationshipType = value;
+    } else {
+      this.relationshipType = null;
+    }
     return this;
   }
 
@@ -7692,10 +7681,13 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('Citation.citedArtifact.relatesTo.target[x]')
-  public setTarget(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `Citation.citedArtifact.relatesTo.target[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.target = value;
+  public setTarget(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.target = value;
+    } else {
+      this.target = null;
+    }
     return this;
   }
 
@@ -7820,6 +7812,16 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.relationshipType, this.target, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -7846,21 +7848,19 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRelationshipType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelationshipType()!, 'relationshipType', jsonObj);
+      setFhirComplexJson(this.getRelationshipType(), 'relationshipType', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.relatesTo.relationshipType`);
+      jsonObj['relationshipType'] = null;
     }
 
     if (this.hasTargetClassifier()) {
@@ -7871,12 +7871,7 @@ export class CitationCitedArtifactRelatesToComponent extends BackboneElement imp
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getTarget()!, 'target', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.relatesTo.target[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['target'] = null;
     }
 
     return jsonObj;
@@ -8025,7 +8020,6 @@ export class CitationCitedArtifactPublicationFormComponent extends BackboneEleme
       instance.setCopyrightElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9027,7 +9021,6 @@ export class CitationCitedArtifactPublicationFormPublishedInComponent extends Ba
       instance.setPublisherLocationElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9520,7 +9513,6 @@ export class CitationCitedArtifactPublicationFormPeriodicReleaseComponent extend
       instance.setDateOfPublication(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -9946,7 +9938,6 @@ export class CitationCitedArtifactPublicationFormPeriodicReleaseDateOfPublicatio
       instance.setTextElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -10566,7 +10557,6 @@ export class CitationCitedArtifactWebLocationComponent extends BackboneElement i
       instance.setUrlElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -10830,7 +10820,6 @@ export class CitationCitedArtifactClassificationComponent extends BackboneElemen
       instance.setWhoClassified(component);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -11154,7 +11143,6 @@ export class CitationCitedArtifactClassificationWhoClassifiedComponent extends B
       instance.setFreeToShareElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -11637,7 +11625,6 @@ export class CitationCitedArtifactContributorshipComponent extends BackboneEleme
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -12111,7 +12098,6 @@ export class CitationCitedArtifactContributorshipEntryComponent extends Backbone
       instance.setListOrderElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13160,7 +13146,6 @@ export class CitationCitedArtifactContributorshipEntryAffiliationInfoComponent e
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13492,7 +13477,6 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactContributorshipEntryContributionInstanceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactContributorshipEntryContributionInstanceComponent
    * @returns CitationCitedArtifactContributorshipEntryContributionInstanceComponent data model or undefined for `CitationCitedArtifactContributorshipEntryContributionInstanceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactContributorshipEntryContributionInstanceComponent | undefined {
@@ -13511,20 +13495,18 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'time';
@@ -13536,12 +13518,6 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
       instance.setTimeElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13576,10 +13552,10 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -13589,11 +13565,14 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Citation.citedArtifact.contributorship.entry.contributionInstance.type is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.entry.contributionInstance.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -13688,6 +13667,16 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -13712,30 +13701,23 @@ export class CitationCitedArtifactContributorshipEntryContributionInstanceCompon
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.contributorship.entry.contributionInstance.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasTimeElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getTimeElement(), 'time', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -13772,7 +13754,6 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
    * @param sourceJson - JSON representing FHIR `CitationCitedArtifactContributorshipSummaryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to CitationCitedArtifactContributorshipSummaryComponent
    * @returns CitationCitedArtifactContributorshipSummaryComponent data model or undefined for `CitationCitedArtifactContributorshipSummaryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): CitationCitedArtifactContributorshipSummaryComponent | undefined {
@@ -13790,8 +13771,6 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -13824,20 +13803,14 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: MarkdownType | undefined = fhirParser.parseMarkdownType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -13996,10 +13969,10 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
   }
 
   /**
-   * @returns the `value` property value as a MarkdownType object if defined; else null
+   * @returns the `value` property value as a MarkdownType object if defined; else an empty MarkdownType object
    */
-  public getValueElement(): MarkdownType | null {
-    return this.value;
+  public getValueElement(): MarkdownType {
+    return this.value ?? new MarkdownType();
   }
 
   /**
@@ -14010,11 +13983,14 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: MarkdownType): this {
-    assertIsDefined<MarkdownType>(element, `Citation.citedArtifact.contributorship.summary.value is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.value; Provided value is not an instance of MarkdownType.`;
-    assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: MarkdownType | undefined | null): this {
+    if (isDefined<MarkdownType>(element)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.value; Provided value is not an instance of MarkdownType.`;
+      assertFhirType<MarkdownType>(element, MarkdownType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -14043,10 +14019,13 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirMarkdown): this {
-    assertIsDefined<fhirMarkdown>(value, `Citation.citedArtifact.contributorship.summary.value is required`);
-    const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.value (${String(value)})`;
-    this.value = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+  public setValue(value: fhirMarkdown | undefined | null): this {
+    if (isDefined<fhirMarkdown>(value)) {
+      const optErrMsg = `Invalid Citation.citedArtifact.contributorship.summary.value (${String(value)})`;
+      this.value = new MarkdownType(parseFhirPrimitiveData(value, fhirMarkdownSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -14079,6 +14058,16 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -14105,15 +14094,14 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
@@ -14128,15 +14116,9 @@ export class CitationCitedArtifactContributorshipSummaryComponent extends Backbo
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirMarkdown>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirMarkdown>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Citation.citedArtifact.contributorship.summary.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

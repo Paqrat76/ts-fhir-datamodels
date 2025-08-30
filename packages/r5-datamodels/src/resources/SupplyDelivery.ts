@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -50,7 +49,6 @@ import {
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   ReferenceTargets,
@@ -107,7 +105,6 @@ export class SupplyDelivery extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `SupplyDelivery`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SupplyDelivery
    * @returns SupplyDelivery data model or undefined for `SupplyDelivery`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SupplyDelivery | undefined {
@@ -247,7 +244,6 @@ export class SupplyDelivery extends DomainResource implements IDomainResource {
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1335,7 +1331,6 @@ export class SupplyDeliverySuppliedItemComponent extends BackboneElement impleme
     );
     instance.setItem(item);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

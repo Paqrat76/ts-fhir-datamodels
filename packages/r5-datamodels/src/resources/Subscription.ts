@@ -37,24 +37,19 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CanonicalType,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   JSON,
   PositiveIntType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UnsignedIntType,
@@ -63,7 +58,6 @@ import {
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCanonical,
@@ -87,6 +81,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -149,7 +144,6 @@ export class Subscription extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Subscription`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Subscription
    * @returns Subscription data model or undefined for `Subscription`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Subscription | undefined {
@@ -168,8 +162,6 @@ export class Subscription extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -200,12 +192,12 @@ export class Subscription extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'topic';
@@ -215,12 +207,12 @@ export class Subscription extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTopic(null);
       } else {
         instance.setTopicElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTopic(null);
     }
 
     fieldName = 'contact';
@@ -281,12 +273,12 @@ export class Subscription extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setChannelType(null);
       } else {
         instance.setChannelType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setChannelType(null);
     }
 
     fieldName = 'endpoint';
@@ -356,12 +348,6 @@ export class Subscription extends DomainResource implements IDomainResource {
       instance.setMaxCountElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -782,11 +768,14 @@ export class Subscription extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link SubscriptionStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Subscription.status is required`);
-    const errMsgPrefix = `Invalid Subscription.status`;
-    assertEnumCodeType<SubscriptionStatusEnum>(enumType, SubscriptionStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Subscription.status`;
+      assertEnumCodeType<SubscriptionStatusEnum>(enumType, SubscriptionStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -819,11 +808,14 @@ export class Subscription extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link SubscriptionStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Subscription.status is required`);
-    const optErrMsg = `Invalid Subscription.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.subscriptionStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Subscription.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.subscriptionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -856,10 +848,13 @@ export class Subscription extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link SubscriptionStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Subscription.status is required`);
-    const optErrMsg = `Invalid Subscription.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.subscriptionStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Subscription.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.subscriptionStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -871,10 +866,10 @@ export class Subscription extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `topic` property value as a CanonicalType object if defined; else null
+   * @returns the `topic` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getTopicElement(): CanonicalType | null {
-    return this.topic;
+  public getTopicElement(): CanonicalType {
+    return this.topic ?? new CanonicalType();
   }
 
   /**
@@ -885,11 +880,14 @@ export class Subscription extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTopicElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `Subscription.topic is required`);
-    const optErrMsg = `Invalid Subscription.topic; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.topic = element;
+  public setTopicElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid Subscription.topic; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.topic = element;
+    } else {
+      this.topic = null;
+    }
     return this;
   }
 
@@ -918,10 +916,13 @@ export class Subscription extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTopic(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `Subscription.topic is required`);
-    const optErrMsg = `Invalid Subscription.topic (${String(value)})`;
-    this.topic = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setTopic(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid Subscription.topic (${String(value)})`;
+      this.topic = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.topic = null;
+    }
     return this;
   }
 
@@ -1225,10 +1226,10 @@ export class Subscription extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `channelType` property value as a Coding object if defined; else null
+   * @returns the `channelType` property value as a Coding object if defined; else an empty Coding object
    */
-  public getChannelType(): Coding | null {
-    return this.channelType;
+  public getChannelType(): Coding {
+    return this.channelType ?? new Coding();
   }
 
   /**
@@ -1238,11 +1239,14 @@ export class Subscription extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setChannelType(value: Coding): this {
-    assertIsDefined<Coding>(value, `Subscription.channelType is required`);
-    const optErrMsg = `Invalid Subscription.channelType; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.channelType = value;
+  public setChannelType(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid Subscription.channelType; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.channelType = value;
+    } else {
+      this.channelType = null;
+    }
     return this;
   }
 
@@ -1782,6 +1786,16 @@ export class Subscription extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.topic, this.channelType, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1825,15 +1839,14 @@ export class Subscription extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1847,14 +1860,13 @@ export class Subscription extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasTopicElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getTopicElement()!, 'topic', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getTopicElement(), 'topic', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.topic`);
+      jsonObj['topic'] = null;
     }
 
     if (this.hasContact()) {
@@ -1878,10 +1890,9 @@ export class Subscription extends DomainResource implements IDomainResource {
     }
 
     if (this.hasChannelType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getChannelType()!, 'channelType', jsonObj);
+      setFhirComplexJson(this.getChannelType(), 'channelType', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.channelType`);
+      jsonObj['channelType'] = null;
     }
 
     if (this.hasEndpointElement()) {
@@ -1911,11 +1922,6 @@ export class Subscription extends DomainResource implements IDomainResource {
 
     if (this.hasMaxCountElement()) {
       setFhirPrimitiveJson<fhirPositiveInt>(this.getMaxCountElement(), 'maxCount', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1965,7 +1971,6 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
    * @param sourceJson - JSON representing FHIR `SubscriptionFilterByComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubscriptionFilterByComponent
    * @returns SubscriptionFilterByComponent data model or undefined for `SubscriptionFilterByComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubscriptionFilterByComponent | undefined {
@@ -1984,8 +1989,6 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'resourceType';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2002,12 +2005,12 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setFilterParameter(null);
       } else {
         instance.setFilterParameterElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setFilterParameter(null);
     }
 
     fieldName = 'comparator';
@@ -2035,20 +2038,14 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2209,10 +2206,10 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
   }
 
   /**
-   * @returns the `filterParameter` property value as a StringType object if defined; else null
+   * @returns the `filterParameter` property value as a StringType object if defined; else an empty StringType object
    */
-  public getFilterParameterElement(): StringType | null {
-    return this.filterParameter;
+  public getFilterParameterElement(): StringType {
+    return this.filterParameter ?? new StringType();
   }
 
   /**
@@ -2223,11 +2220,14 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setFilterParameterElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Subscription.filterBy.filterParameter is required`);
-    const optErrMsg = `Invalid Subscription.filterBy.filterParameter; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.filterParameter = element;
+  public setFilterParameterElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Subscription.filterBy.filterParameter; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.filterParameter = element;
+    } else {
+      this.filterParameter = null;
+    }
     return this;
   }
 
@@ -2256,10 +2256,13 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setFilterParameter(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Subscription.filterBy.filterParameter is required`);
-    const optErrMsg = `Invalid Subscription.filterBy.filterParameter (${String(value)})`;
-    this.filterParameter = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setFilterParameter(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Subscription.filterBy.filterParameter (${String(value)})`;
+      this.filterParameter = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.filterParameter = null;
+    }
     return this;
   }
 
@@ -2503,10 +2506,10 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -2517,11 +2520,14 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Subscription.filterBy.value is required`);
-    const optErrMsg = `Invalid Subscription.filterBy.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Subscription.filterBy.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2550,10 +2556,13 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Subscription.filterBy.value is required`);
-    const optErrMsg = `Invalid Subscription.filterBy.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Subscription.filterBy.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2587,6 +2596,16 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.filterParameter, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2614,25 +2633,23 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasResourceTypeElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getResourceTypeElement(), 'resourceType', jsonObj);
     }
 
     if (this.hasFilterParameterElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getFilterParameterElement()!, 'filterParameter', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getFilterParameterElement(), 'filterParameter', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.filterBy.filterParameter`);
+      jsonObj['filterParameter'] = null;
     }
 
     if (this.hasComparatorElement()) {
@@ -2646,15 +2663,9 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.filterBy.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -2701,7 +2712,6 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `SubscriptionParameterComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SubscriptionParameterComponent
    * @returns SubscriptionParameterComponent data model or undefined for `SubscriptionParameterComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SubscriptionParameterComponent | undefined {
@@ -2720,8 +2730,6 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2729,12 +2737,12 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
     fieldName = 'value';
@@ -2744,20 +2752,14 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setValue(null);
       } else {
         instance.setValueElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2792,10 +2794,10 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -2806,11 +2808,14 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Subscription.parameter.name is required`);
-    const optErrMsg = `Invalid Subscription.parameter.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Subscription.parameter.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -2839,10 +2844,13 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Subscription.parameter.name is required`);
-    const optErrMsg = `Invalid Subscription.parameter.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Subscription.parameter.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -2854,10 +2862,10 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
   }
 
   /**
-   * @returns the `value` property value as a StringType object if defined; else null
+   * @returns the `value` property value as a StringType object if defined; else an empty StringType object
    */
-  public getValueElement(): StringType | null {
-    return this.value;
+  public getValueElement(): StringType {
+    return this.value ?? new StringType();
   }
 
   /**
@@ -2868,11 +2876,14 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValueElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Subscription.parameter.value is required`);
-    const optErrMsg = `Invalid Subscription.parameter.value; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.value = element;
+  public setValueElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Subscription.parameter.value; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.value = element;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2901,10 +2912,13 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setValue(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Subscription.parameter.value is required`);
-    const optErrMsg = `Invalid Subscription.parameter.value (${String(value)})`;
-    this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setValue(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Subscription.parameter.value (${String(value)})`;
+      this.value = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -2935,6 +2949,16 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.name, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2959,33 +2983,25 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.parameter.name`);
+      jsonObj['name'] = null;
     }
 
     if (this.hasValueElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getValueElement()!, 'value', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`Subscription.parameter.value`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;

@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -47,16 +46,12 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -78,6 +73,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -143,7 +139,6 @@ export class MedicationAdministration extends DomainResource implements IDomainR
    * @param sourceJson - JSON representing FHIR `MedicationAdministration`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicationAdministration
    * @returns MedicationAdministration data model or undefined for `MedicationAdministration`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicationAdministration | undefined {
@@ -166,8 +161,6 @@ export class MedicationAdministration extends DomainResource implements IDomainR
     const classMetadata: DecoratorMetadataObject | null = MedicationAdministration[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for MedicationAdministration`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -215,12 +208,12 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'statusReason';
@@ -255,12 +248,12 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMedication(null);
       } else {
         instance.setMedication(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMedication(null);
     }
 
     fieldName = 'subject';
@@ -269,12 +262,12 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSubject(null);
       } else {
         instance.setSubject(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSubject(null);
     }
 
     fieldName = 'encounter';
@@ -307,7 +300,7 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       classMetadata,
     );
     if (occurence === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setOccurence(null);
     } else {
       instance.setOccurence(occurence);
     }
@@ -424,12 +417,6 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       });
   }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1007,11 +994,14 @@ export class MedicationAdministration extends DomainResource implements IDomainR
    *
    * @see CodeSystem Enumeration: {@link MedicationAdminStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MedicationAdministration.status is required`);
-    const errMsgPrefix = `Invalid MedicationAdministration.status`;
-    assertEnumCodeType<MedicationAdminStatusEnum>(enumType, MedicationAdminStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MedicationAdministration.status`;
+      assertEnumCodeType<MedicationAdminStatusEnum>(enumType, MedicationAdminStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1044,11 +1034,14 @@ export class MedicationAdministration extends DomainResource implements IDomainR
    *
    * @see CodeSystem Enumeration: {@link MedicationAdminStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MedicationAdministration.status is required`);
-    const optErrMsg = `Invalid MedicationAdministration.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.medicationAdminStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MedicationAdministration.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.medicationAdminStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1081,10 +1074,13 @@ export class MedicationAdministration extends DomainResource implements IDomainR
    *
    * @see CodeSystem Enumeration: {@link MedicationAdminStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MedicationAdministration.status is required`);
-    const optErrMsg = `Invalid MedicationAdministration.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationAdminStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MedicationAdministration.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationAdminStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1212,10 +1208,10 @@ export class MedicationAdministration extends DomainResource implements IDomainR
   }
 
   /**
-   * @returns the `medication` property value as a CodeableReference object if defined; else null
+   * @returns the `medication` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getMedication(): CodeableReference | null {
-    return this.medication;
+  public getMedication(): CodeableReference {
+    return this.medication ?? new CodeableReference();
   }
 
   /**
@@ -1225,11 +1221,14 @@ export class MedicationAdministration extends DomainResource implements IDomainR
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setMedication(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `MedicationAdministration.medication is required`);
-    const optErrMsg = `Invalid MedicationAdministration.medication; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.medication = value;
+  public setMedication(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid MedicationAdministration.medication; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.medication = value;
+    } else {
+      this.medication = null;
+    }
     return this;
   }
 
@@ -1241,10 +1240,10 @@ export class MedicationAdministration extends DomainResource implements IDomainR
   }
 
   /**
-   * @returns the `subject` property value as a Reference object if defined; else null
+   * @returns the `subject` property value as a Reference object if defined; else an empty Reference object
    */
-  public getSubject(): Reference | null {
-    return this.subject;
+  public getSubject(): Reference {
+    return this.subject ?? new Reference();
   }
 
   /**
@@ -1261,10 +1260,13 @@ export class MedicationAdministration extends DomainResource implements IDomainR
   
     'Group',
   ])
-  public setSubject(value: Reference): this {
-    assertIsDefined<Reference>(value, `MedicationAdministration.subject is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.subject = value;
+  public setSubject(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.subject = value;
+    } else {
+      this.subject = null;
+    }
     return this;
   }
 
@@ -1394,10 +1396,13 @@ export class MedicationAdministration extends DomainResource implements IDomainR
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MedicationAdministration.occurence[x]')
-  public setOccurence(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MedicationAdministration.occurence[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.occurence = value;
+  public setOccurence(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.occurence = value;
+    } else {
+      this.occurence = null;
+    }
     return this;
   }
 
@@ -2070,6 +2075,16 @@ export class MedicationAdministration extends DomainResource implements IDomainR
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.medication, this.subject, this.occurence, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2125,15 +2140,14 @@ export class MedicationAdministration extends DomainResource implements IDomainR
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -2151,7 +2165,7 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationAdministration.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasStatusReason()) {
@@ -2163,17 +2177,15 @@ export class MedicationAdministration extends DomainResource implements IDomainR
     }
 
     if (this.hasMedication()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getMedication()!, 'medication', jsonObj);
+      setFhirComplexJson(this.getMedication(), 'medication', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationAdministration.medication`);
+      jsonObj['medication'] = null;
     }
 
     if (this.hasSubject()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getSubject()!, 'subject', jsonObj);
+      setFhirComplexJson(this.getSubject(), 'subject', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationAdministration.subject`);
+      jsonObj['subject'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -2188,7 +2200,7 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getOccurence()!, 'occurence', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationAdministration.occurence[x]`);
+      jsonObj['occurence'] = null;
     }
 
     if (this.hasRecordedElement()) {
@@ -2231,11 +2243,6 @@ export class MedicationAdministration extends DomainResource implements IDomainR
       setFhirComplexListJson(this.getEventHistory(), 'eventHistory', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -2267,7 +2274,6 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
    * @param sourceJson - JSON representing FHIR `MedicationAdministrationPerformerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicationAdministrationPerformerComponent
    * @returns MedicationAdministrationPerformerComponent data model or undefined for `MedicationAdministrationPerformerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MedicationAdministrationPerformerComponent | undefined {
@@ -2285,8 +2291,6 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'function';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -2301,20 +2305,14 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableReference | undefined = CodeableReference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setActor(null);
       } else {
         instance.setActor(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setActor(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2388,10 +2386,10 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
   }
 
   /**
-   * @returns the `actor` property value as a CodeableReference object if defined; else null
+   * @returns the `actor` property value as a CodeableReference object if defined; else an empty CodeableReference object
    */
-  public getActor(): CodeableReference | null {
-    return this.actor;
+  public getActor(): CodeableReference {
+    return this.actor ?? new CodeableReference();
   }
 
   /**
@@ -2401,11 +2399,14 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setActor(value: CodeableReference): this {
-    assertIsDefined<CodeableReference>(value, `MedicationAdministration.performer.actor is required`);
-    const optErrMsg = `Invalid MedicationAdministration.performer.actor; Provided element is not an instance of CodeableReference.`;
-    assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
-    this.actor = value;
+  public setActor(value: CodeableReference | undefined | null): this {
+    if (isDefined<CodeableReference>(value)) {
+      const optErrMsg = `Invalid MedicationAdministration.performer.actor; Provided element is not an instance of CodeableReference.`;
+      assertFhirType<CodeableReference>(value, CodeableReference, optErrMsg);
+      this.actor = value;
+    } else {
+      this.actor = null;
+    }
     return this;
   }
 
@@ -2436,6 +2437,16 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.actor, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2460,30 +2471,23 @@ export class MedicationAdministrationPerformerComponent extends BackboneElement 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFunction()) {
       setFhirComplexJson(this.getFunction(), 'function', jsonObj);
     }
 
     if (this.hasActor()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getActor()!, 'actor', jsonObj);
+      setFhirComplexJson(this.getActor(), 'actor', jsonObj);
     } else {
-      missingReqdProperties.push(`MedicationAdministration.performer.actor`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['actor'] = null;
     }
 
     return jsonObj;
@@ -2585,7 +2589,6 @@ export class MedicationAdministrationDosageComponent extends BackboneElement imp
     );
     instance.setRate(rate);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

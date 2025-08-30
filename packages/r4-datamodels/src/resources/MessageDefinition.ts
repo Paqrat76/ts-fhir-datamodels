@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,19 +47,15 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UnsignedIntType,
   UriType,
@@ -92,6 +87,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexListJson,
@@ -163,7 +159,6 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `MessageDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageDefinition
    * @returns MessageDefinition data model or undefined for `MessageDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MessageDefinition | undefined {
@@ -186,8 +181,6 @@ export class MessageDefinition extends DomainResource implements IDomainResource
     const classMetadata: DecoratorMetadataObject | null = MessageDefinition[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for MessageDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -263,12 +256,12 @@ export class MessageDefinition extends DomainResource implements IDomainResource
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -287,12 +280,12 @@ export class MessageDefinition extends DomainResource implements IDomainResource
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDate(null);
       } else {
         instance.setDateElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDate(null);
     }
 
     fieldName = 'publisher';
@@ -406,7 +399,7 @@ export class MessageDefinition extends DomainResource implements IDomainResource
       classMetadata,
     );
     if (event === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setEvent(null);
     } else {
       instance.setEvent(event);
     }
@@ -473,12 +466,6 @@ export class MessageDefinition extends DomainResource implements IDomainResource
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1348,11 +1335,14 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MessageDefinition.status is required`);
-    const errMsgPrefix = `Invalid MessageDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MessageDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1385,11 +1375,14 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MessageDefinition.status is required`);
-    const optErrMsg = `Invalid MessageDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MessageDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1422,10 +1415,13 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MessageDefinition.status is required`);
-    const optErrMsg = `Invalid MessageDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MessageDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1501,10 +1497,10 @@ export class MessageDefinition extends DomainResource implements IDomainResource
   }
 
   /**
-   * @returns the `date` property value as a DateTimeType object if defined; else null
+   * @returns the `date` property value as a DateTimeType object if defined; else an empty DateTimeType object
    */
-  public getDateElement(): DateTimeType | null {
-    return this.date;
+  public getDateElement(): DateTimeType {
+    return this.date ?? new DateTimeType();
   }
 
   /**
@@ -1515,11 +1511,14 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDateElement(element: DateTimeType): this {
-    assertIsDefined<DateTimeType>(element, `MessageDefinition.date is required`);
-    const optErrMsg = `Invalid MessageDefinition.date; Provided value is not an instance of DateTimeType.`;
-    assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
-    this.date = element;
+  public setDateElement(element: DateTimeType | undefined | null): this {
+    if (isDefined<DateTimeType>(element)) {
+      const optErrMsg = `Invalid MessageDefinition.date; Provided value is not an instance of DateTimeType.`;
+      assertFhirType<DateTimeType>(element, DateTimeType, optErrMsg);
+      this.date = element;
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -1548,10 +1547,13 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDate(value: fhirDateTime): this {
-    assertIsDefined<fhirDateTime>(value, `MessageDefinition.date is required`);
-    const optErrMsg = `Invalid MessageDefinition.date (${String(value)})`;
-    this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+  public setDate(value: fhirDateTime | undefined | null): this {
+    if (isDefined<fhirDateTime>(value)) {
+      const optErrMsg = `Invalid MessageDefinition.date (${String(value)})`;
+      this.date = new DateTimeType(parseFhirPrimitiveData(value, fhirDateTimeSchema, optErrMsg));
+    } else {
+      this.date = null;
+    }
     return this;
   }
 
@@ -2195,10 +2197,13 @@ export class MessageDefinition extends DomainResource implements IDomainResource
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MessageDefinition.event[x]')
-  public setEvent(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MessageDefinition.event[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.event = value;
+  public setEvent(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.event = value;
+    } else {
+      this.event = null;
+    }
     return this;
   }
 
@@ -2770,6 +2775,16 @@ export class MessageDefinition extends DomainResource implements IDomainResource
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.date, this.event, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2825,15 +2840,14 @@ export class MessageDefinition extends DomainResource implements IDomainResource
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2863,7 +2877,7 @@ export class MessageDefinition extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2871,10 +2885,9 @@ export class MessageDefinition extends DomainResource implements IDomainResource
     }
 
     if (this.hasDateElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement()!, 'date', jsonObj);
+      setFhirPrimitiveJson<fhirDateTime>(this.getDateElement(), 'date', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageDefinition.date`);
+      jsonObj['date'] = null;
     }
 
     if (this.hasPublisherElement()) {
@@ -2917,7 +2930,7 @@ export class MessageDefinition extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getEvent()!, 'event', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageDefinition.event[x]`);
+      jsonObj['event'] = null;
     }
 
     if (this.hasCategoryElement()) {
@@ -2940,11 +2953,6 @@ export class MessageDefinition extends DomainResource implements IDomainResource
 
     if (this.hasGraph()) {
       setFhirPrimitiveListJson(this.getGraphElement(), 'graph', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2991,7 +2999,6 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `MessageDefinitionFocusComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageDefinitionFocusComponent
    * @returns MessageDefinitionFocusComponent data model or undefined for `MessageDefinitionFocusComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MessageDefinitionFocusComponent | undefined {
@@ -3010,8 +3017,6 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3019,12 +3024,12 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'profile';
@@ -3043,12 +3048,12 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UnsignedIntType | undefined = fhirParser.parseUnsignedIntType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMin(null);
       } else {
         instance.setMinElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMin(null);
     }
 
     fieldName = 'max';
@@ -3060,12 +3065,6 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
       instance.setMaxElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3161,11 +3160,14 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setCodeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MessageDefinition.focus.code is required`);
-    const errMsgPrefix = `Invalid MessageDefinition.focus.code`;
-    assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
-    this.code = enumType;
+  public setCodeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MessageDefinition.focus.code`;
+      assertEnumCodeType<ResourceTypesEnum>(enumType, ResourceTypesEnum, errMsgPrefix);
+      this.code = enumType;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3198,11 +3200,14 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MessageDefinition.focus.code is required`);
-    const optErrMsg = `Invalid MessageDefinition.focus.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = new EnumCodeType(element, this.resourceTypesEnum);
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MessageDefinition.focus.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = new EnumCodeType(element, this.resourceTypesEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3235,10 +3240,13 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
    *
    * @see CodeSystem Enumeration: {@link ResourceTypesEnum }
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MessageDefinition.focus.code is required`);
-    const optErrMsg = `Invalid MessageDefinition.focus.code (${String(value)})`;
-    this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceTypesEnum);
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MessageDefinition.focus.code (${String(value)})`;
+      this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.resourceTypesEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -3314,10 +3322,10 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
   }
 
   /**
-   * @returns the `min` property value as a UnsignedIntType object if defined; else null
+   * @returns the `min` property value as a UnsignedIntType object if defined; else an empty UnsignedIntType object
    */
-  public getMinElement(): UnsignedIntType | null {
-    return this.min;
+  public getMinElement(): UnsignedIntType {
+    return this.min ?? new UnsignedIntType();
   }
 
   /**
@@ -3328,11 +3336,14 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMinElement(element: UnsignedIntType): this {
-    assertIsDefined<UnsignedIntType>(element, `MessageDefinition.focus.min is required`);
-    const optErrMsg = `Invalid MessageDefinition.focus.min; Provided value is not an instance of UnsignedIntType.`;
-    assertFhirType<UnsignedIntType>(element, UnsignedIntType, optErrMsg);
-    this.min = element;
+  public setMinElement(element: UnsignedIntType | undefined | null): this {
+    if (isDefined<UnsignedIntType>(element)) {
+      const optErrMsg = `Invalid MessageDefinition.focus.min; Provided value is not an instance of UnsignedIntType.`;
+      assertFhirType<UnsignedIntType>(element, UnsignedIntType, optErrMsg);
+      this.min = element;
+    } else {
+      this.min = null;
+    }
     return this;
   }
 
@@ -3361,10 +3372,13 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMin(value: fhirUnsignedInt): this {
-    assertIsDefined<fhirUnsignedInt>(value, `MessageDefinition.focus.min is required`);
-    const optErrMsg = `Invalid MessageDefinition.focus.min (${String(value)})`;
-    this.min = new UnsignedIntType(parseFhirPrimitiveData(value, fhirUnsignedIntSchema, optErrMsg));
+  public setMin(value: fhirUnsignedInt | undefined | null): this {
+    if (isDefined<fhirUnsignedInt>(value)) {
+      const optErrMsg = `Invalid MessageDefinition.focus.min (${String(value)})`;
+      this.min = new UnsignedIntType(parseFhirPrimitiveData(value, fhirUnsignedIntSchema, optErrMsg));
+    } else {
+      this.min = null;
+    }
     return this;
   }
 
@@ -3461,6 +3475,16 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.min, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3487,21 +3511,20 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageDefinition.focus.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasProfileElement()) {
@@ -3509,19 +3532,13 @@ export class MessageDefinitionFocusComponent extends BackboneElement implements 
     }
 
     if (this.hasMinElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUnsignedInt>(this.getMinElement()!, 'min', jsonObj);
+      setFhirPrimitiveJson<fhirUnsignedInt>(this.getMinElement(), 'min', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageDefinition.focus.min`);
+      jsonObj['min'] = null;
     }
 
     if (this.hasMaxElement()) {
       setFhirPrimitiveJson<fhirString>(this.getMaxElement(), 'max', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3559,7 +3576,6 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
    * @param sourceJson - JSON representing FHIR `MessageDefinitionAllowedResponseComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageDefinitionAllowedResponseComponent
    * @returns MessageDefinitionAllowedResponseComponent data model or undefined for `MessageDefinitionAllowedResponseComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MessageDefinitionAllowedResponseComponent | undefined {
@@ -3578,8 +3594,6 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'message';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3587,12 +3601,12 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMessage(null);
       } else {
         instance.setMessageElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMessage(null);
     }
 
     fieldName = 'situation';
@@ -3604,12 +3618,6 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
       instance.setSituationElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3647,10 +3655,10 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `message` property value as a CanonicalType object if defined; else null
+   * @returns the `message` property value as a CanonicalType object if defined; else an empty CanonicalType object
    */
-  public getMessageElement(): CanonicalType | null {
-    return this.message;
+  public getMessageElement(): CanonicalType {
+    return this.message ?? new CanonicalType();
   }
 
   /**
@@ -3661,11 +3669,14 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMessageElement(element: CanonicalType): this {
-    assertIsDefined<CanonicalType>(element, `MessageDefinition.allowedResponse.message is required`);
-    const optErrMsg = `Invalid MessageDefinition.allowedResponse.message; Provided value is not an instance of CanonicalType.`;
-    assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
-    this.message = element;
+  public setMessageElement(element: CanonicalType | undefined | null): this {
+    if (isDefined<CanonicalType>(element)) {
+      const optErrMsg = `Invalid MessageDefinition.allowedResponse.message; Provided value is not an instance of CanonicalType.`;
+      assertFhirType<CanonicalType>(element, CanonicalType, optErrMsg);
+      this.message = element;
+    } else {
+      this.message = null;
+    }
     return this;
   }
 
@@ -3694,10 +3705,13 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setMessage(value: fhirCanonical): this {
-    assertIsDefined<fhirCanonical>(value, `MessageDefinition.allowedResponse.message is required`);
-    const optErrMsg = `Invalid MessageDefinition.allowedResponse.message (${String(value)})`;
-    this.message = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+  public setMessage(value: fhirCanonical | undefined | null): this {
+    if (isDefined<fhirCanonical>(value)) {
+      const optErrMsg = `Invalid MessageDefinition.allowedResponse.message (${String(value)})`;
+      this.message = new CanonicalType(parseFhirPrimitiveData(value, fhirCanonicalSchema, optErrMsg));
+    } else {
+      this.message = null;
+    }
     return this;
   }
 
@@ -3792,6 +3806,16 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.message, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3816,30 +3840,23 @@ export class MessageDefinitionAllowedResponseComponent extends BackboneElement i
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasMessageElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCanonical>(this.getMessageElement()!, 'message', jsonObj);
+      setFhirPrimitiveJson<fhirCanonical>(this.getMessageElement(), 'message', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageDefinition.allowedResponse.message`);
+      jsonObj['message'] = null;
     }
 
     if (this.hasSituationElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getSituationElement(), 'situation', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,26 +37,20 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   CodeType,
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -72,6 +66,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirComplexListJson,
@@ -135,7 +130,6 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
    * @param sourceJson - JSON representing FHIR `ImmunizationEvaluation`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ImmunizationEvaluation
    * @returns ImmunizationEvaluation data model or undefined for `ImmunizationEvaluation`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ImmunizationEvaluation | undefined {
@@ -154,8 +148,6 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -177,12 +169,12 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'patient';
@@ -191,12 +183,12 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPatient(null);
       } else {
         instance.setPatient(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPatient(null);
     }
 
     fieldName = 'date';
@@ -222,12 +214,12 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTargetDisease(null);
       } else {
         instance.setTargetDisease(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTargetDisease(null);
     }
 
     fieldName = 'immunizationEvent';
@@ -236,12 +228,12 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setImmunizationEvent(null);
       } else {
         instance.setImmunizationEvent(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setImmunizationEvent(null);
     }
 
     fieldName = 'doseStatus';
@@ -250,12 +242,12 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDoseStatus(null);
       } else {
         instance.setDoseStatus(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDoseStatus(null);
     }
 
     fieldName = 'doseStatusReason';
@@ -307,12 +299,6 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       instance.setSeriesDosesElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -598,11 +584,14 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
    *
    * @see CodeSystem Enumeration: {@link MedicationAdminStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ImmunizationEvaluation.status is required`);
-    const errMsgPrefix = `Invalid ImmunizationEvaluation.status`;
-    assertEnumCodeType<MedicationAdminStatusEnum>(enumType, MedicationAdminStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ImmunizationEvaluation.status`;
+      assertEnumCodeType<MedicationAdminStatusEnum>(enumType, MedicationAdminStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -635,11 +624,14 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
    *
    * @see CodeSystem Enumeration: {@link MedicationAdminStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ImmunizationEvaluation.status is required`);
-    const optErrMsg = `Invalid ImmunizationEvaluation.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.medicationAdminStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ImmunizationEvaluation.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.medicationAdminStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -672,10 +664,13 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
    *
    * @see CodeSystem Enumeration: {@link MedicationAdminStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ImmunizationEvaluation.status is required`);
-    const optErrMsg = `Invalid ImmunizationEvaluation.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationAdminStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ImmunizationEvaluation.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.medicationAdminStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -687,10 +682,10 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   }
 
   /**
-   * @returns the `patient` property value as a Reference object if defined; else null
+   * @returns the `patient` property value as a Reference object if defined; else an empty Reference object
    */
-  public getPatient(): Reference | null {
-    return this.patient;
+  public getPatient(): Reference {
+    return this.patient ?? new Reference();
   }
 
   /**
@@ -705,10 +700,13 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   @ReferenceTargets('ImmunizationEvaluation.patient', [
     'Patient',
   ])
-  public setPatient(value: Reference): this {
-    assertIsDefined<Reference>(value, `ImmunizationEvaluation.patient is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.patient = value;
+  public setPatient(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.patient = value;
+    } else {
+      this.patient = null;
+    }
     return this;
   }
 
@@ -820,10 +818,10 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   }
 
   /**
-   * @returns the `targetDisease` property value as a CodeableConcept object if defined; else null
+   * @returns the `targetDisease` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getTargetDisease(): CodeableConcept | null {
-    return this.targetDisease;
+  public getTargetDisease(): CodeableConcept {
+    return this.targetDisease ?? new CodeableConcept();
   }
 
   /**
@@ -833,11 +831,14 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setTargetDisease(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ImmunizationEvaluation.targetDisease is required`);
-    const optErrMsg = `Invalid ImmunizationEvaluation.targetDisease; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.targetDisease = value;
+  public setTargetDisease(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ImmunizationEvaluation.targetDisease; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.targetDisease = value;
+    } else {
+      this.targetDisease = null;
+    }
     return this;
   }
 
@@ -849,10 +850,10 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   }
 
   /**
-   * @returns the `immunizationEvent` property value as a Reference object if defined; else null
+   * @returns the `immunizationEvent` property value as a Reference object if defined; else an empty Reference object
    */
-  public getImmunizationEvent(): Reference | null {
-    return this.immunizationEvent;
+  public getImmunizationEvent(): Reference {
+    return this.immunizationEvent ?? new Reference();
   }
 
   /**
@@ -867,10 +868,13 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   @ReferenceTargets('ImmunizationEvaluation.immunizationEvent', [
     'Immunization',
   ])
-  public setImmunizationEvent(value: Reference): this {
-    assertIsDefined<Reference>(value, `ImmunizationEvaluation.immunizationEvent is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.immunizationEvent = value;
+  public setImmunizationEvent(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.immunizationEvent = value;
+    } else {
+      this.immunizationEvent = null;
+    }
     return this;
   }
 
@@ -882,10 +886,10 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   }
 
   /**
-   * @returns the `doseStatus` property value as a CodeableConcept object if defined; else null
+   * @returns the `doseStatus` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getDoseStatus(): CodeableConcept | null {
-    return this.doseStatus;
+  public getDoseStatus(): CodeableConcept {
+    return this.doseStatus ?? new CodeableConcept();
   }
 
   /**
@@ -895,11 +899,14 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setDoseStatus(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `ImmunizationEvaluation.doseStatus is required`);
-    const optErrMsg = `Invalid ImmunizationEvaluation.doseStatus; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.doseStatus = value;
+  public setDoseStatus(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid ImmunizationEvaluation.doseStatus; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.doseStatus = value;
+    } else {
+      this.doseStatus = null;
+    }
     return this;
   }
 
@@ -1255,6 +1262,16 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.patient, this.targetDisease, this.immunizationEvent, this.doseStatus, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1292,15 +1309,14 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1310,14 +1326,13 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationEvaluation.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasPatient()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getPatient()!, 'patient', jsonObj);
+      setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationEvaluation.patient`);
+      jsonObj['patient'] = null;
     }
 
     if (this.hasDateElement()) {
@@ -1329,24 +1344,21 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
     }
 
     if (this.hasTargetDisease()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getTargetDisease()!, 'targetDisease', jsonObj);
+      setFhirComplexJson(this.getTargetDisease(), 'targetDisease', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationEvaluation.targetDisease`);
+      jsonObj['targetDisease'] = null;
     }
 
     if (this.hasImmunizationEvent()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getImmunizationEvent()!, 'immunizationEvent', jsonObj);
+      setFhirComplexJson(this.getImmunizationEvent(), 'immunizationEvent', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationEvaluation.immunizationEvent`);
+      jsonObj['immunizationEvent'] = null;
     }
 
     if (this.hasDoseStatus()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getDoseStatus()!, 'doseStatus', jsonObj);
+      setFhirComplexJson(this.getDoseStatus(), 'doseStatus', jsonObj);
     } else {
-      missingReqdProperties.push(`ImmunizationEvaluation.doseStatus`);
+      jsonObj['doseStatus'] = null;
     }
 
     if (this.hasDoseStatusReason()) {
@@ -1367,11 +1379,6 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
 
     if (this.hasSeriesDosesElement()) {
       setFhirPrimitiveJson<fhirString>(this.getSeriesDosesElement(), 'seriesDoses', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

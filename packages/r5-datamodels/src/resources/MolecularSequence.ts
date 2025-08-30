@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -45,17 +44,13 @@ import {
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -74,6 +69,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -118,7 +114,6 @@ export class MolecularSequence extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `MolecularSequence`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MolecularSequence
    * @returns MolecularSequence data model or undefined for `MolecularSequence`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MolecularSequence | undefined {
@@ -240,7 +235,6 @@ export class MolecularSequence extends DomainResource implements IDomainResource
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1132,7 +1126,6 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
    * @param sourceJson - JSON representing FHIR `MolecularSequenceRelativeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MolecularSequenceRelativeComponent
    * @returns MolecularSequenceRelativeComponent data model or undefined for `MolecularSequenceRelativeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MolecularSequenceRelativeComponent | undefined {
@@ -1151,20 +1144,18 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'coordinateSystem';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCoordinateSystem(null);
       } else {
         instance.setCoordinateSystem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCoordinateSystem(null);
     }
 
     fieldName = 'ordinalPosition';
@@ -1205,12 +1196,6 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1287,10 +1272,10 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `coordinateSystem` property value as a CodeableConcept object if defined; else null
+   * @returns the `coordinateSystem` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCoordinateSystem(): CodeableConcept | null {
-    return this.coordinateSystem;
+  public getCoordinateSystem(): CodeableConcept {
+    return this.coordinateSystem ?? new CodeableConcept();
   }
 
   /**
@@ -1300,11 +1285,14 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCoordinateSystem(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `MolecularSequence.relative.coordinateSystem is required`);
-    const optErrMsg = `Invalid MolecularSequence.relative.coordinateSystem; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.coordinateSystem = value;
+  public setCoordinateSystem(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid MolecularSequence.relative.coordinateSystem; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.coordinateSystem = value;
+    } else {
+      this.coordinateSystem = null;
+    }
     return this;
   }
 
@@ -1524,6 +1512,16 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.coordinateSystem, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1552,21 +1550,19 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCoordinateSystem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCoordinateSystem()!, 'coordinateSystem', jsonObj);
+      setFhirComplexJson(this.getCoordinateSystem(), 'coordinateSystem', jsonObj);
     } else {
-      missingReqdProperties.push(`MolecularSequence.relative.coordinateSystem`);
+      jsonObj['coordinateSystem'] = null;
     }
 
     if (this.hasOrdinalPositionElement()) {
@@ -1583,11 +1579,6 @@ export class MolecularSequenceRelativeComponent extends BackboneElement implemen
 
     if (this.hasEdit()) {
       setFhirBackboneElementListJson(this.getEdit(), 'edit', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1702,7 +1693,6 @@ export class MolecularSequenceRelativeStartingSequenceComponent extends Backbone
       instance.setStrandElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2538,7 +2528,6 @@ export class MolecularSequenceRelativeEditComponent extends BackboneElement impl
       instance.setReplacedSequenceElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

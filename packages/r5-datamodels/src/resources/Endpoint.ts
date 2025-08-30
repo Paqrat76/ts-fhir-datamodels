@@ -37,30 +37,23 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   PrimitiveType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UrlType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -75,6 +68,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -134,7 +128,6 @@ export class Endpoint extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Endpoint`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Endpoint
    * @returns Endpoint data model or undefined for `Endpoint`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Endpoint | undefined {
@@ -153,8 +146,6 @@ export class Endpoint extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -176,12 +167,12 @@ export class Endpoint extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'connectionType';
@@ -192,13 +183,13 @@ export class Endpoint extends DomainResource implements IDomainResource {
       dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
         const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
         if (datatype === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setConnectionType(null);
         } else {
           instance.addConnectionType(datatype);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setConnectionType(null);
     }
 
     fieldName = 'name';
@@ -281,12 +272,12 @@ export class Endpoint extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UrlType | undefined = fhirParser.parseUrlType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAddress(null);
       } else {
         instance.setAddressElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAddress(null);
     }
 
     fieldName = 'header';
@@ -307,12 +298,6 @@ export class Endpoint extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -583,11 +568,14 @@ export class Endpoint extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EndpointStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Endpoint.status is required`);
-    const errMsgPrefix = `Invalid Endpoint.status`;
-    assertEnumCodeType<EndpointStatusEnum>(enumType, EndpointStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Endpoint.status`;
+      assertEnumCodeType<EndpointStatusEnum>(enumType, EndpointStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -620,11 +608,14 @@ export class Endpoint extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EndpointStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Endpoint.status is required`);
-    const optErrMsg = `Invalid Endpoint.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.endpointStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Endpoint.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.endpointStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -657,10 +648,13 @@ export class Endpoint extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link EndpointStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Endpoint.status is required`);
-    const optErrMsg = `Invalid Endpoint.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.endpointStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Endpoint.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.endpointStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -685,11 +679,14 @@ export class Endpoint extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setConnectionType(value: CodeableConcept[]): this {
-    assertIsDefinedList<CodeableConcept>(value, `Endpoint.connectionType is required`);
-    const optErrMsg = `Invalid Endpoint.connectionType; Provided value array has an element that is not an instance of CodeableConcept.`;
-    assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.connectionType = value;
+  public setConnectionType(value: CodeableConcept[] | undefined | null): this {
+    if (isDefinedList<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Endpoint.connectionType; Provided value array has an element that is not an instance of CodeableConcept.`;
+      assertFhirTypeList<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.connectionType = value;
+    } else {
+      this.connectionType = null;
+    }
     return this;
   }
 
@@ -1097,10 +1094,10 @@ export class Endpoint extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `address` property value as a UrlType object if defined; else null
+   * @returns the `address` property value as a UrlType object if defined; else an empty UrlType object
    */
-  public getAddressElement(): UrlType | null {
-    return this.address;
+  public getAddressElement(): UrlType {
+    return this.address ?? new UrlType();
   }
 
   /**
@@ -1111,11 +1108,14 @@ export class Endpoint extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAddressElement(element: UrlType): this {
-    assertIsDefined<UrlType>(element, `Endpoint.address is required`);
-    const optErrMsg = `Invalid Endpoint.address; Provided value is not an instance of UrlType.`;
-    assertFhirType<UrlType>(element, UrlType, optErrMsg);
-    this.address = element;
+  public setAddressElement(element: UrlType | undefined | null): this {
+    if (isDefined<UrlType>(element)) {
+      const optErrMsg = `Invalid Endpoint.address; Provided value is not an instance of UrlType.`;
+      assertFhirType<UrlType>(element, UrlType, optErrMsg);
+      this.address = element;
+    } else {
+      this.address = null;
+    }
     return this;
   }
 
@@ -1144,10 +1144,13 @@ export class Endpoint extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setAddress(value: fhirUrl): this {
-    assertIsDefined<fhirUrl>(value, `Endpoint.address is required`);
-    const optErrMsg = `Invalid Endpoint.address (${String(value)})`;
-    this.address = new UrlType(parseFhirPrimitiveData(value, fhirUrlSchema, optErrMsg));
+  public setAddress(value: fhirUrl | undefined | null): this {
+    if (isDefined<fhirUrl>(value)) {
+      const optErrMsg = `Invalid Endpoint.address (${String(value)})`;
+      this.address = new UrlType(parseFhirPrimitiveData(value, fhirUrlSchema, optErrMsg));
+    } else {
+      this.address = null;
+    }
     return this;
   }
 
@@ -1310,6 +1313,16 @@ export class Endpoint extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.address, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1350,15 +1363,14 @@ export class Endpoint extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1368,13 +1380,13 @@ export class Endpoint extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Endpoint.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasConnectionType()) {
       setFhirComplexListJson(this.getConnectionType(), 'connectionType', jsonObj);
     } else {
-      missingReqdProperties.push(`Endpoint.connectionType`);
+      jsonObj['connectionType'] = null;
     }
 
     if (this.hasNameElement()) {
@@ -1406,19 +1418,13 @@ export class Endpoint extends DomainResource implements IDomainResource {
     }
 
     if (this.hasAddressElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUrl>(this.getAddressElement()!, 'address', jsonObj);
+      setFhirPrimitiveJson<fhirUrl>(this.getAddressElement(), 'address', jsonObj);
     } else {
-      missingReqdProperties.push(`Endpoint.address`);
+      jsonObj['address'] = null;
     }
 
     if (this.hasHeader()) {
       setFhirPrimitiveListJson(this.getHeaderElement(), 'header', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1498,7 +1504,6 @@ export class EndpointPayloadComponent extends BackboneElement implements IBackbo
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

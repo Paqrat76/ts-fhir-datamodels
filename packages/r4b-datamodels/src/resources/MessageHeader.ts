@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CanonicalType,
@@ -46,18 +45,14 @@ import {
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IdType,
   InvalidTypeError,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -83,6 +78,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -136,7 +132,6 @@ export class MessageHeader extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `MessageHeader`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageHeader
    * @returns MessageHeader data model or undefined for `MessageHeader`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MessageHeader | undefined {
@@ -160,8 +155,6 @@ export class MessageHeader extends DomainResource implements IDomainResource {
     const errorMessage = `DecoratorMetadataObject does not exist for MessageHeader`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'event[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const event: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -171,7 +164,7 @@ export class MessageHeader extends DomainResource implements IDomainResource {
       classMetadata,
     );
     if (event === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setEvent(null);
     } else {
       instance.setEvent(event);
     }
@@ -219,12 +212,12 @@ export class MessageHeader extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const component: MessageHeaderSourceComponent | undefined = MessageHeaderSourceComponent.parse(classJsonObj[fieldName]!, sourceField);
       if (component === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setSource(null);
       } else {
         instance.setSource(component);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setSource(null);
     }
 
     fieldName = 'responsible';
@@ -273,12 +266,6 @@ export class MessageHeader extends DomainResource implements IDomainResource {
       instance.setDefinitionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -504,10 +491,13 @@ export class MessageHeader extends DomainResource implements IDomainResource {
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('MessageHeader.event[x]')
-  public setEvent(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `MessageHeader.event[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.event = value;
+  public setEvent(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.event = value;
+    } else {
+      this.event = null;
+    }
     return this;
   }
 
@@ -742,10 +732,10 @@ export class MessageHeader extends DomainResource implements IDomainResource {
   }
 
   /**
-   * @returns the `source` property value as a MessageHeaderSourceComponent object if defined; else null
+   * @returns the `source` property value as a MessageHeaderSourceComponent object if defined; else an empty MessageHeaderSourceComponent object
    */
-  public getSource(): MessageHeaderSourceComponent | null {
-    return this.source;
+  public getSource(): MessageHeaderSourceComponent {
+    return this.source ?? new MessageHeaderSourceComponent();
   }
 
   /**
@@ -755,11 +745,14 @@ export class MessageHeader extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setSource(value: MessageHeaderSourceComponent): this {
-    assertIsDefined<MessageHeaderSourceComponent>(value, `MessageHeader.source is required`);
-    const optErrMsg = `Invalid MessageHeader.source; Provided element is not an instance of MessageHeaderSourceComponent.`;
-    assertFhirType<MessageHeaderSourceComponent>(value, MessageHeaderSourceComponent, optErrMsg);
-    this.source = value;
+  public setSource(value: MessageHeaderSourceComponent | undefined | null): this {
+    if (isDefined<MessageHeaderSourceComponent>(value)) {
+      const optErrMsg = `Invalid MessageHeader.source; Provided element is not an instance of MessageHeaderSourceComponent.`;
+      assertFhirType<MessageHeaderSourceComponent>(value, MessageHeaderSourceComponent, optErrMsg);
+      this.source = value;
+    } else {
+      this.source = null;
+    }
     return this;
   }
 
@@ -1033,6 +1026,16 @@ export class MessageHeader extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.event, this.source, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1068,21 +1071,20 @@ export class MessageHeader extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasEvent()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getEvent()!, 'event', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageHeader.event[x]`);
+      jsonObj['event'] = null;
     }
 
     if (this.hasDestination()) {
@@ -1102,10 +1104,9 @@ export class MessageHeader extends DomainResource implements IDomainResource {
     }
 
     if (this.hasSource()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirBackboneElementJson(this.getSource()!, 'source', jsonObj);
+      setFhirBackboneElementJson(this.getSource(), 'source', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageHeader.source`);
+      jsonObj['source'] = null;
     }
 
     if (this.hasResponsible()) {
@@ -1126,11 +1127,6 @@ export class MessageHeader extends DomainResource implements IDomainResource {
 
     if (this.hasDefinitionElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getDefinitionElement(), 'definition', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1170,7 +1166,6 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `MessageHeaderDestinationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageHeaderDestinationComponent
    * @returns MessageHeaderDestinationComponent data model or undefined for `MessageHeaderDestinationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MessageHeaderDestinationComponent | undefined {
@@ -1188,8 +1183,6 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -1215,12 +1208,12 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UrlType | undefined = fhirParser.parseUrlType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setEndpoint(null);
       } else {
         instance.setEndpointElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setEndpoint(null);
     }
 
     fieldName = 'receiver';
@@ -1231,12 +1224,6 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
       instance.setReceiver(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1412,10 +1399,10 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
   }
 
   /**
-   * @returns the `endpoint` property value as a UrlType object if defined; else null
+   * @returns the `endpoint` property value as a UrlType object if defined; else an empty UrlType object
    */
-  public getEndpointElement(): UrlType | null {
-    return this.endpoint;
+  public getEndpointElement(): UrlType {
+    return this.endpoint ?? new UrlType();
   }
 
   /**
@@ -1426,11 +1413,14 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEndpointElement(element: UrlType): this {
-    assertIsDefined<UrlType>(element, `MessageHeader.destination.endpoint is required`);
-    const optErrMsg = `Invalid MessageHeader.destination.endpoint; Provided value is not an instance of UrlType.`;
-    assertFhirType<UrlType>(element, UrlType, optErrMsg);
-    this.endpoint = element;
+  public setEndpointElement(element: UrlType | undefined | null): this {
+    if (isDefined<UrlType>(element)) {
+      const optErrMsg = `Invalid MessageHeader.destination.endpoint; Provided value is not an instance of UrlType.`;
+      assertFhirType<UrlType>(element, UrlType, optErrMsg);
+      this.endpoint = element;
+    } else {
+      this.endpoint = null;
+    }
     return this;
   }
 
@@ -1459,10 +1449,13 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEndpoint(value: fhirUrl): this {
-    assertIsDefined<fhirUrl>(value, `MessageHeader.destination.endpoint is required`);
-    const optErrMsg = `Invalid MessageHeader.destination.endpoint (${String(value)})`;
-    this.endpoint = new UrlType(parseFhirPrimitiveData(value, fhirUrlSchema, optErrMsg));
+  public setEndpoint(value: fhirUrl | undefined | null): this {
+    if (isDefined<fhirUrl>(value)) {
+      const optErrMsg = `Invalid MessageHeader.destination.endpoint (${String(value)})`;
+      this.endpoint = new UrlType(parseFhirPrimitiveData(value, fhirUrlSchema, optErrMsg));
+    } else {
+      this.endpoint = null;
+    }
     return this;
   }
 
@@ -1535,6 +1528,16 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.endpoint, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1561,15 +1564,14 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
@@ -1580,19 +1582,13 @@ export class MessageHeaderDestinationComponent extends BackboneElement implement
     }
 
     if (this.hasEndpointElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUrl>(this.getEndpointElement()!, 'endpoint', jsonObj);
+      setFhirPrimitiveJson<fhirUrl>(this.getEndpointElement(), 'endpoint', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageHeader.destination.endpoint`);
+      jsonObj['endpoint'] = null;
     }
 
     if (this.hasReceiver()) {
       setFhirComplexJson(this.getReceiver(), 'receiver', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1630,7 +1626,6 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
    * @param sourceJson - JSON representing FHIR `MessageHeaderSourceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageHeaderSourceComponent
    * @returns MessageHeaderSourceComponent data model or undefined for `MessageHeaderSourceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MessageHeaderSourceComponent | undefined {
@@ -1648,8 +1643,6 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'name';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -1693,20 +1686,14 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: UrlType | undefined = fhirParser.parseUrlType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setEndpoint(null);
       } else {
         instance.setEndpointElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setEndpoint(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2013,10 +2000,10 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
   }
 
   /**
-   * @returns the `endpoint` property value as a UrlType object if defined; else null
+   * @returns the `endpoint` property value as a UrlType object if defined; else an empty UrlType object
    */
-  public getEndpointElement(): UrlType | null {
-    return this.endpoint;
+  public getEndpointElement(): UrlType {
+    return this.endpoint ?? new UrlType();
   }
 
   /**
@@ -2027,11 +2014,14 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEndpointElement(element: UrlType): this {
-    assertIsDefined<UrlType>(element, `MessageHeader.source.endpoint is required`);
-    const optErrMsg = `Invalid MessageHeader.source.endpoint; Provided value is not an instance of UrlType.`;
-    assertFhirType<UrlType>(element, UrlType, optErrMsg);
-    this.endpoint = element;
+  public setEndpointElement(element: UrlType | undefined | null): this {
+    if (isDefined<UrlType>(element)) {
+      const optErrMsg = `Invalid MessageHeader.source.endpoint; Provided value is not an instance of UrlType.`;
+      assertFhirType<UrlType>(element, UrlType, optErrMsg);
+      this.endpoint = element;
+    } else {
+      this.endpoint = null;
+    }
     return this;
   }
 
@@ -2060,10 +2050,13 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setEndpoint(value: fhirUrl): this {
-    assertIsDefined<fhirUrl>(value, `MessageHeader.source.endpoint is required`);
-    const optErrMsg = `Invalid MessageHeader.source.endpoint (${String(value)})`;
-    this.endpoint = new UrlType(parseFhirPrimitiveData(value, fhirUrlSchema, optErrMsg));
+  public setEndpoint(value: fhirUrl | undefined | null): this {
+    if (isDefined<fhirUrl>(value)) {
+      const optErrMsg = `Invalid MessageHeader.source.endpoint (${String(value)})`;
+      this.endpoint = new UrlType(parseFhirPrimitiveData(value, fhirUrlSchema, optErrMsg));
+    } else {
+      this.endpoint = null;
+    }
     return this;
   }
 
@@ -2097,6 +2090,16 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.endpoint, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2124,15 +2127,14 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
@@ -2151,15 +2153,9 @@ export class MessageHeaderSourceComponent extends BackboneElement implements IBa
     }
 
     if (this.hasEndpointElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirUrl>(this.getEndpointElement()!, 'endpoint', jsonObj);
+      setFhirPrimitiveJson<fhirUrl>(this.getEndpointElement(), 'endpoint', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageHeader.source.endpoint`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['endpoint'] = null;
     }
 
     return jsonObj;
@@ -2205,7 +2201,6 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
    * @param sourceJson - JSON representing FHIR `MessageHeaderResponseComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MessageHeaderResponseComponent
    * @returns MessageHeaderResponseComponent data model or undefined for `MessageHeaderResponseComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): MessageHeaderResponseComponent | undefined {
@@ -2224,8 +2219,6 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2233,12 +2226,12 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: IdType | undefined = fhirParser.parseIdType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setIdentifier(null);
       } else {
         instance.setIdentifierElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setIdentifier(null);
     }
 
     fieldName = 'code';
@@ -2248,12 +2241,12 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'details';
@@ -2264,12 +2257,6 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
       instance.setDetails(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2335,10 +2322,10 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `identifier` property value as a IdType object if defined; else null
+   * @returns the `identifier` property value as a IdType object if defined; else an empty IdType object
    */
-  public getIdentifierElement(): IdType | null {
-    return this.identifier;
+  public getIdentifierElement(): IdType {
+    return this.identifier ?? new IdType();
   }
 
   /**
@@ -2349,11 +2336,14 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIdentifierElement(element: IdType): this {
-    assertIsDefined<IdType>(element, `MessageHeader.response.identifier is required`);
-    const optErrMsg = `Invalid MessageHeader.response.identifier; Provided value is not an instance of IdType.`;
-    assertFhirType<IdType>(element, IdType, optErrMsg);
-    this.identifier = element;
+  public setIdentifierElement(element: IdType | undefined | null): this {
+    if (isDefined<IdType>(element)) {
+      const optErrMsg = `Invalid MessageHeader.response.identifier; Provided value is not an instance of IdType.`;
+      assertFhirType<IdType>(element, IdType, optErrMsg);
+      this.identifier = element;
+    } else {
+      this.identifier = null;
+    }
     return this;
   }
 
@@ -2382,10 +2372,13 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setIdentifier(value: fhirId): this {
-    assertIsDefined<fhirId>(value, `MessageHeader.response.identifier is required`);
-    const optErrMsg = `Invalid MessageHeader.response.identifier (${String(value)})`;
-    this.identifier = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+  public setIdentifier(value: fhirId | undefined | null): this {
+    if (isDefined<fhirId>(value)) {
+      const optErrMsg = `Invalid MessageHeader.response.identifier (${String(value)})`;
+      this.identifier = new IdType(parseFhirPrimitiveData(value, fhirIdSchema, optErrMsg));
+    } else {
+      this.identifier = null;
+    }
     return this;
   }
 
@@ -2415,11 +2408,14 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link ResponseCodeEnum }
    */
-  public setCodeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `MessageHeader.response.code is required`);
-    const errMsgPrefix = `Invalid MessageHeader.response.code`;
-    assertEnumCodeType<ResponseCodeEnum>(enumType, ResponseCodeEnum, errMsgPrefix);
-    this.code = enumType;
+  public setCodeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid MessageHeader.response.code`;
+      assertEnumCodeType<ResponseCodeEnum>(enumType, ResponseCodeEnum, errMsgPrefix);
+      this.code = enumType;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2452,11 +2448,14 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link ResponseCodeEnum }
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `MessageHeader.response.code is required`);
-    const optErrMsg = `Invalid MessageHeader.response.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = new EnumCodeType(element, this.responseCodeEnum);
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid MessageHeader.response.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = new EnumCodeType(element, this.responseCodeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2489,10 +2488,13 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
    *
    * @see CodeSystem Enumeration: {@link ResponseCodeEnum }
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `MessageHeader.response.code is required`);
-    const optErrMsg = `Invalid MessageHeader.response.code (${String(value)})`;
-    this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.responseCodeEnum);
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid MessageHeader.response.code (${String(value)})`;
+      this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.responseCodeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -2560,6 +2562,16 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.identifier, this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2585,37 +2597,30 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasIdentifierElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirId>(this.getIdentifierElement()!, 'identifier', jsonObj);
+      setFhirPrimitiveJson<fhirId>(this.getIdentifierElement(), 'identifier', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageHeader.response.identifier`);
+      jsonObj['identifier'] = null;
     }
 
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`MessageHeader.response.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasDetails()) {
       setFhirComplexJson(this.getDetails(), 'details', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

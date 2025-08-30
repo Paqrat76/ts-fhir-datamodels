@@ -37,12 +37,10 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   DomainResource,
   FhirParser,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
   ReferenceTargets,
   assertFhirType,
@@ -84,7 +82,6 @@ export class MedicinalProductUndesirableEffect extends DomainResource implements
    * @param sourceJson - JSON representing FHIR `MedicinalProductUndesirableEffect`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to MedicinalProductUndesirableEffect
    * @returns MedicinalProductUndesirableEffect data model or undefined for `MedicinalProductUndesirableEffect`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): MedicinalProductUndesirableEffect | undefined {
@@ -153,7 +150,6 @@ export class MedicinalProductUndesirableEffect extends DomainResource implements
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

@@ -37,28 +37,21 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   CodeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InstantType,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -72,6 +65,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -126,7 +120,6 @@ export class DocumentReference extends DomainResource implements IDomainResource
    * @param sourceJson - JSON representing FHIR `DocumentReference`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DocumentReference
    * @returns DocumentReference data model or undefined for `DocumentReference`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): DocumentReference | undefined {
@@ -145,8 +138,6 @@ export class DocumentReference extends DomainResource implements IDomainResource
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'masterIdentifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -176,12 +167,12 @@ export class DocumentReference extends DomainResource implements IDomainResource
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'docStatus';
@@ -303,13 +294,13 @@ export class DocumentReference extends DomainResource implements IDomainResource
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: DocumentReferenceContentComponent | undefined = DocumentReferenceContentComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setContent(null);
         } else {
           instance.addContent(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContent(null);
     }
 
     fieldName = 'context';
@@ -320,12 +311,6 @@ export class DocumentReference extends DomainResource implements IDomainResource
       instance.setContext(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -721,11 +706,14 @@ export class DocumentReference extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link DocumentReferenceStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DocumentReference.status is required`);
-    const errMsgPrefix = `Invalid DocumentReference.status`;
-    assertEnumCodeType<DocumentReferenceStatusEnum>(enumType, DocumentReferenceStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DocumentReference.status`;
+      assertEnumCodeType<DocumentReferenceStatusEnum>(enumType, DocumentReferenceStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -758,11 +746,14 @@ export class DocumentReference extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link DocumentReferenceStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DocumentReference.status is required`);
-    const optErrMsg = `Invalid DocumentReference.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.documentReferenceStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DocumentReference.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.documentReferenceStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -795,10 +786,13 @@ export class DocumentReference extends DomainResource implements IDomainResource
    *
    * @see CodeSystem Enumeration: {@link DocumentReferenceStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DocumentReference.status is required`);
-    const optErrMsg = `Invalid DocumentReference.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.documentReferenceStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DocumentReference.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.documentReferenceStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1477,11 +1471,14 @@ export class DocumentReference extends DomainResource implements IDomainResource
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setContent(value: DocumentReferenceContentComponent[]): this {
-    assertIsDefinedList<DocumentReferenceContentComponent>(value, `DocumentReference.content is required`);
-    const optErrMsg = `Invalid DocumentReference.content; Provided value array has an element that is not an instance of DocumentReferenceContentComponent.`;
-    assertFhirTypeList<DocumentReferenceContentComponent>(value, DocumentReferenceContentComponent, optErrMsg);
-    this.content = value;
+  public setContent(value: DocumentReferenceContentComponent[] | undefined | null): this {
+    if (isDefinedList<DocumentReferenceContentComponent>(value)) {
+      const optErrMsg = `Invalid DocumentReference.content; Provided value array has an element that is not an instance of DocumentReferenceContentComponent.`;
+      assertFhirTypeList<DocumentReferenceContentComponent>(value, DocumentReferenceContentComponent, optErrMsg);
+      this.content = value;
+    } else {
+      this.content = null;
+    }
     return this;
   }
 
@@ -1584,6 +1581,16 @@ export class DocumentReference extends DomainResource implements IDomainResource
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1628,15 +1635,14 @@ export class DocumentReference extends DomainResource implements IDomainResource
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasMasterIdentifier()) {
       setFhirComplexJson(this.getMasterIdentifier(), 'masterIdentifier', jsonObj);
@@ -1650,7 +1656,7 @@ export class DocumentReference extends DomainResource implements IDomainResource
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`DocumentReference.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasDocStatusElement()) {
@@ -1701,16 +1707,11 @@ export class DocumentReference extends DomainResource implements IDomainResource
     if (this.hasContent()) {
       setFhirBackboneElementListJson(this.getContent(), 'content', jsonObj);
     } else {
-      missingReqdProperties.push(`DocumentReference.content`);
+      jsonObj['content'] = null;
     }
 
     if (this.hasContext()) {
       setFhirBackboneElementJson(this.getContext(), 'context', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1754,7 +1755,6 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `DocumentReferenceRelatesToComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DocumentReferenceRelatesToComponent
    * @returns DocumentReferenceRelatesToComponent data model or undefined for `DocumentReferenceRelatesToComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DocumentReferenceRelatesToComponent | undefined {
@@ -1773,8 +1773,6 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
@@ -1782,12 +1780,12 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCodeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'target';
@@ -1796,20 +1794,14 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTarget(null);
       } else {
         instance.setTarget(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTarget(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1875,11 +1867,14 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link DocumentRelationshipTypeEnum }
    */
-  public setCodeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `DocumentReference.relatesTo.code is required`);
-    const errMsgPrefix = `Invalid DocumentReference.relatesTo.code`;
-    assertEnumCodeType<DocumentRelationshipTypeEnum>(enumType, DocumentRelationshipTypeEnum, errMsgPrefix);
-    this.code = enumType;
+  public setCodeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid DocumentReference.relatesTo.code`;
+      assertEnumCodeType<DocumentRelationshipTypeEnum>(enumType, DocumentRelationshipTypeEnum, errMsgPrefix);
+      this.code = enumType;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1912,11 +1907,14 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link DocumentRelationshipTypeEnum }
    */
-  public setCodeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `DocumentReference.relatesTo.code is required`);
-    const optErrMsg = `Invalid DocumentReference.relatesTo.code; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.code = new EnumCodeType(element, this.documentRelationshipTypeEnum);
+  public setCodeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid DocumentReference.relatesTo.code; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.code = new EnumCodeType(element, this.documentRelationshipTypeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1949,10 +1947,13 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
    *
    * @see CodeSystem Enumeration: {@link DocumentRelationshipTypeEnum }
    */
-  public setCode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `DocumentReference.relatesTo.code is required`);
-    const optErrMsg = `Invalid DocumentReference.relatesTo.code (${String(value)})`;
-    this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.documentRelationshipTypeEnum);
+  public setCode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid DocumentReference.relatesTo.code (${String(value)})`;
+      this.code = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.documentRelationshipTypeEnum);
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -1964,10 +1965,10 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `target` property value as a Reference object if defined; else null
+   * @returns the `target` property value as a Reference object if defined; else an empty Reference object
    */
-  public getTarget(): Reference | null {
-    return this.target;
+  public getTarget(): Reference {
+    return this.target ?? new Reference();
   }
 
   /**
@@ -1982,10 +1983,13 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
   @ReferenceTargets('DocumentReference.relatesTo.target', [
     'DocumentReference',
   ])
-  public setTarget(value: Reference): this {
-    assertIsDefined<Reference>(value, `DocumentReference.relatesTo.target is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.target = value;
+  public setTarget(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.target = value;
+    } else {
+      this.target = null;
+    }
     return this;
   }
 
@@ -2016,6 +2020,16 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, this.target, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2040,33 +2054,26 @@ export class DocumentReferenceRelatesToComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`DocumentReference.relatesTo.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasTarget()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getTarget()!, 'target', jsonObj);
+      setFhirComplexJson(this.getTarget(), 'target', jsonObj);
     } else {
-      missingReqdProperties.push(`DocumentReference.relatesTo.target`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['target'] = null;
     }
 
     return jsonObj;
@@ -2099,7 +2106,6 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `DocumentReferenceContentComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to DocumentReferenceContentComponent
    * @returns DocumentReferenceContentComponent data model or undefined for `DocumentReferenceContentComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): DocumentReferenceContentComponent | undefined {
@@ -2117,20 +2123,18 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'attachment';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Attachment | undefined = Attachment.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAttachment(null);
       } else {
         instance.setAttachment(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAttachment(null);
     }
 
     fieldName = 'format';
@@ -2141,12 +2145,6 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
       instance.setFormat(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2182,10 +2180,10 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `attachment` property value as a Attachment object if defined; else null
+   * @returns the `attachment` property value as a Attachment object if defined; else an empty Attachment object
    */
-  public getAttachment(): Attachment | null {
-    return this.attachment;
+  public getAttachment(): Attachment {
+    return this.attachment ?? new Attachment();
   }
 
   /**
@@ -2195,11 +2193,14 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAttachment(value: Attachment): this {
-    assertIsDefined<Attachment>(value, `DocumentReference.content.attachment is required`);
-    const optErrMsg = `Invalid DocumentReference.content.attachment; Provided element is not an instance of Attachment.`;
-    assertFhirType<Attachment>(value, Attachment, optErrMsg);
-    this.attachment = value;
+  public setAttachment(value: Attachment | undefined | null): this {
+    if (isDefined<Attachment>(value)) {
+      const optErrMsg = `Invalid DocumentReference.content.attachment; Provided element is not an instance of Attachment.`;
+      assertFhirType<Attachment>(value, Attachment, optErrMsg);
+      this.attachment = value;
+    } else {
+      this.attachment = null;
+    }
     return this;
   }
 
@@ -2262,6 +2263,16 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.attachment, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2286,30 +2297,23 @@ export class DocumentReferenceContentComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAttachment()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getAttachment()!, 'attachment', jsonObj);
+      setFhirComplexJson(this.getAttachment(), 'attachment', jsonObj);
     } else {
-      missingReqdProperties.push(`DocumentReference.content.attachment`);
+      jsonObj['attachment'] = null;
     }
 
     if (this.hasFormat()) {
       setFhirComplexJson(this.getFormat(), 'format', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2427,7 +2431,6 @@ export class DocumentReferenceContextComponent extends BackboneElement implement
       });
   }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

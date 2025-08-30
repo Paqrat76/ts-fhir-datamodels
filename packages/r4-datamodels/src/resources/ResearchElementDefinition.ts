@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,25 +48,20 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -92,6 +86,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -161,7 +156,6 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    * @param sourceJson - JSON representing FHIR `ResearchElementDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ResearchElementDefinition
    * @returns ResearchElementDefinition data model or undefined for `ResearchElementDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ResearchElementDefinition | undefined {
@@ -184,8 +178,6 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
     const classMetadata: DecoratorMetadataObject | null = ResearchElementDefinition[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ResearchElementDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -261,12 +253,12 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -528,12 +520,12 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'variableType';
@@ -553,21 +545,15 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: ResearchElementDefinitionCharacteristicComponent | undefined = ResearchElementDefinitionCharacteristicComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setCharacteristic(null);
         } else {
           instance.addCharacteristic(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCharacteristic(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1567,11 +1553,14 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ResearchElementDefinition.status is required`);
-    const errMsgPrefix = `Invalid ResearchElementDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ResearchElementDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1604,11 +1593,14 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ResearchElementDefinition.status is required`);
-    const optErrMsg = `Invalid ResearchElementDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ResearchElementDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1641,10 +1633,13 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ResearchElementDefinition.status is required`);
-    const optErrMsg = `Invalid ResearchElementDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ResearchElementDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -3131,11 +3126,14 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    *
    * @see CodeSystem Enumeration: {@link ResearchElementTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ResearchElementDefinition.type is required`);
-    const errMsgPrefix = `Invalid ResearchElementDefinition.type`;
-    assertEnumCodeType<ResearchElementTypeEnum>(enumType, ResearchElementTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ResearchElementDefinition.type`;
+      assertEnumCodeType<ResearchElementTypeEnum>(enumType, ResearchElementTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3168,11 +3166,14 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    *
    * @see CodeSystem Enumeration: {@link ResearchElementTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ResearchElementDefinition.type is required`);
-    const optErrMsg = `Invalid ResearchElementDefinition.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.researchElementTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ResearchElementDefinition.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.researchElementTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3205,10 +3206,13 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    *
    * @see CodeSystem Enumeration: {@link ResearchElementTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ResearchElementDefinition.type is required`);
-    const optErrMsg = `Invalid ResearchElementDefinition.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.researchElementTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ResearchElementDefinition.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.researchElementTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -3349,11 +3353,14 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCharacteristic(value: ResearchElementDefinitionCharacteristicComponent[]): this {
-    assertIsDefinedList<ResearchElementDefinitionCharacteristicComponent>(value, `ResearchElementDefinition.characteristic is required`);
-    const optErrMsg = `Invalid ResearchElementDefinition.characteristic; Provided value array has an element that is not an instance of ResearchElementDefinitionCharacteristicComponent.`;
-    assertFhirTypeList<ResearchElementDefinitionCharacteristicComponent>(value, ResearchElementDefinitionCharacteristicComponent, optErrMsg);
-    this.characteristic = value;
+  public setCharacteristic(value: ResearchElementDefinitionCharacteristicComponent[] | undefined | null): this {
+    if (isDefinedList<ResearchElementDefinitionCharacteristicComponent>(value)) {
+      const optErrMsg = `Invalid ResearchElementDefinition.characteristic; Provided value array has an element that is not an instance of ResearchElementDefinitionCharacteristicComponent.`;
+      assertFhirTypeList<ResearchElementDefinitionCharacteristicComponent>(value, ResearchElementDefinitionCharacteristicComponent, optErrMsg);
+      this.characteristic = value;
+    } else {
+      this.characteristic = null;
+    }
     return this;
   }
 
@@ -3441,6 +3448,16 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.type_, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3509,15 +3526,14 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -3551,7 +3567,7 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ResearchElementDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -3647,7 +3663,7 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ResearchElementDefinition.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasVariableTypeElement()) {
@@ -3658,12 +3674,7 @@ export class ResearchElementDefinition extends DomainResource implements IDomain
     if (this.hasCharacteristic()) {
       setFhirBackboneElementListJson(this.getCharacteristic(), 'characteristic', jsonObj);
     } else {
-      missingReqdProperties.push(`ResearchElementDefinition.characteristic`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['characteristic'] = null;
     }
 
     return jsonObj;
@@ -3701,7 +3712,6 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
    * @param sourceJson - JSON representing FHIR `ResearchElementDefinitionCharacteristicComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ResearchElementDefinitionCharacteristicComponent
    * @returns ResearchElementDefinitionCharacteristicComponent data model or undefined for `ResearchElementDefinitionCharacteristicComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ResearchElementDefinitionCharacteristicComponent | undefined {
@@ -3724,8 +3734,6 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
     const errorMessage = `DecoratorMetadataObject does not exist for ResearchElementDefinitionCharacteristicComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'definition[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const definition: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -3735,7 +3743,7 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
       classMetadata,
     );
     if (definition === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setDefinition(null);
     } else {
       instance.setDefinition(definition);
     }
@@ -3842,12 +3850,6 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
       instance.setParticipantEffectiveGroupMeasureElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4087,10 +4089,13 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('ResearchElementDefinition.characteristic.definition[x]')
-  public setDefinition(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `ResearchElementDefinition.characteristic.definition[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.definition = value;
+  public setDefinition(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.definition = value;
+    } else {
+      this.definition = null;
+    }
     return this;
   }
 
@@ -5056,6 +5061,16 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.definition, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5091,21 +5106,20 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasDefinition()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getDefinition()!, 'definition', jsonObj);
     } else {
-      missingReqdProperties.push(`ResearchElementDefinition.characteristic.definition[x]`);
+      jsonObj['definition'] = null;
     }
 
     if (this.hasUsageContext()) {
@@ -5154,11 +5168,6 @@ export class ResearchElementDefinitionCharacteristicComponent extends BackboneEl
     if (this.hasParticipantEffectiveGroupMeasureElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getParticipantEffectiveGroupMeasureElement()!, 'participantEffectiveGroupMeasure', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

@@ -37,22 +37,16 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   Base64BinaryType,
   CodeType,
-  FhirError,
   FhirParser,
-  INSTANCE_EMPTY_ERROR_MSG,
   IResource,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   Resource,
   assertFhirType,
-  assertIsDefined,
   fhirBase64Binary,
   fhirBase64BinarySchema,
   fhirCode,
@@ -61,6 +55,7 @@ import {
   isDefined,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirComplexJson,
   setFhirPrimitiveJson,
@@ -105,7 +100,6 @@ export class Binary extends Resource implements IResource {
    * @param sourceJson - JSON representing FHIR `Binary`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Binary
    * @returns Binary data model or undefined for `Binary`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Binary | undefined {
@@ -125,8 +119,6 @@ export class Binary extends Resource implements IResource {
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'contentType';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -134,12 +126,12 @@ export class Binary extends Resource implements IResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setContentType(null);
       } else {
         instance.setContentTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setContentType(null);
     }
 
     fieldName = 'securityContext';
@@ -159,12 +151,6 @@ export class Binary extends Resource implements IResource {
       instance.setDataElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -218,10 +204,10 @@ export class Binary extends Resource implements IResource {
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `contentType` property value as a CodeType object if defined; else null
+   * @returns the `contentType` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getContentTypeElement(): CodeType | null {
-    return this.contentType;
+  public getContentTypeElement(): CodeType {
+    return this.contentType ?? new CodeType();
   }
 
   /**
@@ -232,11 +218,14 @@ export class Binary extends Resource implements IResource {
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setContentTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Binary.contentType is required`);
-    const optErrMsg = `Invalid Binary.contentType; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.contentType = element;
+  public setContentTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Binary.contentType; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.contentType = element;
+    } else {
+      this.contentType = null;
+    }
     return this;
   }
 
@@ -265,10 +254,13 @@ export class Binary extends Resource implements IResource {
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setContentType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Binary.contentType is required`);
-    const optErrMsg = `Invalid Binary.contentType (${String(value)})`;
-    this.contentType = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setContentType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Binary.contentType (${String(value)})`;
+      this.contentType = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.contentType = null;
+    }
     return this;
   }
 
@@ -400,6 +392,16 @@ export class Binary extends Resource implements IResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.contentType, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -425,21 +427,19 @@ export class Binary extends Resource implements IResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasContentTypeElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getContentTypeElement()!, 'contentType', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getContentTypeElement(), 'contentType', jsonObj);
     } else {
-      missingReqdProperties.push(`Binary.contentType`);
+      jsonObj['contentType'] = null;
     }
 
     if (this.hasSecurityContext()) {
@@ -448,11 +448,6 @@ export class Binary extends Resource implements IResource {
 
     if (this.hasDataElement()) {
       setFhirPrimitiveJson<fhirBase64Binary>(this.getDataElement(), 'data', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

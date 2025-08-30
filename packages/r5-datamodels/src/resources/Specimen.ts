@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -46,17 +45,13 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
@@ -75,6 +70,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -119,7 +115,6 @@ export class Specimen extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Specimen`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Specimen
    * @returns Specimen data model or undefined for `Specimen`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Specimen | undefined {
@@ -315,7 +310,6 @@ export class Specimen extends DomainResource implements IDomainResource {
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1757,7 +1751,6 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
    * @param sourceJson - JSON representing FHIR `SpecimenFeatureComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SpecimenFeatureComponent
    * @returns SpecimenFeatureComponent data model or undefined for `SpecimenFeatureComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SpecimenFeatureComponent | undefined {
@@ -1776,20 +1769,18 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'description';
@@ -1799,20 +1790,14 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDescription(null);
       } else {
         instance.setDescriptionElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDescription(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1847,10 +1832,10 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `type_` property value as a CodeableConcept object if defined; else null
+   * @returns the `type_` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getType(): CodeableConcept | null {
-    return this.type_;
+  public getType(): CodeableConcept {
+    return this.type_ ?? new CodeableConcept();
   }
 
   /**
@@ -1860,11 +1845,14 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Specimen.feature.type is required`);
-    const optErrMsg = `Invalid Specimen.feature.type; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.type_ = value;
+  public setType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Specimen.feature.type; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.type_ = value;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -1876,10 +1864,10 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
   }
 
   /**
-   * @returns the `description` property value as a StringType object if defined; else null
+   * @returns the `description` property value as a StringType object if defined; else an empty StringType object
    */
-  public getDescriptionElement(): StringType | null {
-    return this.description;
+  public getDescriptionElement(): StringType {
+    return this.description ?? new StringType();
   }
 
   /**
@@ -1890,11 +1878,14 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDescriptionElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `Specimen.feature.description is required`);
-    const optErrMsg = `Invalid Specimen.feature.description; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.description = element;
+  public setDescriptionElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid Specimen.feature.description; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.description = element;
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -1923,10 +1914,13 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setDescription(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `Specimen.feature.description is required`);
-    const optErrMsg = `Invalid Specimen.feature.description (${String(value)})`;
-    this.description = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setDescription(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid Specimen.feature.description (${String(value)})`;
+      this.description = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.description = null;
+    }
     return this;
   }
 
@@ -1957,6 +1951,16 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.type_, this.description, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1981,33 +1985,25 @@ export class SpecimenFeatureComponent extends BackboneElement implements IBackbo
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getType()!, 'type', jsonObj);
+      setFhirComplexJson(this.getType(), 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`Specimen.feature.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasDescriptionElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getDescriptionElement()!, 'description', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
     } else {
-      missingReqdProperties.push(`Specimen.feature.description`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['description'] = null;
     }
 
     return jsonObj;
@@ -2133,7 +2129,6 @@ export class SpecimenCollectionComponent extends BackboneElement implements IBac
     );
     instance.setFastingStatus(fastingStatus);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2896,7 +2891,6 @@ export class SpecimenProcessingComponent extends BackboneElement implements IBac
     );
     instance.setTime(time);
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3319,7 +3313,6 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `SpecimenContainerComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SpecimenContainerComponent
    * @returns SpecimenContainerComponent data model or undefined for `SpecimenContainerComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SpecimenContainerComponent | undefined {
@@ -3337,20 +3330,18 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'device';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setDevice(null);
       } else {
         instance.setDevice(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setDevice(null);
     }
 
     fieldName = 'location';
@@ -3369,12 +3360,6 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
       instance.setSpecimenQuantity(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3429,10 +3414,10 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `device` property value as a Reference object if defined; else null
+   * @returns the `device` property value as a Reference object if defined; else an empty Reference object
    */
-  public getDevice(): Reference | null {
-    return this.device;
+  public getDevice(): Reference {
+    return this.device ?? new Reference();
   }
 
   /**
@@ -3447,10 +3432,13 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
   @ReferenceTargets('Specimen.container.device', [
     'Device',
   ])
-  public setDevice(value: Reference): this {
-    assertIsDefined<Reference>(value, `Specimen.container.device is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.device = value;
+  public setDevice(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.device = value;
+    } else {
+      this.device = null;
+    }
     return this;
   }
 
@@ -3550,6 +3538,16 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.device, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3575,21 +3573,19 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasDevice()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getDevice()!, 'device', jsonObj);
+      setFhirComplexJson(this.getDevice(), 'device', jsonObj);
     } else {
-      missingReqdProperties.push(`Specimen.container.device`);
+      jsonObj['device'] = null;
     }
 
     if (this.hasLocation()) {
@@ -3598,11 +3594,6 @@ export class SpecimenContainerComponent extends BackboneElement implements IBack
 
     if (this.hasSpecimenQuantity()) {
       setFhirComplexJson(this.getSpecimenQuantity(), 'specimenQuantity', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;

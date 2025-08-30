@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   ChoiceDataTypes,
@@ -48,17 +47,13 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UnsignedIntType,
@@ -67,7 +62,6 @@ import {
   assertFhirType,
   assertFhirTypeList,
   assertIsDefined,
-  assertIsDefinedList,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirCode,
@@ -91,6 +85,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -146,7 +141,6 @@ export class Evidence extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `Evidence`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to Evidence
    * @returns Evidence data model or undefined for `Evidence`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): Evidence | undefined {
@@ -169,8 +163,6 @@ export class Evidence extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = Evidence[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for Evidence`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -229,12 +221,12 @@ export class Evidence extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'date';
@@ -403,13 +395,13 @@ export class Evidence extends DomainResource implements IDomainResource {
       componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
         const component: EvidenceVariableDefinitionComponent | undefined = EvidenceVariableDefinitionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
         if (component === undefined) {
-          missingReqdProperties.push(`${sourceField}[${String(idx)}]`);
+          instance.setVariableDefinition(null);
         } else {
           instance.addVariableDefinition(component);
         }
       });
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setVariableDefinition(null);
     }
 
     fieldName = 'synthesisType';
@@ -454,12 +446,6 @@ export class Evidence extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1206,11 +1192,14 @@ export class Evidence extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `Evidence.status is required`);
-    const errMsgPrefix = `Invalid Evidence.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid Evidence.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1243,11 +1232,14 @@ export class Evidence extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `Evidence.status is required`);
-    const optErrMsg = `Invalid Evidence.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid Evidence.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1280,10 +1272,13 @@ export class Evidence extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `Evidence.status is required`);
-    const optErrMsg = `Invalid Evidence.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid Evidence.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2156,11 +2151,14 @@ export class Evidence extends DomainResource implements IDomainResource {
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setVariableDefinition(value: EvidenceVariableDefinitionComponent[]): this {
-    assertIsDefinedList<EvidenceVariableDefinitionComponent>(value, `Evidence.variableDefinition is required`);
-    const optErrMsg = `Invalid Evidence.variableDefinition; Provided value array has an element that is not an instance of EvidenceVariableDefinitionComponent.`;
-    assertFhirTypeList<EvidenceVariableDefinitionComponent>(value, EvidenceVariableDefinitionComponent, optErrMsg);
-    this.variableDefinition = value;
+  public setVariableDefinition(value: EvidenceVariableDefinitionComponent[] | undefined | null): this {
+    if (isDefinedList<EvidenceVariableDefinitionComponent>(value)) {
+      const optErrMsg = `Invalid Evidence.variableDefinition; Provided value array has an element that is not an instance of EvidenceVariableDefinitionComponent.`;
+      assertFhirTypeList<EvidenceVariableDefinitionComponent>(value, EvidenceVariableDefinitionComponent, optErrMsg);
+      this.variableDefinition = value;
+    } else {
+      this.variableDefinition = null;
+    }
     return this;
   }
 
@@ -2420,6 +2418,16 @@ export class Evidence extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2479,15 +2487,14 @@ export class Evidence extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2514,7 +2521,7 @@ export class Evidence extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`Evidence.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasDateElement()) {
@@ -2576,7 +2583,7 @@ export class Evidence extends DomainResource implements IDomainResource {
     if (this.hasVariableDefinition()) {
       setFhirBackboneElementListJson(this.getVariableDefinition(), 'variableDefinition', jsonObj);
     } else {
-      missingReqdProperties.push(`Evidence.variableDefinition`);
+      jsonObj['variableDefinition'] = null;
     }
 
     if (this.hasSynthesisType()) {
@@ -2593,11 +2600,6 @@ export class Evidence extends DomainResource implements IDomainResource {
 
     if (this.hasCertainty()) {
       setFhirBackboneElementListJson(this.getCertainty(), 'certainty', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2631,7 +2633,6 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
    * @param sourceJson - JSON representing FHIR `EvidenceVariableDefinitionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EvidenceVariableDefinitionComponent
    * @returns EvidenceVariableDefinitionComponent data model or undefined for `EvidenceVariableDefinitionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): EvidenceVariableDefinitionComponent | undefined {
@@ -2649,8 +2650,6 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'description';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -2680,12 +2679,12 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setVariableRole(null);
       } else {
         instance.setVariableRole(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setVariableRole(null);
     }
 
     fieldName = 'observed';
@@ -2712,12 +2711,6 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
       instance.setDirectnessMatch(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2938,10 +2931,10 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
   }
 
   /**
-   * @returns the `variableRole` property value as a CodeableConcept object if defined; else null
+   * @returns the `variableRole` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getVariableRole(): CodeableConcept | null {
-    return this.variableRole;
+  public getVariableRole(): CodeableConcept {
+    return this.variableRole ?? new CodeableConcept();
   }
 
   /**
@@ -2951,11 +2944,14 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setVariableRole(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Evidence.variableDefinition.variableRole is required`);
-    const optErrMsg = `Invalid Evidence.variableDefinition.variableRole; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.variableRole = value;
+  public setVariableRole(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Evidence.variableDefinition.variableRole; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.variableRole = value;
+    } else {
+      this.variableRole = null;
+    }
     return this;
   }
 
@@ -3098,6 +3094,16 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.variableRole, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3127,15 +3133,14 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getDescriptionElement(), 'description', jsonObj);
@@ -3146,10 +3151,9 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
     }
 
     if (this.hasVariableRole()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getVariableRole()!, 'variableRole', jsonObj);
+      setFhirComplexJson(this.getVariableRole(), 'variableRole', jsonObj);
     } else {
-      missingReqdProperties.push(`Evidence.variableDefinition.variableRole`);
+      jsonObj['variableRole'] = null;
     }
 
     if (this.hasObserved()) {
@@ -3162,11 +3166,6 @@ export class EvidenceVariableDefinitionComponent extends BackboneElement impleme
 
     if (this.hasDirectnessMatch()) {
       setFhirComplexJson(this.getDirectnessMatch(), 'directnessMatch', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3311,7 +3310,6 @@ export class EvidenceStatisticComponent extends BackboneElement implements IBack
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4159,7 +4157,6 @@ export class EvidenceStatisticSampleSizeComponent extends BackboneElement implem
       instance.setKnownDataCountElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4741,7 +4738,6 @@ export class EvidenceStatisticAttributeEstimateComponent extends BackboneElement
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5310,7 +5306,6 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `EvidenceStatisticModelCharacteristicComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EvidenceStatisticModelCharacteristicComponent
    * @returns EvidenceStatisticModelCharacteristicComponent data model or undefined for `EvidenceStatisticModelCharacteristicComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): EvidenceStatisticModelCharacteristicComponent | undefined {
@@ -5328,20 +5323,18 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'code';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCode(null);
       } else {
         instance.setCode(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCode(null);
     }
 
     fieldName = 'value';
@@ -5378,12 +5371,6 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5446,10 +5433,10 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `code` property value as a CodeableConcept object if defined; else null
+   * @returns the `code` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCode(): CodeableConcept | null {
-    return this.code;
+  public getCode(): CodeableConcept {
+    return this.code ?? new CodeableConcept();
   }
 
   /**
@@ -5459,11 +5446,14 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCode(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `Evidence.statistic.modelCharacteristic.code is required`);
-    const optErrMsg = `Invalid Evidence.statistic.modelCharacteristic.code; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.code = value;
+  public setCode(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid Evidence.statistic.modelCharacteristic.code; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.code = value;
+    } else {
+      this.code = null;
+    }
     return this;
   }
 
@@ -5644,6 +5634,16 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.code, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5672,21 +5672,19 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCode()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCode()!, 'code', jsonObj);
+      setFhirComplexJson(this.getCode(), 'code', jsonObj);
     } else {
-      missingReqdProperties.push(`Evidence.statistic.modelCharacteristic.code`);
+      jsonObj['code'] = null;
     }
 
     if (this.hasValue()) {
@@ -5699,11 +5697,6 @@ export class EvidenceStatisticModelCharacteristicComponent extends BackboneEleme
 
     if (this.hasAttributeEstimate()) {
       setFhirBackboneElementListJson(this.getAttributeEstimate(), 'attributeEstimate', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5738,7 +5731,6 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
    * @param sourceJson - JSON representing FHIR `EvidenceStatisticModelCharacteristicVariableComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to EvidenceStatisticModelCharacteristicVariableComponent
    * @returns EvidenceStatisticModelCharacteristicVariableComponent data model or undefined for `EvidenceStatisticModelCharacteristicVariableComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): EvidenceStatisticModelCharacteristicVariableComponent | undefined {
@@ -5757,20 +5749,18 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
     let sourceField = '';
     
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'variableDefinition';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setVariableDefinition(null);
       } else {
         instance.setVariableDefinition(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setVariableDefinition(null);
     }
 
     fieldName = 'handling';
@@ -5821,12 +5811,6 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5916,10 +5900,10 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `variableDefinition` property value as a Reference object if defined; else null
+   * @returns the `variableDefinition` property value as a Reference object if defined; else an empty Reference object
    */
-  public getVariableDefinition(): Reference | null {
-    return this.variableDefinition;
+  public getVariableDefinition(): Reference {
+    return this.variableDefinition ?? new Reference();
   }
 
   /**
@@ -5936,10 +5920,13 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
   
     'EvidenceVariable',
   ])
-  public setVariableDefinition(value: Reference): this {
-    assertIsDefined<Reference>(value, `Evidence.statistic.modelCharacteristic.variable.variableDefinition is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.variableDefinition = value;
+  public setVariableDefinition(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.variableDefinition = value;
+    } else {
+      this.variableDefinition = null;
+    }
     return this;
   }
 
@@ -6263,6 +6250,16 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.variableDefinition, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6293,21 +6290,19 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasVariableDefinition()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getVariableDefinition()!, 'variableDefinition', jsonObj);
+      setFhirComplexJson(this.getVariableDefinition(), 'variableDefinition', jsonObj);
     } else {
-      missingReqdProperties.push(`Evidence.statistic.modelCharacteristic.variable.variableDefinition`);
+      jsonObj['variableDefinition'] = null;
     }
 
     if (this.hasHandlingElement()) {
@@ -6325,11 +6320,6 @@ export class EvidenceStatisticModelCharacteristicVariableComponent extends Backb
 
     if (this.hasValueRange()) {
       setFhirComplexListJson(this.getValueRange(), 'valueRange', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6436,7 +6426,6 @@ export class EvidenceCertaintyComponent extends BackboneElement implements IBack
       });
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

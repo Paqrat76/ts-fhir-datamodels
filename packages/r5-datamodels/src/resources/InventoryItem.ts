@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,18 +47,14 @@ import {
   DecimalType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   IntegerType,
   InvalidTypeError,
   JSON,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UrlType,
@@ -80,6 +75,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -129,7 +125,6 @@ export class InventoryItem extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `InventoryItem`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryItem
    * @returns InventoryItem data model or undefined for `InventoryItem`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): InventoryItem | undefined {
@@ -148,8 +143,6 @@ export class InventoryItem extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -171,12 +164,12 @@ export class InventoryItem extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'category';
@@ -310,12 +303,6 @@ export class InventoryItem extends DomainResource implements IDomainResource {
       instance.setProductReference(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -609,11 +596,14 @@ export class InventoryItem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryitemStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `InventoryItem.status is required`);
-    const errMsgPrefix = `Invalid InventoryItem.status`;
-    assertEnumCodeType<InventoryitemStatusEnum>(enumType, InventoryitemStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid InventoryItem.status`;
+      assertEnumCodeType<InventoryitemStatusEnum>(enumType, InventoryitemStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -646,11 +636,14 @@ export class InventoryItem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryitemStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `InventoryItem.status is required`);
-    const optErrMsg = `Invalid InventoryItem.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.inventoryitemStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid InventoryItem.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.inventoryitemStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -683,10 +676,13 @@ export class InventoryItem extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link InventoryitemStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `InventoryItem.status is required`);
-    const optErrMsg = `Invalid InventoryItem.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.inventoryitemStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid InventoryItem.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.inventoryitemStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1305,6 +1301,16 @@ export class InventoryItem extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1349,15 +1355,14 @@ export class InventoryItem extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1367,7 +1372,7 @@ export class InventoryItem extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasCategory()) {
@@ -1416,11 +1421,6 @@ export class InventoryItem extends DomainResource implements IDomainResource {
 
     if (this.hasProductReference()) {
       setFhirComplexJson(this.getProductReference(), 'productReference', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -1472,7 +1472,6 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
    * @param sourceJson - JSON representing FHIR `InventoryItemNameComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryItemNameComponent
    * @returns InventoryItemNameComponent data model or undefined for `InventoryItemNameComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InventoryItemNameComponent | undefined {
@@ -1491,20 +1490,18 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'nameType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setNameType(null);
       } else {
         instance.setNameType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setNameType(null);
     }
 
     fieldName = 'language';
@@ -1514,12 +1511,12 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setLanguage(null);
       } else {
         instance.setLanguageElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setLanguage(null);
     }
 
     fieldName = 'name';
@@ -1529,20 +1526,14 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setName(null);
       } else {
         instance.setNameElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setName(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1591,10 +1582,10 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `nameType` property value as a Coding object if defined; else null
+   * @returns the `nameType` property value as a Coding object if defined; else an empty Coding object
    */
-  public getNameType(): Coding | null {
-    return this.nameType;
+  public getNameType(): Coding {
+    return this.nameType ?? new Coding();
   }
 
   /**
@@ -1604,11 +1595,14 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setNameType(value: Coding): this {
-    assertIsDefined<Coding>(value, `InventoryItem.name.nameType is required`);
-    const optErrMsg = `Invalid InventoryItem.name.nameType; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.nameType = value;
+  public setNameType(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid InventoryItem.name.nameType; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.nameType = value;
+    } else {
+      this.nameType = null;
+    }
     return this;
   }
 
@@ -1620,10 +1614,10 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
   }
 
   /**
-   * @returns the `language` property value as a CodeType object if defined; else null
+   * @returns the `language` property value as a CodeType object if defined; else an empty CodeType object
    */
-  public getLanguageElement(): CodeType | null {
-    return this.language;
+  public getLanguageElement(): CodeType {
+    return this.language ?? new CodeType();
   }
 
   /**
@@ -1634,11 +1628,14 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLanguageElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `InventoryItem.name.language is required`);
-    const optErrMsg = `Invalid InventoryItem.name.language; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.language = element;
+  public setLanguageElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid InventoryItem.name.language; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.language = element;
+    } else {
+      this.language = null;
+    }
     return this;
   }
 
@@ -1667,10 +1664,13 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setLanguage(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `InventoryItem.name.language is required`);
-    const optErrMsg = `Invalid InventoryItem.name.language (${String(value)})`;
-    this.language = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+  public setLanguage(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid InventoryItem.name.language (${String(value)})`;
+      this.language = new CodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg));
+    } else {
+      this.language = null;
+    }
     return this;
   }
 
@@ -1682,10 +1682,10 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
   }
 
   /**
-   * @returns the `name` property value as a StringType object if defined; else null
+   * @returns the `name` property value as a StringType object if defined; else an empty StringType object
    */
-  public getNameElement(): StringType | null {
-    return this.name;
+  public getNameElement(): StringType {
+    return this.name ?? new StringType();
   }
 
   /**
@@ -1696,11 +1696,14 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setNameElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `InventoryItem.name.name is required`);
-    const optErrMsg = `Invalid InventoryItem.name.name; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.name = element;
+  public setNameElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid InventoryItem.name.name; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.name = element;
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1729,10 +1732,13 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setName(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `InventoryItem.name.name is required`);
-    const optErrMsg = `Invalid InventoryItem.name.name (${String(value)})`;
-    this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setName(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid InventoryItem.name.name (${String(value)})`;
+      this.name = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.name = null;
+    }
     return this;
   }
 
@@ -1764,6 +1770,16 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.nameType, this.language, this.name, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1789,40 +1805,31 @@ export class InventoryItemNameComponent extends BackboneElement implements IBack
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasNameType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getNameType()!, 'nameType', jsonObj);
+      setFhirComplexJson(this.getNameType(), 'nameType', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.name.nameType`);
+      jsonObj['nameType'] = null;
     }
 
     if (this.hasLanguageElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirCode>(this.getLanguageElement()!, 'language', jsonObj);
+      setFhirPrimitiveJson<fhirCode>(this.getLanguageElement(), 'language', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.name.language`);
+      jsonObj['language'] = null;
     }
 
     if (this.hasNameElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getNameElement()!, 'name', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.name.name`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['name'] = null;
     }
 
     return jsonObj;
@@ -1860,7 +1867,6 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
    * @param sourceJson - JSON representing FHIR `InventoryItemResponsibleOrganizationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryItemResponsibleOrganizationComponent
    * @returns InventoryItemResponsibleOrganizationComponent data model or undefined for `InventoryItemResponsibleOrganizationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InventoryItemResponsibleOrganizationComponent | undefined {
@@ -1878,20 +1884,18 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'role';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRole(null);
       } else {
         instance.setRole(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRole(null);
     }
 
     fieldName = 'organization';
@@ -1900,20 +1904,14 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setOrganization(null);
       } else {
         instance.setOrganization(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setOrganization(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1951,10 +1949,10 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `role` property value as a CodeableConcept object if defined; else null
+   * @returns the `role` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getRole(): CodeableConcept | null {
-    return this.role;
+  public getRole(): CodeableConcept {
+    return this.role ?? new CodeableConcept();
   }
 
   /**
@@ -1964,11 +1962,14 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setRole(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InventoryItem.responsibleOrganization.role is required`);
-    const optErrMsg = `Invalid InventoryItem.responsibleOrganization.role; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.role = value;
+  public setRole(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InventoryItem.responsibleOrganization.role; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.role = value;
+    } else {
+      this.role = null;
+    }
     return this;
   }
 
@@ -1980,10 +1981,10 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
   }
 
   /**
-   * @returns the `organization` property value as a Reference object if defined; else null
+   * @returns the `organization` property value as a Reference object if defined; else an empty Reference object
    */
-  public getOrganization(): Reference | null {
-    return this.organization;
+  public getOrganization(): Reference {
+    return this.organization ?? new Reference();
   }
 
   /**
@@ -1998,10 +1999,13 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
   @ReferenceTargets('InventoryItem.responsibleOrganization.organization', [
     'Organization',
   ])
-  public setOrganization(value: Reference): this {
-    assertIsDefined<Reference>(value, `InventoryItem.responsibleOrganization.organization is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.organization = value;
+  public setOrganization(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.organization = value;
+    } else {
+      this.organization = null;
+    }
     return this;
   }
 
@@ -2032,6 +2036,16 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.role, this.organization, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2056,33 +2070,25 @@ export class InventoryItemResponsibleOrganizationComponent extends BackboneEleme
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasRole()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRole()!, 'role', jsonObj);
+      setFhirComplexJson(this.getRole(), 'role', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.responsibleOrganization.role`);
+      jsonObj['role'] = null;
     }
 
     if (this.hasOrganization()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getOrganization()!, 'organization', jsonObj);
+      setFhirComplexJson(this.getOrganization(), 'organization', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.responsibleOrganization.organization`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['organization'] = null;
     }
 
     return jsonObj;
@@ -2147,7 +2153,6 @@ export class InventoryItemDescriptionComponent extends BackboneElement implement
       instance.setDescriptionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2410,7 +2415,6 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
    * @param sourceJson - JSON representing FHIR `InventoryItemAssociationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryItemAssociationComponent
    * @returns InventoryItemAssociationComponent data model or undefined for `InventoryItemAssociationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InventoryItemAssociationComponent | undefined {
@@ -2428,20 +2432,18 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
     let fieldName = '';
     let sourceField = '';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'associationType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setAssociationType(null);
       } else {
         instance.setAssociationType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setAssociationType(null);
     }
 
     fieldName = 'relatedItem';
@@ -2450,12 +2452,12 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setRelatedItem(null);
       } else {
         instance.setRelatedItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setRelatedItem(null);
     }
 
     fieldName = 'quantity';
@@ -2464,20 +2466,14 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Ratio | undefined = Ratio.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setQuantity(null);
       } else {
         instance.setQuantity(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setQuantity(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2535,10 +2531,10 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `associationType` property value as a CodeableConcept object if defined; else null
+   * @returns the `associationType` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getAssociationType(): CodeableConcept | null {
-    return this.associationType;
+  public getAssociationType(): CodeableConcept {
+    return this.associationType ?? new CodeableConcept();
   }
 
   /**
@@ -2548,11 +2544,14 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setAssociationType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InventoryItem.association.associationType is required`);
-    const optErrMsg = `Invalid InventoryItem.association.associationType; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.associationType = value;
+  public setAssociationType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InventoryItem.association.associationType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.associationType = value;
+    } else {
+      this.associationType = null;
+    }
     return this;
   }
 
@@ -2564,10 +2563,10 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
   }
 
   /**
-   * @returns the `relatedItem` property value as a Reference object if defined; else null
+   * @returns the `relatedItem` property value as a Reference object if defined; else an empty Reference object
    */
-  public getRelatedItem(): Reference | null {
-    return this.relatedItem;
+  public getRelatedItem(): Reference {
+    return this.relatedItem ?? new Reference();
   }
 
   /**
@@ -2594,10 +2593,13 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
   
     'BiologicallyDerivedProduct',
   ])
-  public setRelatedItem(value: Reference): this {
-    assertIsDefined<Reference>(value, `InventoryItem.association.relatedItem is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.relatedItem = value;
+  public setRelatedItem(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.relatedItem = value;
+    } else {
+      this.relatedItem = null;
+    }
     return this;
   }
 
@@ -2609,10 +2611,10 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
   }
 
   /**
-   * @returns the `quantity` property value as a Ratio object if defined; else null
+   * @returns the `quantity` property value as a Ratio object if defined; else an empty Ratio object
    */
-  public getQuantity(): Ratio | null {
-    return this.quantity;
+  public getQuantity(): Ratio {
+    return this.quantity ?? new Ratio();
   }
 
   /**
@@ -2622,11 +2624,14 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setQuantity(value: Ratio): this {
-    assertIsDefined<Ratio>(value, `InventoryItem.association.quantity is required`);
-    const optErrMsg = `Invalid InventoryItem.association.quantity; Provided element is not an instance of Ratio.`;
-    assertFhirType<Ratio>(value, Ratio, optErrMsg);
-    this.quantity = value;
+  public setQuantity(value: Ratio | undefined | null): this {
+    if (isDefined<Ratio>(value)) {
+      const optErrMsg = `Invalid InventoryItem.association.quantity; Provided element is not an instance of Ratio.`;
+      assertFhirType<Ratio>(value, Ratio, optErrMsg);
+      this.quantity = value;
+    } else {
+      this.quantity = null;
+    }
     return this;
   }
 
@@ -2658,6 +2663,16 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.associationType, this.relatedItem, this.quantity, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2683,40 +2698,31 @@ export class InventoryItemAssociationComponent extends BackboneElement implement
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasAssociationType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getAssociationType()!, 'associationType', jsonObj);
+      setFhirComplexJson(this.getAssociationType(), 'associationType', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.association.associationType`);
+      jsonObj['associationType'] = null;
     }
 
     if (this.hasRelatedItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getRelatedItem()!, 'relatedItem', jsonObj);
+      setFhirComplexJson(this.getRelatedItem(), 'relatedItem', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.association.relatedItem`);
+      jsonObj['relatedItem'] = null;
     }
 
     if (this.hasQuantity()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getQuantity()!, 'quantity', jsonObj);
+      setFhirComplexJson(this.getQuantity(), 'quantity', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.association.quantity`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['quantity'] = null;
     }
 
     return jsonObj;
@@ -2755,7 +2761,6 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
    * @param sourceJson - JSON representing FHIR `InventoryItemCharacteristicComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to InventoryItemCharacteristicComponent
    * @returns InventoryItemCharacteristicComponent data model or undefined for `InventoryItemCharacteristicComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): InventoryItemCharacteristicComponent | undefined {
@@ -2777,20 +2782,18 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
     const errorMessage = `DecoratorMetadataObject does not exist for InventoryItemCharacteristicComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'characteristicType';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: CodeableConcept | undefined = CodeableConcept.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setCharacteristicType(null);
       } else {
         instance.setCharacteristicType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setCharacteristicType(null);
     }
 
     fieldName = 'value[x]';
@@ -2802,17 +2805,11 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
       classMetadata,
     );
     if (value === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setValue(null);
     } else {
       instance.setValue(value);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2878,10 +2875,10 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `characteristicType` property value as a CodeableConcept object if defined; else null
+   * @returns the `characteristicType` property value as a CodeableConcept object if defined; else an empty CodeableConcept object
    */
-  public getCharacteristicType(): CodeableConcept | null {
-    return this.characteristicType;
+  public getCharacteristicType(): CodeableConcept {
+    return this.characteristicType ?? new CodeableConcept();
   }
 
   /**
@@ -2891,11 +2888,14 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setCharacteristicType(value: CodeableConcept): this {
-    assertIsDefined<CodeableConcept>(value, `InventoryItem.characteristic.characteristicType is required`);
-    const optErrMsg = `Invalid InventoryItem.characteristic.characteristicType; Provided element is not an instance of CodeableConcept.`;
-    assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
-    this.characteristicType = value;
+  public setCharacteristicType(value: CodeableConcept | undefined | null): this {
+    if (isDefined<CodeableConcept>(value)) {
+      const optErrMsg = `Invalid InventoryItem.characteristic.characteristicType; Provided element is not an instance of CodeableConcept.`;
+      assertFhirType<CodeableConcept>(value, CodeableConcept, optErrMsg);
+      this.characteristicType = value;
+    } else {
+      this.characteristicType = null;
+    }
     return this;
   }
 
@@ -2923,10 +2923,13 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('InventoryItem.characteristic.value[x]')
-  public setValue(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `InventoryItem.characteristic.value[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.value = value;
+  public setValue(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.value = value;
+    } else {
+      this.value = null;
+    }
     return this;
   }
 
@@ -3248,6 +3251,16 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.characteristicType, this.value, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3272,33 +3285,26 @@ export class InventoryItemCharacteristicComponent extends BackboneElement implem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasCharacteristicType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getCharacteristicType()!, 'characteristicType', jsonObj);
+      setFhirComplexJson(this.getCharacteristicType(), 'characteristicType', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.characteristic.characteristicType`);
+      jsonObj['characteristicType'] = null;
     }
 
     if (this.hasValue()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getValue()!, 'value', jsonObj);
     } else {
-      missingReqdProperties.push(`InventoryItem.characteristic.value[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -3392,7 +3398,6 @@ export class InventoryItemInstanceComponent extends BackboneElement implements I
       instance.setLocation(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

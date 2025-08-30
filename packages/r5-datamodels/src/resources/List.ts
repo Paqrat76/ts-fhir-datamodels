@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -45,20 +44,15 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   JSON,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   assertEnumCodeType,
   assertFhirType,
   assertFhirTypeList,
-  assertIsDefined,
   constructorCodeValueAsEnumCodeType,
   copyListValues,
   fhirBoolean,
@@ -74,6 +68,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementListJson,
   setFhirComplexJson,
@@ -127,7 +122,6 @@ export class List extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `List`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to List
    * @returns List data model or undefined for `List`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): List | undefined {
@@ -146,8 +140,6 @@ export class List extends DomainResource implements IDomainResource {
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -169,12 +161,12 @@ export class List extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'mode';
@@ -184,12 +176,12 @@ export class List extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setMode(null);
       } else {
         instance.setModeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setMode(null);
     }
 
     fieldName = 'title';
@@ -289,12 +281,6 @@ export class List extends DomainResource implements IDomainResource {
       instance.setEmptyReason(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -611,11 +597,14 @@ export class List extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ListStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `List.status is required`);
-    const errMsgPrefix = `Invalid List.status`;
-    assertEnumCodeType<ListStatusEnum>(enumType, ListStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid List.status`;
+      assertEnumCodeType<ListStatusEnum>(enumType, ListStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -648,11 +637,14 @@ export class List extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ListStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `List.status is required`);
-    const optErrMsg = `Invalid List.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.listStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid List.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.listStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -685,10 +677,13 @@ export class List extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ListStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `List.status is required`);
-    const optErrMsg = `Invalid List.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.listStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid List.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.listStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -718,11 +713,14 @@ export class List extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ListModeEnum }
    */
-  public setModeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `List.mode is required`);
-    const errMsgPrefix = `Invalid List.mode`;
-    assertEnumCodeType<ListModeEnum>(enumType, ListModeEnum, errMsgPrefix);
-    this.mode = enumType;
+  public setModeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid List.mode`;
+      assertEnumCodeType<ListModeEnum>(enumType, ListModeEnum, errMsgPrefix);
+      this.mode = enumType;
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -755,11 +753,14 @@ export class List extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ListModeEnum }
    */
-  public setModeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `List.mode is required`);
-    const optErrMsg = `Invalid List.mode; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.mode = new EnumCodeType(element, this.listModeEnum);
+  public setModeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid List.mode; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.mode = new EnumCodeType(element, this.listModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -792,10 +793,13 @@ export class List extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link ListModeEnum }
    */
-  public setMode(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `List.mode is required`);
-    const optErrMsg = `Invalid List.mode (${String(value)})`;
-    this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.listModeEnum);
+  public setMode(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid List.mode (${String(value)})`;
+      this.mode = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.listModeEnum);
+    } else {
+      this.mode = null;
+    }
     return this;
   }
 
@@ -1327,6 +1331,16 @@ export class List extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, this.mode, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1366,15 +1380,14 @@ export class List extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIdentifier()) {
       setFhirComplexListJson(this.getIdentifier(), 'identifier', jsonObj);
@@ -1384,14 +1397,14 @@ export class List extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`List.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasModeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getModeElement()!, 'mode', jsonObj);
     } else {
-      missingReqdProperties.push(`List.mode`);
+      jsonObj['mode'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -1434,11 +1447,6 @@ export class List extends DomainResource implements IDomainResource {
       setFhirComplexJson(this.getEmptyReason(), 'emptyReason', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -1471,7 +1479,6 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
    * @param sourceJson - JSON representing FHIR `ListEntryComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ListEntryComponent
    * @returns ListEntryComponent data model or undefined for `ListEntryComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ListEntryComponent | undefined {
@@ -1489,8 +1496,6 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'flag';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -1524,20 +1529,14 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Reference | undefined = Reference.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setItem(null);
       } else {
         instance.setItem(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setItem(null);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1769,10 +1768,10 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
   }
 
   /**
-   * @returns the `item` property value as a Reference object if defined; else null
+   * @returns the `item` property value as a Reference object if defined; else an empty Reference object
    */
-  public getItem(): Reference | null {
-    return this.item;
+  public getItem(): Reference {
+    return this.item ?? new Reference();
   }
 
   /**
@@ -1787,10 +1786,13 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
   @ReferenceTargets('List.entry.item', [
     'Resource',
   ])
-  public setItem(value: Reference): this {
-    assertIsDefined<Reference>(value, `List.entry.item is required`);
-    // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
-    this.item = value;
+  public setItem(value: Reference | undefined | null): this {
+    if (isDefined<Reference>(value)) {
+      // assertFhirType<Reference>(value, Reference) unnecessary because @ReferenceTargets decorator ensures proper type/value
+      this.item = value;
+    } else {
+      this.item = null;
+    }
     return this;
   }
 
@@ -1823,6 +1825,16 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.item, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -1849,15 +1861,14 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasFlag()) {
       setFhirComplexJson(this.getFlag(), 'flag', jsonObj);
@@ -1872,15 +1883,9 @@ export class ListEntryComponent extends BackboneElement implements IBackboneElem
     }
 
     if (this.hasItem()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getItem()!, 'item', jsonObj);
+      setFhirComplexJson(this.getItem(), 'item', jsonObj);
     } else {
-      missingReqdProperties.push(`List.entry.item`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['item'] = null;
     }
 
     return jsonObj;

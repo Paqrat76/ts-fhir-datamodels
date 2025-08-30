@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -49,18 +48,14 @@ import {
   DateType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveTypeJson,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   StringType,
   UriType,
   assertEnumCodeType,
@@ -91,6 +86,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -142,7 +138,6 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
    * @param sourceJson - JSON representing FHIR `SpecimenDefinition`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SpecimenDefinition
    * @returns SpecimenDefinition data model or undefined for `SpecimenDefinition`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): SpecimenDefinition | undefined {
@@ -165,8 +160,6 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
     const classMetadata: DecoratorMetadataObject | null = SpecimenDefinition[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for SpecimenDefinition`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -265,12 +258,12 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -467,12 +460,6 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1557,11 +1544,14 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `SpecimenDefinition.status is required`);
-    const errMsgPrefix = `Invalid SpecimenDefinition.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid SpecimenDefinition.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1594,11 +1584,14 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `SpecimenDefinition.status is required`);
-    const optErrMsg = `Invalid SpecimenDefinition.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid SpecimenDefinition.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1631,10 +1624,13 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `SpecimenDefinition.status is required`);
-    const optErrMsg = `Invalid SpecimenDefinition.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid SpecimenDefinition.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2826,6 +2822,16 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2884,15 +2890,14 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2931,7 +2936,7 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`SpecimenDefinition.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -3011,11 +3016,6 @@ export class SpecimenDefinition extends DomainResource implements IDomainResourc
       setFhirBackboneElementListJson(this.getTypeTested(), 'typeTested', jsonObj);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
     return jsonObj;
   }
 }
@@ -3051,7 +3051,6 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
    * @param sourceJson - JSON representing FHIR `SpecimenDefinitionTypeTestedComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SpecimenDefinitionTypeTestedComponent
    * @returns SpecimenDefinitionTypeTestedComponent data model or undefined for `SpecimenDefinitionTypeTestedComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SpecimenDefinitionTypeTestedComponent | undefined {
@@ -3069,8 +3068,6 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
     let fieldName = '';
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'isDerived';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -3096,12 +3093,12 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setPreference(null);
       } else {
         instance.setPreferenceElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setPreference(null);
     }
 
     fieldName = 'container';
@@ -3177,12 +3174,6 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3452,11 +3443,14 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link SpecimenContainedPreferenceEnum }
    */
-  public setPreferenceEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `SpecimenDefinition.typeTested.preference is required`);
-    const errMsgPrefix = `Invalid SpecimenDefinition.typeTested.preference`;
-    assertEnumCodeType<SpecimenContainedPreferenceEnum>(enumType, SpecimenContainedPreferenceEnum, errMsgPrefix);
-    this.preference = enumType;
+  public setPreferenceEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid SpecimenDefinition.typeTested.preference`;
+      assertEnumCodeType<SpecimenContainedPreferenceEnum>(enumType, SpecimenContainedPreferenceEnum, errMsgPrefix);
+      this.preference = enumType;
+    } else {
+      this.preference = null;
+    }
     return this;
   }
 
@@ -3489,11 +3483,14 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link SpecimenContainedPreferenceEnum }
    */
-  public setPreferenceElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `SpecimenDefinition.typeTested.preference is required`);
-    const optErrMsg = `Invalid SpecimenDefinition.typeTested.preference; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.preference = new EnumCodeType(element, this.specimenContainedPreferenceEnum);
+  public setPreferenceElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid SpecimenDefinition.typeTested.preference; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.preference = new EnumCodeType(element, this.specimenContainedPreferenceEnum);
+    } else {
+      this.preference = null;
+    }
     return this;
   }
 
@@ -3526,10 +3523,13 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
    *
    * @see CodeSystem Enumeration: {@link SpecimenContainedPreferenceEnum }
    */
-  public setPreference(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `SpecimenDefinition.typeTested.preference is required`);
-    const optErrMsg = `Invalid SpecimenDefinition.typeTested.preference (${String(value)})`;
-    this.preference = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.specimenContainedPreferenceEnum);
+  public setPreference(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid SpecimenDefinition.typeTested.preference (${String(value)})`;
+      this.preference = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.specimenContainedPreferenceEnum);
+    } else {
+      this.preference = null;
+    }
     return this;
   }
 
@@ -3934,6 +3934,16 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.preference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3969,15 +3979,14 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasIsDerivedElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getIsDerivedElement(), 'isDerived', jsonObj);
@@ -3991,7 +4000,7 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getPreferenceElement()!, 'preference', jsonObj);
     } else {
-      missingReqdProperties.push(`SpecimenDefinition.typeTested.preference`);
+      jsonObj['preference'] = null;
     }
 
     if (this.hasContainer()) {
@@ -4020,11 +4029,6 @@ export class SpecimenDefinitionTypeTestedComponent extends BackboneElement imple
 
     if (this.hasTestingDestination()) {
       setFhirComplexListJson(this.getTestingDestination(), 'testingDestination', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4148,7 +4152,6 @@ export class SpecimenDefinitionTypeTestedContainerComponent extends BackboneElem
       instance.setPreparationElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4803,7 +4806,6 @@ export class SpecimenDefinitionTypeTestedContainerAdditiveComponent extends Back
    * @param sourceJson - JSON representing FHIR `SpecimenDefinitionTypeTestedContainerAdditiveComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to SpecimenDefinitionTypeTestedContainerAdditiveComponent
    * @returns SpecimenDefinitionTypeTestedContainerAdditiveComponent data model or undefined for `SpecimenDefinitionTypeTestedContainerAdditiveComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): SpecimenDefinitionTypeTestedContainerAdditiveComponent | undefined {
@@ -4825,8 +4827,6 @@ export class SpecimenDefinitionTypeTestedContainerAdditiveComponent extends Back
     const errorMessage = `DecoratorMetadataObject does not exist for SpecimenDefinitionTypeTestedContainerAdditiveComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'additive[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const additive: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -4836,17 +4836,11 @@ export class SpecimenDefinitionTypeTestedContainerAdditiveComponent extends Back
       classMetadata,
     );
     if (additive === undefined) {
-      missingReqdProperties.push(sourceField);
+      instance.setAdditive(null);
     } else {
       instance.setAdditive(additive);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4891,10 +4885,13 @@ export class SpecimenDefinitionTypeTestedContainerAdditiveComponent extends Back
    * @throws {@link InvalidTypeError} for invalid data types
    */
   @ChoiceDataTypes('SpecimenDefinition.typeTested.container.additive.additive[x]')
-  public setAdditive(value: IDataType): this {
-    assertIsDefined<IDataType>(value, `SpecimenDefinition.typeTested.container.additive.additive[x] is required`);
-    // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
-    this.additive = value;
+  public setAdditive(value: IDataType | undefined | null): this {
+    if (isDefined<IDataType>(value)) {
+      // assertFhirType<IDataType>(value, DataType) unnecessary because @ChoiceDataTypes decorator ensures proper type/value
+      this.additive = value;
+    } else {
+      this.additive = null;
+    }
     return this;
   }
 
@@ -4973,6 +4970,16 @@ export class SpecimenDefinitionTypeTestedContainerAdditiveComponent extends Back
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.additive, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4996,26 +5003,20 @@ export class SpecimenDefinitionTypeTestedContainerAdditiveComponent extends Back
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasAdditive()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getAdditive()!, 'additive', jsonObj);
     } else {
-      missingReqdProperties.push(`SpecimenDefinition.typeTested.container.additive.additive[x]`);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
+      jsonObj['additive'] = null;
     }
 
     return jsonObj;
@@ -5095,7 +5096,6 @@ export class SpecimenDefinitionTypeTestedHandlingComponent extends BackboneEleme
       instance.setInstructionElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 

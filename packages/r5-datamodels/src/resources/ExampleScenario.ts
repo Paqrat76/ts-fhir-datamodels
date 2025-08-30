@@ -37,7 +37,6 @@
  * @packageDocumentation
  */
 
-import { strict as assert } from 'node:assert';
 import {
   BackboneElement,
   BooleanType,
@@ -48,18 +47,14 @@ import {
   DateTimeType,
   DomainResource,
   EnumCodeType,
-  FhirError,
   FhirParser,
   IBackboneElement,
   IDataType,
   IDomainResource,
-  INSTANCE_EMPTY_ERROR_MSG,
   InvalidTypeError,
   JSON,
   MarkdownType,
   PrimitiveType,
-  REQUIRED_PROPERTIES_DO_NOT_EXIST,
-  REQUIRED_PROPERTIES_REQD_IN_JSON,
   ReferenceTargets,
   StringType,
   UriType,
@@ -88,6 +83,7 @@ import {
   isDefinedList,
   isElementEmpty,
   isEmpty,
+  isRequiredElementEmpty,
   parseFhirPrimitiveData,
   setFhirBackboneElementJson,
   setFhirBackboneElementListJson,
@@ -138,7 +134,6 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
    * @param sourceJson - JSON representing FHIR `ExampleScenario`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenario
    * @returns ExampleScenario data model or undefined for `ExampleScenario`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static override parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenario | undefined {
@@ -161,8 +156,6 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
     const classMetadata: DecoratorMetadataObject | null = ExampleScenario[Symbol.metadata];
     const errorMessage = `DecoratorMetadataObject does not exist for ExampleScenario`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
-
-    const missingReqdProperties: string[] = [];
 
     fieldName = 'url';
     sourceField = `${optSourceValue}.${fieldName}`;
@@ -230,12 +223,12 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStatus(null);
       } else {
         instance.setStatusElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStatus(null);
     }
 
     fieldName = 'experimental';
@@ -379,12 +372,6 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -1130,11 +1117,14 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ExampleScenario.status is required`);
-    const errMsgPrefix = `Invalid ExampleScenario.status`;
-    assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
-    this.status = enumType;
+  public setStatusEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ExampleScenario.status`;
+      assertEnumCodeType<PublicationStatusEnum>(enumType, PublicationStatusEnum, errMsgPrefix);
+      this.status = enumType;
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1167,11 +1157,14 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatusElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ExampleScenario.status is required`);
-    const optErrMsg = `Invalid ExampleScenario.status; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.status = new EnumCodeType(element, this.publicationStatusEnum);
+  public setStatusElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.status; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.status = new EnumCodeType(element, this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -1204,10 +1197,13 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
    *
    * @see CodeSystem Enumeration: {@link PublicationStatusEnum }
    */
-  public setStatus(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ExampleScenario.status is required`);
-    const optErrMsg = `Invalid ExampleScenario.status (${String(value)})`;
-    this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+  public setStatus(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.status (${String(value)})`;
+      this.status = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.publicationStatusEnum);
+    } else {
+      this.status = null;
+    }
     return this;
   }
 
@@ -2052,6 +2048,16 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.status, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2101,15 +2107,14 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
@@ -2140,7 +2145,7 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.status`);
+      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2193,11 +2198,6 @@ export class ExampleScenario extends DomainResource implements IDomainResource {
 
     if (this.hasProcess()) {
       setFhirBackboneElementListJson(this.getProcess(), 'process', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2254,7 +2254,6 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    * @param sourceJson - JSON representing FHIR `ExampleScenarioActorComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioActorComponent
    * @returns ExampleScenarioActorComponent data model or undefined for `ExampleScenarioActorComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioActorComponent | undefined {
@@ -2273,8 +2272,6 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'key';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2282,12 +2279,12 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKey(null);
       } else {
         instance.setKeyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKey(null);
     }
 
     fieldName = 'type';
@@ -2297,12 +2294,12 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: CodeType | undefined = fhirParser.parseCodeType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setType(null);
       } else {
         instance.setTypeElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setType(null);
     }
 
     fieldName = 'title';
@@ -2312,12 +2309,12 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'description';
@@ -2329,12 +2326,6 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
       instance.setDescriptionElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -2406,10 +2397,10 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `key` property value as a StringType object if defined; else null
+   * @returns the `key` property value as a StringType object if defined; else an empty StringType object
    */
-  public getKeyElement(): StringType | null {
-    return this.key;
+  public getKeyElement(): StringType {
+    return this.key ?? new StringType();
   }
 
   /**
@@ -2420,11 +2411,14 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKeyElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.actor.key is required`);
-    const optErrMsg = `Invalid ExampleScenario.actor.key; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.key = element;
+  public setKeyElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.actor.key; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.key = element;
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -2453,10 +2447,13 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKey(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.actor.key is required`);
-    const optErrMsg = `Invalid ExampleScenario.actor.key (${String(value)})`;
-    this.key = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setKey(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.actor.key (${String(value)})`;
+      this.key = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -2486,11 +2483,14 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link ExamplescenarioActorTypeEnum }
    */
-  public setTypeEnumType(enumType: EnumCodeType): this {
-    assertIsDefined<EnumCodeType>(enumType, `ExampleScenario.actor.type is required`);
-    const errMsgPrefix = `Invalid ExampleScenario.actor.type`;
-    assertEnumCodeType<ExamplescenarioActorTypeEnum>(enumType, ExamplescenarioActorTypeEnum, errMsgPrefix);
-    this.type_ = enumType;
+  public setTypeEnumType(enumType: EnumCodeType | undefined | null): this {
+    if (isDefined<EnumCodeType>(enumType)) {
+      const errMsgPrefix = `Invalid ExampleScenario.actor.type`;
+      assertEnumCodeType<ExamplescenarioActorTypeEnum>(enumType, ExamplescenarioActorTypeEnum, errMsgPrefix);
+      this.type_ = enumType;
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2523,11 +2523,14 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link ExamplescenarioActorTypeEnum }
    */
-  public setTypeElement(element: CodeType): this {
-    assertIsDefined<CodeType>(element, `ExampleScenario.actor.type is required`);
-    const optErrMsg = `Invalid ExampleScenario.actor.type; Provided value is not an instance of CodeType.`;
-    assertFhirType<CodeType>(element, CodeType, optErrMsg);
-    this.type_ = new EnumCodeType(element, this.examplescenarioActorTypeEnum);
+  public setTypeElement(element: CodeType | undefined | null): this {
+    if (isDefined<CodeType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.actor.type; Provided value is not an instance of CodeType.`;
+      assertFhirType<CodeType>(element, CodeType, optErrMsg);
+      this.type_ = new EnumCodeType(element, this.examplescenarioActorTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2560,10 +2563,13 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    *
    * @see CodeSystem Enumeration: {@link ExamplescenarioActorTypeEnum }
    */
-  public setType(value: fhirCode): this {
-    assertIsDefined<fhirCode>(value, `ExampleScenario.actor.type is required`);
-    const optErrMsg = `Invalid ExampleScenario.actor.type (${String(value)})`;
-    this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.examplescenarioActorTypeEnum);
+  public setType(value: fhirCode | undefined | null): this {
+    if (isDefined<fhirCode>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.actor.type (${String(value)})`;
+      this.type_ = new EnumCodeType(parseFhirPrimitiveData(value, fhirCodeSchema, optErrMsg), this.examplescenarioActorTypeEnum);
+    } else {
+      this.type_ = null;
+    }
     return this;
   }
 
@@ -2575,10 +2581,10 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
   }
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -2589,11 +2595,14 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.actor.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.actor.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.actor.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -2622,10 +2631,13 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.actor.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.actor.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.actor.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -2722,6 +2734,16 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.key, this.type_, this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -2748,44 +2770,36 @@ export class ExampleScenarioActorComponent extends BackboneElement implements IB
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasKeyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getKeyElement()!, 'key', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getKeyElement(), 'key', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.actor.key`);
+      jsonObj['key'] = null;
     }
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.actor.type`);
+      jsonObj['type'] = null;
     }
 
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.actor.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getDescriptionElement(), 'description', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -2836,7 +2850,6 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
    * @param sourceJson - JSON representing FHIR `ExampleScenarioInstanceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioInstanceComponent
    * @returns ExampleScenarioInstanceComponent data model or undefined for `ExampleScenarioInstanceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioInstanceComponent | undefined {
@@ -2859,8 +2872,6 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
     const errorMessage = `DecoratorMetadataObject does not exist for ExampleScenarioInstanceComponent`;
     assertIsDefined<DecoratorMetadataObject>(classMetadata, errorMessage);
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'key';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -2868,12 +2879,12 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKey(null);
       } else {
         instance.setKeyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKey(null);
     }
 
     fieldName = 'structureType';
@@ -2882,12 +2893,12 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const datatype: Coding | undefined = Coding.parse(classJsonObj[fieldName]!, sourceField);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setStructureType(null);
       } else {
         instance.setStructureType(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setStructureType(null);
     }
 
     fieldName = 'structureVersion';
@@ -2916,12 +2927,12 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'description';
@@ -2967,12 +2978,6 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3116,10 +3121,10 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `key` property value as a StringType object if defined; else null
+   * @returns the `key` property value as a StringType object if defined; else an empty StringType object
    */
-  public getKeyElement(): StringType | null {
-    return this.key;
+  public getKeyElement(): StringType {
+    return this.key ?? new StringType();
   }
 
   /**
@@ -3130,11 +3135,14 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKeyElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.instance.key is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.key; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.key = element;
+  public setKeyElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.key; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.key = element;
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -3163,10 +3171,13 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKey(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.instance.key is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.key (${String(value)})`;
-    this.key = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setKey(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.key (${String(value)})`;
+      this.key = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -3178,10 +3189,10 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
   }
 
   /**
-   * @returns the `structureType` property value as a Coding object if defined; else null
+   * @returns the `structureType` property value as a Coding object if defined; else an empty Coding object
    */
-  public getStructureType(): Coding | null {
-    return this.structureType;
+  public getStructureType(): Coding {
+    return this.structureType ?? new Coding();
   }
 
   /**
@@ -3191,11 +3202,14 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
    * @returns this
    * @throws {@link InvalidTypeError} for invalid data types
    */
-  public setStructureType(value: Coding): this {
-    assertIsDefined<Coding>(value, `ExampleScenario.instance.structureType is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.structureType; Provided element is not an instance of Coding.`;
-    assertFhirType<Coding>(value, Coding, optErrMsg);
-    this.structureType = value;
+  public setStructureType(value: Coding | undefined | null): this {
+    if (isDefined<Coding>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.structureType; Provided element is not an instance of Coding.`;
+      assertFhirType<Coding>(value, Coding, optErrMsg);
+      this.structureType = value;
+    } else {
+      this.structureType = null;
+    }
     return this;
   }
 
@@ -3354,10 +3368,10 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
   // End of choice datatype-specific "get"/"has" methods
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -3368,11 +3382,14 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.instance.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -3401,10 +3418,13 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.instance.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -3656,6 +3676,16 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.key, this.structureType, this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -3689,28 +3719,25 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasKeyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getKeyElement()!, 'key', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getKeyElement(), 'key', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.instance.key`);
+      jsonObj['key'] = null;
     }
 
     if (this.hasStructureType()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirComplexJson(this.getStructureType()!, 'structureType', jsonObj);
+      setFhirComplexJson(this.getStructureType(), 'structureType', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.instance.structureType`);
+      jsonObj['structureType'] = null;
     }
 
     if (this.hasStructureVersionElement()) {
@@ -3723,10 +3750,9 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
     }
 
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.instance.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -3743,11 +3769,6 @@ export class ExampleScenarioInstanceComponent extends BackboneElement implements
 
     if (this.hasContainedInstance()) {
       setFhirBackboneElementListJson(this.getContainedInstance(), 'containedInstance', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -3795,7 +3816,6 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
    * @param sourceJson - JSON representing FHIR `ExampleScenarioInstanceVersionComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioInstanceVersionComponent
    * @returns ExampleScenarioInstanceVersionComponent data model or undefined for `ExampleScenarioInstanceVersionComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioInstanceVersionComponent | undefined {
@@ -3814,8 +3834,6 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'key';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -3823,12 +3841,12 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setKey(null);
       } else {
         instance.setKeyElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setKey(null);
     }
 
     fieldName = 'title';
@@ -3838,12 +3856,12 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'description';
@@ -3863,12 +3881,6 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
       instance.setContent(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -3932,10 +3944,10 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `key` property value as a StringType object if defined; else null
+   * @returns the `key` property value as a StringType object if defined; else an empty StringType object
    */
-  public getKeyElement(): StringType | null {
-    return this.key;
+  public getKeyElement(): StringType {
+    return this.key ?? new StringType();
   }
 
   /**
@@ -3946,11 +3958,14 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKeyElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.instance.version.key is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.version.key; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.key = element;
+  public setKeyElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.version.key; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.key = element;
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -3979,10 +3994,13 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setKey(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.instance.version.key is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.version.key (${String(value)})`;
-    this.key = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setKey(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.version.key (${String(value)})`;
+      this.key = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.key = null;
+    }
     return this;
   }
 
@@ -3994,10 +4012,10 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
   }
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -4008,11 +4026,14 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.instance.version.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.version.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.version.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -4041,10 +4062,13 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.instance.version.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.version.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.version.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -4175,6 +4199,16 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.key, this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4201,28 +4235,25 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasKeyElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getKeyElement()!, 'key', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getKeyElement(), 'key', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.instance.version.key`);
+      jsonObj['key'] = null;
     }
 
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.instance.version.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -4231,11 +4262,6 @@ export class ExampleScenarioInstanceVersionComponent extends BackboneElement imp
 
     if (this.hasContent()) {
       setFhirComplexJson(this.getContent(), 'content', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4272,7 +4298,6 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
    * @param sourceJson - JSON representing FHIR `ExampleScenarioInstanceContainedInstanceComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioInstanceContainedInstanceComponent
    * @returns ExampleScenarioInstanceContainedInstanceComponent data model or undefined for `ExampleScenarioInstanceContainedInstanceComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioInstanceContainedInstanceComponent | undefined {
@@ -4291,8 +4316,6 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'instanceReference';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4300,12 +4323,12 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setInstanceReference(null);
       } else {
         instance.setInstanceReferenceElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setInstanceReference(null);
     }
 
     fieldName = 'versionReference';
@@ -4317,12 +4340,6 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
       instance.setVersionReferenceElement(datatype);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4358,10 +4375,10 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `instanceReference` property value as a StringType object if defined; else null
+   * @returns the `instanceReference` property value as a StringType object if defined; else an empty StringType object
    */
-  public getInstanceReferenceElement(): StringType | null {
-    return this.instanceReference;
+  public getInstanceReferenceElement(): StringType {
+    return this.instanceReference ?? new StringType();
   }
 
   /**
@@ -4372,11 +4389,14 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setInstanceReferenceElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.instance.containedInstance.instanceReference is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.containedInstance.instanceReference; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.instanceReference = element;
+  public setInstanceReferenceElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.containedInstance.instanceReference; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.instanceReference = element;
+    } else {
+      this.instanceReference = null;
+    }
     return this;
   }
 
@@ -4405,10 +4425,13 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setInstanceReference(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.instance.containedInstance.instanceReference is required`);
-    const optErrMsg = `Invalid ExampleScenario.instance.containedInstance.instanceReference (${String(value)})`;
-    this.instanceReference = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setInstanceReference(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.instance.containedInstance.instanceReference (${String(value)})`;
+      this.instanceReference = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.instanceReference = null;
+    }
     return this;
   }
 
@@ -4503,6 +4526,16 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.instanceReference, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -4527,30 +4560,23 @@ export class ExampleScenarioInstanceContainedInstanceComponent extends BackboneE
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasInstanceReferenceElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getInstanceReferenceElement()!, 'instanceReference', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getInstanceReferenceElement(), 'instanceReference', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.instance.containedInstance.instanceReference`);
+      jsonObj['instanceReference'] = null;
     }
 
     if (this.hasVersionReferenceElement()) {
       setFhirPrimitiveJson<fhirString>(this.getVersionReferenceElement(), 'versionReference', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -4588,7 +4614,6 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
    * @param sourceJson - JSON representing FHIR `ExampleScenarioProcessComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioProcessComponent
    * @returns ExampleScenarioProcessComponent data model or undefined for `ExampleScenarioProcessComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioProcessComponent | undefined {
@@ -4607,8 +4632,6 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'title';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -4616,12 +4639,12 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'description';
@@ -4664,12 +4687,6 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -4747,10 +4764,10 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -4761,11 +4778,14 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.process.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.process.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.process.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -4794,10 +4814,13 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.process.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.process.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.process.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -5081,6 +5104,16 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -5109,21 +5142,19 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.process.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -5140,11 +5171,6 @@ export class ExampleScenarioProcessComponent extends BackboneElement implements 
 
     if (this.hasStep()) {
       setFhirBackboneElementListJson(this.getStep(), 'step', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -5247,7 +5273,6 @@ export class ExampleScenarioProcessStepComponent extends BackboneElement impleme
       instance.setPauseElement(datatype);
     }
 
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -5775,7 +5800,6 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
    * @param sourceJson - JSON representing FHIR `ExampleScenarioProcessStepOperationComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioProcessStepOperationComponent
    * @returns ExampleScenarioProcessStepOperationComponent data model or undefined for `ExampleScenarioProcessStepOperationComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioProcessStepOperationComponent | undefined {
@@ -5794,8 +5818,6 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'type';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -5811,12 +5833,12 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'initiator';
@@ -5880,12 +5902,6 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
       instance.setResponse(component);
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6057,10 +6073,10 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
   }
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -6071,11 +6087,14 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.process.step.operation.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.process.step.operation.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.process.step.operation.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -6104,10 +6123,13 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.process.step.operation.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.process.step.operation.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.process.step.operation.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -6529,6 +6551,16 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6560,25 +6592,23 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
-
-    const missingReqdProperties: string[] = [];
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
     }
 
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.process.step.operation.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasInitiatorElement()) {
@@ -6607,11 +6637,6 @@ export class ExampleScenarioProcessStepOperationComponent extends BackboneElemen
 
     if (this.hasResponse()) {
       setFhirBackboneElementJson(this.getResponse(), 'response', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
@@ -6648,7 +6673,6 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
    * @param sourceJson - JSON representing FHIR `ExampleScenarioProcessStepAlternativeComponent`
    * @param optSourceField - Optional data source field (e.g. `<complexTypeName>.<complexTypeFieldName>`); defaults to ExampleScenarioProcessStepAlternativeComponent
    * @returns ExampleScenarioProcessStepAlternativeComponent data model or undefined for `ExampleScenarioProcessStepAlternativeComponent`
-   * @throws {@link FhirError} if the provided JSON is missing required properties
    * @throws {@link JsonError} if the provided JSON is not a valid JSON object
    */
   public static parse(sourceJson: JSON.Value, optSourceField?: string): ExampleScenarioProcessStepAlternativeComponent | undefined {
@@ -6667,8 +6691,6 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
     let sourceField = '';
     let primitiveJsonType: 'boolean' | 'number' | 'string' = 'string';
 
-    const missingReqdProperties: string[] = [];
-
     fieldName = 'title';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
@@ -6676,12 +6698,12 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
       const { dtJson, dtSiblingJson } = getPrimitiveTypeJson(classJsonObj, sourceField, fieldName, primitiveJsonType);
       const datatype: StringType | undefined = fhirParser.parseStringType(dtJson, dtSiblingJson);
       if (datatype === undefined) {
-        missingReqdProperties.push(sourceField);
+        instance.setTitle(null);
       } else {
         instance.setTitleElement(datatype);
       }
     } else {
-      missingReqdProperties.push(sourceField);
+      instance.setTitle(null);
     }
 
     fieldName = 'description';
@@ -6706,12 +6728,6 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
       });
     }
 
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_REQD_IN_JSON} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
-    }
-
-    assert(!instance.isEmpty(), INSTANCE_EMPTY_ERROR_MSG);
     return instance;
   }
 
@@ -6760,10 +6776,10 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
   /* eslint-disable @typescript-eslint/no-unnecessary-type-conversion */
 
   /**
-   * @returns the `title` property value as a StringType object if defined; else null
+   * @returns the `title` property value as a StringType object if defined; else an empty StringType object
    */
-  public getTitleElement(): StringType | null {
-    return this.title;
+  public getTitleElement(): StringType {
+    return this.title ?? new StringType();
   }
 
   /**
@@ -6774,11 +6790,14 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
    * @throws {@link InvalidTypeError} for invalid data types
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitleElement(element: StringType): this {
-    assertIsDefined<StringType>(element, `ExampleScenario.process.step.alternative.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.process.step.alternative.title; Provided value is not an instance of StringType.`;
-    assertFhirType<StringType>(element, StringType, optErrMsg);
-    this.title = element;
+  public setTitleElement(element: StringType | undefined | null): this {
+    if (isDefined<StringType>(element)) {
+      const optErrMsg = `Invalid ExampleScenario.process.step.alternative.title; Provided value is not an instance of StringType.`;
+      assertFhirType<StringType>(element, StringType, optErrMsg);
+      this.title = element;
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -6807,10 +6826,13 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
    * @returns this
    * @throws {@link PrimitiveTypeError} for invalid primitive types
    */
-  public setTitle(value: fhirString): this {
-    assertIsDefined<fhirString>(value, `ExampleScenario.process.step.alternative.title is required`);
-    const optErrMsg = `Invalid ExampleScenario.process.step.alternative.title (${String(value)})`;
-    this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+  public setTitle(value: fhirString | undefined | null): this {
+    if (isDefined<fhirString>(value)) {
+      const optErrMsg = `Invalid ExampleScenario.process.step.alternative.title (${String(value)})`;
+      this.title = new StringType(parseFhirPrimitiveData(value, fhirStringSchema, optErrMsg));
+    } else {
+      this.title = null;
+    }
     return this;
   }
 
@@ -6964,6 +6986,16 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
   }
 
   /**
+   * @returns `true` if and only if the data model has required fields (min cardinality > 0)
+   * and at least one of those required fields in the instance is empty; `false` otherwise
+   */
+  public override isRequiredFieldsEmpty(): boolean {
+    return isRequiredElementEmpty(
+      this.title, 
+    );
+  }
+
+  /**
    * Creates a copy of the current instance.
    *
    * @returns the a new instance copied from the current instance
@@ -6990,21 +7022,19 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
 
   /**
    * @returns the JSON value or undefined if the instance is empty
-   * @throws {@link FhirError} if the instance is missing required properties
    */
   public override toJSON(): JSON.Value | undefined {
-    // Required class properties exist (have a min cardinality > 0); therefore, do not check for this.isEmpty()!
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
     let jsonObj = super.toJSON() as JSON.Object | undefined;
     jsonObj ??= {} as JSON.Object;
 
-    const missingReqdProperties: string[] = [];
-
     if (this.hasTitleElement()) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setFhirPrimitiveJson<fhirString>(this.getTitleElement()!, 'title', jsonObj);
+      setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
     } else {
-      missingReqdProperties.push(`ExampleScenario.process.step.alternative.title`);
+      jsonObj['title'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -7013,11 +7043,6 @@ export class ExampleScenarioProcessStepAlternativeComponent extends BackboneElem
 
     if (this.hasStep()) {
       setFhirBackboneElementListJson(this.getStep(), 'step', jsonObj);
-    }
-
-    if (missingReqdProperties.length > 0) {
-      const errMsg = `${REQUIRED_PROPERTIES_DO_NOT_EXIST} ${missingReqdProperties.join(', ')}`;
-      throw new FhirError(errMsg);
     }
 
     return jsonObj;
