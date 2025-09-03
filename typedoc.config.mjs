@@ -14,6 +14,7 @@ const config = {
   includeVersion: true,
   cleanOutputDir: true,
   out: 'docs-site',
+  customFooterHtml: `Last Published: ${new Date().toString()}`,
   sort: ['source-order'],
   plugin: ['typedoc-plugin-zod'],
 };
