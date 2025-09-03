@@ -1,0 +1,61 @@
+# Based on https://github.com/github/gitignore/blob/main/Node.gitignore; Removed unneeded ignores
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# ---------------------------------------
+# Additional project specific git ignores
+# ---------------------------------------
+
+# TypeScript
+lib
+
+# JetBrains
+.idea
+
+# Test output
+**/__test__/**/test-out/
+**/temp/
+
+# NPM
+.npmrc
