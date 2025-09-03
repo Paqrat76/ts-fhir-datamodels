@@ -59,6 +59,3 @@ lib
 
 # NPM
 .npmrc
-
-# Typedoc documentation site
-docs-site/
