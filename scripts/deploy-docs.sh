@@ -24,7 +24,7 @@
 
 typedoc --out ./temp-docs-site
 git checkout gh-pages
-rm -rf ./docs-site/
+rm -rf ./docs-site/*
 mv ./temp-docs-site/* ./docs-site/
 #git add .
 #git commit -m "Update documentation"
