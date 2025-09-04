@@ -22,12 +22,20 @@
 # SOFTWARE.
 #
 
+# If ./temp-docs-site directory exists, typedoc will overwrite existing content.
+# Therefore, there is no need to pre-clean the ./temp-docs-site directory.
 typedoc --out ./temp-docs-site
+
+# Update the gh-pages branch with the latest generated documentation.
+# NOTE: This DOES NOT trigger the GitHub action to publish the updated content to the GitHub Pages site.
+#       Executing the GitHub action ("Deploy docs-site to Pages") is done manually.
 git checkout gh-pages
+# Deleting the existing gh-pages content eliminates merge issues
 rm -rf ./docs-site/*
 mv ./temp-docs-site/* ./docs-site/
-#git add .
-#git commit -m "Update documentation"
-#git push origin gh-pages
-#git checkout main
-#rm -rf ./temp-docs-site
+git add .
+git commit -m "Update generated documentation"
+git push origin gh-pages
+git checkout main
+
+rm -rf ./temp-docs-site
