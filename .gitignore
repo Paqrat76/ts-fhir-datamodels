@@ -56,6 +56,7 @@ lib
 # Test output
 **/__test__/**/test-out/
 **/temp/
+temp-docs-site/
 
 # NPM
 .npmrc
