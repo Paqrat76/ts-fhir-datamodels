@@ -37,6 +37,7 @@
     "generate": "npm run generate --workspaces --if-present",
     "typedoc": "typedoc",
     "posttypedoc": "opener ./docs-site/index.html",
+    "typedocDeploy": "./scripts/deploy-docs.sh",
     "lint:R4": "echo 'Please be patient!!' && eslint --ext ts --report-unused-disable-directives-severity off ./packages/r4-datamodels/src",
     "lint:R4B": "echo 'Please be patient!!' && eslint --ext ts --report-unused-disable-directives-severity off ./packages/r4b-datamodels/src",
     "lint:R5": "echo 'Please be patient!!' && eslint --ext ts --report-unused-disable-directives-severity off ./packages/r5-datamodels/src",
