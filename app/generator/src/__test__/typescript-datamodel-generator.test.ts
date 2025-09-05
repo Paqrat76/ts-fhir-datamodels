@@ -359,15 +359,75 @@ describe('src/typescript-datamodel-generator', () => {
   //
   //     const filteredResources = resources.filter((sd) => {
   //       return sd.snapshot.element.some((ed) => {
-  //         if (ed.max && ed.max !== '1' && ed.type && ed.type.length > 0) {
-  //           return ed.type.some((t) => t.code === 'code');
+  //         if (ed.constraint && ed.constraint.length > 0) {
+  //           return ed.constraint.some((t) => ![
+  //             'ele-1',
+  //             'ext-1',
+  //             'dom-2',
+  //             'dom-3',
+  //             'dom-4',
+  //             'dom-5',
+  //             'dom-6',
+  //           ].includes(t.key));
   //         }
   //       });
   //     });
   //     expect(filteredResources).toBeDefined();
   //
-  //     const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
-  //     expect(complexTypes).toBeDefined();
+  //     const constraints = new Map<string, object>();
+  //     filteredResources.forEach((sd) => {
+  //       sd.snapshot.element.forEach((ed) => {
+  //         if (ed.constraint && ed.constraint.length > 0) {
+  //           ed.constraint.forEach((t) => {
+  //             if ([
+  //               'ele-1',
+  //               'ext-1',
+  //               'dom-2',
+  //               'dom-3',
+  //               'dom-4',
+  //               'dom-5',
+  //               'dom-6',
+  //             ].includes(t.key)) {
+  //               if (!constraints.has(t.key)) {
+  //                 const newConstraint = Object.assign({}, { edPath: 'common' }, t);
+  //                 constraints.set(t.key, newConstraint);
+  //               }
+  //             } else {
+  //               const newConstraint = Object.assign({}, { edPath: ed.path }, t);
+  //               constraints.set(t.key, newConstraint);
+  //             }
+  //           });
+  //         }
+  //       });
+  //     });
+  //     expect(constraints.size).toBeGreaterThan(0);
+  //     const objArray = Array.from(constraints.values());
+  //     objArray.sort((a, b) => {
+  //       // eslint-disable-next-line @typescript-eslint/dot-notation
+  //       const idA = `${String(a['edPath'])}-${String(a['key'])}`;
+  //       // eslint-disable-next-line @typescript-eslint/dot-notation
+  //       const idB = `${String(b['edPath'])}-${String(b['key'])}`;
+  //       if (idA < idB) {
+  //         return -1;
+  //       }
+  //       if (idA > idB) {
+  //         return 1;
+  //       }
+  //        return 0;
+  //     });
+  //     expect(objArray).toBeDefined();
+  //
+  //     // const filteredResources = resources.filter((sd) => {
+  //     //   return sd.snapshot.element.some((ed) => {
+  //     //     if (ed.max && ed.max !== '1' && ed.type && ed.type.length > 0) {
+  //     //       return ed.type.some((t) => t.code === 'code');
+  //     //     }
+  //     //   });
+  //     // });
+  //     // expect(filteredResources).toBeDefined();
+  //     //
+  //     // const complexTypes: StructureDefinition[] = tsDataModelGenerator.getComplexTypes();
+  //     // expect(complexTypes).toBeDefined();
   //   });
   // });
 });
