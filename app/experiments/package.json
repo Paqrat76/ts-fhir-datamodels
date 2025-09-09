@@ -1,0 +1,27 @@
+{
+  "name": "experiments",
+  "private": true,
+  "description": "Project for experimenting with POCs for future considerations",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rm -rf tsconfig.tsbuildinfo lib",
+    "compile": "tsc",
+    "test:exp": "jest",
+    "jest:clear": "jest --clearCache",
+    "jest:updateSnapshot": "jest --updateSnapshot"
+  },
+  "dependencies": {
+    "generator": "file:../generator",
+    "@paq-ts-fhir/fhir-core": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=22.11",
+    "npm": ">=10.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github:Paqrat76/ts-fhir-datamodels/ts-fhir-datamodels.git",
+    "directory": "app/experiments"
+  }
+}

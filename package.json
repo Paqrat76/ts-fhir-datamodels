@@ -25,7 +25,7 @@
     "prettier": "npm run prettier --workspaces --if-present",
     "prettier:fix": "npm run prettier:fix --workspaces --if-present",
     "prelint": "npm run build --workspace=packages/fhir-core",
-    "lint": "echo 'Please be patient!!' && eslint --ext ts --ignore-pattern './packages/r*-datamodels/src/' .",
+    "lint": "echo 'Please be patient!!' && eslint --ext ts --ignore-pattern './app/experiments/src/' --ignore-pattern './packages/r*-datamodels/src/' .",
     "lint:fix": "npm run lint -- --fix",
     "lint:docs": "markdownlint '**/*.md' -i '**/node_modules/**' -i '**/CHANGELOG.md' -i '**/changelog-hist/**'",
     "pretest": "npm run build --workspace=packages/fhir-core",
