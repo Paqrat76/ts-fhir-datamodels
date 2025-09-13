@@ -12,75 +12,75 @@
     jsonObj ??= {} as JSON.Object;
 
 {{#each elementDefinitions}}
-{{#if this.isBackboneType}}
-{{#if this.isOptionalItem}}
+  {{#if this.isBackboneType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirBackboneElementJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirBackboneElementJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirBackboneElementListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirBackboneElementListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isPrimitiveType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isPrimitiveType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveJson<fhir{{upperFirst this.type.fhirDataType}}>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirPrimitiveListJson(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveListJson(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isChoiceType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isChoiceType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
@@ -88,47 +88,47 @@
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isComplexType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isComplexType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isEnumCodeType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isEnumCodeType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element()!, '{{this.fieldName}}', jsonObj);
@@ -136,61 +136,61 @@
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveListJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     if (this.has{{upperFirst this.fieldName}}Element()) {
       setFhirPrimitiveListJson<fhirCode>(this.get{{upperFirst this.fieldName}}Element(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isReferenceType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isReferenceType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     if (this.has{{upperFirst this.fieldName}}()) {
       setFhirComplexListJson(this.get{{upperFirst this.fieldName}}(), '{{this.fieldName}}', jsonObj);
     } else {
       jsonObj['{{this.fieldName}}'] = null;
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isResourceType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isResourceType}}
+    {{#if this.isOptionalItem}}
     if (this.has{{upperFirst this.fieldName}}()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirResourceJson(this.get{{upperFirst this.fieldName}}()!, '{{this.fieldName}}', jsonObj);
     }
 
-{{/if}}
-{{/if}}
+    {{/if}}
+  {{/if}}
 {{/each}}
     return jsonObj;
   }

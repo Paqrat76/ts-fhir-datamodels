@@ -34,8 +34,8 @@
 
 {{#if sdHbs.isExtension}}
 {{!-- Public Field Methods Partial --}}
-{{#each sdHbs.parentComponent.elementDefinitions}}
+  {{#each sdHbs.parentComponent.elementDefinitions}}
 {{> publicExtensionMethodsChoicePartial edHbs=this }}
-{{/each}}
+  {{/each}}
 {{/if}}
 }

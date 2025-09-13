@@ -130,23 +130,4 @@ describe('src/generator-app unit test suite', () => {
       });
     });
   });
-
-  // Uncomment to debug the generator against a full FHIR cache
-  // describe('generator-app using full FHIR cache for debugging', () => {
-  //   const testOut = resolve(__dirname, 'test-out');
-  //   const testFhirPackage: FhirPackage = {
-  //     release: 'R4',
-  //     pkgName: 'hl7.fhir.r4.core',
-  //     pkgVersion: '4.0.1',
-  //     baseOutputPath: testOut,
-  //     pkgLoaderCacheRootPath: os.homedir(),
-  //   };
-  //
-  //   it.skip('should generate data models for debugging', async () => {
-  //     const generator = new GeneratorApp(testFhirPackage);
-  //     // Add conditional breakpoints in generator code as needed
-  //     const generatedContent: GeneratedContent[] = await generator.generate();
-  //     expect(generatedContent).toBeDefined();
-  //   });
-  // });
 });

@@ -52,8 +52,8 @@
 
 {{/if}}
 {{#each elementDefinitions}}
-{{#if this.isBackboneType}}
-{{#if this.isOptionalItem}}
+  {{#if this.isBackboneType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -62,8 +62,8 @@
       instance.set{{upperFirst this.fieldName}}(component);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -78,8 +78,8 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -93,8 +93,8 @@
       });
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -112,10 +112,10 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isChoiceType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isChoiceType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const {{this.fieldIdentifierName}}: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -126,8 +126,8 @@
     );
     instance.set{{upperFirst this.fieldName}}({{this.fieldName}});
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}[x]';
     sourceField = `${optSourceValue}.${fieldName}`;
     const {{this.fieldIdentifierName}}: IDataType | undefined = fhirParser.parsePolymorphicDataType(
@@ -142,10 +142,10 @@
       instance.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isComplexType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isComplexType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -154,8 +154,8 @@
       instance.set{{upperFirst this.fieldName}}(datatype);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -170,8 +170,8 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -185,8 +185,8 @@
       });
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -204,10 +204,10 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isEnumCodeType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isEnumCodeType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = 'string';
@@ -217,8 +217,8 @@
       instance.set{{upperFirst this.fieldName}}Element(datatype);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = 'string';
@@ -234,8 +234,8 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = 'string';
@@ -254,8 +254,8 @@
       });
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = 'string';
@@ -278,10 +278,10 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isPrimitiveType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isPrimitiveType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
@@ -291,8 +291,8 @@
       instance.set{{upperFirst this.fieldName}}Element(datatype);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
@@ -308,8 +308,8 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
@@ -328,8 +328,8 @@
       });
     }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
@@ -352,10 +352,10 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isReferenceType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isReferenceType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -364,8 +364,8 @@
       instance.set{{upperFirst this.fieldName}}(datatype);
     }
 
-{{/if}}
-{{#if this.isRequiredItem}}
+    {{/if}}
+    {{#if this.isRequiredItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -380,8 +380,8 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{#if this.isOptionalList}}
+    {{/if}}
+    {{#if this.isOptionalList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -395,8 +395,8 @@
       });
   }
 
-{{/if}}
-{{#if this.isRequiredList}}
+    {{/if}}
+    {{#if this.isRequiredList}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -414,10 +414,10 @@
       instance.set{{upperFirst this.fieldName}}(null);
     }
 
-{{/if}}
-{{/if}}
-{{#if this.isResourceType}}
-{{#if this.isOptionalItem}}
+    {{/if}}
+  {{/if}}
+  {{#if this.isResourceType}}
+    {{#if this.isOptionalItem}}
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
@@ -425,8 +425,8 @@
       instance.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
 
-{{/if}}
-{{/if}}
+    {{/if}}
+  {{/if}}
 {{/each}}
     return instance;
   }

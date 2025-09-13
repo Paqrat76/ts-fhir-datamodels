@@ -78,7 +78,7 @@
 }
 {{!-- Public Component Classes Partial --}}
 {{#if sdHbs.hasChildComponents}}
-{{#each sdHbs.childComponents}}
+  {{#each sdHbs.childComponents}}
 {{> fhirChildComponentPartial compHbs=this }}
-{{/each}}
+  {{/each}}
 {{/if}}
