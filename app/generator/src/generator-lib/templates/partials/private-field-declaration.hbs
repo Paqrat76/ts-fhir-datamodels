@@ -1,6 +1,6 @@
 {{!-- Private Field Declaration Partial Template --}}
 {{#if edHbs.isEnumCodeType}}
-{{#unless edHbs.type.isDupeCodeSystemName}}
+  {{#unless edHbs.type.isDupeCodeSystemName}}
   /**
    * FHIR CodeSystem: {{edHbs.type.codeSystemName}}
    *
@@ -8,7 +8,7 @@
    */
   private readonly {{camelCase edHbs.type.codeSystemEnumName}}: {{edHbs.type.codeSystemEnumName}};
 
-{{/unless}}
+  {{/unless}}
 {{/if}}
   /**
    * {{edHbs.path}} Element
@@ -59,21 +59,21 @@
    */
 {{#if edHbs.isChoiceType}}
   @ChoiceDataTypesMeta('{{edHbs.path}}',[
-{{#each edHbs.type.choiceTypes}}
+    {{#each edHbs.type.choiceTypes}}
     '{{this}}',
-{{/each}}
+    {{/each}}
   ])
 {{/if}}
 {{#if edHbs.isRequired}}
-{{#if edHbs.isChoiceType}}
+  {{#if edHbs.isChoiceType}}
   private {{edHbs.fieldIdentifierName}}: IDataType{{#if edHbs.isArray}}[]{{/if}} | null;
-{{else}}
+  {{else}}
   private {{edHbs.fieldIdentifierName}}: {{fieldDataType edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | null;
-{{/if}}
+  {{/if}}
 {{else}}
-{{#if edHbs.isChoiceType}}
+  {{#if edHbs.isChoiceType}}
   private {{edHbs.fieldIdentifierName}}?: IDataType{{#if edHbs.isArray}}[]{{/if}} | undefined;
-{{else}}
+  {{else}}
   private {{edHbs.fieldIdentifierName}}?: {{fieldDataType edHbs.type.code}}{{#if edHbs.isArray}}[]{{/if}} | undefined;
-{{/if}}
+  {{/if}}
 {{/if}}

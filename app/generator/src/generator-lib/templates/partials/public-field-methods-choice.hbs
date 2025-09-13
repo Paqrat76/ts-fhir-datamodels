@@ -36,7 +36,7 @@
 
   // *** NOTE ***
   // Following choice datatype-specific "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
-{{#each edHbs.type.choiceDataTypes}}
+  {{#each edHbs.type.choiceDataTypes}}
 
   /**
    * @returns the `{{../edHbs.fieldIdentifierName}}` property value as a {{this}} object if defined; else undefined
@@ -59,7 +59,7 @@
   public has{{upperFirst ../edHbs.fieldName}}{{this}}(): boolean {
     return this.has{{upperFirst ../edHbs.fieldName}}() && this.{{../edHbs.fieldIdentifierName}} instanceof {{this}};
   }
-{{/each}}
+  {{/each}}
 
   // End of choice datatype-specific "get"/"has" methods
 {{/if}}
@@ -100,7 +100,7 @@
 
   // *** NOTE ***
   // Following choice datatype-specific "get"/"has" methods are added for each choice data type - one pair of methods for each choice data type
-{{#each edHbs.type.choiceDataTypes}}
+  {{#each edHbs.type.choiceDataTypes}}
 
   /**
    * @returns the `{{../edHbs.fieldIdentifierName}}` property value as a {{this}} object if defined; else null
@@ -123,7 +123,7 @@
   public has{{upperFirst ../edHbs.fieldName}}{{this}}(): boolean {
     return this.has{{upperFirst ../edHbs.fieldName}}() && this.{{../edHbs.fieldIdentifierName}} instanceof {{this}};
   }
-{{/each}}
+  {{/each}}
 
   // End of choice datatype-specific "get"/"has" methods
 {{/if}}

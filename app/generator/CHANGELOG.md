@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-09-13]
+
+### Changed
+
+- Updated dependencies
+- Minor "prettier" formatting changes in various Handlebars templates (*.hbs)
+
+### Removed
+
+- Commented out unit tests used for debugging
+
+
 ## [2025-08-30]
 
 ### Added

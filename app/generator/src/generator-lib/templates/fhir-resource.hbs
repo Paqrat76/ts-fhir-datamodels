@@ -44,9 +44,9 @@ import {
 {{/each}}
 } from '@paq-ts-fhir/fhir-core';
 {{#if sdHbs.generatedImports }}
-{{#each sdHbs.generatedImports}}
+  {{#each sdHbs.generatedImports}}
 {{{this}}};
-{{/each}}
+  {{/each}}
 {{/if}}
 {{#if sdHbs.hasSymbolMetadata}}
 
@@ -118,7 +118,7 @@ export class {{sdHbs.name}} extends {{sdHbs.baseDefinitionType}} implements I{{s
 
 {{!-- Public Component Classes Partial --}}
 {{#if sdHbs.hasChildComponents}}
-{{#each sdHbs.childComponents}}
+  {{#each sdHbs.childComponents}}
 {{> fhirChildComponentPartial compHbs=this }}
-{{/each}}
+  {{/each}}
 {{/if}}

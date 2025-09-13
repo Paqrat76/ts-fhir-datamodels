@@ -61,9 +61,7 @@ export default tsEslint.config(
     linterOptions: {
       // https://eslint.org/docs/latest/use/configure/configuration-files#disabling-inline-configuration
       noInlineConfig: false,
-      // For linting generated files, use `--report-unused-disable-directives-severity off` on the linting NPM script.
-      // Refer to https://eslint.org/docs/latest/use/command-line-interface#--report-unused-disable-directives.
-      // Set to 'warn' to report unused disable directives withing non-generated files.
+      // Set to 'warn' to report unused disable directives with non-generated files.
       // https://eslint.org/docs/latest/use/configure/configuration-files#reporting-unused-disable-directives
       reportUnusedDisableDirectives: 'warn',
     },
@@ -151,6 +149,15 @@ export default tsEslint.config(
       'jsdoc/empty-tags': 'off', // override of 'plugin:jsdoc/recommended'
       'jsdoc/require-param-type': 'off', // override of 'plugin:jsdoc/recommended'
       'jsdoc/require-returns-type': 'off', // override of 'plugin:jsdoc/recommended'
+    },
+  },
+  {
+    name: 'generated/datamodels',
+    files: ['app/generator-datamodel-ftest/src/**/*.ts', 'packages/r*-datamodels/src/**/*.ts'],
+    linterOptions: {
+      // Set to 'off' to NOT report unused disable directives with generated files.
+      // https://eslint.org/docs/latest/use/configure/configuration-files#reporting-unused-disable-directives
+      reportUnusedDisableDirectives: 'off',
     },
   },
   {

@@ -4,39 +4,39 @@
     super();
 {{#if compHbs.hasCodeSystemEnums}}
 
-{{#each compHbs.elementDefinitions}}
-{{#if this.isEnumCodeType}}
-{{#unless this.type.isDupeCodeSystemName}}
+  {{#each compHbs.elementDefinitions}}
+    {{#if this.isEnumCodeType}}
+      {{#unless this.type.isDupeCodeSystemName}}
     this.{{camelCase this.type.codeSystemEnumName}} = new {{this.type.codeSystemEnumName}}();
-{{/unless}}
-{{/if}}
-{{/each}}
+      {{/unless}}
+    {{/if}}
+  {{/each}}
 {{/if}}
 {{#if compHbs.hasRequiredFields}}
-{{#each compHbs.elementDefinitions}}
-{{#if this.isRequired}}
-{{#if this.type.codeSystemEnumName}}
+  {{#each compHbs.elementDefinitions}}
+    {{#if this.isRequired}}
+      {{#if this.type.codeSystemEnumName}}
 
-{{#if this.isArray}}
+        {{#if this.isArray}}
     this.{{this.fieldIdentifierName}} = constructorCodeValueAsEnumCodeTypeList<{{this.type.codeSystemEnumName}}>(
       {{this.fieldIdentifierName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
       '{{../compHbs.rootElement.path}}.{{this.fieldName}}',
     );
-{{else}}
+        {{else}}
     this.{{this.fieldIdentifierName}} = constructorCodeValueAsEnumCodeType<{{this.type.codeSystemEnumName}}>(
       {{this.fieldIdentifierName}},
       {{this.type.codeSystemEnumName}},
       this.{{camelCase this.type.codeSystemEnumName}},
       '{{../compHbs.rootElement.path}}.{{this.fieldName}}',
     );
-{{/if}}
-{{else}}
+        {{/if}}
+      {{else}}
 
     this.{{this.fieldIdentifierName}} = null;
-{{#if this.isPrimitiveType}}
-{{#if this.isArray}}
+        {{#if this.isPrimitiveType}}
+          {{#if this.isArray}}
     if (isDefinedList<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldIdentifierName}})) {
       if ({{this.fieldIdentifierName}}[0] instanceof PrimitiveType) {
         this.set{{upperFirst this.fieldName}}Element({{this.fieldIdentifierName}} as {{this.type.code}}[]);
@@ -44,7 +44,7 @@
         this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}} as fhir{{upperFirst this.type.fhirDataType}}[]);
       }
     }
-{{else}}
+          {{else}}
     if (isDefined<{{this.type.code}} | fhir{{upperFirst this.type.fhirDataType}}>({{this.fieldIdentifierName}})) {
       if ({{this.fieldIdentifierName}} instanceof PrimitiveType) {
         this.set{{upperFirst this.fieldName}}Element({{this.fieldIdentifierName}});
@@ -52,33 +52,33 @@
         this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
       }
     }
-{{/if}}
-{{else}}
-{{#if this.isChoiceType}}
-{{#if this.isArray}}
+          {{/if}}
+        {{else}}
+          {{#if this.isChoiceType}}
+            {{#if this.isArray}}
     if (isDefinedList<IDataType>({{this.fieldIdentifierName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
-{{else}}
+            {{else}}
     if (isDefined<IDataType>({{this.fieldIdentifierName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
-{{/if}}
+            {{/if}}
 
-{{else}}
-{{#if this.isArray}}
+          {{else}}
+            {{#if this.isArray}}
     if (isDefinedList<{{this.type.code}}>({{this.fieldIdentifierName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
-{{else}}
+            {{else}}
     if (isDefined<{{this.type.code}}>({{this.fieldIdentifierName}})) {
       this.set{{upperFirst this.fieldName}}({{this.fieldIdentifierName}});
     }
-{{/if}}
-{{/if}}
-{{/if}}
-{{/if}}
-{{/if}}
-{{/each}}
+            {{/if}}
+          {{/if}}
+        {{/if}}
+      {{/if}}
+    {{/if}}
+  {{/each}}
 {{/if}}
   }
