@@ -174,14 +174,16 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -268,16 +270,20 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
     fieldName = 'lensSpecification';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: VisionPrescriptionLensSpecificationComponent | undefined = VisionPrescriptionLensSpecificationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setLensSpecification(null);
-        } else {
-          instance.addLensSpecification(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setLensSpecification(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: VisionPrescriptionLensSpecificationComponent | undefined = VisionPrescriptionLensSpecificationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setLensSpecification(null);
+          } else {
+            instance.addLensSpecification(component);
+          }
+        });
+      }
     } else {
       instance.setLensSpecification(null);
     }
@@ -990,20 +996,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasCreatedElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement(), 'created', jsonObj);
-    } else {
-      jsonObj['created'] = null;
     }
 
     if (this.hasPatient()) {
       setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
-    } else {
-      jsonObj['patient'] = null;
     }
 
     if (this.hasEncounter()) {
@@ -1012,20 +1012,14 @@ export class VisionPrescription extends DomainResource implements IDomainResourc
 
     if (this.hasDateWrittenElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getDateWrittenElement(), 'dateWritten', jsonObj);
-    } else {
-      jsonObj['dateWritten'] = null;
     }
 
     if (this.hasPrescriber()) {
       setFhirComplexJson(this.getPrescriber(), 'prescriber', jsonObj);
-    } else {
-      jsonObj['prescriber'] = null;
     }
 
     if (this.hasLensSpecification()) {
       setFhirBackboneElementListJson(this.getLensSpecification(), 'lensSpecification', jsonObj);
-    } else {
-      jsonObj['lensSpecification'] = null;
     }
 
     return jsonObj;
@@ -1145,14 +1139,16 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
     fieldName = 'prism';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: VisionPrescriptionLensSpecificationPrismComponent | undefined = VisionPrescriptionLensSpecificationPrismComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addPrism(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: VisionPrescriptionLensSpecificationPrismComponent | undefined = VisionPrescriptionLensSpecificationPrismComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addPrism(component);
+          }
+        });
+      }
     }
 
     fieldName = 'add';
@@ -1220,14 +1216,16 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
     fieldName = 'note';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Annotation | undefined = Annotation.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addNote(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Annotation | undefined = Annotation.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addNote(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2420,15 +2418,11 @@ export class VisionPrescriptionLensSpecificationComponent extends BackboneElemen
 
     if (this.hasProduct()) {
       setFhirComplexJson(this.getProduct(), 'product', jsonObj);
-    } else {
-      jsonObj['product'] = null;
     }
 
     if (this.hasEyeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getEyeElement()!, 'eye', jsonObj);
-    } else {
-      jsonObj['eye'] = null;
     }
 
     if (this.hasSphereElement()) {
@@ -2864,15 +2858,11 @@ export class VisionPrescriptionLensSpecificationPrismComponent extends BackboneE
 
     if (this.hasAmountElement()) {
       setFhirPrimitiveJson<fhirDecimal>(this.getAmountElement(), 'amount', jsonObj);
-    } else {
-      jsonObj['amount'] = null;
     }
 
     if (this.hasBaseElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getBaseElement()!, 'base', jsonObj);
-    } else {
-      jsonObj['base'] = null;
     }
 
     return jsonObj;

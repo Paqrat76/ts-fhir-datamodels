@@ -80,3 +80,22 @@ This document will contain release notes for each release of these packages.
 **What Changed:**
 
 - Updated version and CHANGELOG.md files to resolve publication failures.
+
+### Release 2025-09-17
+
+**Summary:** This release resolved [Issue #26](https://github.com/Paqrat76/ts-fhir-datamodels/issues/26).
+
+**Released Packages:**
+
+- `@paq-ts-fhir/fhir-core@1.2.0`
+- `@paq-ts-fhir/r4-datamodels@1.2.0`
+- `@paq-ts-fhir/r4b-datamodels@1.2.0`
+- `@paq-ts-fhir/r5-datamodels@1.2.0`
+
+**What Changed:**
+
+- The static `parse(...)` method was modified to resolved [Issue #26](https://github.com/Paqrat76/ts-fhir-datamodels/issues/26)
+  where an unexpected error was thrown when a JSON field value was `null` for an array type field (i.e., max cardinality > 1).
+- The instance `toJSON()` methods will no longer return `fieldName: null` for missing "required" field values.
+  Any "required" fields having a `null` value will be omitted from the JSON output just as all other fields are omitted
+  from the JSON output if they are `undefined`.

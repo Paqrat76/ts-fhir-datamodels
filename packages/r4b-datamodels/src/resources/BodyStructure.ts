@@ -118,14 +118,16 @@ export class BodyStructure extends DomainResource implements IDomainResource {
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'active';
@@ -156,14 +158,16 @@ export class BodyStructure extends DomainResource implements IDomainResource {
     fieldName = 'locationQualifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addLocationQualifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addLocationQualifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'description';
@@ -178,14 +182,16 @@ export class BodyStructure extends DomainResource implements IDomainResource {
     fieldName = 'image';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Attachment | undefined = Attachment.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addImage(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Attachment | undefined = Attachment.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addImage(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'patient';
@@ -837,8 +843,6 @@ export class BodyStructure extends DomainResource implements IDomainResource {
 
     if (this.hasPatient()) {
       setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
-    } else {
-      jsonObj['patient'] = null;
     }
 
     return jsonObj;

@@ -152,14 +152,16 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -197,40 +199,46 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     fieldName = 'performer';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImagingSelectionPerformerComponent | undefined = ImagingSelectionPerformerComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addPerformer(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImagingSelectionPerformerComponent | undefined = ImagingSelectionPerformerComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addPerformer(component);
+          }
+        });
+      }
     }
 
     fieldName = 'basedOn';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addBasedOn(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addBasedOn(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'category';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addCategory(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addCategory(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'code';
@@ -259,27 +267,31 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     fieldName = 'derivedFrom';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addDerivedFrom(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addDerivedFrom(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'endpoint';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addEndpoint(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addEndpoint(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'seriesUid';
@@ -320,27 +332,31 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     fieldName = 'focus';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addFocus(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addFocus(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'instance';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImagingSelectionInstanceComponent | undefined = ImagingSelectionInstanceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addInstance(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImagingSelectionInstanceComponent | undefined = ImagingSelectionInstanceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addInstance(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1824,8 +1840,6 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasSubject()) {
@@ -1850,8 +1864,6 @@ export class ImagingSelection extends DomainResource implements IDomainResource 
 
     if (this.hasCode()) {
       setFhirComplexJson(this.getCode(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasStudyUidElement()) {
@@ -2226,44 +2238,50 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addSubsetElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addSubsetElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'imageRegion2D';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImagingSelectionInstanceImageRegion2DComponent | undefined = ImagingSelectionInstanceImageRegion2DComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addImageRegion2D(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImagingSelectionInstanceImageRegion2DComponent | undefined = ImagingSelectionInstanceImageRegion2DComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addImageRegion2D(component);
+          }
+        });
+      }
     }
 
     fieldName = 'imageRegion3D';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImagingSelectionInstanceImageRegion3DComponent | undefined = ImagingSelectionInstanceImageRegion3DComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addImageRegion3D(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImagingSelectionInstanceImageRegion3DComponent | undefined = ImagingSelectionInstanceImageRegion3DComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addImageRegion3D(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2841,8 +2859,6 @@ export class ImagingSelectionInstanceComponent extends BackboneElement implement
 
     if (this.hasUidElement()) {
       setFhirPrimitiveJson<fhirId>(this.getUidElement(), 'uid', jsonObj);
-    } else {
-      jsonObj['uid'] = null;
     }
 
     if (this.hasNumberElement()) {
@@ -2946,20 +2962,24 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.setCoordinate(null);
-        } else {
-          instance.addCoordinateElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setCoordinate(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.setCoordinate(null);
+          } else {
+            instance.addCoordinateElement(datatype);
+          }
+        });
+      }
     } else {
       instance.setCoordinate(null);
     }
@@ -3314,14 +3334,10 @@ export class ImagingSelectionInstanceImageRegion2DComponent extends BackboneElem
     if (this.hasRegionTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRegionTypeElement()!, 'regionType', jsonObj);
-    } else {
-      jsonObj['regionType'] = null;
     }
 
     if (this.hasCoordinateElement()) {
       setFhirPrimitiveListJson(this.getCoordinateElement(), 'coordinate', jsonObj);
-    } else {
-      jsonObj['coordinate'] = null;
     }
 
     return jsonObj;
@@ -3405,20 +3421,24 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.setCoordinate(null);
-        } else {
-          instance.addCoordinateElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setCoordinate(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: DecimalType | undefined = fhirParser.parseDecimalType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.setCoordinate(null);
+          } else {
+            instance.addCoordinateElement(datatype);
+          }
+        });
+      }
     } else {
       instance.setCoordinate(null);
     }
@@ -3773,14 +3793,10 @@ export class ImagingSelectionInstanceImageRegion3DComponent extends BackboneElem
     if (this.hasRegionTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getRegionTypeElement()!, 'regionType', jsonObj);
-    } else {
-      jsonObj['regionType'] = null;
     }
 
     if (this.hasCoordinateElement()) {
       setFhirPrimitiveListJson(this.getCoordinateElement(), 'coordinate', jsonObj);
-    } else {
-      jsonObj['coordinate'] = null;
     }
 
     return jsonObj;

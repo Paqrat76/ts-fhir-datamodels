@@ -144,14 +144,16 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'type';
@@ -234,14 +236,16 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
     fieldName = 'calibration';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: DeviceMetricCalibrationComponent | undefined = DeviceMetricCalibrationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addCalibration(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: DeviceMetricCalibrationComponent | undefined = DeviceMetricCalibrationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addCalibration(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1029,8 +1033,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasUnit()) {
@@ -1039,8 +1041,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
 
     if (this.hasDevice()) {
       setFhirComplexJson(this.getDevice(), 'device', jsonObj);
-    } else {
-      jsonObj['device'] = null;
     }
 
     if (this.hasOperationalStatusElement()) {
@@ -1055,8 +1055,6 @@ export class DeviceMetric extends DomainResource implements IDomainResource {
     if (this.hasCategoryElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCategoryElement()!, 'category', jsonObj);
-    } else {
-      jsonObj['category'] = null;
     }
 
     if (this.hasMeasurementFrequency()) {

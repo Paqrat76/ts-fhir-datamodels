@@ -166,14 +166,16 @@ export class Subscription extends DomainResource implements IDomainResource {
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'name';
@@ -218,14 +220,16 @@ export class Subscription extends DomainResource implements IDomainResource {
     fieldName = 'contact';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ContactPoint | undefined = ContactPoint.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addContact(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: ContactPoint | undefined = ContactPoint.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addContact(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'end';
@@ -257,14 +261,16 @@ export class Subscription extends DomainResource implements IDomainResource {
     fieldName = 'filterBy';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: SubscriptionFilterByComponent | undefined = SubscriptionFilterByComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addFilterBy(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: SubscriptionFilterByComponent | undefined = SubscriptionFilterByComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addFilterBy(component);
+          }
+        });
+      }
     }
 
     fieldName = 'channelType';
@@ -293,14 +299,16 @@ export class Subscription extends DomainResource implements IDomainResource {
     fieldName = 'parameter';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: SubscriptionParameterComponent | undefined = SubscriptionParameterComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addParameter(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: SubscriptionParameterComponent | undefined = SubscriptionParameterComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addParameter(component);
+          }
+        });
+      }
     }
 
     fieldName = 'heartbeatPeriod';
@@ -1859,14 +1867,10 @@ export class Subscription extends DomainResource implements IDomainResource {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasTopicElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getTopicElement(), 'topic', jsonObj);
-    } else {
-      jsonObj['topic'] = null;
     }
 
     if (this.hasContact()) {
@@ -1891,8 +1895,6 @@ export class Subscription extends DomainResource implements IDomainResource {
 
     if (this.hasChannelType()) {
       setFhirComplexJson(this.getChannelType(), 'channelType', jsonObj);
-    } else {
-      jsonObj['channelType'] = null;
     }
 
     if (this.hasEndpointElement()) {
@@ -2648,8 +2650,6 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
 
     if (this.hasFilterParameterElement()) {
       setFhirPrimitiveJson<fhirString>(this.getFilterParameterElement(), 'filterParameter', jsonObj);
-    } else {
-      jsonObj['filterParameter'] = null;
     }
 
     if (this.hasComparatorElement()) {
@@ -2664,8 +2664,6 @@ export class SubscriptionFilterByComponent extends BackboneElement implements IB
 
     if (this.hasValueElement()) {
       setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
-    } else {
-      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -2994,14 +2992,10 @@ export class SubscriptionParameterComponent extends BackboneElement implements I
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasValueElement()) {
       setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
-    } else {
-      jsonObj['value'] = null;
     }
 
     return jsonObj;

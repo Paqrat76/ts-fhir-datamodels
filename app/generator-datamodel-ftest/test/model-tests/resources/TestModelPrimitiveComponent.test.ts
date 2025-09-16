@@ -29,7 +29,9 @@ import {
   fhirString,
   IBackboneElement,
   IntegerType,
+  InvalidCodeError,
   InvalidTypeError,
+  JsonError,
   PrimitiveTypeError,
   StringType,
 } from '@paq-ts-fhir/fhir-core';
@@ -728,6 +730,67 @@ describe('TestModelPrimitiveComponent', () => {
       primitive1x: ['This is a valid string.', 'This is another valid string.'],
       choice11Uri: 'validUri',
     };
+    const INVALID_JSON_1 = {
+      primitive01: ['2024-01-28T14:30:00Z'],
+    };
+    const INVALID_JSON_2 = {
+      primitive11: 1234,
+    };
+    const INVALID_JSON_3 = {
+      primitive0x: 13579,
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      primitive01: null,
+      primitive0x: null,
+      primitive11: null,
+      primitive1x: null,
+      choice11Uri: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModelPrimitiveComponent(null, null, null);
@@ -787,6 +850,47 @@ describe('TestModelPrimitiveComponent', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no field values', () => {
+      const testInstance = new TestModelPrimitiveComponent(null, null, null);
+
+      initializeBackboneElementProperties(testInstance, 2);
+
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expectInitializedBackboneElementProperties(testInstance, 2);
+
+      expect(testInstance.hasPrimitive01Element()).toBe(false);
+      expect(testInstance.getPrimitive01Element()).toEqual(new DateTimeType());
+      expect(testInstance.hasPrimitive01()).toBe(false);
+      expect(testInstance.getPrimitive01()).toBeUndefined();
+      expect(testInstance.hasPrimitive0xElement()).toBe(false);
+      expect(testInstance.getPrimitive0xElement()).toEqual([] as IntegerType[]);
+      expect(testInstance.hasPrimitive0x()).toBe(false);
+      expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
+      expect(testInstance.hasChoice11StringType()).toBe(false);
+      expect(testInstance.getChoice11StringType()).toBeNull();
+      expect(testInstance.hasChoice11UriType()).toBe(false);
+      expect(testInstance.getChoice11UriType()).toBeNull();
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: TestModelPrimitiveComponent | undefined;
       testInstance = TestModelPrimitiveComponent.parse({});
@@ -797,6 +901,32 @@ describe('TestModelPrimitiveComponent', () => {
 
       testInstance = TestModelPrimitiveComponent.parse(undefined);
       expect(testInstance).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        TestModelPrimitiveComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelPrimitiveComponent JSON is not a JSON object.`);
+
+      t = () => {
+        TestModelPrimitiveComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelPrimitiveComponent.primitive01 is not a string.`);
+
+      t = () => {
+        TestModelPrimitiveComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelPrimitiveComponent.primitive11 is not a boolean.`);
+
+      t = () => {
+        TestModelPrimitiveComponent.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelPrimitiveComponent.primitive0x is not a JSON array.`);
     });
 
     it('should return parsed TestModelPrimitiveComponent for valid json', () => {
@@ -844,6 +974,84 @@ describe('TestModelPrimitiveComponent', () => {
       );
       expect(testInstance.hasChoice11UriType()).toBe(true);
       expect(testInstance.getChoice11UriType()).toEqual(TestData.VALID_URI_TYPE);
+    });
+
+    it('should return parsed TestModelPrimitiveComponent for valid json with no field values', () => {
+      const testInstance: TestModelPrimitiveComponent | undefined =
+        TestModelPrimitiveComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedBackboneElementProperties(testInstance, 2);
+
+      expect(testInstance.hasPrimitive01Element()).toBe(false);
+      expect(testInstance.getPrimitive01Element()).toEqual(new DateTimeType());
+      expect(testInstance.hasPrimitive01()).toBe(false);
+      expect(testInstance.getPrimitive01()).toBeUndefined();
+      expect(testInstance.hasPrimitive0xElement()).toBe(false);
+      expect(testInstance.getPrimitive0xElement()).toEqual([] as IntegerType[]);
+      expect(testInstance.hasPrimitive0x()).toBe(false);
+      expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
+      expect(testInstance.hasChoice11StringType()).toBe(false);
+      expect(testInstance.getChoice11StringType()).toBeNull();
+      expect(testInstance.hasChoice11UriType()).toBe(false);
+      expect(testInstance.getChoice11UriType()).toBeNull();
+    });
+
+    it('should return parsed TestModelPrimitiveComponent for valid json with null field values', () => {
+      const testInstance: TestModelPrimitiveComponent | undefined =
+        TestModelPrimitiveComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneElementBase(
+        TestModelPrimitiveComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelPrimitiveComponent',
+        'TestModel.primitive',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedBackboneElementProperties(testInstance, 2);
+
+      expect(testInstance.hasPrimitive01Element()).toBe(false);
+      expect(testInstance.getPrimitive01Element()).toEqual(new DateTimeType());
+      expect(testInstance.hasPrimitive01()).toBe(false);
+      expect(testInstance.getPrimitive01()).toBeUndefined();
+      expect(testInstance.hasPrimitive0xElement()).toBe(false);
+      expect(testInstance.getPrimitive0xElement()).toEqual([] as IntegerType[]);
+      expect(testInstance.hasPrimitive0x()).toBe(false);
+      expect(testInstance.getPrimitive0x()).toEqual([] as fhirInteger[]);
+      expect(testInstance.hasPrimitive11Element()).toBe(false);
+      expect(testInstance.getPrimitive11Element()).toEqual(new BooleanType());
+      expect(testInstance.hasPrimitive11()).toBe(false);
+      expect(testInstance.getPrimitive11()).toBeNull();
+      expect(testInstance.hasPrimitive1xElement()).toBe(false);
+      expect(testInstance.getPrimitive1xElement()).toEqual([] as StringType[]);
+      expect(testInstance.hasPrimitive1x()).toBe(false);
+      expect(testInstance.getPrimitive1x()).toEqual([] as fhirString[]);
+      expect(testInstance.hasChoice11()).toBe(false);
+      expect(testInstance.getChoice11()).toBeNull();
+      expect(testInstance.hasChoice11StringType()).toBe(false);
+      expect(testInstance.getChoice11StringType()).toBeNull();
+      expect(testInstance.hasChoice11UriType()).toBe(false);
+      expect(testInstance.getChoice11UriType()).toBeNull();
     });
   });
 

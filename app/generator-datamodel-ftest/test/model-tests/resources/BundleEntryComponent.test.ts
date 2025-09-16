@@ -21,7 +21,15 @@
  *
  */
 
-import { EnumCodeType, IBackboneElement, InvalidTypeError, PrimitiveTypeError, UriType } from '@paq-ts-fhir/fhir-core';
+import {
+  EnumCodeType,
+  IBackboneElement,
+  InvalidCodeError,
+  InvalidTypeError,
+  JsonError,
+  PrimitiveTypeError,
+  UriType,
+} from '@paq-ts-fhir/fhir-core';
 import {
   BundleEntryComponent,
   BundleEntryRequestComponent,
@@ -405,6 +413,81 @@ describe('BundleEntryComponent', () => {
         status: 'This is a valid string.',
       },
     };
+    const INVALID_JSON_1 = {
+      search: [
+        {
+          mode: 'include',
+        },
+      ],
+    };
+    const INVALID_JSON_2 = {
+      fullUrl: 1234,
+    };
+    const INVALID_JSON_3 = {
+      link: {
+        relation: 'This is a valid string.',
+        url: 'validUri',
+      },
+    };
+    const INVALID_JSON_4 = {
+      request: {
+        method: 'BOGUS',
+        url: 'validUri',
+      },
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      link: null,
+      fullUrl: null,
+      resource: null,
+      search: null,
+      request: null,
+      response: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleEntryComponent();
@@ -446,6 +529,39 @@ describe('BundleEntryComponent', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new BundleEntryComponent();
+
+      initializeBackboneElementProperties(testInstance, 2);
+
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryComponent',
+        'Bundle.entry',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasLink()).toBe(false);
+      expect(testInstance.getLink()).toEqual([] as BundleLinkComponent[]);
+      expect(testInstance.hasFullUrlElement()).toBe(false);
+      expect(testInstance.getFullUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasFullUrl()).toBe(false);
+      expect(testInstance.getFullUrl()).toBeUndefined();
+      expect(testInstance.hasResource()).toBe(false);
+      expect(testInstance.getResource()).toBeUndefined();
+      expect(testInstance.hasSearch()).toBe(false);
+      expect(testInstance.getSearch()).toEqual(new BundleEntrySearchComponent());
+      expect(testInstance.hasRequest()).toBe(false);
+      expect(testInstance.getRequest()).toEqual(new BundleEntryRequestComponent());
+      expect(testInstance.hasResponse()).toBe(false);
+      expect(testInstance.getResponse()).toEqual(new BundleEntryResponseComponent());
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: BundleEntryComponent | undefined;
       testInstance = BundleEntryComponent.parse({});
@@ -458,7 +574,39 @@ describe('BundleEntryComponent', () => {
       expect(testInstance).toBeUndefined();
     });
 
-    it('should return parsed Bundle for valid json', () => {
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        BundleEntryComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryComponent JSON is not a JSON object.`);
+
+      t = () => {
+        BundleEntryComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryComponent.search JSON is not a JSON object.`);
+
+      t = () => {
+        BundleEntryComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryComponent.fullUrl is not a string.`);
+
+      t = () => {
+        BundleEntryComponent.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryComponent.link is not a JSON array.`);
+
+      t = () => {
+        BundleEntryComponent.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown HttpVerbEnum 'code' value 'BOGUS'`);
+    });
+
+    it('should return parsed BundleEntryComponent for valid json', () => {
       const testInstance = BundleEntryComponent.parse(VALID_JSON);
 
       expectBackboneElementBase(
@@ -486,6 +634,66 @@ describe('BundleEntryComponent', () => {
       expect(testInstance.getRequest()).toEqual(bundleEntryRequestComponent);
       expect(testInstance.hasResponse()).toBe(true);
       expect(testInstance.getResponse()).toEqual(bundleEntryResponseComponent);
+    });
+
+    it('should return parsed BundleEntryComponent for valid json with no fields', () => {
+      const testInstance = BundleEntryComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryComponent',
+        'Bundle.entry',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasLink()).toBe(false);
+      expect(testInstance.getLink()).toEqual([] as BundleLinkComponent[]);
+      expect(testInstance.hasFullUrlElement()).toBe(false);
+      expect(testInstance.getFullUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasFullUrl()).toBe(false);
+      expect(testInstance.getFullUrl()).toBeUndefined();
+      expect(testInstance.hasResource()).toBe(false);
+      expect(testInstance.getResource()).toBeUndefined();
+      expect(testInstance.hasSearch()).toBe(false);
+      expect(testInstance.getSearch()).toEqual(new BundleEntrySearchComponent());
+      expect(testInstance.hasRequest()).toBe(false);
+      expect(testInstance.getRequest()).toEqual(new BundleEntryRequestComponent());
+      expect(testInstance.hasResponse()).toBe(false);
+      expect(testInstance.getResponse()).toEqual(new BundleEntryResponseComponent());
+    });
+
+    it('should return parsed BundleEntryComponent for valid json with null fields', () => {
+      const testInstance = BundleEntryComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneElementBase(
+        BundleEntryComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryComponent',
+        'Bundle.entry',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasLink()).toBe(false);
+      expect(testInstance.getLink()).toEqual([] as BundleLinkComponent[]);
+      expect(testInstance.hasFullUrlElement()).toBe(false);
+      expect(testInstance.getFullUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasFullUrl()).toBe(false);
+      expect(testInstance.getFullUrl()).toBeUndefined();
+      expect(testInstance.hasResource()).toBe(false);
+      expect(testInstance.getResource()).toBeUndefined();
+      expect(testInstance.hasSearch()).toBe(false);
+      expect(testInstance.getSearch()).toEqual(new BundleEntrySearchComponent());
+      expect(testInstance.hasRequest()).toBe(false);
+      expect(testInstance.getRequest()).toEqual(new BundleEntryRequestComponent());
+      expect(testInstance.hasResponse()).toBe(false);
+      expect(testInstance.getResponse()).toEqual(new BundleEntryResponseComponent());
     });
   });
 

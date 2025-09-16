@@ -1168,9 +1168,7 @@ export function setPolymorphicValueJson(value: IDataType, propName: string, json
   const valueKeyName = `${valuePrefix}${upperFirst(fhirType)}`;
 
   const json: JSON.Value | undefined = value.toJSON();
-  if (json === null) {
-    jsonObj[valueKeyName] = null;
-  } else if (typeof json === 'boolean') {
+  if (typeof json === 'boolean') {
     jsonObj[valueKeyName] = json;
   } else if (typeof json === 'number') {
     jsonObj[valueKeyName] = json;

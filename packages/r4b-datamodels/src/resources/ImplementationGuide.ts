@@ -299,14 +299,16 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
     fieldName = 'contact';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addContact(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addContact(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'description';
@@ -321,27 +323,31 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
     fieldName = 'useContext';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addUseContext(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addUseContext(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'jurisdiction';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addJurisdiction(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addJurisdiction(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'copyright';
@@ -381,20 +387,24 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.setFhirVersion(null);
-        } else {
-          instance.addFhirVersionElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setFhirVersion(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.setFhirVersion(null);
+          } else {
+            instance.addFhirVersionElement(datatype);
+          }
+        });
+      }
     } else {
       instance.setFhirVersion(null);
     }
@@ -402,27 +412,31 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
     fieldName = 'dependsOn';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideDependsOnComponent | undefined = ImplementationGuideDependsOnComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addDependsOn(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideDependsOnComponent | undefined = ImplementationGuideDependsOnComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addDependsOn(component);
+          }
+        });
+      }
     }
 
     fieldName = 'global';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideGlobalComponent | undefined = ImplementationGuideGlobalComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addGlobal(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideGlobalComponent | undefined = ImplementationGuideGlobalComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addGlobal(component);
+          }
+        });
+      }
     }
 
     fieldName = 'definition';
@@ -2317,8 +2331,6 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
-    } else {
-      jsonObj['url'] = null;
     }
 
     if (this.hasVersionElement()) {
@@ -2327,8 +2339,6 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -2338,8 +2348,6 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -2376,8 +2384,6 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
 
     if (this.hasPackageIdElement()) {
       setFhirPrimitiveJson<fhirId>(this.getPackageIdElement(), 'packageId', jsonObj);
-    } else {
-      jsonObj['packageId'] = null;
     }
 
     if (this.hasLicenseElement()) {
@@ -2387,8 +2393,6 @@ export class ImplementationGuide extends DomainResource implements IDomainResour
 
     if (this.hasFhirVersionElement()) {
       setFhirPrimitiveListJson<fhirCode>(this.getFhirVersionElement(), 'fhirVersion', jsonObj);
-    } else {
-      jsonObj['fhirVersion'] = null;
     }
 
     if (this.hasDependsOn()) {
@@ -2808,8 +2812,6 @@ export class ImplementationGuideDependsOnComponent extends BackboneElement imple
 
     if (this.hasUriElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getUriElement(), 'uri', jsonObj);
-    } else {
-      jsonObj['uri'] = null;
     }
 
     if (this.hasPackageIdElement()) {
@@ -3208,14 +3210,10 @@ export class ImplementationGuideGlobalComponent extends BackboneElement implemen
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasProfileElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getProfileElement(), 'profile', jsonObj);
-    } else {
-      jsonObj['profile'] = null;
     }
 
     return jsonObj;
@@ -3269,29 +3267,35 @@ export class ImplementationGuideDefinitionComponent extends BackboneElement impl
     fieldName = 'grouping';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideDefinitionGroupingComponent | undefined = ImplementationGuideDefinitionGroupingComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addGrouping(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideDefinitionGroupingComponent | undefined = ImplementationGuideDefinitionGroupingComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addGrouping(component);
+          }
+        });
+      }
     }
 
     fieldName = 'resource';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideDefinitionResourceComponent | undefined = ImplementationGuideDefinitionResourceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setResource(null);
-        } else {
-          instance.addResource(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setResource(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideDefinitionResourceComponent | undefined = ImplementationGuideDefinitionResourceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setResource(null);
+          } else {
+            instance.addResource(component);
+          }
+        });
+      }
     } else {
       instance.setResource(null);
     }
@@ -3307,27 +3311,31 @@ export class ImplementationGuideDefinitionComponent extends BackboneElement impl
     fieldName = 'parameter';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideDefinitionParameterComponent | undefined = ImplementationGuideDefinitionParameterComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addParameter(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideDefinitionParameterComponent | undefined = ImplementationGuideDefinitionParameterComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addParameter(component);
+          }
+        });
+      }
     }
 
     fieldName = 'template';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideDefinitionTemplateComponent | undefined = ImplementationGuideDefinitionTemplateComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addTemplate(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideDefinitionTemplateComponent | undefined = ImplementationGuideDefinitionTemplateComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addTemplate(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -3750,8 +3758,6 @@ export class ImplementationGuideDefinitionComponent extends BackboneElement impl
 
     if (this.hasResource()) {
       setFhirBackboneElementListJson(this.getResource(), 'resource', jsonObj);
-    } else {
-      jsonObj['resource'] = null;
     }
 
     if (this.hasPage()) {
@@ -4073,8 +4079,6 @@ export class ImplementationGuideDefinitionGroupingComponent extends BackboneElem
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -4153,18 +4157,20 @@ export class ImplementationGuideDefinitionResourceComponent extends BackboneElem
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addFhirVersionElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addFhirVersionElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'name';
@@ -4898,8 +4904,6 @@ export class ImplementationGuideDefinitionResourceComponent extends BackboneElem
 
     if (this.hasReference()) {
       setFhirComplexJson(this.getReference(), 'reference', jsonObj);
-    } else {
-      jsonObj['reference'] = null;
     }
 
     if (this.hasFhirVersionElement()) {
@@ -5042,14 +5046,16 @@ export class ImplementationGuideDefinitionPageComponent extends BackboneElement 
     fieldName = 'page';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideDefinitionPageComponent | undefined = ImplementationGuideDefinitionPageComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addPage(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideDefinitionPageComponent | undefined = ImplementationGuideDefinitionPageComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addPage(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -5528,21 +5534,15 @@ export class ImplementationGuideDefinitionPageComponent extends BackboneElement 
     if (this.hasName()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getName()!, 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
       setFhirPrimitiveJson<fhirString>(this.getTitleElement(), 'title', jsonObj);
-    } else {
-      jsonObj['title'] = null;
     }
 
     if (this.hasGenerationElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getGenerationElement()!, 'generation', jsonObj);
-    } else {
-      jsonObj['generation'] = null;
     }
 
     if (this.hasPage()) {
@@ -5932,14 +5932,10 @@ export class ImplementationGuideDefinitionParameterComponent extends BackboneEle
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasValueElement()) {
       setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
-    } else {
-      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -6356,14 +6352,10 @@ export class ImplementationGuideDefinitionTemplateComponent extends BackboneElem
 
     if (this.hasCodeElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasSourceElement()) {
       setFhirPrimitiveJson<fhirString>(this.getSourceElement(), 'source', jsonObj);
-    } else {
-      jsonObj['source'] = null;
     }
 
     if (this.hasScopeElement()) {
@@ -6430,16 +6422,20 @@ export class ImplementationGuideManifestComponent extends BackboneElement implem
     fieldName = 'resource';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideManifestResourceComponent | undefined = ImplementationGuideManifestResourceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setResource(null);
-        } else {
-          instance.addResource(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setResource(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideManifestResourceComponent | undefined = ImplementationGuideManifestResourceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setResource(null);
+          } else {
+            instance.addResource(component);
+          }
+        });
+      }
     } else {
       instance.setResource(null);
     }
@@ -6447,50 +6443,56 @@ export class ImplementationGuideManifestComponent extends BackboneElement implem
     fieldName = 'page';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: ImplementationGuideManifestPageComponent | undefined = ImplementationGuideManifestPageComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addPage(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: ImplementationGuideManifestPageComponent | undefined = ImplementationGuideManifestPageComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addPage(component);
+          }
+        });
+      }
     }
 
     fieldName = 'image';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addImageElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addImageElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'other';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addOtherElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addOtherElement(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -7074,8 +7076,6 @@ export class ImplementationGuideManifestComponent extends BackboneElement implem
 
     if (this.hasResource()) {
       setFhirBackboneElementListJson(this.getResource(), 'resource', jsonObj);
-    } else {
-      jsonObj['resource'] = null;
     }
 
     if (this.hasPage()) {
@@ -7486,8 +7486,6 @@ export class ImplementationGuideManifestResourceComponent extends BackboneElemen
 
     if (this.hasReference()) {
       setFhirComplexJson(this.getReference(), 'reference', jsonObj);
-    } else {
-      jsonObj['reference'] = null;
     }
 
     if (this.hasExample()) {
@@ -7580,18 +7578,20 @@ export class ImplementationGuideManifestPageComponent extends BackboneElement im
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addAnchorElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addAnchorElement(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -7967,8 +7967,6 @@ export class ImplementationGuideManifestPageComponent extends BackboneElement im
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {

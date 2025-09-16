@@ -154,14 +154,16 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -1185,8 +1187,6 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasRequest()) {
@@ -1199,8 +1199,6 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
 
     if (this.hasCreatedElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement(), 'created', jsonObj);
-    } else {
-      jsonObj['created'] = null;
     }
 
     if (this.hasProvider()) {
@@ -1209,8 +1207,6 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
 
     if (this.hasPayment()) {
       setFhirComplexJson(this.getPayment(), 'payment', jsonObj);
-    } else {
-      jsonObj['payment'] = null;
     }
 
     if (this.hasPaymentDateElement()) {
@@ -1223,14 +1219,10 @@ export class PaymentNotice extends DomainResource implements IDomainResource {
 
     if (this.hasRecipient()) {
       setFhirComplexJson(this.getRecipient(), 'recipient', jsonObj);
-    } else {
-      jsonObj['recipient'] = null;
     }
 
     if (this.hasAmount()) {
       setFhirComplexJson(this.getAmount(), 'amount', jsonObj);
-    } else {
-      jsonObj['amount'] = null;
     }
 
     if (this.hasPaymentStatus()) {

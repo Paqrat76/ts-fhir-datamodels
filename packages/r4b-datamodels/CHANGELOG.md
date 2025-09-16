@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.2.0] - 2025-09-16
+
+### Changed
+
+- Updated @paq-ts-fhir/fhir-core dependency
+
+### Fixed
+
+- Re-generated FHIR R4B data models using @paq-ts-fhir/fhir-core 1.2.0. These changes resolved
+  [issue #26](https://github.com/Paqrat76/ts-fhir-datamodels/issues/26) ensuring proper field handling for missing
+  "required" field values in `toJSON()` methods. Also, the `toJSON()` methods will no longer return `fieldName: null`
+  for missing "required" field values.
+
+
 ## [1.1.1]
 
 ### Fixed

@@ -152,14 +152,16 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -253,14 +255,16 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
     fieldName = 'doseStatusReason';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addDoseStatusReason(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addDoseStatusReason(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'description';
@@ -1325,14 +1329,10 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasPatient()) {
       setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
-    } else {
-      jsonObj['patient'] = null;
     }
 
     if (this.hasDateElement()) {
@@ -1345,20 +1345,14 @@ export class ImmunizationEvaluation extends DomainResource implements IDomainRes
 
     if (this.hasTargetDisease()) {
       setFhirComplexJson(this.getTargetDisease(), 'targetDisease', jsonObj);
-    } else {
-      jsonObj['targetDisease'] = null;
     }
 
     if (this.hasImmunizationEvent()) {
       setFhirComplexJson(this.getImmunizationEvent(), 'immunizationEvent', jsonObj);
-    } else {
-      jsonObj['immunizationEvent'] = null;
     }
 
     if (this.hasDoseStatus()) {
       setFhirComplexJson(this.getDoseStatus(), 'doseStatus', jsonObj);
-    } else {
-      jsonObj['doseStatus'] = null;
     }
 
     if (this.hasDoseStatusReason()) {

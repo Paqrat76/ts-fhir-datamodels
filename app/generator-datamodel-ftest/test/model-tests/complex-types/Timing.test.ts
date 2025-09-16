@@ -22,10 +22,12 @@
  */
 
 import {
+  Coding,
   DateTimeType,
   fhirDateTime,
   IBackboneType,
   InvalidTypeError,
+  JsonError,
   PrimitiveTypeError,
 } from '@paq-ts-fhir/fhir-core';
 import { CodeableConcept, Timing, TimingRepeatComponent } from '../../../src/complex-types/complex-datatypes';
@@ -330,17 +332,92 @@ describe('Timing', () => {
         text: 'TestCodeType',
       },
     };
+    const INVALID_JSON_1 = {
+      event: '2024-01-28T14:30:00Z',
+    };
+    const INVALID_JSON_2 = {
+      repeat: [
+        {
+          count: 1,
+          countMax: 1,
+        },
+      ],
+    };
+    const INVALID_JSON_3 = {
+      repeat: {
+        count: '1',
+        countMax: 1,
+      },
+    };
+    const INVALID_JSON_4 = {
+      code: {
+        coding: {
+          system: 'validUri',
+          code: 'testCodeType',
+          display: 'TestCodeType',
+        },
+        text: 'TestCodeType',
+      },
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      event: null,
+      repeat: null,
+      code: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
-      const testModel = new Timing();
+      const testInstance = new Timing();
 
-      initializeBackboneTypeProperties(testModel, 2);
+      initializeBackboneTypeProperties(testInstance, 2);
 
-      testModel.setEventElement([altEvent]);
-      testModel.setRepeat(testTimingRepeatComponent);
-      testModel.setCode(VALID_CODEABLE_CONCEPT);
-
-      let testInstance: Timing = testModel.copy();
+      testInstance.setEventElement([altEvent]);
+      testInstance.setRepeat(testTimingRepeatComponent);
+      testInstance.setCode(VALID_CODEABLE_CONCEPT);
 
       expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
       expectInitializedBackboneTypeProperties(testInstance, 2);
@@ -359,6 +436,28 @@ describe('Timing', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new Timing();
+
+      initializeBackboneTypeProperties(testInstance, 2);
+
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
+      expectInitializedBackboneTypeProperties(testInstance, 2);
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isComplexDataType()).toBe(true);
+
+      expect(testInstance.hasEventElement()).toBe(false);
+      expect(testInstance.getEventElement()).toEqual([] as DateTimeType[]);
+      expect(testInstance.hasEvent()).toBe(false);
+      expect(testInstance.getEvent()).toEqual([] as fhirDateTime[]);
+      expect(testInstance.hasRepeat()).toBe(false);
+      expect(testInstance.getRepeat()).toEqual(new TimingRepeatComponent());
+      expect(testInstance.hasCode()).toBe(false);
+      expect(testInstance.getCode()).toEqual(new CodeableConcept());
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: Timing | undefined;
       testInstance = Timing.parse({});
@@ -369,6 +468,38 @@ describe('Timing', () => {
 
       testInstance = Timing.parse(undefined);
       expect(testInstance).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Timing.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Timing JSON is not a JSON object.`);
+
+      t = () => {
+        Timing.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Timing.event is not a JSON array.`);
+
+      t = () => {
+        Timing.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Timing.repeat JSON is not a JSON object.`);
+
+      t = () => {
+        Timing.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Timing.repeat.count is not a number.`);
+
+      t = () => {
+        Timing.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Timing.code.coding is not a JSON array.`);
     });
 
     it('should return parsed Timing for valid json', () => {
@@ -388,6 +519,44 @@ describe('Timing', () => {
       expect(testInstance.getRepeat()).toEqual(testTimingRepeatComponent);
       expect(testInstance.hasCode()).toBe(true);
       expect(testInstance.getCode()).toEqual(VALID_CODEABLE_CONCEPT);
+    });
+
+    it('should return parsed Timing for valid json with no field values', () => {
+      const testInstance: Timing | undefined = Timing.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
+      expectInitializedBackboneTypeProperties(testInstance, 2);
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isComplexDataType()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      expect(testInstance.hasEventElement()).toBe(false);
+      expect(testInstance.getEventElement()).toEqual([] as DateTimeType[]);
+      expect(testInstance.hasEvent()).toBe(false);
+      expect(testInstance.getEvent()).toEqual([] as fhirDateTime[]);
+      expect(testInstance.hasRepeat()).toBe(false);
+      expect(testInstance.getRepeat()).toEqual(new TimingRepeatComponent());
+      expect(testInstance.hasCode()).toBe(false);
+      expect(testInstance.getCode()).toEqual(new CodeableConcept());
+    });
+
+    it('should return parsed Timing for valid json with null field values', () => {
+      const testInstance: Timing | undefined = Timing.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneTypeBase(Timing as unknown as IBackboneType, testInstance, 'Timing', 'Timing');
+      expectInitializedBackboneTypeProperties(testInstance, 2);
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isComplexDataType()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      expect(testInstance.hasEventElement()).toBe(false);
+      expect(testInstance.getEventElement()).toEqual([] as DateTimeType[]);
+      expect(testInstance.hasEvent()).toBe(false);
+      expect(testInstance.getEvent()).toEqual([] as fhirDateTime[]);
+      expect(testInstance.hasRepeat()).toBe(false);
+      expect(testInstance.getRepeat()).toEqual(new TimingRepeatComponent());
+      expect(testInstance.hasCode()).toBe(false);
+      expect(testInstance.getCode()).toEqual(new CodeableConcept());
     });
   });
 

@@ -28,6 +28,7 @@ import {
   IBackboneElement,
   InvalidCodeError,
   InvalidTypeError,
+  JsonError,
   PrimitiveTypeError,
 } from '@paq-ts-fhir/fhir-core';
 import { BundleEntrySearchComponent } from '../../../src/resources/Bundle';
@@ -331,6 +332,64 @@ describe('BundleEntrySearchComponent', () => {
       },
       score: 128.1978,
     };
+    const INVALID_JSON_1 = {
+      score: [128.1978],
+    };
+    const INVALID_JSON_2 = {
+      mode: 1234,
+    };
+    const INVALID_JSON_3 = {
+      mode: 'bogus',
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      mode: null,
+      score: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleEntrySearchComponent();
@@ -364,6 +423,35 @@ describe('BundleEntrySearchComponent', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new BundleEntrySearchComponent();
+
+      initializeBackboneElementProperties(testInstance, 2);
+
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntrySearchComponent',
+        'Bundle.entry.search',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasModeEnumType()).toBe(false);
+      expect(testInstance.getModeEnumType()).toBeUndefined();
+      expect(testInstance.hasModeElement()).toBe(false);
+      expect(testInstance.getModeElement()).toBeUndefined();
+      expect(testInstance.hasMode()).toBe(false);
+      expect(testInstance.getMode()).toBeUndefined();
+      expect(testInstance.hasScoreElement()).toBe(false);
+      expect(testInstance.getScoreElement()).toEqual(new DecimalType());
+      expect(testInstance.hasScore()).toBe(false);
+      expect(testInstance.getScore()).toBeUndefined();
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: BundleEntrySearchComponent | undefined;
       testInstance = BundleEntrySearchComponent.parse({});
@@ -376,7 +464,33 @@ describe('BundleEntrySearchComponent', () => {
       expect(testInstance).toBeUndefined();
     });
 
-    it('should return parsed Bundle for valid json', () => {
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        BundleEntrySearchComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntrySearchComponent JSON is not a JSON object.`);
+
+      t = () => {
+        BundleEntrySearchComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntrySearchComponent.score is not a number.`);
+
+      t = () => {
+        BundleEntrySearchComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntrySearchComponent.mode is not a string.`);
+
+      t = () => {
+        BundleEntrySearchComponent.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown SearchEntryModeEnum 'code' value 'bogus'`);
+    });
+
+    it('should return parsed BundleEntrySearchComponent for valid json', () => {
       const testInstance = BundleEntrySearchComponent.parse(VALID_JSON);
 
       expectBackboneElementBase(
@@ -400,6 +514,58 @@ describe('BundleEntrySearchComponent', () => {
       expect(testInstance.getScoreElement()).toEqual(TestData.VALID_DECIMAL_TYPE);
       expect(testInstance.hasScore()).toBe(true);
       expect(testInstance.getScore()).toEqual(TestData.VALID_DECIMAL);
+    });
+
+    it('should return parsed BundleEntrySearchComponent for valid json with no fields', () => {
+      const testInstance = BundleEntrySearchComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntrySearchComponent',
+        'Bundle.entry.search',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasModeEnumType()).toBe(false);
+      expect(testInstance.getModeEnumType()).toBeUndefined();
+      expect(testInstance.hasModeElement()).toBe(false);
+      expect(testInstance.getModeElement()).toBeUndefined();
+      expect(testInstance.hasMode()).toBe(false);
+      expect(testInstance.getMode()).toBeUndefined();
+      expect(testInstance.hasScoreElement()).toBe(false);
+      expect(testInstance.getScoreElement()).toEqual(new DecimalType());
+      expect(testInstance.hasScore()).toBe(false);
+      expect(testInstance.getScore()).toBeUndefined();
+    });
+
+    it('should return parsed BundleEntrySearchComponent for valid json with null fields', () => {
+      const testInstance = BundleEntrySearchComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneElementBase(
+        BundleEntrySearchComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntrySearchComponent',
+        'Bundle.entry.search',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasModeEnumType()).toBe(false);
+      expect(testInstance.getModeEnumType()).toBeUndefined();
+      expect(testInstance.hasModeElement()).toBe(false);
+      expect(testInstance.getModeElement()).toBeUndefined();
+      expect(testInstance.hasMode()).toBe(false);
+      expect(testInstance.getMode()).toBeUndefined();
+      expect(testInstance.hasScoreElement()).toBe(false);
+      expect(testInstance.getScoreElement()).toEqual(new DecimalType());
+      expect(testInstance.hasScore()).toBe(false);
+      expect(testInstance.getScore()).toBeUndefined();
     });
   });
 

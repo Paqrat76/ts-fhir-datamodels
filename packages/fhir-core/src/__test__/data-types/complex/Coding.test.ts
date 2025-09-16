@@ -25,7 +25,7 @@ import { DataType, Extension } from '../../../base-models/core-fhir-models';
 import { Coding } from '../../../data-types/complex/Coding';
 import { BooleanType } from '../../../data-types/primitive/BooleanType';
 import { CodeType } from '../../../data-types/primitive/CodeType';
-import { fhirBoolean } from '../../../data-types/primitive/primitive-types';
+import { fhirBoolean, fhirString } from '../../../data-types/primitive/primitive-types';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
@@ -593,6 +593,22 @@ describe('Coding', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let displayType: StringType;
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      displayType = new StringType(VALID_STRING);
+      const displayId = 'D1357';
+      const displayExtension = new Extension('displayUrl', new StringType('display extension string value'));
+      displayType.setId(displayId);
+      displayType.addExtension(displayExtension);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -620,40 +636,61 @@ describe('Coding', () => {
       },
       userSelected: true,
     };
-
-    it('should return undefined for empty json', () => {
-      let testType = Coding.parse({});
-      expect(testType).toBeUndefined();
-
-      testType = Coding.parse(undefined);
-      expect(testType).toBeUndefined();
-
-      testType = Coding.parse(null);
-      expect(testType).toBeUndefined();
-    });
-
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
-        Coding.parse('NOT AN OBJECT');
-      };
-      expect(t).toThrow(JsonError);
-      expect(t).toThrow(`Coding JSON is not a JSON object.`);
-    });
+    const INVALID_JSON_1 = [
+      {
+        system: 'testUriType',
+        code: 'testCodeType',
+        display: 'This is a valid string.',
+      },
+    ];
+    const INVALID_JSON_2 = {
+      system: 'testUriType',
+      code: ' invalid code value',
+      display: 'This is a valid string.',
+    };
+    const INVALID_JSON_3 = {
+      system: 'testUriType',
+      code: 'testCodeType',
+      display: 1234,
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      system: null,
+      version: null,
+      code: null,
+      display: null,
+      userSelected: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testCoding = new Coding();
-      const testId = 'id1234';
       testCoding.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testCoding.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testCoding.addExtension(testExtension2);
-
-      const displayType = new StringType(VALID_STRING);
-      const displayId = 'D1357';
-      const displayExtension = new Extension('displayUrl', new StringType('display extension string value'));
-      displayType.setId(displayId);
-      displayType.addExtension(displayExtension);
 
       testCoding.setSystemElement(VALID_URI_TYPE);
       testCoding.setVersionElement(VALID_VERSION_TYPE);
@@ -702,17 +739,214 @@ describe('Coding', () => {
       expect(testCoding.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return Coding for valid json', () => {
-      const testType: Coding | undefined = Coding.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testCoding = new Coding();
+      testCoding.setId(testId);
+      testCoding.addExtension(testExtension1);
+      testCoding.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(Coding);
-      expect(testType?.constructor.name).toStrictEqual('Coding');
-      expect(testType?.fhirType()).toStrictEqual('Coding');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('Coding');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testCoding).toBeDefined();
+      expect(testCoding).toBeInstanceOf(DataType);
+      expect(testCoding).toBeInstanceOf(Coding);
+      expect(testCoding.constructor.name).toStrictEqual('Coding');
+      expect(testCoding.fhirType()).toStrictEqual('Coding');
+      expect(testCoding.isEmpty()).toBe(false);
+      expect(testCoding.isComplexDataType()).toBe(true);
+      expect(testCoding.dataTypeName()).toStrictEqual('Coding');
+
+      // inherited properties from Element
+      expect(testCoding.hasId()).toBe(true);
+      expect(testCoding.getId()).toStrictEqual(testId);
+      expect(testCoding.hasExtension()).toBe(true);
+      expect(testCoding.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Coding properties
+      expect(testCoding.hasSystemElement()).toBe(false);
+      expect(testCoding.getSystemElement()).toEqual(new UriType());
+      expect(testCoding.hasVersionElement()).toBe(false);
+      expect(testCoding.getVersionElement()).toEqual(new StringType());
+      expect(testCoding.hasCodeElement()).toBe(false);
+      expect(testCoding.getCodeElement()).toEqual(new CodeType());
+      expect(testCoding.hasDisplayElement()).toBe(false);
+      expect(testCoding.getDisplayElement()).toEqual(new StringType());
+      expect(testCoding.hasUserSelectedElement()).toBe(false);
+      expect(testCoding.getUserSelectedElement()).toEqual(new BooleanType());
+
+      expect(testCoding.hasSystem()).toBe(false);
+      expect(testCoding.getSystem()).toBeUndefined();
+      expect(testCoding.hasVersion()).toBe(false);
+      expect(testCoding.getVersion()).toBeUndefined();
+      expect(testCoding.hasCode()).toBe(false);
+      expect(testCoding.getCode()).toBeUndefined();
+      expect(testCoding.hasDisplay()).toBe(false);
+      expect(testCoding.getDisplay()).toBeUndefined();
+      expect(testCoding.hasUserSelected()).toBe(false);
+      expect(testCoding.getUserSelected()).toBeUndefined();
+
+      expect(testCoding.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return undefined for empty json', () => {
+      let testType = Coding.parse({});
+      expect(testType).toBeUndefined();
+
+      testType = Coding.parse(undefined);
+      expect(testType).toBeUndefined();
+
+      testType = Coding.parse(null);
+      expect(testType).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Coding.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Coding JSON is not a JSON object.`);
+
+      t = () => {
+        Coding.parse(INVALID_JSON_1, 'Test Coding array');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Test Coding array JSON is not a JSON object.`);
+
+      t = () => {
+        Coding.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid value for CodeType ( invalid code value)`);
+
+      t = () => {
+        Coding.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Coding.display is not a string.`);
+    });
+
+    it('should return Coding for valid json', () => {
+      const testCoding: Coding | undefined = Coding.parse(VALID_JSON);
+
+      expect(testCoding).toBeDefined();
+      expect(testCoding).toBeInstanceOf(Coding);
+      expect(testCoding?.constructor.name).toStrictEqual('Coding');
+      expect(testCoding?.fhirType()).toStrictEqual('Coding');
+      expect(testCoding?.isEmpty()).toBe(false);
+      expect(testCoding?.isComplexDataType()).toBe(true);
+      expect(testCoding?.dataTypeName()).toStrictEqual('Coding');
+      expect(testCoding?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testCoding.hasId()).toBe(true);
+      expect(testCoding.getId()).toStrictEqual(testId);
+      expect(testCoding.hasExtension()).toBe(true);
+      expect(testCoding.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Coding properties
+      expect(testCoding.hasSystemElement()).toBe(true);
+      expect(testCoding.getSystemElement()).toStrictEqual(VALID_URI_TYPE);
+      expect(testCoding.hasVersionElement()).toBe(true);
+      expect(testCoding.getVersionElement()).toEqual(VALID_VERSION_TYPE);
+      expect(testCoding.hasCodeElement()).toBe(true);
+      expect(testCoding.getCodeElement()).toStrictEqual(VALID_CODE_TYPE);
+      expect(testCoding.hasDisplayElement()).toBe(true);
+      expect(testCoding.getDisplayElement()).toStrictEqual(displayType);
+      expect(testCoding.hasUserSelectedElement()).toBe(true);
+      expect(testCoding.getUserSelectedElement()).toEqual(VALID_BOOLEAN_TYPE_TRUE);
+
+      expect(testCoding.hasSystem()).toBe(true);
+      expect(testCoding.getSystem()).toStrictEqual(VALID_URI);
+      expect(testCoding.hasVersion()).toBe(true);
+      expect(testCoding.getVersion()).toStrictEqual(VALID_VERSION);
+      expect(testCoding.hasCode()).toBe(true);
+      expect(testCoding.getCode()).toStrictEqual(VALID_CODE);
+      expect(testCoding.hasDisplay()).toBe(true);
+      expect(testCoding.getDisplay()).toStrictEqual(VALID_STRING);
+      expect(testCoding.hasUserSelected()).toBe(true);
+      expect(testCoding.getUserSelected()).toBe(VALID_BOOLEAN_TRUE);
+    });
+
+    it('should return Coding for valid json with no field values', () => {
+      const testCoding: Coding | undefined = Coding.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testCoding).toBeDefined();
+      expect(testCoding).toBeInstanceOf(Coding);
+      expect(testCoding?.constructor.name).toStrictEqual('Coding');
+      expect(testCoding?.fhirType()).toStrictEqual('Coding');
+      expect(testCoding?.isEmpty()).toBe(false);
+      expect(testCoding?.isComplexDataType()).toBe(true);
+      expect(testCoding?.dataTypeName()).toStrictEqual('Coding');
+      expect(testCoding?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testCoding.hasId()).toBe(true);
+      expect(testCoding.getId()).toStrictEqual(testId);
+      expect(testCoding.hasExtension()).toBe(true);
+      expect(testCoding.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Coding properties
+      expect(testCoding.hasSystemElement()).toBe(false);
+      expect(testCoding.getSystemElement()).toEqual(new UriType());
+      expect(testCoding.hasVersionElement()).toBe(false);
+      expect(testCoding.getVersionElement()).toEqual(new StringType());
+      expect(testCoding.hasCodeElement()).toBe(false);
+      expect(testCoding.getCodeElement()).toEqual(new CodeType());
+      expect(testCoding.hasDisplayElement()).toBe(false);
+      expect(testCoding.getDisplayElement()).toEqual(new StringType());
+      expect(testCoding.hasUserSelectedElement()).toBe(false);
+      expect(testCoding.getUserSelectedElement()).toEqual(new BooleanType());
+
+      expect(testCoding.hasSystem()).toBe(false);
+      expect(testCoding.getSystem()).toBeUndefined();
+      expect(testCoding.hasVersion()).toBe(false);
+      expect(testCoding.getVersion()).toBeUndefined();
+      expect(testCoding.hasCode()).toBe(false);
+      expect(testCoding.getCode()).toBeUndefined();
+      expect(testCoding.hasDisplay()).toBe(false);
+      expect(testCoding.getDisplay()).toBeUndefined();
+      expect(testCoding.hasUserSelected()).toBe(false);
+      expect(testCoding.getUserSelected()).toBeUndefined();
+    });
+
+    it('should return Coding for valid json with null field values', () => {
+      const testCoding: Coding | undefined = Coding.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testCoding).toBeDefined();
+      expect(testCoding).toBeInstanceOf(Coding);
+      expect(testCoding?.constructor.name).toStrictEqual('Coding');
+      expect(testCoding?.fhirType()).toStrictEqual('Coding');
+      expect(testCoding?.isEmpty()).toBe(false);
+      expect(testCoding?.isComplexDataType()).toBe(true);
+      expect(testCoding?.dataTypeName()).toStrictEqual('Coding');
+      expect(testCoding?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testCoding.hasId()).toBe(true);
+      expect(testCoding.getId()).toStrictEqual(testId);
+      expect(testCoding.hasExtension()).toBe(true);
+      expect(testCoding.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Coding properties
+      expect(testCoding.hasSystemElement()).toBe(false);
+      expect(testCoding.getSystemElement()).toEqual(new UriType());
+      expect(testCoding.hasVersionElement()).toBe(false);
+      expect(testCoding.getVersionElement()).toEqual(new StringType());
+      expect(testCoding.hasCodeElement()).toBe(false);
+      expect(testCoding.getCodeElement()).toEqual(new CodeType());
+      expect(testCoding.hasDisplayElement()).toBe(false);
+      expect(testCoding.getDisplayElement()).toEqual(new StringType());
+      expect(testCoding.hasUserSelectedElement()).toBe(false);
+      expect(testCoding.getUserSelectedElement()).toEqual(new BooleanType());
+
+      expect(testCoding.hasSystem()).toBe(false);
+      expect(testCoding.getSystem()).toBeUndefined();
+      expect(testCoding.hasVersion()).toBe(false);
+      expect(testCoding.getVersion()).toBeUndefined();
+      expect(testCoding.hasCode()).toBe(false);
+      expect(testCoding.getCode()).toBeUndefined();
+      expect(testCoding.hasDisplay()).toBe(false);
+      expect(testCoding.getDisplay()).toBeUndefined();
+      expect(testCoding.hasUserSelected()).toBe(false);
+      expect(testCoding.getUserSelected()).toBeUndefined();
     });
   });
 });

@@ -201,14 +201,16 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -230,20 +232,24 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.setPurpose(null);
-        } else {
-          instance.addPurposeElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setPurpose(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.setPurpose(null);
+          } else {
+            instance.addPurposeElement(datatype);
+          }
+        });
+      }
     } else {
       instance.setPurpose(null);
     }
@@ -265,14 +271,16 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
     fieldName = 'event';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: CoverageEligibilityResponseEventComponent | undefined = CoverageEligibilityResponseEventComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addEvent(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: CoverageEligibilityResponseEventComponent | undefined = CoverageEligibilityResponseEventComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addEvent(component);
+          }
+        });
+      }
     }
 
     fieldName = 'serviced[x]';
@@ -363,14 +371,16 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
     fieldName = 'insurance';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: CoverageEligibilityResponseInsuranceComponent | undefined = CoverageEligibilityResponseInsuranceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addInsurance(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: CoverageEligibilityResponseInsuranceComponent | undefined = CoverageEligibilityResponseInsuranceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addInsurance(component);
+          }
+        });
+      }
     }
 
     fieldName = 'preAuthRef';
@@ -393,14 +403,16 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
     fieldName = 'error';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: CoverageEligibilityResponseErrorComponent | undefined = CoverageEligibilityResponseErrorComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addError(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: CoverageEligibilityResponseErrorComponent | undefined = CoverageEligibilityResponseErrorComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addError(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1923,20 +1935,14 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasPurposeElement()) {
       setFhirPrimitiveListJson<fhirCode>(this.getPurposeElement(), 'purpose', jsonObj);
-    } else {
-      jsonObj['purpose'] = null;
     }
 
     if (this.hasPatient()) {
       setFhirComplexJson(this.getPatient(), 'patient', jsonObj);
-    } else {
-      jsonObj['patient'] = null;
     }
 
     if (this.hasEvent()) {
@@ -1950,8 +1956,6 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
 
     if (this.hasCreatedElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement(), 'created', jsonObj);
-    } else {
-      jsonObj['created'] = null;
     }
 
     if (this.hasRequestor()) {
@@ -1960,15 +1964,11 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
 
     if (this.hasRequest()) {
       setFhirComplexJson(this.getRequest(), 'request', jsonObj);
-    } else {
-      jsonObj['request'] = null;
     }
 
     if (this.hasOutcomeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getOutcomeElement()!, 'outcome', jsonObj);
-    } else {
-      jsonObj['outcome'] = null;
     }
 
     if (this.hasDispositionElement()) {
@@ -1977,8 +1977,6 @@ export class CoverageEligibilityResponse extends DomainResource implements IDoma
 
     if (this.hasInsurer()) {
       setFhirComplexJson(this.getInsurer(), 'insurer', jsonObj);
-    } else {
-      jsonObj['insurer'] = null;
     }
 
     if (this.hasInsurance()) {
@@ -2304,15 +2302,11 @@ export class CoverageEligibilityResponseEventComponent extends BackboneElement i
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasWhen()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getWhen()!, 'when', jsonObj);
-    } else {
-      jsonObj['when'] = null;
     }
 
     return jsonObj;
@@ -2399,14 +2393,16 @@ export class CoverageEligibilityResponseInsuranceComponent extends BackboneEleme
     fieldName = 'item';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: CoverageEligibilityResponseInsuranceItemComponent | undefined = CoverageEligibilityResponseInsuranceItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addItem(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: CoverageEligibilityResponseInsuranceItemComponent | undefined = CoverageEligibilityResponseInsuranceItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addItem(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2736,8 +2732,6 @@ export class CoverageEligibilityResponseInsuranceComponent extends BackboneEleme
 
     if (this.hasCoverage()) {
       setFhirComplexJson(this.getCoverage(), 'coverage', jsonObj);
-    } else {
-      jsonObj['coverage'] = null;
     }
 
     if (this.hasInforceElement()) {
@@ -2815,14 +2809,16 @@ export class CoverageEligibilityResponseInsuranceItemComponent extends BackboneE
     fieldName = 'modifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addModifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addModifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'provider';
@@ -2887,14 +2883,16 @@ export class CoverageEligibilityResponseInsuranceItemComponent extends BackboneE
     fieldName = 'benefit';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: CoverageEligibilityResponseInsuranceItemBenefitComponent | undefined = CoverageEligibilityResponseInsuranceItemBenefitComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addBenefit(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: CoverageEligibilityResponseInsuranceItemBenefitComponent | undefined = CoverageEligibilityResponseInsuranceItemBenefitComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addBenefit(component);
+          }
+        });
+      }
     }
 
     fieldName = 'authorizationRequired';
@@ -2909,14 +2907,16 @@ export class CoverageEligibilityResponseInsuranceItemComponent extends BackboneE
     fieldName = 'authorizationSupporting';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addAuthorizationSupporting(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addAuthorizationSupporting(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'authorizationUrl';
@@ -4444,8 +4444,6 @@ export class CoverageEligibilityResponseInsuranceItemBenefitComponent extends Ba
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasAllowed()) {
@@ -4525,18 +4523,20 @@ export class CoverageEligibilityResponseErrorComponent extends BackboneElement i
     sourceField = `${optSourceValue}.${fieldName}`;
     const primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addExpressionElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addExpressionElement(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -4795,8 +4795,6 @@ export class CoverageEligibilityResponseErrorComponent extends BackboneElement i
 
     if (this.hasCode()) {
       setFhirComplexJson(this.getCode(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasExpression()) {

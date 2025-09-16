@@ -6383,16 +6383,20 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
     fieldName = 'type';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Coding | undefined = Coding.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype === undefined) {
-          instance.setType(null);
-        } else {
-          instance.addType(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setType(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Coding | undefined = Coding.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype === undefined) {
+            instance.setType(null);
+          } else {
+            instance.addType(datatype);
+          }
+        });
+      }
     } else {
       instance.setType(null);
     }
@@ -7087,20 +7091,14 @@ export { CodeableConcept, Coding, Identifier, Meta, Narrative, Period, Reference
 
     if (this.hasType()) {
       setFhirComplexListJson(this.getType(), 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasWhenElement()) {
       setFhirPrimitiveJson<fhirInstant>(this.getWhenElement(), 'when', jsonObj);
-    } else {
-      jsonObj['when'] = null;
     }
 
     if (this.hasWho()) {
       setFhirComplexJson(this.getWho(), 'who', jsonObj);
-    } else {
-      jsonObj['who'] = null;
     }
 
     if (this.hasOnBehalfOf()) {
@@ -7174,18 +7172,20 @@ export class Timing extends BackboneType implements IBackboneType {
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     const primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addEventElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: DateTimeType | undefined = fhirParser.parseDateTimeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addEventElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'repeat';
@@ -7676,54 +7676,60 @@ export class TimingRepeatComponent extends DataType implements IDataType {
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addDayOfWeekElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addDayOfWeekElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'timeOfDay';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: TimeType | undefined = fhirParser.parseTimeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addTimeOfDayElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: TimeType | undefined = fhirParser.parseTimeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addTimeOfDayElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'when';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addWhenElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addWhenElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'offset';
@@ -9606,27 +9612,31 @@ export class Bundle extends Resource implements IResource {
     fieldName = 'link';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: BundleLinkComponent | undefined = BundleLinkComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (component !== undefined) {
-          instance.addLink(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: BundleLinkComponent | undefined = BundleLinkComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (component !== undefined) {
+            instance.addLink(component);
+          }
+        });
+      }
     }
 
     fieldName = 'entry';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: BundleEntryComponent | undefined = BundleEntryComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (component !== undefined) {
-          instance.addEntry(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: BundleEntryComponent | undefined = BundleEntryComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (component !== undefined) {
+            instance.addEntry(component);
+          }
+        });
+      }
     }
 
     fieldName = 'signature';
@@ -10262,8 +10272,6 @@ export class Bundle extends Resource implements IResource {
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasTimestampElement()) {
@@ -10613,14 +10621,10 @@ export class BundleLinkComponent extends BackboneElement implements IBackboneEle
 
     if (this.hasRelationElement()) {
       setFhirPrimitiveJson<fhirString>(this.getRelationElement(), 'relation', jsonObj);
-    } else {
-      jsonObj['relation'] = null;
     }
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
-    } else {
-      jsonObj['url'] = null;
     }
 
     return jsonObj;
@@ -10670,14 +10674,16 @@ export class BundleEntryComponent extends BackboneElement implements IBackboneEl
     fieldName = 'link';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: BundleLinkComponent | undefined = BundleLinkComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (component !== undefined) {
-          instance.addLink(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: BundleLinkComponent | undefined = BundleLinkComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (component !== undefined) {
+            instance.addLink(component);
+          }
+        });
+      }
     }
 
     fieldName = 'fullUrl';
@@ -12236,14 +12242,10 @@ export class BundleEntryRequestComponent extends BackboneElement implements IBac
     if (this.hasMethodElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getMethodElement()!, 'method', jsonObj);
-    } else {
-      jsonObj['method'] = null;
     }
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
-    } else {
-      jsonObj['url'] = null;
     }
 
     if (this.hasIfNoneMatchElement()) {
@@ -12804,8 +12806,6 @@ export class BundleEntryResponseComponent extends BackboneElement implements IBa
 
     if (this.hasStatusElement()) {
       setFhirPrimitiveJson<fhirString>(this.getStatusElement(), 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasLocationElement()) {
@@ -12980,14 +12980,16 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
     fieldName = 'identifier';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'active';
@@ -13026,92 +13028,106 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
     fieldName = 'code';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addCode(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addCode(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'specialty';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addSpecialty(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addSpecialty(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'location';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addLocation(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addLocation(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'healthcareService';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addHealthcareService(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addHealthcareService(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'telecom';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ContactPoint | undefined = ContactPoint.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addTelecom(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: ContactPoint | undefined = ContactPoint.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addTelecom(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'availableTime';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: PractitionerRoleAvailableTimeComponent | undefined = PractitionerRoleAvailableTimeComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (component !== undefined) {
-          instance.addAvailableTime(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: PractitionerRoleAvailableTimeComponent | undefined = PractitionerRoleAvailableTimeComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (component !== undefined) {
+            instance.addAvailableTime(component);
+          }
+        });
+      }
     }
 
     fieldName = 'notAvailable';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: PractitionerRoleNotAvailableComponent | undefined = PractitionerRoleNotAvailableComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (component !== undefined) {
-          instance.addNotAvailable(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: PractitionerRoleNotAvailableComponent | undefined = PractitionerRoleNotAvailableComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (component !== undefined) {
+            instance.addNotAvailable(component);
+          }
+        });
+      }
     }
 
     fieldName = 'availabilityExceptions';
@@ -13126,14 +13142,16 @@ export class PractitionerRole extends DomainResource implements IDomainResource 
     fieldName = 'endpoint';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addEndpoint(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addEndpoint(datatype);
+          }
+        });
+      }
   }
 
     return instance;
@@ -14332,18 +14350,20 @@ export class PractitionerRoleAvailableTimeComponent extends BackboneElement impl
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addDaysOfWeekElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addDaysOfWeekElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'allDay';
@@ -15179,8 +15199,6 @@ export class PractitionerRoleNotAvailableComponent extends BackboneElement imple
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirString>(this.getDescriptionElement(), 'description', jsonObj);
-    } else {
-      jsonObj['description'] = null;
     }
 
     if (this.hasDuring()) {
@@ -15506,14 +15524,16 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     fieldName = 'contact';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addContact(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addContact(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'description';
@@ -15534,27 +15554,31 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     fieldName = 'useContext';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addUseContext(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addUseContext(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'jurisdiction';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (datatype !== undefined) {
-          instance.addJurisdiction(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (datatype !== undefined) {
+            instance.addJurisdiction(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'purpose';
@@ -15585,20 +15609,24 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.setBase(null);
-        } else {
-          instance.addBaseElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setBase(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.setBase(null);
+          } else {
+            instance.addBaseElement(datatype);
+          }
+        });
+      }
     } else {
       instance.setBase(null);
     }
@@ -15649,18 +15677,20 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addTargetElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addTargetElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'multipleOr';
@@ -15685,67 +15715,75 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addComparatorElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addComparatorElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'modifier';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addModifierElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addModifierElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'chain';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addChainElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addChainElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'component';
     sourceField = \`\${optSourceValue}.\${fieldName}\`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: SearchParameterComponentComponent | undefined = SearchParameterComponentComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
-        if (component !== undefined) {
-          instance.addComponent(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: SearchParameterComponentComponent | undefined = SearchParameterComponentComponent.parse(componentJson, \`\${sourceField}[\${String(idx)}]\`);
+          if (component !== undefined) {
+            instance.addComponent(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -18657,8 +18695,6 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
-    } else {
-      jsonObj['url'] = null;
     }
 
     if (this.hasVersionElement()) {
@@ -18667,8 +18703,6 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasDerivedFromElement()) {
@@ -18678,8 +18712,6 @@ export class SearchParameter extends DomainResource implements IDomainResource {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -18700,8 +18732,6 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
     if (this.hasDescriptionElement()) {
       setFhirPrimitiveJson<fhirMarkdown>(this.getDescriptionElement(), 'description', jsonObj);
-    } else {
-      jsonObj['description'] = null;
     }
 
     if (this.hasUseContext()) {
@@ -18718,21 +18748,15 @@ export class SearchParameter extends DomainResource implements IDomainResource {
 
     if (this.hasCodeElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasBaseElement()) {
       setFhirPrimitiveListJson<fhirCode>(this.getBaseElement(), 'base', jsonObj);
-    } else {
-      jsonObj['base'] = null;
     }
 
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasExpressionElement()) {
@@ -19105,14 +19129,10 @@ export class SearchParameterComponentComponent extends BackboneElement implement
 
     if (this.hasDefinitionElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getDefinitionElement(), 'definition', jsonObj);
-    } else {
-      jsonObj['definition'] = null;
     }
 
     if (this.hasExpressionElement()) {
       setFhirPrimitiveJson<fhirString>(this.getExpressionElement(), 'expression', jsonObj);
-    } else {
-      jsonObj['expression'] = null;
     }
 
     return jsonObj;

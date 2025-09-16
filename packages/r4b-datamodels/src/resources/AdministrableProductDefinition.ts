@@ -145,14 +145,16 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -173,14 +175,16 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     fieldName = 'formOf';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addFormOf(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addFormOf(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'administrableDoseForm';
@@ -202,27 +206,31 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     fieldName = 'producedFrom';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addProducedFrom(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addProducedFrom(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'ingredient';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIngredient(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIngredient(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'device';
@@ -236,29 +244,35 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     fieldName = 'property';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: AdministrableProductDefinitionPropertyComponent | undefined = AdministrableProductDefinitionPropertyComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addProperty(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: AdministrableProductDefinitionPropertyComponent | undefined = AdministrableProductDefinitionPropertyComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addProperty(component);
+          }
+        });
+      }
     }
 
     fieldName = 'routeOfAdministration';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: AdministrableProductDefinitionRouteOfAdministrationComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setRouteOfAdministration(null);
-        } else {
-          instance.addRouteOfAdministration(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setRouteOfAdministration(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: AdministrableProductDefinitionRouteOfAdministrationComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setRouteOfAdministration(null);
+          } else {
+            instance.addRouteOfAdministration(component);
+          }
+        });
+      }
     } else {
       instance.setRouteOfAdministration(null);
     }
@@ -1100,8 +1114,6 @@ export class AdministrableProductDefinition extends DomainResource implements ID
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasFormOf()) {
@@ -1134,8 +1146,6 @@ export class AdministrableProductDefinition extends DomainResource implements ID
 
     if (this.hasRouteOfAdministration()) {
       setFhirBackboneElementListJson(this.getRouteOfAdministration(), 'routeOfAdministration', jsonObj);
-    } else {
-      jsonObj['routeOfAdministration'] = null;
     }
 
     return jsonObj;
@@ -1563,8 +1573,6 @@ export class AdministrableProductDefinitionPropertyComponent extends BackboneEle
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasValue()) {
@@ -1680,14 +1688,16 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
     fieldName = 'targetSpecies';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addTargetSpecies(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addTargetSpecies(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2119,8 +2129,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationComponent extend
 
     if (this.hasCode()) {
       setFhirComplexJson(this.getCode(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasFirstDose()) {
@@ -2211,14 +2219,16 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
     fieldName = 'withdrawalPeriod';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addWithdrawalPeriod(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent | undefined = AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriodComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addWithdrawalPeriod(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2410,8 +2420,6 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesCom
 
     if (this.hasCode()) {
       setFhirComplexJson(this.getCode(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasWithdrawalPeriod()) {
@@ -2750,14 +2758,10 @@ export class AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWit
 
     if (this.hasTissue()) {
       setFhirComplexJson(this.getTissue(), 'tissue', jsonObj);
-    } else {
-      jsonObj['tissue'] = null;
     }
 
     if (this.hasValue()) {
       setFhirComplexJson(this.getValue(), 'value', jsonObj);
-    } else {
-      jsonObj['value'] = null;
     }
 
     if (this.hasSupportingInformationElement()) {

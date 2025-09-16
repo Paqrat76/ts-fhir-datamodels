@@ -21,7 +21,15 @@
  *
  */
 
-import { FhirError, IDomainResource, InvalidTypeError, PrimitiveTypeError, StringType } from '@paq-ts-fhir/fhir-core';
+import {
+  FhirError,
+  IDomainResource,
+  InvalidCodeError,
+  InvalidTypeError,
+  JsonError,
+  PrimitiveTypeError,
+  StringType,
+} from '@paq-ts-fhir/fhir-core';
 import { Address, HumanName, Identifier } from '../../../src/complex-types/complex-datatypes';
 import { SimplePersonModel } from '../../../src/resources/SimplePersonModel';
 import { TestData } from '../../ftest-data';
@@ -289,6 +297,108 @@ describe('SimplePersonModel', () => {
     const INVALID_JSON = {
       bogusField: 'bogus value',
     };
+    const INVALID_JSON_1 = {
+      resourceType: 'SimplePersonModel',
+      identifier: [
+        {
+          system: 'http://sample/system/one',
+          value: 'This is a valid string.',
+        },
+      ],
+    };
+    const INVALID_JSON_2 = {
+      resourceType: 'SimplePersonModel',
+      phone: ['888-555-1234'],
+    };
+    const INVALID_JSON_3 = {
+      resourceType: 'SimplePersonModel',
+      name: {
+        family: 'Surname',
+        suffix: [2],
+      },
+    };
+    const INVALID_JSON_4 = {
+      resourceType: 'SimplePersonModel',
+      address: [
+        {
+          type: 'bogus',
+          city: 'Nashua',
+          state: 'NH',
+          postalCode: '03064',
+        },
+      ],
+    };
+    const VALID_JSON_NO_FIELDS = {
+      resourceType: 'SimplePersonModel',
+      id: 'id12345',
+      meta: {
+        lastUpdated: '2024-01-28T14:30:00.000Z',
+      },
+      implicitRules: 'implicitRules',
+      language: 'en-US',
+      text: {
+        status: 'generated',
+        div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
+      },
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      resourceType: 'SimplePersonModel',
+      id: 'id12345',
+      meta: {
+        lastUpdated: '2024-01-28T14:30:00.000Z',
+      },
+      implicitRules: 'implicitRules',
+      language: 'en-US',
+      text: {
+        status: 'generated',
+        div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
+      },
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      identifier: null,
+      name: null,
+      address: null,
+      phone: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new SimplePersonModel();
@@ -304,6 +414,41 @@ describe('SimplePersonModel', () => {
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
+      expectInitializedDomainResourceProperties(testInstance, 2);
+
+      expect(testInstance.hasIdentifier()).toBe(true);
+      expect(testInstance.getIdentifier()).toEqual(VALID_IDENTIFIER);
+      expect(testInstance.hasName()).toBe(true);
+      expect(testInstance.getName()).toEqual(VALID_HUMAN_NAME);
+      expect(testInstance.hasAddress()).toBe(true);
+      expect(testInstance.getAddress()).toEqual([VALID_ADDRESS, VALID_ADDRESS_2]);
+      expect(testInstance.hasPhoneElement()).toBe(true);
+      expect(testInstance.getPhoneElement()).toEqual(altPhone);
+      expect(testInstance.hasPhone()).toBe(true);
+      expect(testInstance.getPhone()).toStrictEqual(TestData.VALID_PHONE);
+    });
+
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new SimplePersonModel();
+
+      initializeDomainResourceProperties(testInstance, 2);
+
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedDomainResourceProperties(testInstance, 2);
+
+      expect(testInstance.hasIdentifier()).toBe(false);
+      expect(testInstance.getIdentifier()).toEqual(new Identifier());
+      expect(testInstance.hasName()).toBe(false);
+      expect(testInstance.getName()).toEqual(new HumanName());
+      expect(testInstance.hasAddress()).toBe(false);
+      expect(testInstance.getAddress()).toEqual([] as Address[]);
+      expect(testInstance.hasPhoneElement()).toBe(false);
+      expect(testInstance.getPhoneElement()).toEqual(new StringType());
+      expect(testInstance.hasPhone()).toBe(false);
+      expect(testInstance.getPhone()).toBeUndefined();
     });
 
     it('should return undefined when parsed with no json', () => {
@@ -326,6 +471,38 @@ describe('SimplePersonModel', () => {
       expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
     });
 
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        SimplePersonModel.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`SimplePersonModel JSON is not a JSON object.`);
+
+      t = () => {
+        SimplePersonModel.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`SimplePersonModel.identifier JSON is not a JSON object.`);
+
+      t = () => {
+        SimplePersonModel.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`SimplePersonModel.phone is not a string.`);
+
+      t = () => {
+        SimplePersonModel.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`SimplePersonModel.name.suffix is not a string.`);
+
+      t = () => {
+        SimplePersonModel.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown AddressTypeEnum 'code' value 'bogus'`);
+    });
+
     it('should return parsed SimplePersonModel for valid json', () => {
       const testInstance: SimplePersonModel | undefined = SimplePersonModel.parse(VALID_JSON);
 
@@ -345,6 +522,48 @@ describe('SimplePersonModel', () => {
       expect(testInstance.getPhoneElement()).toEqual(altPhone);
       expect(testInstance.hasPhone()).toBe(true);
       expect(testInstance.getPhone()).toStrictEqual(TestData.VALID_PHONE);
+    });
+
+    it('should return parsed SimplePersonModel for valid json with no field values', () => {
+      const testInstance: SimplePersonModel | undefined = SimplePersonModel.parse(VALID_JSON_NO_FIELDS);
+
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
+      expect(testInstance?.isEmpty()).toBe(false);
+      expect(testInstance?.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedDomainResourceProperties(testInstance, 2);
+
+      expect(testInstance.hasIdentifier()).toBe(false);
+      expect(testInstance.getIdentifier()).toEqual(new Identifier());
+      expect(testInstance.hasName()).toBe(false);
+      expect(testInstance.getName()).toEqual(new HumanName());
+      expect(testInstance.hasAddress()).toBe(false);
+      expect(testInstance.getAddress()).toEqual([] as Address[]);
+      expect(testInstance.hasPhoneElement()).toBe(false);
+      expect(testInstance.getPhoneElement()).toEqual(new StringType());
+      expect(testInstance.hasPhone()).toBe(false);
+      expect(testInstance.getPhone()).toBeUndefined();
+    });
+
+    it('should return parsed SimplePersonModel for valid json with null field values', () => {
+      const testInstance: SimplePersonModel | undefined = SimplePersonModel.parse(VALID_JSON_NULL_FIELDS);
+
+      expectDomainResourceBase(SimplePersonModel as unknown as IDomainResource, testInstance, 'SimplePersonModel');
+      expect(testInstance?.isEmpty()).toBe(false);
+      expect(testInstance?.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedDomainResourceProperties(testInstance, 2);
+
+      expect(testInstance.hasIdentifier()).toBe(false);
+      expect(testInstance.getIdentifier()).toEqual(new Identifier());
+      expect(testInstance.hasName()).toBe(false);
+      expect(testInstance.getName()).toEqual(new HumanName());
+      expect(testInstance.hasAddress()).toBe(false);
+      expect(testInstance.getAddress()).toEqual([] as Address[]);
+      expect(testInstance.hasPhoneElement()).toBe(false);
+      expect(testInstance.getPhoneElement()).toEqual(new StringType());
+      expect(testInstance.hasPhone()).toBe(false);
+      expect(testInstance.getPhone()).toBeUndefined();
     });
   });
 

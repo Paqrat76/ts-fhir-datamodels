@@ -194,14 +194,16 @@ export class TestScript extends DomainResource implements IDomainResource {
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'version';
@@ -292,14 +294,16 @@ export class TestScript extends DomainResource implements IDomainResource {
     fieldName = 'contact';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addContact(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: ContactDetail | undefined = ContactDetail.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addContact(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'description';
@@ -314,27 +318,31 @@ export class TestScript extends DomainResource implements IDomainResource {
     fieldName = 'useContext';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addUseContext(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: UsageContext | undefined = UsageContext.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addUseContext(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'jurisdiction';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addJurisdiction(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addJurisdiction(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'purpose';
@@ -367,27 +375,31 @@ export class TestScript extends DomainResource implements IDomainResource {
     fieldName = 'origin';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptOriginComponent | undefined = TestScriptOriginComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addOrigin(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptOriginComponent | undefined = TestScriptOriginComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addOrigin(component);
+          }
+        });
+      }
     }
 
     fieldName = 'destination';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptDestinationComponent | undefined = TestScriptDestinationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addDestination(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptDestinationComponent | undefined = TestScriptDestinationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addDestination(component);
+          }
+        });
+      }
     }
 
     fieldName = 'metadata';
@@ -401,58 +413,66 @@ export class TestScript extends DomainResource implements IDomainResource {
     fieldName = 'scope';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptScopeComponent | undefined = TestScriptScopeComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addScope(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptScopeComponent | undefined = TestScriptScopeComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addScope(component);
+          }
+        });
+      }
     }
 
     fieldName = 'fixture';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptFixtureComponent | undefined = TestScriptFixtureComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addFixture(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptFixtureComponent | undefined = TestScriptFixtureComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addFixture(component);
+          }
+        });
+      }
     }
 
     fieldName = 'profile';
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addProfileElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CanonicalType | undefined = fhirParser.parseCanonicalType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addProfileElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'variable';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptVariableComponent | undefined = TestScriptVariableComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addVariable(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptVariableComponent | undefined = TestScriptVariableComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addVariable(component);
+          }
+        });
+      }
     }
 
     fieldName = 'setup';
@@ -466,14 +486,16 @@ export class TestScript extends DomainResource implements IDomainResource {
     fieldName = 'test';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptTestComponent | undefined = TestScriptTestComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addTest(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptTestComponent | undefined = TestScriptTestComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addTest(component);
+          }
+        });
+      }
     }
 
     fieldName = 'teardown';
@@ -2764,8 +2786,6 @@ export class TestScript extends DomainResource implements IDomainResource {
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasTitleElement()) {
@@ -2775,8 +2795,6 @@ export class TestScript extends DomainResource implements IDomainResource {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasExperimentalElement()) {
@@ -3237,14 +3255,10 @@ export class TestScriptOriginComponent extends BackboneElement implements IBackb
 
     if (this.hasIndexElement()) {
       setFhirPrimitiveJson<fhirInteger>(this.getIndexElement(), 'index', jsonObj);
-    } else {
-      jsonObj['index'] = null;
     }
 
     if (this.hasProfile()) {
       setFhirComplexJson(this.getProfile(), 'profile', jsonObj);
-    } else {
-      jsonObj['profile'] = null;
     }
 
     if (this.hasUrlElement()) {
@@ -3628,14 +3642,10 @@ export class TestScriptDestinationComponent extends BackboneElement implements I
 
     if (this.hasIndexElement()) {
       setFhirPrimitiveJson<fhirInteger>(this.getIndexElement(), 'index', jsonObj);
-    } else {
-      jsonObj['index'] = null;
     }
 
     if (this.hasProfile()) {
       setFhirComplexJson(this.getProfile(), 'profile', jsonObj);
-    } else {
-      jsonObj['profile'] = null;
     }
 
     if (this.hasUrlElement()) {
@@ -3692,29 +3702,35 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
     fieldName = 'link';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptMetadataLinkComponent | undefined = TestScriptMetadataLinkComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addLink(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptMetadataLinkComponent | undefined = TestScriptMetadataLinkComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addLink(component);
+          }
+        });
+      }
     }
 
     fieldName = 'capability';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptMetadataCapabilityComponent | undefined = TestScriptMetadataCapabilityComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setCapability(null);
-        } else {
-          instance.addCapability(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setCapability(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptMetadataCapabilityComponent | undefined = TestScriptMetadataCapabilityComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setCapability(null);
+          } else {
+            instance.addCapability(component);
+          }
+        });
+      }
     } else {
       instance.setCapability(null);
     }
@@ -3940,8 +3956,6 @@ export class TestScriptMetadataComponent extends BackboneElement implements IBac
 
     if (this.hasCapability()) {
       setFhirBackboneElementListJson(this.getCapability(), 'capability', jsonObj);
-    } else {
-      jsonObj['capability'] = null;
     }
 
     return jsonObj;
@@ -4250,8 +4264,6 @@ export class TestScriptMetadataLinkComponent extends BackboneElement implements 
 
     if (this.hasUrlElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUrlElement(), 'url', jsonObj);
-    } else {
-      jsonObj['url'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -4372,18 +4384,20 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'number';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: IntegerType | undefined = fhirParser.parseIntegerType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addOriginElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: IntegerType | undefined = fhirParser.parseIntegerType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addOriginElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'destination';
@@ -4399,18 +4413,20 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: UriType | undefined = fhirParser.parseUriType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addLinkElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: UriType | undefined = fhirParser.parseUriType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addLinkElement(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'capabilities';
@@ -5188,14 +5204,10 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
 
     if (this.hasRequiredElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getRequiredElement(), 'required', jsonObj);
-    } else {
-      jsonObj['required'] = null;
     }
 
     if (this.hasValidatedElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getValidatedElement(), 'validated', jsonObj);
-    } else {
-      jsonObj['validated'] = null;
     }
 
     if (this.hasDescriptionElement()) {
@@ -5216,8 +5228,6 @@ export class TestScriptMetadataCapabilityComponent extends BackboneElement imple
 
     if (this.hasCapabilitiesElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getCapabilitiesElement(), 'capabilities', jsonObj);
-    } else {
-      jsonObj['capabilities'] = null;
     }
 
     return jsonObj;
@@ -5552,8 +5562,6 @@ export class TestScriptScopeComponent extends BackboneElement implements IBackbo
 
     if (this.hasArtifactElement()) {
       setFhirPrimitiveJson<fhirCanonical>(this.getArtifactElement(), 'artifact', jsonObj);
-    } else {
-      jsonObj['artifact'] = null;
     }
 
     if (this.hasConformance()) {
@@ -5953,14 +5961,10 @@ export class TestScriptFixtureComponent extends BackboneElement implements IBack
 
     if (this.hasAutocreateElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getAutocreateElement(), 'autocreate', jsonObj);
-    } else {
-      jsonObj['autocreate'] = null;
     }
 
     if (this.hasAutodeleteElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getAutodeleteElement(), 'autodelete', jsonObj);
-    } else {
-      jsonObj['autodelete'] = null;
     }
 
     if (this.hasResource()) {
@@ -6814,8 +6818,6 @@ export class TestScriptVariableComponent extends BackboneElement implements IBac
 
     if (this.hasNameElement()) {
       setFhirPrimitiveJson<fhirString>(this.getNameElement(), 'name', jsonObj);
-    } else {
-      jsonObj['name'] = null;
     }
 
     if (this.hasDefaultValueElement()) {
@@ -6896,16 +6898,20 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptSetupActionComponent | undefined = TestScriptSetupActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setAction(null);
-        } else {
-          instance.addAction(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setAction(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptSetupActionComponent | undefined = TestScriptSetupActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setAction(null);
+          } else {
+            instance.addAction(component);
+          }
+        });
+      }
     } else {
       instance.setAction(null);
     }
@@ -7052,8 +7058,6 @@ export class TestScriptSetupComponent extends BackboneElement implements IBackbo
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    } else {
-      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -7436,14 +7440,16 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
     fieldName = 'requestHeader';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptSetupActionOperationRequestHeaderComponent | undefined = TestScriptSetupActionOperationRequestHeaderComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addRequestHeader(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptSetupActionOperationRequestHeaderComponent | undefined = TestScriptSetupActionOperationRequestHeaderComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addRequestHeader(component);
+          }
+        });
+      }
     }
 
     fieldName = 'requestId';
@@ -8988,8 +8994,6 @@ export class TestScriptSetupActionOperationComponent extends BackboneElement imp
 
     if (this.hasEncodeRequestUrlElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getEncodeRequestUrlElement(), 'encodeRequestUrl', jsonObj);
-    } else {
-      jsonObj['encodeRequestUrl'] = null;
     }
 
     if (this.hasMethodElement()) {
@@ -9357,14 +9361,10 @@ export class TestScriptSetupActionOperationRequestHeaderComponent extends Backbo
 
     if (this.hasFieldElement()) {
       setFhirPrimitiveJson<fhirString>(this.getFieldElement(), 'field', jsonObj);
-    } else {
-      jsonObj['field'] = null;
     }
 
     if (this.hasValueElement()) {
       setFhirPrimitiveJson<fhirString>(this.getValueElement(), 'value', jsonObj);
-    } else {
-      jsonObj['value'] = null;
     }
 
     return jsonObj;
@@ -9666,14 +9666,16 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
     fieldName = 'requirement';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptSetupActionAssertRequirementComponent | undefined = TestScriptSetupActionAssertRequirementComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addRequirement(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptSetupActionAssertRequirementComponent | undefined = TestScriptSetupActionAssertRequirementComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addRequirement(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -12159,8 +12161,6 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
 
     if (this.hasStopTestOnFailElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getStopTestOnFailElement(), 'stopTestOnFail', jsonObj);
-    } else {
-      jsonObj['stopTestOnFail'] = null;
     }
 
     if (this.hasValidateProfileIdElement()) {
@@ -12173,8 +12173,6 @@ export class TestScriptSetupActionAssertComponent extends BackboneElement implem
 
     if (this.hasWarningOnlyElement()) {
       setFhirPrimitiveJson<fhirBoolean>(this.getWarningOnlyElement(), 'warningOnly', jsonObj);
-    } else {
-      jsonObj['warningOnly'] = null;
     }
 
     if (this.hasRequirement()) {
@@ -12474,16 +12472,20 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptTestActionComponent | undefined = TestScriptTestActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setAction(null);
-        } else {
-          instance.addAction(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setAction(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptTestActionComponent | undefined = TestScriptTestActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setAction(null);
+          } else {
+            instance.addAction(component);
+          }
+        });
+      }
     } else {
       instance.setAction(null);
     }
@@ -12798,8 +12800,6 @@ export class TestScriptTestComponent extends BackboneElement implements IBackbon
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    } else {
-      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -13071,16 +13071,20 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestScriptTeardownActionComponent | undefined = TestScriptTeardownActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setAction(null);
-        } else {
-          instance.addAction(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setAction(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestScriptTeardownActionComponent | undefined = TestScriptTeardownActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setAction(null);
+          } else {
+            instance.addAction(component);
+          }
+        });
+      }
     } else {
       instance.setAction(null);
     }
@@ -13227,8 +13231,6 @@ export class TestScriptTeardownComponent extends BackboneElement implements IBac
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    } else {
-      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -13407,8 +13409,6 @@ export class TestScriptTeardownActionComponent extends BackboneElement implement
 
     if (this.hasOperation()) {
       setFhirBackboneElementJson(this.getOperation(), 'operation', jsonObj);
-    } else {
-      jsonObj['operation'] = null;
     }
 
     return jsonObj;

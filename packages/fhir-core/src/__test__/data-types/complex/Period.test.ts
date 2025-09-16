@@ -29,6 +29,7 @@ import { InvalidTypeError } from '../../../errors/InvalidTypeError';
 import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
+import { fhirString } from '../../../data-types/primitive/primitive-types';
 
 describe('Period', () => {
   const VALID_START_DATETIME = `2017-01-01T00:00:00.000Z`;
@@ -563,6 +564,25 @@ describe('Period', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let startDt: DateTimeType;
+    let endDt: DateTimeType;
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      startDt = new DateTimeType(VALID_START_DATETIME);
+      const startId = 'S1357';
+      const startExtension = new Extension('startUrl', new StringType('start extension string value'));
+      startDt.setId(startId);
+      startDt.addExtension(startExtension);
+
+      endDt = new DateTimeType(VALID_END_DATETIME);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -587,40 +607,46 @@ describe('Period', () => {
       },
       end: '2017-01-01T01:00:00.000Z',
     };
-
-    it('should return undefined for empty json', () => {
-      let testType = Period.parse({});
-      expect(testType).toBeUndefined();
-
-      testType = Period.parse(undefined);
-      expect(testType).toBeUndefined();
-
-      testType = Period.parse(null);
-      expect(testType).toBeUndefined();
-    });
-
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
-        Period.parse('NOT AN OBJECT');
-      };
-      expect(t).toThrow(JsonError);
-      expect(t).toThrow(`Period JSON is not a JSON object.`);
-    });
+    const INVALID_JSON_1 = {
+      start: 'invalidDateTime',
+    };
+    const INVALID_JSON_2 = {
+      end: 1234,
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      start: null,
+      end: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
-      const startDt = new DateTimeType(VALID_START_DATETIME);
-      const startId = 'S1357';
-      const startExtension = new Extension('startUrl', new StringType('start extension string value'));
-      startDt.setId(startId);
-      startDt.addExtension(startExtension);
-      const endDt = new DateTimeType(VALID_END_DATETIME);
-
       const testPeriod = new Period();
-      const testId = 'id1234';
       testPeriod.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testPeriod.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testPeriod.addExtension(testExtension2);
 
       testPeriod.setStartElement(startDt);
@@ -655,17 +681,160 @@ describe('Period', () => {
       expect(testPeriod.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return Period for valid json', () => {
-      const testType: Period | undefined = Period.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testPeriod = new Period();
+      testPeriod.setId(testId);
+      testPeriod.addExtension(testExtension1);
+      testPeriod.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(Period);
-      expect(testType?.constructor.name).toStrictEqual('Period');
-      expect(testType?.fhirType()).toStrictEqual('Period');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('Period');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testPeriod).toBeDefined();
+      expect(testPeriod).toBeInstanceOf(DataType);
+      expect(testPeriod).toBeInstanceOf(Period);
+      expect(testPeriod.constructor.name).toStrictEqual('Period');
+      expect(testPeriod.fhirType()).toStrictEqual('Period');
+      expect(testPeriod.isEmpty()).toBe(false);
+      expect(testPeriod.isComplexDataType()).toBe(true);
+      expect(testPeriod.dataTypeName()).toStrictEqual('Period');
+
+      // inherited properties from Element
+      expect(testPeriod.hasId()).toBe(true);
+      expect(testPeriod.getId()).toStrictEqual(testId);
+      expect(testPeriod.hasExtension()).toBe(true);
+      expect(testPeriod.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Period properties
+      expect(testPeriod.hasStartElement()).toBe(false);
+      expect(testPeriod.getStartElement()).toEqual(new DateTimeType());
+      expect(testPeriod.hasEndElement()).toBe(false);
+      expect(testPeriod.getEndElement()).toEqual(new DateTimeType());
+
+      expect(testPeriod.hasStart()).toBe(false);
+      expect(testPeriod.getStart()).toBeUndefined();
+      expect(testPeriod.hasEnd()).toBe(false);
+      expect(testPeriod.getEnd()).toBeUndefined();
+
+      expect(testPeriod.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return undefined for empty json', () => {
+      let testType = Period.parse({});
+      expect(testType).toBeUndefined();
+
+      testType = Period.parse(undefined);
+      expect(testType).toBeUndefined();
+
+      testType = Period.parse(null);
+      expect(testType).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Period.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Period JSON is not a JSON object.`);
+
+      t = () => {
+        Period.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid value for DateTimeType (invalidDateTime)`);
+
+      t = () => {
+        Period.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Period.end is not a string.`);
+    });
+
+    it('should return Period for valid json', () => {
+      const testPeriod: Period | undefined = Period.parse(VALID_JSON);
+
+      expect(testPeriod).toBeDefined();
+      expect(testPeriod).toBeInstanceOf(Period);
+      expect(testPeriod?.constructor.name).toStrictEqual('Period');
+      expect(testPeriod?.fhirType()).toStrictEqual('Period');
+      expect(testPeriod?.isEmpty()).toBe(false);
+      expect(testPeriod?.isComplexDataType()).toBe(true);
+      expect(testPeriod?.dataTypeName()).toStrictEqual('Period');
+      expect(testPeriod?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testPeriod.hasId()).toBe(true);
+      expect(testPeriod.getId()).toStrictEqual(testId);
+      expect(testPeriod.hasExtension()).toBe(true);
+      expect(testPeriod.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Period properties
+      expect(testPeriod.hasStartElement()).toBe(true);
+      expect(testPeriod.getStartElement()).toEqual(startDt);
+      expect(testPeriod.hasEndElement()).toBe(true);
+      expect(testPeriod.getEndElement()).toEqual(endDt);
+
+      expect(testPeriod.hasStart()).toBe(true);
+      expect(testPeriod.getStart()).toStrictEqual(VALID_START_DATETIME);
+      expect(testPeriod.hasEnd()).toBe(true);
+      expect(testPeriod.getEnd()).toStrictEqual(VALID_END_DATETIME);
+    });
+
+    it('should return Period for valid json with no field values', () => {
+      const testPeriod: Period | undefined = Period.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testPeriod).toBeDefined();
+      expect(testPeriod).toBeInstanceOf(Period);
+      expect(testPeriod?.constructor.name).toStrictEqual('Period');
+      expect(testPeriod?.fhirType()).toStrictEqual('Period');
+      expect(testPeriod?.isEmpty()).toBe(false);
+      expect(testPeriod?.isComplexDataType()).toBe(true);
+      expect(testPeriod?.dataTypeName()).toStrictEqual('Period');
+      expect(testPeriod?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testPeriod.hasId()).toBe(true);
+      expect(testPeriod.getId()).toStrictEqual(testId);
+      expect(testPeriod.hasExtension()).toBe(true);
+      expect(testPeriod.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Period properties
+      expect(testPeriod.hasStartElement()).toBe(false);
+      expect(testPeriod.getStartElement()).toEqual(new DateTimeType());
+      expect(testPeriod.hasEndElement()).toBe(false);
+      expect(testPeriod.getEndElement()).toEqual(new DateTimeType());
+
+      expect(testPeriod.hasStart()).toBe(false);
+      expect(testPeriod.getStart()).toBeUndefined();
+      expect(testPeriod.hasEnd()).toBe(false);
+      expect(testPeriod.getEnd()).toBeUndefined();
+    });
+
+    it('should return Period for valid json with null field values', () => {
+      const testPeriod: Period | undefined = Period.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testPeriod).toBeDefined();
+      expect(testPeriod).toBeInstanceOf(Period);
+      expect(testPeriod?.constructor.name).toStrictEqual('Period');
+      expect(testPeriod?.fhirType()).toStrictEqual('Period');
+      expect(testPeriod?.isEmpty()).toBe(false);
+      expect(testPeriod?.isComplexDataType()).toBe(true);
+      expect(testPeriod?.dataTypeName()).toStrictEqual('Period');
+      expect(testPeriod?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testPeriod.hasId()).toBe(true);
+      expect(testPeriod.getId()).toStrictEqual(testId);
+      expect(testPeriod.hasExtension()).toBe(true);
+      expect(testPeriod.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Period properties
+      expect(testPeriod.hasStartElement()).toBe(false);
+      expect(testPeriod.getStartElement()).toEqual(new DateTimeType());
+      expect(testPeriod.hasEndElement()).toBe(false);
+      expect(testPeriod.getEndElement()).toEqual(new DateTimeType());
+
+      expect(testPeriod.hasStart()).toBe(false);
+      expect(testPeriod.getStart()).toBeUndefined();
+      expect(testPeriod.hasEnd()).toBe(false);
+      expect(testPeriod.getEnd()).toBeUndefined();
     });
   });
 });
