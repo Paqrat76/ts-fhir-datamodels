@@ -29,6 +29,7 @@ import { InvalidTypeError } from '../../../errors/InvalidTypeError';
 import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, INVALID_STRING, INVALID_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
+import { fhirString } from '../../../data-types/primitive/primitive-types';
 
 describe('Reference', () => {
   const VALID_URI = `testUriType`;
@@ -549,6 +550,23 @@ describe('Reference', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let typeType: UriType;
+    const typeUri = 'testUriType3';
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      typeType = new UriType(typeUri);
+      const typeId = 'T1357';
+      typeType.setId(typeId);
+      const typeExtension = new Extension('typeUrl', new StringType('type extension string value'));
+      typeType.addExtension(typeExtension);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -577,39 +595,53 @@ describe('Reference', () => {
       },
       display: 'This is another valid string!',
     };
-
-    it('should return undefined for empty json', () => {
-      let testType = Reference.parse({});
-      expect(testType).toBeUndefined();
-      testType = Reference.parse(undefined);
-      expect(testType).toBeUndefined();
-
-      testType = Reference.parse(null);
-      expect(testType).toBeUndefined();
-    });
-
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
-        Reference.parse('NOT AN OBJECT');
-      };
-      expect(t).toThrow(JsonError);
-      expect(t).toThrow(`Reference JSON is not a JSON object.`);
-    });
+    const INVALID_JSON_1 = {
+      reference: ['This is a valid string.'],
+    };
+    const INVALID_JSON_2 = {
+      type: ' test Uri Type 3',
+    };
+    const INVALID_JSON_3 = {
+      identifier: {
+        value: 1234,
+      },
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      reference: null,
+      type: null,
+      identifier: null,
+      display: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
-      const typeUri = 'testUriType3';
-      const typeType = new UriType(typeUri);
-      const typeId = 'T1357';
-      typeType.setId(typeId);
-      const typeExtension = new Extension('typeUrl', new StringType('type extension string value'));
-      typeType.addExtension(typeExtension);
-
       const testReference = new Reference();
-      const testId = 'id1234';
       testReference.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testReference.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testReference.addExtension(testExtension2);
 
       testReference.setReferenceElement(VALID_STRING_TYPE);
@@ -652,17 +684,189 @@ describe('Reference', () => {
       expect(testReference.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return Reference for valid json', () => {
-      const testType: Reference | undefined = Reference.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testReference = new Reference();
+      testReference.setId(testId);
+      testReference.addExtension(testExtension1);
+      testReference.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(Reference);
-      expect(testType?.constructor.name).toStrictEqual('Reference');
-      expect(testType?.fhirType()).toStrictEqual('Reference');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('Reference');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testReference).toBeDefined();
+      expect(testReference).toBeInstanceOf(DataType);
+      expect(testReference).toBeInstanceOf(Reference);
+      expect(testReference.constructor.name).toStrictEqual('Reference');
+      expect(testReference.fhirType()).toStrictEqual('Reference');
+      expect(testReference.isEmpty()).toBe(false);
+      expect(testReference.isComplexDataType()).toBe(true);
+      expect(testReference.dataTypeName()).toStrictEqual('Reference');
+
+      // inherited properties from Element
+      expect(testReference.hasId()).toBe(true);
+      expect(testReference.getId()).toStrictEqual(testId);
+      expect(testReference.hasExtension()).toBe(true);
+      expect(testReference.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Reference properties
+      expect(testReference.hasReferenceElement()).toBe(false);
+      expect(testReference.getReferenceElement()).toEqual(new StringType());
+      expect(testReference.hasTypeElement()).toBe(false);
+      expect(testReference.getTypeElement()).toEqual(new UriType());
+      expect(testReference.hasIdentifier()).toBe(false);
+      expect(testReference.getIdentifier()).toEqual(new Identifier());
+      expect(testReference.hasDisplayElement()).toBe(false);
+      expect(testReference.getDisplayElement()).toEqual(new StringType());
+
+      expect(testReference.hasReference()).toBe(false);
+      expect(testReference.getReference()).toBeUndefined();
+      expect(testReference.hasType()).toBe(false);
+      expect(testReference.getType()).toBeUndefined();
+      expect(testReference.hasDisplay()).toBe(false);
+      expect(testReference.getDisplay()).toBeUndefined();
+
+      expect(testReference.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return undefined for empty json', () => {
+      let testType = Reference.parse({});
+      expect(testType).toBeUndefined();
+      testType = Reference.parse(undefined);
+      expect(testType).toBeUndefined();
+
+      testType = Reference.parse(null);
+      expect(testType).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Reference.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Reference JSON is not a JSON object.`);
+
+      t = () => {
+        Reference.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Reference.reference is not a string.`);
+
+      t = () => {
+        Reference.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid value for UriType ( test Uri Type 3)`);
+
+      t = () => {
+        Reference.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Reference.identifier.value is not a string.`);
+    });
+
+    it('should return Reference for valid json', () => {
+      const testReference: Reference | undefined = Reference.parse(VALID_JSON);
+
+      expect(testReference).toBeDefined();
+      expect(testReference).toBeInstanceOf(Reference);
+      expect(testReference?.constructor.name).toStrictEqual('Reference');
+      expect(testReference?.fhirType()).toStrictEqual('Reference');
+      expect(testReference?.isEmpty()).toBe(false);
+      expect(testReference?.isComplexDataType()).toBe(true);
+      expect(testReference?.dataTypeName()).toStrictEqual('Reference');
+      expect(testReference?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testReference.hasId()).toBe(true);
+      expect(testReference.getId()).toStrictEqual(testId);
+      expect(testReference.hasExtension()).toBe(true);
+      expect(testReference.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Reference properties
+      expect(testReference.hasReferenceElement()).toBe(true);
+      expect(testReference.getReferenceElement()).toEqual(VALID_STRING_TYPE);
+      expect(testReference.hasTypeElement()).toBe(true);
+      expect(testReference.getTypeElement()).toEqual(typeType);
+      expect(testReference.hasDisplayElement()).toBe(true);
+      expect(testReference.getDisplayElement()).toEqual(VALID_STRING_TYPE_2);
+
+      expect(testReference.hasReference()).toBe(true);
+      expect(testReference.getReference()).toStrictEqual(VALID_STRING);
+      expect(testReference.hasType()).toBe(true);
+      expect(testReference.getType()).toStrictEqual(typeUri);
+      expect(testReference.hasIdentifier()).toBe(true);
+      expect(testReference.getIdentifier()).toEqual(IDENTIFIER_TYPE_1);
+      expect(testReference.hasDisplay()).toBe(true);
+      expect(testReference.getDisplay()).toStrictEqual(VALID_STRING_2);
+    });
+
+    it('should return Reference for valid json with no field values', () => {
+      const testReference: Reference | undefined = Reference.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testReference).toBeDefined();
+      expect(testReference).toBeInstanceOf(Reference);
+      expect(testReference?.constructor.name).toStrictEqual('Reference');
+      expect(testReference?.fhirType()).toStrictEqual('Reference');
+      expect(testReference?.isEmpty()).toBe(false);
+      expect(testReference?.isComplexDataType()).toBe(true);
+      expect(testReference?.dataTypeName()).toStrictEqual('Reference');
+      expect(testReference?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testReference.hasId()).toBe(true);
+      expect(testReference.getId()).toStrictEqual(testId);
+      expect(testReference.hasExtension()).toBe(true);
+      expect(testReference.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Reference properties
+      expect(testReference.hasReferenceElement()).toBe(false);
+      expect(testReference.getReferenceElement()).toEqual(new StringType());
+      expect(testReference.hasTypeElement()).toBe(false);
+      expect(testReference.getTypeElement()).toEqual(new UriType());
+      expect(testReference.hasIdentifier()).toBe(false);
+      expect(testReference.getIdentifier()).toEqual(new Identifier());
+      expect(testReference.hasDisplayElement()).toBe(false);
+      expect(testReference.getDisplayElement()).toEqual(new StringType());
+
+      expect(testReference.hasReference()).toBe(false);
+      expect(testReference.getReference()).toBeUndefined();
+      expect(testReference.hasType()).toBe(false);
+      expect(testReference.getType()).toBeUndefined();
+      expect(testReference.hasDisplay()).toBe(false);
+      expect(testReference.getDisplay()).toBeUndefined();
+    });
+
+    it('should return Reference for valid json with null field values', () => {
+      const testReference: Reference | undefined = Reference.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testReference).toBeDefined();
+      expect(testReference).toBeInstanceOf(Reference);
+      expect(testReference?.constructor.name).toStrictEqual('Reference');
+      expect(testReference?.fhirType()).toStrictEqual('Reference');
+      expect(testReference?.isEmpty()).toBe(false);
+      expect(testReference?.isComplexDataType()).toBe(true);
+      expect(testReference?.dataTypeName()).toStrictEqual('Reference');
+      expect(testReference?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testReference.hasId()).toBe(true);
+      expect(testReference.getId()).toStrictEqual(testId);
+      expect(testReference.hasExtension()).toBe(true);
+      expect(testReference.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Reference properties
+      expect(testReference.hasReferenceElement()).toBe(false);
+      expect(testReference.getReferenceElement()).toEqual(new StringType());
+      expect(testReference.hasTypeElement()).toBe(false);
+      expect(testReference.getTypeElement()).toEqual(new UriType());
+      expect(testReference.hasIdentifier()).toBe(false);
+      expect(testReference.getIdentifier()).toEqual(new Identifier());
+      expect(testReference.hasDisplayElement()).toBe(false);
+      expect(testReference.getDisplayElement()).toEqual(new StringType());
+
+      expect(testReference.hasReference()).toBe(false);
+      expect(testReference.getReference()).toBeUndefined();
+      expect(testReference.hasType()).toBe(false);
+      expect(testReference.getType()).toBeUndefined();
+      expect(testReference.hasDisplay()).toBe(false);
+      expect(testReference.getDisplay()).toBeUndefined();
     });
   });
 });

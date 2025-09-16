@@ -153,27 +153,31 @@ export class MedicinalProductIngredient extends DomainResource implements IDomai
     fieldName = 'manufacturer';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addManufacturer(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addManufacturer(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'specifiedSubstance';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: MedicinalProductIngredientSpecifiedSubstanceComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addSpecifiedSubstance(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: MedicinalProductIngredientSpecifiedSubstanceComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addSpecifiedSubstance(component);
+          }
+        });
+      }
     }
 
     fieldName = 'substance';
@@ -639,8 +643,6 @@ export class MedicinalProductIngredient extends DomainResource implements IDomai
 
     if (this.hasRole()) {
       setFhirComplexJson(this.getRole(), 'role', jsonObj);
-    } else {
-      jsonObj['role'] = null;
     }
 
     if (this.hasAllergenicIndicatorElement()) {
@@ -751,14 +753,16 @@ export class MedicinalProductIngredientSpecifiedSubstanceComponent extends Backb
     fieldName = 'strength';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: MedicinalProductIngredientSpecifiedSubstanceStrengthComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceStrengthComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addStrength(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: MedicinalProductIngredientSpecifiedSubstanceStrengthComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceStrengthComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addStrength(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1046,14 +1050,10 @@ export class MedicinalProductIngredientSpecifiedSubstanceComponent extends Backb
 
     if (this.hasCode()) {
       setFhirComplexJson(this.getCode(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasGroup()) {
       setFhirComplexJson(this.getGroup(), 'group', jsonObj);
-    } else {
-      jsonObj['group'] = null;
     }
 
     if (this.hasConfidentiality()) {
@@ -1162,27 +1162,31 @@ export class MedicinalProductIngredientSpecifiedSubstanceStrengthComponent exten
     fieldName = 'country';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addCountry(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addCountry(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'referenceStrength';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrengthComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrengthComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addReferenceStrength(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrengthComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrengthComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addReferenceStrength(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1675,8 +1679,6 @@ export class MedicinalProductIngredientSpecifiedSubstanceStrengthComponent exten
 
     if (this.hasPresentation()) {
       setFhirComplexJson(this.getPresentation(), 'presentation', jsonObj);
-    } else {
-      jsonObj['presentation'] = null;
     }
 
     if (this.hasPresentationLowLimit()) {
@@ -1793,14 +1795,16 @@ export class MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStreng
     fieldName = 'country';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addCountry(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addCountry(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2172,8 +2176,6 @@ export class MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStreng
 
     if (this.hasStrength()) {
       setFhirComplexJson(this.getStrength(), 'strength', jsonObj);
-    } else {
-      jsonObj['strength'] = null;
     }
 
     if (this.hasStrengthLowLimit()) {
@@ -2252,14 +2254,16 @@ export class MedicinalProductIngredientSubstanceComponent extends BackboneElemen
     fieldName = 'strength';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: MedicinalProductIngredientSpecifiedSubstanceStrengthComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceStrengthComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addStrength(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: MedicinalProductIngredientSpecifiedSubstanceStrengthComponent | undefined = MedicinalProductIngredientSpecifiedSubstanceStrengthComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addStrength(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -2451,8 +2455,6 @@ export class MedicinalProductIngredientSubstanceComponent extends BackboneElemen
 
     if (this.hasCode()) {
       setFhirComplexJson(this.getCode(), 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasStrength()) {

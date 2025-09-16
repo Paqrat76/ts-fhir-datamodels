@@ -21,7 +21,14 @@
  *
  */
 
-import { EnumCodeType, FhirError, IDomainResource, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
+import {
+  EnumCodeType,
+  FhirError,
+  IDomainResource,
+  InvalidCodeError,
+  InvalidTypeError,
+  JsonError,
+} from '@paq-ts-fhir/fhir-core';
 import { ConsentStateCodesEnum } from '../../../src/code-systems/ConsentStateCodesEnum';
 import { ContributorTypeEnum } from '../../../src/code-systems/ContributorTypeEnum';
 import { Reference } from '../../../src/complex-types/complex-datatypes';
@@ -469,6 +476,171 @@ describe('TestModel', () => {
     const INVALID_JSON = {
       bogusField: 'bogus value',
     };
+    const INVALID_JSON_1 = {
+      resourceType: 'TestModel',
+      resource01: {
+        resourceType: 'SimplePersonModel',
+        identifier: [
+          {
+            system: 'http://sample/system/two',
+            value: 'This is another valid string.',
+          },
+        ],
+      },
+    };
+    const INVALID_JSON_2 = {
+      resourceType: 'TestModel',
+      primitive: [
+        {
+          primitive11: 1234,
+        },
+      ],
+    };
+    const INVALID_JSON_3 = {
+      resourceType: 'TestModel',
+      primitive: [
+        {
+          primitive1x: 'This is a valid string.',
+        },
+      ],
+    };
+    const INVALID_JSON_4 = {
+      resourceType: 'TestModel',
+      complex: {
+        reference: {
+          enumCode: [
+            {
+              enumCode1x: ['bogus'],
+            },
+          ],
+        },
+      },
+    };
+    const VALID_JSON_NO_FIELDS = {
+      resourceType: 'TestModel',
+      id: 'id12345',
+      meta: {
+        lastUpdated: '2024-01-28T14:30:00.000Z',
+      },
+      implicitRules: 'implicitRules',
+      language: 'en-US',
+      text: {
+        status: 'generated',
+        div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
+      },
+      contained: [
+        {
+          resourceType: 'SimplePersonModel',
+          id: '#SMP-1',
+          identifier: {
+            system: 'http://sample/system/one',
+            value: 'This is a valid string.',
+          },
+          name: {
+            family: 'Surname',
+            given: ['First', 'Middle'],
+            prefix: ['Mr.'],
+            suffix: ['Sr.'],
+          },
+          address: [
+            {
+              use: 'home',
+              type: 'postal',
+              line: ['1234 Main ST', 'APT 15A'],
+              city: 'Nashua',
+              state: 'NH',
+              postalCode: '03064',
+              country: 'US',
+            },
+          ],
+        },
+      ],
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      resourceType: 'TestModel',
+      id: 'id12345',
+      meta: {
+        lastUpdated: '2024-01-28T14:30:00.000Z',
+      },
+      implicitRules: 'implicitRules',
+      language: 'en-US',
+      text: {
+        status: 'generated',
+        div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
+      },
+      contained: [
+        {
+          resourceType: 'SimplePersonModel',
+          id: '#SMP-1',
+          identifier: {
+            system: 'http://sample/system/one',
+            value: 'This is a valid string.',
+          },
+          name: {
+            family: 'Surname',
+            given: ['First', 'Middle'],
+            prefix: ['Mr.'],
+            suffix: ['Sr.'],
+          },
+          address: [
+            {
+              use: 'home',
+              type: 'postal',
+              line: ['1234 Main ST', 'APT 15A'],
+              city: 'Nashua',
+              state: 'NH',
+              postalCode: '03064',
+              country: 'US',
+            },
+          ],
+        },
+      ],
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      choice01Quantity: null,
+      resource01: null,
+      primitive: null,
+      complex: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModel();
@@ -483,7 +655,52 @@ describe('TestModel', () => {
       expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expectInitializedDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
+
+      expect(testInstance.hasChoice01()).toBe(true);
+      expect(testInstance.getChoice01()).toEqual(choice01);
+      expect(testInstance.hasChoice01Quantity()).toBe(true);
+      expect(testInstance.getChoice01Quantity()).toEqual(choice01);
+      expect(testInstance.hasChoice01Range()).toBe(false);
+      const t = () => {
+        testInstance.getChoice01Range();
+      };
+      expect(t).toThrow(InvalidTypeError);
+      expect(t).toThrow(`DataType mismatch for TestModel.choice01[x]: Expected Range but encountered Quantity`);
+      expect(testInstance.hasResource01()).toBe(true);
+      expect(testInstance.getResource01()).toEqual(SIMPLE_PERSON_MODEL_RESOURCE);
+      expect(testInstance.hasPrimitive()).toBe(true);
+      expect(testInstance.getPrimitive()).toEqual([testTestModelPrimitiveComponent]);
+      expect(testInstance.hasComplex()).toBe(true);
+      expect(testInstance.getComplex()).toEqual(testTestModelComplexComponent);
+
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
+    });
+
+    it('should properly create serialized content with no field values', () => {
+      const testInstance = new TestModel();
+
+      initializeDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
+
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expectInitializedDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
+
+      expect(testInstance.hasChoice01()).toBe(false);
+      expect(testInstance.getChoice01()).toBeUndefined();
+      expect(testInstance.hasChoice01Quantity()).toBe(false);
+      expect(testInstance.getChoice01Quantity()).toBeUndefined();
+      expect(testInstance.hasChoice01Range()).toBe(false);
+      expect(testInstance.getChoice01Range()).toBeUndefined();
+      expect(testInstance.hasResource01()).toBe(false);
+      expect(testInstance.getResource01()).toBeUndefined();
+      expect(testInstance.hasPrimitive()).toBe(false);
+      expect(testInstance.getPrimitive()).toEqual([] as TestModelPrimitiveComponent[]);
+      expect(testInstance.hasComplex()).toBe(false);
+      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent());
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
     });
 
     it('should return undefined when deserialize with no json', () => {
@@ -504,6 +721,38 @@ describe('TestModel', () => {
       };
       expect(t).toThrow(FhirError);
       expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        TestModel.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModel JSON is not a JSON object.`);
+
+      t = () => {
+        TestModel.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModel.resource01.identifier JSON is not a JSON object.`);
+
+      t = () => {
+        TestModel.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModel.primitive[0].primitive11 is not a boolean.`);
+
+      t = () => {
+        TestModel.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModel.primitive[0].primitive1x is not a JSON array.`);
+
+      t = () => {
+        TestModel.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown ConsentStateCodesEnum 'code' value 'bogus'`);
     });
 
     it('should return parsed TestModel for valid json', () => {
@@ -531,6 +780,52 @@ describe('TestModel', () => {
       expect(testInstance.getPrimitive()).toEqual([testTestModelPrimitiveComponent]);
       expect(testInstance.hasComplex()).toBe(true);
       expect(testInstance.getComplex()).toEqual(testTestModelComplexComponent);
+    });
+
+    it('should return parsed TestModel for valid json with no field values', () => {
+      const testInstance: TestModel | undefined = TestModel.parse(VALID_JSON_NO_FIELDS);
+
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
+      expect(testInstance?.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
+
+      expect(testInstance.hasChoice01()).toBe(false);
+      expect(testInstance.getChoice01()).toBeUndefined();
+      expect(testInstance.hasChoice01Quantity()).toBe(false);
+      expect(testInstance.getChoice01Quantity()).toBeUndefined();
+      expect(testInstance.hasChoice01Range()).toBe(false);
+      expect(testInstance.getChoice01Range()).toBeUndefined();
+      expect(testInstance.hasResource01()).toBe(false);
+      expect(testInstance.getResource01()).toBeUndefined();
+      expect(testInstance.hasPrimitive()).toBe(false);
+      expect(testInstance.getPrimitive()).toEqual([] as TestModelPrimitiveComponent[]);
+      expect(testInstance.hasComplex()).toBe(false);
+      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent());
+    });
+
+    it('should return parsed TestModel for valid json with null field values', () => {
+      const testInstance: TestModel | undefined = TestModel.parse(VALID_JSON_NULL_FIELDS);
+
+      expectDomainResourceBase(TestModel as unknown as IDomainResource, testInstance, 'TestModel');
+      expect(testInstance?.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(false);
+      expect(testInstance?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedDomainResourceProperties(testInstance, 2, CONTAINED_SIMPLE_PERSON_MODEL);
+
+      expect(testInstance.hasChoice01()).toBe(false);
+      expect(testInstance.getChoice01()).toBeUndefined();
+      expect(testInstance.hasChoice01Quantity()).toBe(false);
+      expect(testInstance.getChoice01Quantity()).toBeUndefined();
+      expect(testInstance.hasChoice01Range()).toBe(false);
+      expect(testInstance.getChoice01Range()).toBeUndefined();
+      expect(testInstance.hasResource01()).toBe(false);
+      expect(testInstance.getResource01()).toBeUndefined();
+      expect(testInstance.hasPrimitive()).toBe(false);
+      expect(testInstance.getPrimitive()).toEqual([] as TestModelPrimitiveComponent[]);
+      expect(testInstance.hasComplex()).toBe(false);
+      expect(testInstance.getComplex()).toEqual(new TestModelComplexComponent());
     });
   });
 

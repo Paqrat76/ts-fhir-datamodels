@@ -162,14 +162,16 @@ export class PaymentReconciliation extends DomainResource implements IDomainReso
     fieldName = 'identifier';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addIdentifier(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Identifier | undefined = Identifier.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addIdentifier(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'status';
@@ -292,14 +294,16 @@ export class PaymentReconciliation extends DomainResource implements IDomainReso
     fieldName = 'detail';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: PaymentReconciliationDetailComponent | undefined = PaymentReconciliationDetailComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addDetail(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: PaymentReconciliationDetailComponent | undefined = PaymentReconciliationDetailComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addDetail(component);
+          }
+        });
+      }
     }
 
     fieldName = 'formCode';
@@ -313,14 +317,16 @@ export class PaymentReconciliation extends DomainResource implements IDomainReso
     fieldName = 'processNote';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: PaymentReconciliationProcessNoteComponent | undefined = PaymentReconciliationProcessNoteComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addProcessNote(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: PaymentReconciliationProcessNoteComponent | undefined = PaymentReconciliationProcessNoteComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addProcessNote(component);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1533,8 +1539,6 @@ export class PaymentReconciliation extends DomainResource implements IDomainReso
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasPeriod()) {
@@ -1543,8 +1547,6 @@ export class PaymentReconciliation extends DomainResource implements IDomainReso
 
     if (this.hasCreatedElement()) {
       setFhirPrimitiveJson<fhirDateTime>(this.getCreatedElement(), 'created', jsonObj);
-    } else {
-      jsonObj['created'] = null;
     }
 
     if (this.hasPaymentIssuer()) {
@@ -1570,14 +1572,10 @@ export class PaymentReconciliation extends DomainResource implements IDomainReso
 
     if (this.hasPaymentDateElement()) {
       setFhirPrimitiveJson<fhirDate>(this.getPaymentDateElement(), 'paymentDate', jsonObj);
-    } else {
-      jsonObj['paymentDate'] = null;
     }
 
     if (this.hasPaymentAmount()) {
       setFhirComplexJson(this.getPaymentAmount(), 'paymentAmount', jsonObj);
-    } else {
-      jsonObj['paymentAmount'] = null;
     }
 
     if (this.hasPaymentIdentifier()) {
@@ -2377,8 +2375,6 @@ export class PaymentReconciliationDetailComponent extends BackboneElement implem
 
     if (this.hasType()) {
       setFhirComplexJson(this.getType(), 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasRequest()) {

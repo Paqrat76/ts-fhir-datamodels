@@ -141,16 +141,20 @@ export class Linkage extends DomainResource implements IDomainResource {
     fieldName = 'item';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: LinkageItemComponent | undefined = LinkageItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setItem(null);
-        } else {
-          instance.addItem(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setItem(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: LinkageItemComponent | undefined = LinkageItemComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setItem(null);
+          } else {
+            instance.addItem(component);
+          }
+        });
+      }
     } else {
       instance.setItem(null);
     }
@@ -448,8 +452,6 @@ export class Linkage extends DomainResource implements IDomainResource {
 
     if (this.hasItem()) {
       setFhirBackboneElementListJson(this.getItem(), 'item', jsonObj);
-    } else {
-      jsonObj['item'] = null;
     }
 
     return jsonObj;
@@ -802,14 +804,10 @@ export class LinkageItemComponent extends BackboneElement implements IBackboneEl
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasResource()) {
       setFhirComplexJson(this.getResource(), 'resource', jsonObj);
-    } else {
-      jsonObj['resource'] = null;
     }
 
     return jsonObj;

@@ -29,6 +29,7 @@ import {
   InvalidCodeError,
   InvalidTypeError,
   IResource,
+  JsonError,
   PrimitiveTypeError,
   UnsignedIntType,
 } from '@paq-ts-fhir/fhir-core';
@@ -600,6 +601,56 @@ describe('Bundle', () => {
     const INVALID_JSON = {
       bogusField: 'bogus value',
     };
+    const INVALID_JSON_1 = {
+      resourceType: 'Bundle',
+      signature: {
+        who: [
+          {
+            reference: 'Organization/ORG-54321',
+          },
+        ],
+      },
+    };
+    const INVALID_JSON_2 = {
+      resourceType: 'Bundle',
+      total: true,
+    };
+    const INVALID_JSON_3 = {
+      resourceType: 'Bundle',
+      entry: {
+        fullUrl: 'validUri',
+      },
+    };
+    const INVALID_JSON_4 = {
+      resourceType: 'Bundle',
+      type: 'bogus',
+    };
+    const VALID_JSON_NO_FIELDS = {
+      resourceType: 'Bundle',
+      id: 'id12345',
+      meta: {
+        lastUpdated: '2024-01-28T14:30:00.000Z',
+      },
+      implicitRules: 'implicitRules',
+      language: 'en-US',
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      resourceType: 'Bundle',
+      id: 'id12345',
+      meta: {
+        lastUpdated: '2024-01-28T14:30:00.000Z',
+      },
+      implicitRules: 'implicitRules',
+      language: 'en-US',
+      identifier: null,
+      type: null,
+      timestamp: null,
+      total: null,
+      link: null,
+      entry: null,
+      signature: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new Bundle();
@@ -644,6 +695,41 @@ describe('Bundle', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no field values', () => {
+      const testInstance = new Bundle();
+
+      initializeResourceProperties(testInstance);
+
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
+      expect(testInstance.isEmpty()).toBe(false);
+      expectInitializedResourceProperties(testInstance);
+
+      expect(testInstance.hasIdentifier()).toBe(false);
+      expect(testInstance.getIdentifier()).toEqual(new Identifier());
+      expect(testInstance.hasTypeEnumType()).toBe(false);
+      expect(testInstance.getTypeEnumType()).toBeNull();
+      expect(testInstance.hasTypeElement()).toBe(false);
+      expect(testInstance.getTypeElement()).toBeNull();
+      expect(testInstance.hasType()).toBe(false);
+      expect(testInstance.getType()).toBeNull();
+      expect(testInstance.hasTimestampElement()).toBe(false);
+      expect(testInstance.getTimestampElement()).toEqual(new InstantType());
+      expect(testInstance.hasTimestamp()).toBe(false);
+      expect(testInstance.getTimestamp()).toBeUndefined();
+      expect(testInstance.hasTotalElement()).toBe(false);
+      expect(testInstance.getTotalElement()).toEqual(new UnsignedIntType());
+      expect(testInstance.hasTotal()).toBe(false);
+      expect(testInstance.getTotal()).toBeUndefined();
+      expect(testInstance.hasLink()).toBe(false);
+      expect(testInstance.getLink()).toEqual([] as BundleLinkComponent[]);
+      expect(testInstance.hasEntry()).toBe(false);
+      expect(testInstance.getEntry()).toEqual([] as BundleEntryComponent[]);
+      expect(testInstance.hasSignature()).toBe(false);
+      expect(testInstance.getSignature()).toEqual(new Signature());
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: Bundle | undefined;
       testInstance = Bundle.parse({});
@@ -662,6 +748,38 @@ describe('Bundle', () => {
       };
       expect(t).toThrow(FhirError);
       expect(t).toThrow(`Invalid FHIR JSON: Provided JSON is missing the required 'resourceType' field`);
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Bundle.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Bundle JSON is not a JSON object.`);
+
+      t = () => {
+        Bundle.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Bundle.signature.who JSON is not a JSON object.`);
+
+      t = () => {
+        Bundle.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Bundle.total is not a number.`);
+
+      t = () => {
+        Bundle.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Bundle.entry is not a JSON array.`);
+
+      t = () => {
+        Bundle.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown BundleTypeEnum 'code' value 'bogus'`);
     });
 
     it('should return parsed Bundle for valid json', () => {
@@ -694,6 +812,70 @@ describe('Bundle', () => {
       expect(testInstance.getEntry()).toEqual([bundleEntryComponent]);
       expect(testInstance.hasSignature()).toBe(true);
       expect(testInstance.getSignature()).toEqual(VALID_SIGNATURE);
+    });
+
+    it('should return parsed Bundle for valid json with no field values', () => {
+      const testInstance: Bundle | undefined = Bundle.parse(VALID_JSON_NO_FIELDS);
+
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedResourceProperties(testInstance);
+
+      expect(testInstance.hasIdentifier()).toBe(false);
+      expect(testInstance.getIdentifier()).toEqual(new Identifier());
+      expect(testInstance.hasTypeEnumType()).toBe(false);
+      expect(testInstance.getTypeEnumType()).toBeNull();
+      expect(testInstance.hasTypeElement()).toBe(false);
+      expect(testInstance.getTypeElement()).toBeNull();
+      expect(testInstance.hasType()).toBe(false);
+      expect(testInstance.getType()).toBeNull();
+      expect(testInstance.hasTimestampElement()).toBe(false);
+      expect(testInstance.getTimestampElement()).toEqual(new InstantType());
+      expect(testInstance.hasTimestamp()).toBe(false);
+      expect(testInstance.getTimestamp()).toBeUndefined();
+      expect(testInstance.hasTotalElement()).toBe(false);
+      expect(testInstance.getTotalElement()).toEqual(new UnsignedIntType());
+      expect(testInstance.hasTotal()).toBe(false);
+      expect(testInstance.getTotal()).toBeUndefined();
+      expect(testInstance.hasLink()).toBe(false);
+      expect(testInstance.getLink()).toEqual([] as BundleLinkComponent[]);
+      expect(testInstance.hasEntry()).toBe(false);
+      expect(testInstance.getEntry()).toEqual([] as BundleEntryComponent[]);
+      expect(testInstance.hasSignature()).toBe(false);
+      expect(testInstance.getSignature()).toEqual(new Signature());
+    });
+
+    it('should return parsed Bundle for valid json with null field values', () => {
+      const testInstance: Bundle | undefined = Bundle.parse(VALID_JSON_NULL_FIELDS);
+
+      expectResourceBase(Bundle as unknown as IResource, testInstance, 'Bundle');
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedResourceProperties(testInstance);
+
+      expect(testInstance.hasIdentifier()).toBe(false);
+      expect(testInstance.getIdentifier()).toEqual(new Identifier());
+      expect(testInstance.hasTypeEnumType()).toBe(false);
+      expect(testInstance.getTypeEnumType()).toBeNull();
+      expect(testInstance.hasTypeElement()).toBe(false);
+      expect(testInstance.getTypeElement()).toBeNull();
+      expect(testInstance.hasType()).toBe(false);
+      expect(testInstance.getType()).toBeNull();
+      expect(testInstance.hasTimestampElement()).toBe(false);
+      expect(testInstance.getTimestampElement()).toEqual(new InstantType());
+      expect(testInstance.hasTimestamp()).toBe(false);
+      expect(testInstance.getTimestamp()).toBeUndefined();
+      expect(testInstance.hasTotalElement()).toBe(false);
+      expect(testInstance.getTotalElement()).toEqual(new UnsignedIntType());
+      expect(testInstance.hasTotal()).toBe(false);
+      expect(testInstance.getTotal()).toBeUndefined();
+      expect(testInstance.hasLink()).toBe(false);
+      expect(testInstance.getLink()).toEqual([] as BundleLinkComponent[]);
+      expect(testInstance.hasEntry()).toBe(false);
+      expect(testInstance.getEntry()).toEqual([] as BundleEntryComponent[]);
+      expect(testInstance.hasSignature()).toBe(false);
+      expect(testInstance.getSignature()).toEqual(new Signature());
     });
   });
 

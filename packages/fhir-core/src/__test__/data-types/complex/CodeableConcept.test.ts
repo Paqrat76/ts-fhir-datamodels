@@ -29,6 +29,7 @@ import { InvalidTypeError } from '../../../errors/InvalidTypeError';
 import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, INVALID_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
+import { fhirString } from '../../../data-types/primitive/primitive-types';
 
 describe('CodeableConcept', () => {
   const VALID_URI = `testUriType`;
@@ -380,6 +381,22 @@ describe('CodeableConcept', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let coding1: Coding;
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      coding1 = VALID_CODING.copy();
+      const coding1Id = 'S1357';
+      const coding1Extension = new Extension('coding1Url', new StringType('coding1 extension string value'));
+      coding1.setId(coding1Id);
+      coding1.addExtension(coding1Extension);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -413,50 +430,71 @@ describe('CodeableConcept', () => {
       ],
       text: 'This is a valid string.',
     };
-
-    it('should return undefined for empty json', () => {
-      let testType = CodeableConcept.parse({});
-      expect(testType).toBeUndefined();
-
-      testType = CodeableConcept.parse(undefined);
-      expect(testType).toBeUndefined();
-
-      testType = CodeableConcept.parse(null);
-      expect(testType).toBeUndefined();
-    });
-
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
-        CodeableConcept.parse('NOT AN OBJECT');
-      };
-      expect(t).toThrow(JsonError);
-      expect(t).toThrow(`CodeableConcept JSON is not a JSON object.`);
-    });
+    const INVALID_JSON_1 = {
+      text: 1234,
+    };
+    const INVALID_JSON_2 = {
+      coding: {
+        system: 'testUriType',
+        code: 'testCodeType',
+        display: 'This is a valid string.',
+      },
+    };
+    const INVALID_JSON_3 = {
+      coding: [
+        {
+          system: 'testUriType',
+          code: ' invalid code value',
+          display: 'This is a valid string.',
+        },
+      ],
+    };
+    const INVALID_JSON_4 = {
+      coding: [
+        {
+          system: 'testUriType',
+          code: 'testCodeType',
+          display: 1234,
+        },
+      ],
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      coding: null,
+      text: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testCodeableConcept = new CodeableConcept();
-      const testId = 'id1234';
       testCodeableConcept.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testCodeableConcept.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testCodeableConcept.addExtension(testExtension2);
 
-      const coding1 = new Coding();
-      coding1.setSystem(VALID_URI);
-      coding1.setCode(VALID_CODE);
-      coding1.setDisplay(VALID_STRING);
-      const coding1Id = 'S1357';
-      const coding1Extension = new Extension('coding1Url', new StringType('coding1 extension string value'));
-      coding1.setId(coding1Id);
-      coding1.addExtension(coding1Extension);
-
-      const coding2 = new Coding();
-      coding2.setSystem(VALID_URI_2);
-      coding2.setCode(VALID_CODE_2);
-      coding2.setDisplay(VALID_STRING_2);
-
-      testCodeableConcept.setCoding([coding1, coding2]);
+      testCodeableConcept.setCoding([coding1, VALID_CODING_2]);
       testCodeableConcept.setTextElement(VALID_STRING_TYPE);
 
       expect(testCodeableConcept).toBeDefined();
@@ -477,7 +515,7 @@ describe('CodeableConcept', () => {
       // CodeableConcept properties
       expect(testCodeableConcept.hasCoding()).toBe(true);
       expect(testCodeableConcept.getCoding()).toHaveLength(2);
-      expect(testCodeableConcept.getCoding()).toEqual(expect.arrayContaining([coding1, coding2]));
+      expect(testCodeableConcept.getCoding()).toEqual(expect.arrayContaining([coding1, VALID_CODING_2]));
       expect(testCodeableConcept.hasTextElement()).toBe(true);
       expect(testCodeableConcept.getTextElement()).toEqual(VALID_STRING_TYPE);
       expect(testCodeableConcept.hasText()).toBe(true);
@@ -486,17 +524,161 @@ describe('CodeableConcept', () => {
       expect(testCodeableConcept.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return CodeableConcept for valid json', () => {
-      const testType: CodeableConcept | undefined = CodeableConcept.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testCodeableConcept = new CodeableConcept();
+      testCodeableConcept.setId(testId);
+      testCodeableConcept.addExtension(testExtension1);
+      testCodeableConcept.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(CodeableConcept);
-      expect(testType?.constructor.name).toStrictEqual('CodeableConcept');
-      expect(testType?.fhirType()).toStrictEqual('CodeableConcept');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('CodeableConcept');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testCodeableConcept).toBeDefined();
+      expect(testCodeableConcept).toBeInstanceOf(DataType);
+      expect(testCodeableConcept).toBeInstanceOf(CodeableConcept);
+      expect(testCodeableConcept.constructor.name).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept.fhirType()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept.isEmpty()).toBe(false);
+      expect(testCodeableConcept.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept.dataTypeName()).toStrictEqual('CodeableConcept');
+
+      // inherited properties from Element
+      expect(testCodeableConcept.hasId()).toBe(true);
+      expect(testCodeableConcept.getId()).toStrictEqual(testId);
+      expect(testCodeableConcept.hasExtension()).toBe(true);
+      expect(testCodeableConcept.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // CodeableConcept properties
+      expect(testCodeableConcept.hasCoding()).toBe(false);
+      expect(testCodeableConcept.getCoding()).toEqual([] as Coding[]);
+      expect(testCodeableConcept.hasTextElement()).toBe(false);
+      expect(testCodeableConcept.getTextElement()).toEqual(new StringType());
+      expect(testCodeableConcept.hasText()).toBe(false);
+      expect(testCodeableConcept.getText()).toBeUndefined();
+
+      expect(testCodeableConcept.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return undefined for empty json', () => {
+      let testCodeableConcept = CodeableConcept.parse({});
+      expect(testCodeableConcept).toBeUndefined();
+
+      testCodeableConcept = CodeableConcept.parse(undefined);
+      expect(testCodeableConcept).toBeUndefined();
+
+      testCodeableConcept = CodeableConcept.parse(null);
+      expect(testCodeableConcept).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        CodeableConcept.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`CodeableConcept JSON is not a JSON object.`);
+
+      t = () => {
+        CodeableConcept.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`CodeableConcept.text is not a string.`);
+
+      t = () => {
+        CodeableConcept.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`CodeableConcept.coding is not a JSON array.`);
+
+      t = () => {
+        CodeableConcept.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid value for CodeType ( invalid code value)`);
+
+      t = () => {
+        CodeableConcept.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`CodeableConcept.coding[0].display is not a string.`);
+    });
+
+    it('should return CodeableConcept for valid json', () => {
+      const testCodeableConcept: CodeableConcept | undefined = CodeableConcept.parse(VALID_JSON);
+
+      expect(testCodeableConcept).toBeDefined();
+      expect(testCodeableConcept).toBeInstanceOf(CodeableConcept);
+      expect(testCodeableConcept?.constructor.name).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.fhirType()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.isEmpty()).toBe(false);
+      expect(testCodeableConcept?.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept?.dataTypeName()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testCodeableConcept.hasId()).toBe(true);
+      expect(testCodeableConcept.getId()).toStrictEqual(testId);
+      expect(testCodeableConcept.hasExtension()).toBe(true);
+      expect(testCodeableConcept.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // CodeableConcept properties
+      expect(testCodeableConcept.hasCoding()).toBe(true);
+      expect(testCodeableConcept.getCoding()).toHaveLength(2);
+      expect(testCodeableConcept.getCoding()).toEqual(expect.arrayContaining([coding1, VALID_CODING_2]));
+      expect(testCodeableConcept.hasTextElement()).toBe(true);
+      expect(testCodeableConcept.getTextElement()).toEqual(VALID_STRING_TYPE);
+      expect(testCodeableConcept.hasText()).toBe(true);
+      expect(testCodeableConcept.getText()).toStrictEqual(VALID_STRING);
+    });
+
+    it('should return CodeableConcept for valid json with no field values', () => {
+      const testCodeableConcept: CodeableConcept | undefined = CodeableConcept.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testCodeableConcept).toBeDefined();
+      expect(testCodeableConcept).toBeInstanceOf(CodeableConcept);
+      expect(testCodeableConcept?.constructor.name).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.fhirType()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.isEmpty()).toBe(false);
+      expect(testCodeableConcept?.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept?.dataTypeName()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testCodeableConcept.hasId()).toBe(true);
+      expect(testCodeableConcept.getId()).toStrictEqual(testId);
+      expect(testCodeableConcept.hasExtension()).toBe(true);
+      expect(testCodeableConcept.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // CodeableConcept properties
+      expect(testCodeableConcept.hasCoding()).toBe(false);
+      expect(testCodeableConcept.getCoding()).toEqual([] as Coding[]);
+      expect(testCodeableConcept.hasTextElement()).toBe(false);
+      expect(testCodeableConcept.getTextElement()).toEqual(new StringType());
+      expect(testCodeableConcept.hasText()).toBe(false);
+      expect(testCodeableConcept.getText()).toBeUndefined();
+    });
+
+    it('should return CodeableConcept for valid json with null field values', () => {
+      const testCodeableConcept: CodeableConcept | undefined = CodeableConcept.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testCodeableConcept).toBeDefined();
+      expect(testCodeableConcept).toBeInstanceOf(CodeableConcept);
+      expect(testCodeableConcept?.constructor.name).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.fhirType()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.isEmpty()).toBe(false);
+      expect(testCodeableConcept?.isComplexDataType()).toBe(true);
+      expect(testCodeableConcept?.dataTypeName()).toStrictEqual('CodeableConcept');
+      expect(testCodeableConcept?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testCodeableConcept.hasId()).toBe(true);
+      expect(testCodeableConcept.getId()).toStrictEqual(testId);
+      expect(testCodeableConcept.hasExtension()).toBe(true);
+      expect(testCodeableConcept.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // CodeableConcept properties
+      expect(testCodeableConcept.hasCoding()).toBe(false);
+      expect(testCodeableConcept.getCoding()).toEqual([] as Coding[]);
+      expect(testCodeableConcept.hasTextElement()).toBe(false);
+      expect(testCodeableConcept.getTextElement()).toEqual(new StringType());
+      expect(testCodeableConcept.hasText()).toBe(false);
+      expect(testCodeableConcept.getText()).toBeUndefined();
     });
   });
 });

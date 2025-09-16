@@ -176,14 +176,16 @@ export class SubscriptionStatus extends DomainResource implements IDomainResourc
     fieldName = 'notificationEvent';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: SubscriptionStatusNotificationEventComponent | undefined = SubscriptionStatusNotificationEventComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addNotificationEvent(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: SubscriptionStatusNotificationEventComponent | undefined = SubscriptionStatusNotificationEventComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addNotificationEvent(component);
+          }
+        });
+      }
     }
 
     fieldName = 'subscription';
@@ -212,14 +214,16 @@ export class SubscriptionStatus extends DomainResource implements IDomainResourc
     fieldName = 'error';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addError(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: CodeableConcept | undefined = CodeableConcept.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addError(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -947,8 +951,6 @@ export class SubscriptionStatus extends DomainResource implements IDomainResourc
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasEventsSinceSubscriptionStartElement()) {
@@ -961,8 +963,6 @@ export class SubscriptionStatus extends DomainResource implements IDomainResourc
 
     if (this.hasSubscription()) {
       setFhirComplexJson(this.getSubscription(), 'subscription', jsonObj);
-    } else {
-      jsonObj['subscription'] = null;
     }
 
     if (this.hasTopicElement()) {
@@ -1061,14 +1061,16 @@ export class SubscriptionStatusNotificationEventComponent extends BackboneElemen
     fieldName = 'additionalContext';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addAdditionalContext(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addAdditionalContext(datatype);
+          }
+        });
+      }
   }
 
     return instance;
@@ -1443,8 +1445,6 @@ export class SubscriptionStatusNotificationEventComponent extends BackboneElemen
 
     if (this.hasEventNumberElement()) {
       setFhirPrimitiveJson<fhirInteger64>(this.getEventNumberElement(), 'eventNumber', jsonObj);
-    } else {
-      jsonObj['eventNumber'] = null;
     }
 
     if (this.hasTimestampElement()) {

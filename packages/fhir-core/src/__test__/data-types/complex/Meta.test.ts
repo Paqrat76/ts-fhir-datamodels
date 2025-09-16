@@ -27,7 +27,7 @@ import { Meta } from '../../../data-types/complex/Meta';
 import { CanonicalType } from '../../../data-types/primitive/CanonicalType';
 import { IdType } from '../../../data-types/primitive/IdType';
 import { InstantType } from '../../../data-types/primitive/InstantType';
-import { fhirCanonical } from '../../../data-types/primitive/primitive-types';
+import { fhirCanonical, fhirString } from '../../../data-types/primitive/primitive-types';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
@@ -700,6 +700,29 @@ describe('Meta', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let sourceType: UriType;
+    let profileType: CanonicalType;
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      sourceType = VALID_URI_TYPE.copy();
+      const sourceId = 'S1357';
+      const startExtension = new Extension('sourceUrl', new StringType('source extension string value'));
+      sourceType.setId(sourceId);
+      sourceType.addExtension(startExtension);
+
+      profileType = VALID_CANONICAL_TYPE_2.copy();
+      const profileId = 'C2468';
+      const profileExtension = new Extension('profileUrl', new StringType('profile extension string value'));
+      profileType.setId(profileId);
+      profileType.addExtension(profileExtension);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -714,7 +737,7 @@ describe('Meta', () => {
       ],
       versionId: 'a-432.E-12345',
       lastUpdated: '2015-02-07T13:28:17.239+02:00',
-      source: 'testUriType1',
+      source: 'testUriType',
       _source: {
         id: 'S1357',
         extension: [
@@ -751,46 +774,69 @@ describe('Meta', () => {
         },
       ],
     };
-
-    it('should return undefined for empty json', () => {
-      let testType = Meta.parse({});
-      expect(testType).toBeUndefined();
-
-      testType = Meta.parse(undefined);
-      expect(testType).toBeUndefined();
-
-      testType = Meta.parse(null);
-      expect(testType).toBeUndefined();
-    });
-
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
-        Meta.parse('NOT AN OBJECT');
-      };
-      expect(t).toThrow(JsonError);
-      expect(t).toThrow(`Meta JSON is not a JSON object.`);
-    });
+    const INVALID_JSON_1 = {
+      versionId: 1234,
+    };
+    const INVALID_JSON_2 = {
+      lastUpdated: ['2015-02-07T13:28:17.239+02:00'],
+    };
+    const INVALID_JSON_3 = {
+      profile: 'testCanonical2',
+    };
+    const INVALID_JSON_4 = {
+      security: {
+        system: 'testSystemSecurity',
+        code: 'testCodeSecurity',
+        display: 'testDisplaySecurity',
+      },
+    };
+    const INVALID_JSON_5 = {
+      tag: [
+        {
+          system: false,
+          code: 'testCodeTag',
+          display: 'testDisplayTag',
+        },
+      ],
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      versionId: null,
+      lastUpdated: null,
+      source: null,
+      profile: null,
+      security: null,
+      tag: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
-      const sourceUri = 'testUriType1';
-      const sourceType = new UriType(sourceUri);
-      const sourceId = 'S1357';
-      const startExtension = new Extension('sourceUrl', new StringType('source extension string value'));
-      sourceType.setId(sourceId);
-      sourceType.addExtension(startExtension);
-
-      const profileType = new CanonicalType(VALID_CANONICAL_2);
-      const profileId = 'C2468';
-      const profileExtension = new Extension('profileUrl', new StringType('profile extension string value'));
-      profileType.setId(profileId);
-      profileType.addExtension(profileExtension);
-
       const testMeta = new Meta();
-      const testId = 'id1234';
       testMeta.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testMeta.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testMeta.addExtension(testExtension2);
 
       testMeta.setVersionIdElement(VALID_ID_TYPE);
@@ -815,7 +861,7 @@ describe('Meta', () => {
       expect(testMeta.hasExtension()).toBe(true);
       expect(testMeta.getExtension()).toEqual([testExtension1, testExtension2]);
 
-      // Coding properties
+      // Meta properties
       expect(testMeta.hasVersionIdElement()).toBe(true);
       expect(testMeta.getVersionIdElement()).toEqual(new IdType(VALID_ID));
       expect(testMeta.hasLastUpdatedElement()).toBe(true);
@@ -831,7 +877,7 @@ describe('Meta', () => {
       expect(testMeta.hasLastUpdated()).toBe(true);
       expect(testMeta.getLastUpdated()).toStrictEqual(VALID_INSTANT);
       expect(testMeta.hasSource()).toBe(true);
-      expect(testMeta.getSource()).toStrictEqual(sourceUri);
+      expect(testMeta.getSource()).toStrictEqual(VALID_URI);
       expect(testMeta.hasProfile()).toBe(true);
       expect(testMeta.getProfile()).toHaveLength(1); // always returns an array
       expect(testMeta.getProfile()[0]).toStrictEqual(VALID_CANONICAL_2);
@@ -845,17 +891,230 @@ describe('Meta', () => {
       expect(testMeta.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return Meta for valid json', () => {
-      const testType: Meta | undefined = Meta.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testMeta = new Meta();
+      testMeta.setId(testId);
+      testMeta.addExtension(testExtension1);
+      testMeta.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(Meta);
-      expect(testType?.constructor.name).toStrictEqual('Meta');
-      expect(testType?.fhirType()).toStrictEqual('Meta');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('Meta');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testMeta).toBeDefined();
+      expect(testMeta).toBeInstanceOf(DataType);
+      expect(testMeta).toBeInstanceOf(Meta);
+      expect(testMeta.constructor.name).toStrictEqual('Meta');
+      expect(testMeta.fhirType()).toStrictEqual('Meta');
+      expect(testMeta.isEmpty()).toBe(false);
+      expect(testMeta.isComplexDataType()).toBe(true);
+      expect(testMeta.dataTypeName()).toStrictEqual('Meta');
+
+      // inherited properties from Element
+      expect(testMeta.hasId()).toBe(true);
+      expect(testMeta.getId()).toStrictEqual(testId);
+      expect(testMeta.hasExtension()).toBe(true);
+      expect(testMeta.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Meta properties
+      expect(testMeta.hasVersionIdElement()).toBe(false);
+      expect(testMeta.getVersionIdElement()).toEqual(new IdType());
+      expect(testMeta.hasLastUpdatedElement()).toBe(false);
+      expect(testMeta.getLastUpdatedElement()).toEqual(new InstantType());
+      expect(testMeta.hasSourceElement()).toBe(false);
+      expect(testMeta.getSourceElement()).toEqual(new UriType());
+      expect(testMeta.hasProfileElement()).toBe(false);
+      expect(testMeta.getProfileElement()).toEqual([] as CanonicalType[]);
+      expect(testMeta.hasSecurity()).toBe(false);
+      expect(testMeta.getSecurity()).toEqual([] as Coding[]);
+      expect(testMeta.hasTag()).toBe(false);
+      expect(testMeta.getTag()).toEqual([] as Coding[]);
+
+      expect(testMeta.hasVersionId()).toBe(false);
+      expect(testMeta.getVersionId()).toBeUndefined();
+      expect(testMeta.hasLastUpdated()).toBe(false);
+      expect(testMeta.getLastUpdated()).toBeUndefined();
+      expect(testMeta.hasSource()).toBe(false);
+      expect(testMeta.getSource()).toBeUndefined();
+      expect(testMeta.hasProfile()).toBe(false);
+      expect(testMeta.getProfile()).toEqual([] as fhirCanonical[]);
+
+      expect(testMeta.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return undefined for empty json', () => {
+      let testType = Meta.parse({});
+      expect(testType).toBeUndefined();
+
+      testType = Meta.parse(undefined);
+      expect(testType).toBeUndefined();
+
+      testType = Meta.parse(null);
+      expect(testType).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Meta.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Meta JSON is not a JSON object.`);
+
+      t = () => {
+        Meta.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Meta.versionId is not a string.`);
+
+      t = () => {
+        Meta.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Meta.lastUpdated is not a string.`);
+
+      t = () => {
+        Meta.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Meta.profile is not a JSON array.`);
+
+      t = () => {
+        Meta.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Meta.security is not a JSON array.`);
+
+      t = () => {
+        Meta.parse(INVALID_JSON_5);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Meta.tag[0].system is not a string.`);
+    });
+
+    it('should return Meta for valid json', () => {
+      const testMeta: Meta | undefined = Meta.parse(VALID_JSON);
+
+      expect(testMeta).toBeDefined();
+      expect(testMeta).toBeInstanceOf(Meta);
+      expect(testMeta?.constructor.name).toStrictEqual('Meta');
+      expect(testMeta?.fhirType()).toStrictEqual('Meta');
+      expect(testMeta?.isEmpty()).toBe(false);
+      expect(testMeta?.isComplexDataType()).toBe(true);
+      expect(testMeta?.dataTypeName()).toStrictEqual('Meta');
+      expect(testMeta?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testMeta.hasId()).toBe(true);
+      expect(testMeta.getId()).toStrictEqual(testId);
+      expect(testMeta.hasExtension()).toBe(true);
+      expect(testMeta.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Meta properties
+      expect(testMeta.hasVersionIdElement()).toBe(true);
+      expect(testMeta.getVersionIdElement()).toEqual(new IdType(VALID_ID));
+      expect(testMeta.hasLastUpdatedElement()).toBe(true);
+      expect(testMeta.getLastUpdatedElement()).toEqual(new InstantType(VALID_INSTANT));
+      expect(testMeta.hasSourceElement()).toBe(true);
+      expect(testMeta.getSourceElement()).toEqual(sourceType);
+      expect(testMeta.hasProfileElement()).toBe(true);
+      expect(testMeta.getProfileElement()).toHaveLength(1); // always returns an array
+      expect(testMeta.getProfileElement()[0]).toEqual(profileType);
+
+      expect(testMeta.hasVersionId()).toBe(true);
+      expect(testMeta.getVersionId()).toStrictEqual(VALID_ID);
+      expect(testMeta.hasLastUpdated()).toBe(true);
+      expect(testMeta.getLastUpdated()).toStrictEqual(VALID_INSTANT);
+      expect(testMeta.hasSource()).toBe(true);
+      expect(testMeta.getSource()).toStrictEqual(VALID_URI);
+      expect(testMeta.hasProfile()).toBe(true);
+      expect(testMeta.getProfile()).toHaveLength(1); // always returns an array
+      expect(testMeta.getProfile()[0]).toStrictEqual(VALID_CANONICAL_2);
+      expect(testMeta.hasSecurity()).toBe(true);
+      expect(testMeta.getSecurity()).toHaveLength(1); // always returns an array
+      expect(testMeta.getSecurity()[0]).toEqual(VALID_CODING_SECURITY);
+      expect(testMeta.hasTag()).toBe(true);
+      expect(testMeta.getTag()).toHaveLength(1); // always returns an array
+      expect(testMeta.getTag()[0]).toEqual(VALID_CODING_TAG);
+    });
+
+    it('should return Meta for valid json with no field values', () => {
+      const testMeta: Meta | undefined = Meta.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testMeta).toBeDefined();
+      expect(testMeta).toBeInstanceOf(Meta);
+      expect(testMeta?.constructor.name).toStrictEqual('Meta');
+      expect(testMeta?.fhirType()).toStrictEqual('Meta');
+      expect(testMeta?.isEmpty()).toBe(false);
+      expect(testMeta?.isComplexDataType()).toBe(true);
+      expect(testMeta?.dataTypeName()).toStrictEqual('Meta');
+      expect(testMeta?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testMeta.hasId()).toBe(true);
+      expect(testMeta.getId()).toStrictEqual(testId);
+      expect(testMeta.hasExtension()).toBe(true);
+      expect(testMeta.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Meta properties
+      expect(testMeta.hasVersionIdElement()).toBe(false);
+      expect(testMeta.getVersionIdElement()).toEqual(new IdType());
+      expect(testMeta.hasLastUpdatedElement()).toBe(false);
+      expect(testMeta.getLastUpdatedElement()).toEqual(new InstantType());
+      expect(testMeta.hasSourceElement()).toBe(false);
+      expect(testMeta.getSourceElement()).toEqual(new UriType());
+      expect(testMeta.hasProfileElement()).toBe(false);
+      expect(testMeta.getProfileElement()).toEqual([] as CanonicalType[]);
+      expect(testMeta.hasSecurity()).toBe(false);
+      expect(testMeta.getSecurity()).toEqual([] as Coding[]);
+      expect(testMeta.hasTag()).toBe(false);
+      expect(testMeta.getTag()).toEqual([] as Coding[]);
+
+      expect(testMeta.hasVersionId()).toBe(false);
+      expect(testMeta.getVersionId()).toBeUndefined();
+      expect(testMeta.hasLastUpdated()).toBe(false);
+      expect(testMeta.getLastUpdated()).toBeUndefined();
+      expect(testMeta.hasSource()).toBe(false);
+      expect(testMeta.getSource()).toBeUndefined();
+      expect(testMeta.hasProfile()).toBe(false);
+      expect(testMeta.getProfile()).toEqual([] as fhirCanonical[]);
+    });
+
+    it('should return Meta for valid json with null field values', () => {
+      const testMeta: Meta | undefined = Meta.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testMeta).toBeDefined();
+      expect(testMeta).toBeInstanceOf(Meta);
+      expect(testMeta?.constructor.name).toStrictEqual('Meta');
+      expect(testMeta?.fhirType()).toStrictEqual('Meta');
+      expect(testMeta?.isEmpty()).toBe(false);
+      expect(testMeta?.isComplexDataType()).toBe(true);
+      expect(testMeta?.dataTypeName()).toStrictEqual('Meta');
+      expect(testMeta?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testMeta.hasId()).toBe(true);
+      expect(testMeta.getId()).toStrictEqual(testId);
+      expect(testMeta.hasExtension()).toBe(true);
+      expect(testMeta.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Meta properties
+      expect(testMeta.hasVersionIdElement()).toBe(false);
+      expect(testMeta.getVersionIdElement()).toEqual(new IdType());
+      expect(testMeta.hasLastUpdatedElement()).toBe(false);
+      expect(testMeta.getLastUpdatedElement()).toEqual(new InstantType());
+      expect(testMeta.hasSourceElement()).toBe(false);
+      expect(testMeta.getSourceElement()).toEqual(new UriType());
+      expect(testMeta.hasProfileElement()).toBe(false);
+      expect(testMeta.getProfileElement()).toEqual([] as CanonicalType[]);
+      expect(testMeta.hasSecurity()).toBe(false);
+      expect(testMeta.getSecurity()).toEqual([] as Coding[]);
+      expect(testMeta.hasTag()).toBe(false);
+      expect(testMeta.getTag()).toEqual([] as Coding[]);
+
+      expect(testMeta.hasVersionId()).toBe(false);
+      expect(testMeta.getVersionId()).toBeUndefined();
+      expect(testMeta.hasLastUpdated()).toBe(false);
+      expect(testMeta.getLastUpdated()).toBeUndefined();
+      expect(testMeta.hasSource()).toBe(false);
+      expect(testMeta.getSource()).toBeUndefined();
+      expect(testMeta.hasProfile()).toBe(false);
+      expect(testMeta.getProfile()).toEqual([] as fhirCanonical[]);
     });
   });
 });

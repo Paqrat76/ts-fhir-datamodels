@@ -438,8 +438,6 @@ export class Binary extends Resource implements IResource {
 
     if (this.hasContentTypeElement()) {
       setFhirPrimitiveJson<fhirCode>(this.getContentTypeElement(), 'contentType', jsonObj);
-    } else {
-      jsonObj['contentType'] = null;
     }
 
     if (this.hasSecurityContext()) {

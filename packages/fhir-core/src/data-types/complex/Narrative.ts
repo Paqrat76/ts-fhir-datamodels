@@ -431,15 +431,11 @@ export class Narrative extends DataType implements IDataType {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasDivElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirXhtml>(this.getDivElement()!, 'div', jsonObj);
-    } else {
-      jsonObj['div'] = null;
     }
 
     return jsonObj;

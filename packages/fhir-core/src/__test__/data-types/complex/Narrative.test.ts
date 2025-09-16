@@ -27,6 +27,7 @@ import { Narrative } from '../../../data-types/complex/Narrative';
 import { CodeType, EnumCodeType } from '../../../data-types/primitive/CodeType';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { XhtmlType } from '../../../data-types/primitive/XhtmlType';
+import { fhirString } from '../../../data-types/primitive/primitive-types';
 import { FhirError } from '../../../errors/FhirError';
 import { InvalidCodeError } from '../../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
@@ -496,6 +497,22 @@ describe('Narrative', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let statusType: CodeType;
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      statusType = VALID_CODE_ADDITIONAL_TYPE.copy();
+      const statusId = 'S1357';
+      const statusExtension = new Extension('statusUrl', new StringType('status extension string value'));
+      statusType.setId(statusId);
+      statusType.addExtension(statusExtension);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -519,6 +536,44 @@ describe('Narrative', () => {
         ],
       },
       div: '<div xmlns="http://www.w3.org/1999/xhtml">text</div>',
+    };
+    const INVALID_JSON_1 = {
+      status: 'invalidCode',
+    };
+    const INVALID_JSON_2 = {
+      status: 1234,
+    };
+    const INVALID_JSON_3 = {
+      div: ' <div xmlns="http://www.w3.org/1999/xhtml">text</div> ',
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      status: null,
+      div: null,
+      unexpectedField: 'should be ignored without error',
     };
 
     it('should return undefined for empty json', () => {
@@ -559,12 +614,30 @@ describe('Narrative', () => {
       expect(parsedNarrative.getDiv()).toBeNull();
     });
 
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
         Narrative.parse('NOT AN OBJECT');
       };
       expect(t).toThrow(JsonError);
       expect(t).toThrow(`Narrative JSON is not a JSON object.`);
+
+      t = () => {
+        Narrative.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown NarrativeStatusEnum 'code' value 'invalidCode'`);
+
+      t = () => {
+        Narrative.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Narrative.status is not a string.`);
+
+      t = () => {
+        Narrative.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid value for XhtmlType`);
     });
 
     it('should throw FhirError for including Extension on div (xhtml) field', () => {
@@ -588,33 +661,10 @@ describe('Narrative', () => {
       expect(t).toThrow(`According to the FHIR specification, Extensions are not permitted on the xhtml type`);
     });
 
-    it('should properly create serialized content for missing required fields', () => {
-      const testId = 'id1234';
-      const testNarrative = new Narrative(null, null);
-      testNarrative.setId(testId);
-
-      const expectedJson = {
-        id: testId,
-        status: null,
-        div: null,
-      };
-      const json = testNarrative.toJSON();
-      expect(json).toEqual(expectedJson);
-    });
-
     it('should properly create serialized content', () => {
-      const statusType = new CodeType(VALID_CODE_ADDITIONAL);
-      const statusId = 'S1357';
-      const statusExtension = new Extension('statusUrl', new StringType('status extension string value'));
-      statusType.setId(statusId);
-      statusType.addExtension(statusExtension);
-
       const testNarrative = new Narrative(statusType, VALID_XHTML_TYPE);
-      const testId = 'id1234';
       testNarrative.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testNarrative.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testNarrative.addExtension(testExtension2);
 
       expect(testNarrative).toBeDefined();
@@ -649,18 +699,141 @@ describe('Narrative', () => {
       expect(testNarrative.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return Narrative for valid json', () => {
-      const testType: Narrative | undefined = Narrative.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testNarrative = new Narrative();
+      testNarrative.setId(testId);
+      testNarrative.addExtension(testExtension1);
+      testNarrative.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(Narrative);
-      expect(testType?.constructor.name).toStrictEqual('Narrative');
-      expect(testType?.fhirType()).toStrictEqual('Narrative');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isRequiredFieldsEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('Narrative');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testNarrative).toBeDefined();
+      expect(testNarrative).toBeInstanceOf(DataType);
+      expect(testNarrative).toBeInstanceOf(Narrative);
+      expect(testNarrative.constructor.name).toStrictEqual('Narrative');
+      expect(testNarrative.fhirType()).toStrictEqual('Narrative');
+      expect(testNarrative.isEmpty()).toBe(false);
+      expect(testNarrative.isRequiredFieldsEmpty()).toBe(true);
+      expect(testNarrative.isComplexDataType()).toBe(true);
+      expect(testNarrative.dataTypeName()).toStrictEqual('Narrative');
+
+      // inherited properties from Element
+      expect(testNarrative.hasId()).toBe(true);
+      expect(testNarrative.getId()).toStrictEqual(testId);
+      expect(testNarrative.hasExtension()).toBe(true);
+      expect(testNarrative.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Narrative properties
+      expect(testNarrative.hasStatusEnumType()).toBe(false);
+      expect(testNarrative.getStatusEnumType()).toBeNull();
+      expect(testNarrative.hasStatusElement()).toBe(false);
+      expect(testNarrative.getStatusElement()).toBeNull();
+      expect(testNarrative.hasDivElement()).toBe(false);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
+
+      expect(testNarrative.hasStatus()).toBe(false);
+      expect(testNarrative.getStatus()).toBeNull();
+      expect(testNarrative.hasDiv()).toBe(false);
+      expect(testNarrative.getDiv()).toBeNull();
+
+      expect(testNarrative.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return Narrative for valid json', () => {
+      const testNarrative: Narrative | undefined = Narrative.parse(VALID_JSON);
+
+      expect(testNarrative).toBeDefined();
+      expect(testNarrative).toBeInstanceOf(Narrative);
+      expect(testNarrative?.constructor.name).toStrictEqual('Narrative');
+      expect(testNarrative?.fhirType()).toStrictEqual('Narrative');
+      expect(testNarrative?.isEmpty()).toBe(false);
+      expect(testNarrative?.isRequiredFieldsEmpty()).toBe(false);
+      expect(testNarrative?.isComplexDataType()).toBe(true);
+      expect(testNarrative?.dataTypeName()).toStrictEqual('Narrative');
+      expect(testNarrative?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testNarrative.hasId()).toBe(true);
+      expect(testNarrative.getId()).toStrictEqual(testId);
+      expect(testNarrative.hasExtension()).toBe(true);
+      expect(testNarrative.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Narrative properties
+      expect(testNarrative.hasStatusEnumType()).toBe(true);
+      expect(testNarrative.getStatusEnumType()).toEqual(new EnumCodeType(statusType, narrativeStatusEnum));
+      expect(testNarrative.hasStatusElement()).toBe(true);
+      expect(testNarrative.getStatusElement()).toMatchObject(statusType);
+      expect(testNarrative.hasDivElement()).toBe(true);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType(VALID_XHTML));
+
+      expect(testNarrative.hasStatus()).toBe(true);
+      expect(testNarrative.getStatus()).toStrictEqual(VALID_CODE_ADDITIONAL);
+      expect(testNarrative.hasDiv()).toBe(true);
+      expect(testNarrative.getDiv()).toStrictEqual(VALID_XHTML);
+    });
+
+    it('should return Narrative for valid json with no field values', () => {
+      const testNarrative: Narrative | undefined = Narrative.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testNarrative).toBeDefined();
+      expect(testNarrative).toBeInstanceOf(Narrative);
+      expect(testNarrative?.constructor.name).toStrictEqual('Narrative');
+      expect(testNarrative?.fhirType()).toStrictEqual('Narrative');
+      expect(testNarrative?.isEmpty()).toBe(false);
+      expect(testNarrative?.isRequiredFieldsEmpty()).toBe(true);
+      expect(testNarrative?.isComplexDataType()).toBe(true);
+      expect(testNarrative?.dataTypeName()).toStrictEqual('Narrative');
+      expect(testNarrative?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testNarrative.hasId()).toBe(true);
+      expect(testNarrative.getId()).toStrictEqual(testId);
+      expect(testNarrative.hasExtension()).toBe(true);
+      expect(testNarrative.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Narrative properties
+      expect(testNarrative.hasStatusEnumType()).toBe(false);
+      expect(testNarrative.getStatusEnumType()).toBeNull();
+      expect(testNarrative.hasStatusElement()).toBe(false);
+      expect(testNarrative.getStatusElement()).toBeNull();
+      expect(testNarrative.hasDivElement()).toBe(false);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
+
+      expect(testNarrative.hasStatus()).toBe(false);
+      expect(testNarrative.getStatus()).toBeNull();
+      expect(testNarrative.hasDiv()).toBe(false);
+      expect(testNarrative.getDiv()).toBeNull();
+    });
+
+    it('should return Narrative for valid json with null field values', () => {
+      const testNarrative: Narrative | undefined = Narrative.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testNarrative).toBeDefined();
+      expect(testNarrative).toBeInstanceOf(Narrative);
+      expect(testNarrative?.constructor.name).toStrictEqual('Narrative');
+      expect(testNarrative?.fhirType()).toStrictEqual('Narrative');
+      expect(testNarrative?.isEmpty()).toBe(false);
+      expect(testNarrative?.isRequiredFieldsEmpty()).toBe(true);
+      expect(testNarrative?.isComplexDataType()).toBe(true);
+      expect(testNarrative?.dataTypeName()).toStrictEqual('Narrative');
+      expect(testNarrative?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testNarrative.hasId()).toBe(true);
+      expect(testNarrative.getId()).toStrictEqual(testId);
+      expect(testNarrative.hasExtension()).toBe(true);
+      expect(testNarrative.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Narrative properties
+      expect(testNarrative.hasStatusEnumType()).toBe(false);
+      expect(testNarrative.getStatusEnumType()).toBeNull();
+      expect(testNarrative.hasStatusElement()).toBe(false);
+      expect(testNarrative.getStatusElement()).toBeNull();
+      expect(testNarrative.hasDivElement()).toBe(false);
+      expect(testNarrative.getDivElement()).toEqual(new XhtmlType());
+
+      expect(testNarrative.hasStatus()).toBe(false);
+      expect(testNarrative.getStatus()).toBeNull();
+      expect(testNarrative.hasDiv()).toBe(false);
+      expect(testNarrative.getDiv()).toBeNull();
     });
   });
 });

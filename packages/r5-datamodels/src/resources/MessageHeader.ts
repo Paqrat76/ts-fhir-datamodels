@@ -165,14 +165,16 @@ export class MessageHeader extends DomainResource implements IDomainResource {
     fieldName = 'destination';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: MessageHeaderDestinationComponent | undefined = MessageHeaderDestinationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addDestination(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: MessageHeaderDestinationComponent | undefined = MessageHeaderDestinationComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addDestination(component);
+          }
+        });
+      }
     }
 
     fieldName = 'sender';
@@ -232,14 +234,16 @@ export class MessageHeader extends DomainResource implements IDomainResource {
     fieldName = 'focus';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addFocus(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addFocus(datatype);
+          }
+        });
+      }
   }
 
     fieldName = 'definition';
@@ -1017,8 +1021,6 @@ export class MessageHeader extends DomainResource implements IDomainResource {
     if (this.hasEvent()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setPolymorphicValueJson(this.getEvent()!, 'event', jsonObj);
-    } else {
-      jsonObj['event'] = null;
     }
 
     if (this.hasDestination()) {
@@ -1035,8 +1037,6 @@ export class MessageHeader extends DomainResource implements IDomainResource {
 
     if (this.hasSource()) {
       setFhirBackboneElementJson(this.getSource(), 'source', jsonObj);
-    } else {
-      jsonObj['source'] = null;
     }
 
     if (this.hasResponsible()) {
@@ -2503,15 +2503,11 @@ export class MessageHeaderResponseComponent extends BackboneElement implements I
 
     if (this.hasIdentifier()) {
       setFhirComplexJson(this.getIdentifier(), 'identifier', jsonObj);
-    } else {
-      jsonObj['identifier'] = null;
     }
 
     if (this.hasCodeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getCodeElement()!, 'code', jsonObj);
-    } else {
-      jsonObj['code'] = null;
     }
 
     if (this.hasDetails()) {

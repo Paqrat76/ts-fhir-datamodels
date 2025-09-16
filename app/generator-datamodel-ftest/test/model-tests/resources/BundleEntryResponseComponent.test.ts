@@ -25,7 +25,9 @@ import {
   CodeType,
   IBackboneElement,
   InstantType,
+  InvalidCodeError,
   InvalidTypeError,
+  JsonError,
   PrimitiveTypeError,
   StringType,
   UriType,
@@ -567,6 +569,73 @@ describe('BundleEntryResponseComponent', () => {
         ],
       },
     };
+    const INVALID_JSON_1 = {
+      outcome: [
+        {
+          resourceType: 'SimplePersonModel',
+          id: 'id12345',
+          name: {
+            family: 'Surname',
+            given: ['First', 'Middle'],
+          },
+        },
+      ],
+    };
+    const INVALID_JSON_2 = {
+      lastModified: false,
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      status: null,
+      location: null,
+      etag: null,
+      lastModified: null,
+      outcome: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleEntryResponseComponent();
@@ -611,6 +680,43 @@ describe('BundleEntryResponseComponent', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new BundleEntryResponseComponent();
+
+      initializeBackboneElementProperties(testInstance, 2);
+
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryResponseComponent',
+        'Bundle.entry.response',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasStatusElement()).toBe(false);
+      expect(testInstance.getStatusElement()).toEqual(new StringType());
+      expect(testInstance.hasStatus()).toBe(false);
+      expect(testInstance.getStatus()).toBeNull();
+      expect(testInstance.hasLocationElement()).toBe(false);
+      expect(testInstance.getLocationElement()).toEqual(new UriType());
+      expect(testInstance.hasLocation()).toBe(false);
+      expect(testInstance.getLocation()).toBeUndefined();
+      expect(testInstance.hasEtagElement()).toBe(false);
+      expect(testInstance.getEtagElement()).toEqual(new StringType());
+      expect(testInstance.hasEtag()).toBe(false);
+      expect(testInstance.getEtag()).toBeUndefined();
+      expect(testInstance.hasLastModifiedElement()).toBe(false);
+      expect(testInstance.getLastModifiedElement()).toEqual(new InstantType());
+      expect(testInstance.hasLastModified()).toBe(false);
+      expect(testInstance.getLastModified()).toBeUndefined();
+      expect(testInstance.hasOutcome()).toBe(false);
+      expect(testInstance.getOutcome()).toBeUndefined();
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: BundleEntryResponseComponent | undefined;
       testInstance = BundleEntryResponseComponent.parse({});
@@ -623,7 +729,27 @@ describe('BundleEntryResponseComponent', () => {
       expect(testInstance).toBeUndefined();
     });
 
-    it('should return parsed Bundle for valid json', () => {
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        BundleEntryResponseComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryResponseComponent JSON is not a JSON object.`);
+
+      t = () => {
+        BundleEntryResponseComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryResponseComponent.outcome is not a JSON object.`);
+
+      t = () => {
+        BundleEntryResponseComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleEntryResponseComponent.lastModified is not a string.`);
+    });
+
+    it('should return parsed BundleEntryResponseComponent for valid json', () => {
       const testInstance: BundleEntryResponseComponent | undefined = BundleEntryResponseComponent.parse(VALID_JSON);
 
       expectBackboneElementBase(
@@ -655,6 +781,76 @@ describe('BundleEntryResponseComponent', () => {
       expect(testInstance.getLastModified()).toEqual(TestData.VALID_INSTANT);
       expect(testInstance.hasOutcome()).toBe(true);
       expect(testInstance.getOutcome()).toEqual(OUTCOME_SIMPLE_PERSON_MODEL);
+    });
+
+    it('should return parsed BundleEntryResponseComponent for valid json with no fields', () => {
+      const testInstance: BundleEntryResponseComponent | undefined =
+        BundleEntryResponseComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryResponseComponent',
+        'Bundle.entry.response',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasStatusElement()).toBe(false);
+      expect(testInstance.getStatusElement()).toEqual(new StringType());
+      expect(testInstance.hasStatus()).toBe(false);
+      expect(testInstance.getStatus()).toBeNull();
+      expect(testInstance.hasLocationElement()).toBe(false);
+      expect(testInstance.getLocationElement()).toEqual(new UriType());
+      expect(testInstance.hasLocation()).toBe(false);
+      expect(testInstance.getLocation()).toBeUndefined();
+      expect(testInstance.hasEtagElement()).toBe(false);
+      expect(testInstance.getEtagElement()).toEqual(new StringType());
+      expect(testInstance.hasEtag()).toBe(false);
+      expect(testInstance.getEtag()).toBeUndefined();
+      expect(testInstance.hasLastModifiedElement()).toBe(false);
+      expect(testInstance.getLastModifiedElement()).toEqual(new InstantType());
+      expect(testInstance.hasLastModified()).toBe(false);
+      expect(testInstance.getLastModified()).toBeUndefined();
+      expect(testInstance.hasOutcome()).toBe(false);
+      expect(testInstance.getOutcome()).toBeUndefined();
+    });
+
+    it('should return parsed BundleEntryResponseComponent for valid json with null fields', () => {
+      const testInstance: BundleEntryResponseComponent | undefined =
+        BundleEntryResponseComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneElementBase(
+        BundleEntryResponseComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleEntryResponseComponent',
+        'Bundle.entry.response',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasStatusElement()).toBe(false);
+      expect(testInstance.getStatusElement()).toEqual(new StringType());
+      expect(testInstance.hasStatus()).toBe(false);
+      expect(testInstance.getStatus()).toBeNull();
+      expect(testInstance.hasLocationElement()).toBe(false);
+      expect(testInstance.getLocationElement()).toEqual(new UriType());
+      expect(testInstance.hasLocation()).toBe(false);
+      expect(testInstance.getLocation()).toBeUndefined();
+      expect(testInstance.hasEtagElement()).toBe(false);
+      expect(testInstance.getEtagElement()).toEqual(new StringType());
+      expect(testInstance.hasEtag()).toBe(false);
+      expect(testInstance.getEtag()).toBeUndefined();
+      expect(testInstance.hasLastModifiedElement()).toBe(false);
+      expect(testInstance.getLastModifiedElement()).toEqual(new InstantType());
+      expect(testInstance.hasLastModified()).toBe(false);
+      expect(testInstance.getLastModified()).toBeUndefined();
+      expect(testInstance.hasOutcome()).toBe(false);
+      expect(testInstance.getOutcome()).toBeUndefined();
     });
   });
 

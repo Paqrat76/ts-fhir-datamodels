@@ -29,10 +29,12 @@ import { Identifier, Reference } from '../../../data-types/complex/Reference-Ide
 import { CodeType, EnumCodeType } from '../../../data-types/primitive/CodeType';
 import { StringType } from '../../../data-types/primitive/StringType';
 import { UriType } from '../../../data-types/primitive/UriType';
+import { InvalidCodeError } from '../../../errors/InvalidCodeError';
 import { InvalidTypeError } from '../../../errors/InvalidTypeError';
 import { JsonError } from '../../../errors/JsonError';
 import { PrimitiveTypeError } from '../../../errors/PrimitiveTypeError';
 import { INVALID_NON_STRING_TYPE, INVALID_STRING_TYPE, UNDEFINED_VALUE } from '../../test-utils';
+import { fhirString } from '../../../data-types/primitive/primitive-types';
 
 describe('Identifier Tests', () => {
   const VALID_CODE = `official`;
@@ -652,6 +654,22 @@ describe('Identifier Tests', () => {
   });
 
   describe('Serialization/Deserialization', () => {
+    let testId: fhirString;
+    let testExtension1: Extension;
+    let testExtension2: Extension;
+    let valueType: StringType;
+    beforeAll(() => {
+      testId = 'id1234';
+      testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
+      testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
+
+      valueType = new StringType(VALID_STRING);
+      const valueId = 'V1357';
+      const valueExtension = new Extension('valueUrl', new StringType('value extension string value'));
+      valueType.setId(valueId);
+      valueType.addExtension(valueExtension);
+    });
+
     const VALID_JSON = {
       id: 'id1234',
       extension: [
@@ -669,7 +687,7 @@ describe('Identifier Tests', () => {
         text: 'CodeableConcept text 1',
       },
       system: 'testUriType',
-      value: 'value type string',
+      value: 'This is a valid string.',
       _value: {
         id: 'V1357',
         extension: [
@@ -686,40 +704,58 @@ describe('Identifier Tests', () => {
         reference: 'Organization/13579',
       },
     };
-
-    it('should return undefined for empty json', () => {
-      let testType = Identifier.parse({});
-      expect(testType).toBeUndefined();
-
-      testType = Identifier.parse(undefined);
-      expect(testType).toBeUndefined();
-
-      testType = Identifier.parse(null);
-      expect(testType).toBeUndefined();
-    });
-
-    it('should throw JsonError for invalid json type', () => {
-      const t = () => {
-        Identifier.parse('NOT AN OBJECT');
-      };
-      expect(t).toThrow(JsonError);
-      expect(t).toThrow(`Identifier JSON is not a JSON object.`);
-    });
+    const INVALID_JSON_1 = {
+      use: 'invalidValue',
+    };
+    const INVALID_JSON_2 = {
+      type: 'CodeableConcept text 1',
+    };
+    const INVALID_JSON_3 = {
+      system: 1234,
+    };
+    const INVALID_JSON_4 = {
+      assigner: {
+        reference: 'Basic/13579',
+      },
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id1234',
+      extension: [
+        {
+          url: 'testUrl1',
+          valueString: 'base extension string value 1',
+        },
+        {
+          url: 'testUrl2',
+          valueString: 'base extension string value 2',
+        },
+      ],
+      use: null,
+      type: null,
+      system: null,
+      value: null,
+      period: null,
+      assigner: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
-      const valueStr = 'value type string';
-      const valueType = new StringType(valueStr);
-      const valueId = 'V1357';
-      valueType.setId(valueId);
-      const valueExtension = new Extension('valueUrl', new StringType('value extension string value'));
-      valueType.addExtension(valueExtension);
-
       const testIdentifier = new Identifier();
-      const testId = 'id1234';
       testIdentifier.setId(testId);
-      const testExtension1 = new Extension('testUrl1', new StringType('base extension string value 1'));
       testIdentifier.addExtension(testExtension1);
-      const testExtension2 = new Extension('testUrl2', new StringType('base extension string value 2'));
       testIdentifier.addExtension(testExtension2);
 
       testIdentifier.setUseElement(VALID_CODE_TYPE);
@@ -767,22 +803,235 @@ describe('Identifier Tests', () => {
       expect(testIdentifier.hasSystem()).toBe(true);
       expect(testIdentifier.getSystem()).toStrictEqual(VALID_URI);
       expect(testIdentifier.hasValue()).toBe(true);
-      expect(testIdentifier.getValue()).toStrictEqual(valueStr);
+      expect(testIdentifier.getValue()).toStrictEqual(VALID_STRING);
 
       expect(testIdentifier.toJSON()).toEqual(VALID_JSON);
     });
 
-    it('should return Identifier for valid json', () => {
-      const testType: Identifier | undefined = Identifier.parse(VALID_JSON);
+    it('should properly create serialized content with no fields', () => {
+      const testIdentifier = new Identifier();
+      testIdentifier.setId(testId);
+      testIdentifier.addExtension(testExtension1);
+      testIdentifier.addExtension(testExtension2);
 
-      expect(testType).toBeDefined();
-      expect(testType).toBeInstanceOf(Identifier);
-      expect(testType?.constructor.name).toStrictEqual('Identifier');
-      expect(testType?.fhirType()).toStrictEqual('Identifier');
-      expect(testType?.isEmpty()).toBe(false);
-      expect(testType?.isComplexDataType()).toBe(true);
-      expect(testType?.dataTypeName()).toStrictEqual('Identifier');
-      expect(testType?.toJSON()).toEqual(VALID_JSON);
+      expect(testIdentifier).toBeDefined();
+      expect(testIdentifier).toBeInstanceOf(DataType);
+      expect(testIdentifier).toBeInstanceOf(Identifier);
+      expect(testIdentifier.constructor.name).toStrictEqual('Identifier');
+      expect(testIdentifier.fhirType()).toStrictEqual('Identifier');
+      expect(testIdentifier.isEmpty()).toBe(false);
+      expect(testIdentifier.isComplexDataType()).toBe(true);
+      expect(testIdentifier.dataTypeName()).toStrictEqual('Identifier');
+
+      // inherited properties from Element
+      expect(testIdentifier.hasId()).toBe(true);
+      expect(testIdentifier.getId()).toStrictEqual(testId);
+      expect(testIdentifier.hasExtension()).toBe(true);
+      expect(testIdentifier.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Identifier properties
+      expect(testIdentifier.hasUseEnumType()).toBe(false);
+      expect(testIdentifier.getUseEnumType()).toBeUndefined();
+
+      expect(testIdentifier.hasUseElement()).toBe(false);
+      expect(testIdentifier.getUseElement()).toBeUndefined();
+      expect(testIdentifier.hasSystemElement()).toBe(false);
+      expect(testIdentifier.getSystemElement()).toEqual(new UriType());
+      expect(testIdentifier.hasValueElement()).toBe(false);
+      expect(testIdentifier.getValueElement()).toEqual(new StringType());
+
+      expect(testIdentifier.hasType()).toBe(false);
+      expect(testIdentifier.getType()).toEqual(new CodeableConcept());
+      expect(testIdentifier.hasPeriod()).toBe(false);
+      expect(testIdentifier.getPeriod()).toEqual(new Period());
+      expect(testIdentifier.hasAssigner()).toBe(false);
+      expect(testIdentifier.getAssigner()).toEqual(new Reference());
+
+      expect(testIdentifier.hasUse()).toBe(false);
+      expect(testIdentifier.getUse()).toBeUndefined();
+      expect(testIdentifier.hasSystem()).toBe(false);
+      expect(testIdentifier.getSystem()).toBeUndefined();
+      expect(testIdentifier.hasValue()).toBe(false);
+      expect(testIdentifier.getValue()).toBeUndefined();
+
+      expect(testIdentifier.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should return undefined for empty json', () => {
+      let testType = Identifier.parse({});
+      expect(testType).toBeUndefined();
+
+      testType = Identifier.parse(undefined);
+      expect(testType).toBeUndefined();
+
+      testType = Identifier.parse(null);
+      expect(testType).toBeUndefined();
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        Identifier.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Identifier JSON is not a JSON object.`);
+
+      t = () => {
+        Identifier.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown IdentifierUseEnum 'code' value 'invalidValue'`);
+
+      t = () => {
+        Identifier.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Identifier.type JSON is not a JSON object.`);
+
+      t = () => {
+        Identifier.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Identifier.system is not a string.`);
+
+      t = () => {
+        Identifier.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(InvalidTypeError);
+      expect(t).toThrow(
+        `ReferenceTargets decorator on setAssigner (Identifier.assigner) expects argument (Basic/13579) to be a valid 'Reference' type`,
+      );
+    });
+
+    it('should return Identifier for valid json', () => {
+      const testIdentifier: Identifier | undefined = Identifier.parse(VALID_JSON);
+
+      expect(testIdentifier).toBeDefined();
+      expect(testIdentifier).toBeInstanceOf(Identifier);
+      expect(testIdentifier?.constructor.name).toStrictEqual('Identifier');
+      expect(testIdentifier?.fhirType()).toStrictEqual('Identifier');
+      expect(testIdentifier?.isEmpty()).toBe(false);
+      expect(testIdentifier?.isComplexDataType()).toBe(true);
+      expect(testIdentifier?.dataTypeName()).toStrictEqual('Identifier');
+      expect(testIdentifier?.toJSON()).toEqual(VALID_JSON);
+
+      // inherited properties from Element
+      expect(testIdentifier.hasId()).toBe(true);
+      expect(testIdentifier.getId()).toStrictEqual(testId);
+      expect(testIdentifier.hasExtension()).toBe(true);
+      expect(testIdentifier.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Identifier properties
+      expect(testIdentifier.hasUseEnumType()).toBe(true);
+      expect(testIdentifier.getUseEnumType()).toEqual(new EnumCodeType(VALID_CODE, identifierUseEnum));
+
+      expect(testIdentifier.hasUseElement()).toBe(true);
+      expect(testIdentifier.getUseElement()).toMatchObject(VALID_CODE_TYPE);
+      expect(testIdentifier.hasSystemElement()).toBe(true);
+      expect(testIdentifier.getSystemElement()).toEqual(VALID_URI_TYPE);
+      expect(testIdentifier.hasValueElement()).toBe(true);
+      expect(testIdentifier.getValueElement()).toEqual(valueType);
+
+      expect(testIdentifier.hasType()).toBe(true);
+      expect(testIdentifier.getType()).toEqual(VALID_CODEABLECONCEPT_VALUE_1);
+      expect(testIdentifier.hasPeriod()).toBe(true);
+      expect(testIdentifier.getPeriod()).toEqual(VALID_PERIOD_VALUE_1);
+      expect(testIdentifier.hasAssigner()).toBe(true);
+      expect(testIdentifier.getAssigner()).toEqual(VALID_REFERENCE_VALUE_1);
+
+      expect(testIdentifier.hasUse()).toBe(true);
+      expect(testIdentifier.getUse()).toStrictEqual(VALID_CODE);
+      expect(testIdentifier.hasSystem()).toBe(true);
+      expect(testIdentifier.getSystem()).toStrictEqual(VALID_URI);
+      expect(testIdentifier.hasValue()).toBe(true);
+      expect(testIdentifier.getValue()).toStrictEqual(VALID_STRING);
+    });
+
+    it('should return Identifier for valid json with no field values', () => {
+      const testIdentifier: Identifier | undefined = Identifier.parse(VALID_JSON_NO_FIELDS);
+
+      expect(testIdentifier).toBeDefined();
+      expect(testIdentifier).toBeInstanceOf(Identifier);
+      expect(testIdentifier?.constructor.name).toStrictEqual('Identifier');
+      expect(testIdentifier?.fhirType()).toStrictEqual('Identifier');
+      expect(testIdentifier?.isEmpty()).toBe(false);
+      expect(testIdentifier?.isComplexDataType()).toBe(true);
+      expect(testIdentifier?.dataTypeName()).toStrictEqual('Identifier');
+      expect(testIdentifier?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testIdentifier.hasId()).toBe(true);
+      expect(testIdentifier.getId()).toStrictEqual(testId);
+      expect(testIdentifier.hasExtension()).toBe(true);
+      expect(testIdentifier.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Identifier properties
+      expect(testIdentifier.hasUseEnumType()).toBe(false);
+      expect(testIdentifier.getUseEnumType()).toBeUndefined();
+
+      expect(testIdentifier.hasUseElement()).toBe(false);
+      expect(testIdentifier.getUseElement()).toBeUndefined();
+      expect(testIdentifier.hasSystemElement()).toBe(false);
+      expect(testIdentifier.getSystemElement()).toEqual(new UriType());
+      expect(testIdentifier.hasValueElement()).toBe(false);
+      expect(testIdentifier.getValueElement()).toEqual(new StringType());
+
+      expect(testIdentifier.hasType()).toBe(false);
+      expect(testIdentifier.getType()).toEqual(new CodeableConcept());
+      expect(testIdentifier.hasPeriod()).toBe(false);
+      expect(testIdentifier.getPeriod()).toEqual(new Period());
+      expect(testIdentifier.hasAssigner()).toBe(false);
+      expect(testIdentifier.getAssigner()).toEqual(new Reference());
+
+      expect(testIdentifier.hasUse()).toBe(false);
+      expect(testIdentifier.getUse()).toBeUndefined();
+      expect(testIdentifier.hasSystem()).toBe(false);
+      expect(testIdentifier.getSystem()).toBeUndefined();
+      expect(testIdentifier.hasValue()).toBe(false);
+      expect(testIdentifier.getValue()).toBeUndefined();
+    });
+
+    it('should return Identifier for valid json with null field values', () => {
+      const testIdentifier: Identifier | undefined = Identifier.parse(VALID_JSON_NULL_FIELDS);
+
+      expect(testIdentifier).toBeDefined();
+      expect(testIdentifier).toBeInstanceOf(Identifier);
+      expect(testIdentifier?.constructor.name).toStrictEqual('Identifier');
+      expect(testIdentifier?.fhirType()).toStrictEqual('Identifier');
+      expect(testIdentifier?.isEmpty()).toBe(false);
+      expect(testIdentifier?.isComplexDataType()).toBe(true);
+      expect(testIdentifier?.dataTypeName()).toStrictEqual('Identifier');
+      expect(testIdentifier?.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      // inherited properties from Element
+      expect(testIdentifier.hasId()).toBe(true);
+      expect(testIdentifier.getId()).toStrictEqual(testId);
+      expect(testIdentifier.hasExtension()).toBe(true);
+      expect(testIdentifier.getExtension()).toEqual([testExtension1, testExtension2]);
+
+      // Identifier properties
+      expect(testIdentifier.hasUseEnumType()).toBe(false);
+      expect(testIdentifier.getUseEnumType()).toBeUndefined();
+
+      expect(testIdentifier.hasUseElement()).toBe(false);
+      expect(testIdentifier.getUseElement()).toBeUndefined();
+      expect(testIdentifier.hasSystemElement()).toBe(false);
+      expect(testIdentifier.getSystemElement()).toEqual(new UriType());
+      expect(testIdentifier.hasValueElement()).toBe(false);
+      expect(testIdentifier.getValueElement()).toEqual(new StringType());
+
+      expect(testIdentifier.hasType()).toBe(false);
+      expect(testIdentifier.getType()).toEqual(new CodeableConcept());
+      expect(testIdentifier.hasPeriod()).toBe(false);
+      expect(testIdentifier.getPeriod()).toEqual(new Period());
+      expect(testIdentifier.hasAssigner()).toBe(false);
+      expect(testIdentifier.getAssigner()).toEqual(new Reference());
+
+      expect(testIdentifier.hasUse()).toBe(false);
+      expect(testIdentifier.getUse()).toBeUndefined();
+      expect(testIdentifier.hasSystem()).toBe(false);
+      expect(testIdentifier.getSystem()).toBeUndefined();
+      expect(testIdentifier.hasValue()).toBe(false);
+      expect(testIdentifier.getValue()).toBeUndefined();
     });
   });
 });

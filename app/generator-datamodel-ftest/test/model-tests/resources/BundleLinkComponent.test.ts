@@ -21,7 +21,15 @@
  *
  */
 
-import { IBackboneElement, InvalidTypeError, PrimitiveTypeError, StringType, UriType } from '@paq-ts-fhir/fhir-core';
+import {
+  IBackboneElement,
+  InvalidCodeError,
+  InvalidTypeError,
+  JsonError,
+  PrimitiveTypeError,
+  StringType,
+  UriType,
+} from '@paq-ts-fhir/fhir-core';
 import { BundleLinkComponent } from '../../../src/resources/Bundle';
 import {
   expectBackboneElementBase,
@@ -370,6 +378,61 @@ describe('BundleLinkComponent', () => {
       },
       url: 'validUri',
     };
+    const INVALID_JSON_1 = {
+      relation: ['This is a valid string.'],
+    };
+    const INVALID_JSON_2 = {
+      url: 1234,
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      relation: null,
+      url: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new BundleLinkComponent(altRelation, TestData.VALID_URI_TYPE);
@@ -398,6 +461,33 @@ describe('BundleLinkComponent', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no field', () => {
+      const testInstance = new BundleLinkComponent();
+
+      initializeBackboneElementProperties(testInstance, 2);
+
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleLinkComponent',
+        'Bundle.link',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasRelationElement()).toBe(false);
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
+      expect(testInstance.hasRelation()).toBe(false);
+      expect(testInstance.getRelation()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: BundleLinkComponent | undefined;
       testInstance = BundleLinkComponent.parse({});
@@ -410,7 +500,27 @@ describe('BundleLinkComponent', () => {
       expect(testInstance).toBeUndefined();
     });
 
-    it('should return parsed Bundle for valid json', () => {
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        BundleLinkComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleLinkComponent JSON is not a JSON object.`);
+
+      t = () => {
+        BundleLinkComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleLinkComponent.relation is not a string.`);
+
+      t = () => {
+        BundleLinkComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`BundleLinkComponent.url is not a string.`);
+    });
+
+    it('should return parsed BundleLinkComponent for valid json', () => {
       const testInstance: BundleLinkComponent | undefined = BundleLinkComponent.parse(VALID_JSON);
 
       expectBackboneElementBase(
@@ -432,6 +542,54 @@ describe('BundleLinkComponent', () => {
       expect(testInstance.getUrlElement()).toEqual(TestData.VALID_URI_TYPE);
       expect(testInstance.hasUrl()).toBe(true);
       expect(testInstance.getUrl()).toEqual(TestData.VALID_URI);
+    });
+
+    it('should return parsed BundleLinkComponent for valid json with no fields', () => {
+      const testInstance: BundleLinkComponent | undefined = BundleLinkComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleLinkComponent',
+        'Bundle.link',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasRelationElement()).toBe(false);
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
+      expect(testInstance.hasRelation()).toBe(false);
+      expect(testInstance.getRelation()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
+    });
+
+    it('should return parsed BundleLinkComponent for valid json with null fields', () => {
+      const testInstance: BundleLinkComponent | undefined = BundleLinkComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneElementBase(
+        BundleLinkComponent as unknown as IBackboneElement,
+        testInstance,
+        'BundleLinkComponent',
+        'Bundle.link',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedElementProperties(testInstance, 2);
+
+      expect(testInstance.hasRelationElement()).toBe(false);
+      expect(testInstance.getRelationElement()).toEqual(new StringType());
+      expect(testInstance.hasRelation()).toBe(false);
+      expect(testInstance.getRelation()).toBeNull();
+      expect(testInstance.hasUrlElement()).toBe(false);
+      expect(testInstance.getUrlElement()).toEqual(new UriType());
+      expect(testInstance.hasUrl()).toBe(false);
+      expect(testInstance.getUrl()).toBeNull();
     });
   });
 

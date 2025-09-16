@@ -246,14 +246,16 @@ export class TestReport extends DomainResource implements IDomainResource {
     fieldName = 'participant';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestReportParticipantComponent | undefined = TestReportParticipantComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addParticipant(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestReportParticipantComponent | undefined = TestReportParticipantComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addParticipant(component);
+          }
+        });
+      }
     }
 
     fieldName = 'setup';
@@ -267,14 +269,16 @@ export class TestReport extends DomainResource implements IDomainResource {
     fieldName = 'test';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestReportTestComponent | undefined = TestReportTestComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.addTest(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestReportTestComponent | undefined = TestReportTestComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.addTest(component);
+          }
+        });
+      }
     }
 
     fieldName = 'teardown';
@@ -1318,21 +1322,15 @@ export class TestReport extends DomainResource implements IDomainResource {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasTestScript()) {
       setFhirComplexJson(this.getTestScript(), 'testScript', jsonObj);
-    } else {
-      jsonObj['testScript'] = null;
     }
 
     if (this.hasResultElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getResultElement()!, 'result', jsonObj);
-    } else {
-      jsonObj['result'] = null;
     }
 
     if (this.hasScoreElement()) {
@@ -1836,14 +1834,10 @@ export class TestReportParticipantComponent extends BackboneElement implements I
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasUriElement()) {
       setFhirPrimitiveJson<fhirUri>(this.getUriElement(), 'uri', jsonObj);
-    } else {
-      jsonObj['uri'] = null;
     }
 
     if (this.hasDisplayElement()) {
@@ -1900,16 +1894,20 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestReportSetupActionComponent | undefined = TestReportSetupActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setAction(null);
-        } else {
-          instance.addAction(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setAction(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestReportSetupActionComponent | undefined = TestReportSetupActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setAction(null);
+          } else {
+            instance.addAction(component);
+          }
+        });
+      }
     } else {
       instance.setAction(null);
     }
@@ -2056,8 +2054,6 @@ export class TestReportSetupComponent extends BackboneElement implements IBackbo
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    } else {
-      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -2731,8 +2727,6 @@ export class TestReportSetupActionOperationComponent extends BackboneElement imp
     if (this.hasResultElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getResultElement()!, 'result', jsonObj);
-    } else {
-      jsonObj['result'] = null;
     }
 
     if (this.hasMessageElement()) {
@@ -3196,8 +3190,6 @@ export class TestReportSetupActionAssertComponent extends BackboneElement implem
     if (this.hasResultElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getResultElement()!, 'result', jsonObj);
-    } else {
-      jsonObj['result'] = null;
     }
 
     if (this.hasMessageElement()) {
@@ -3277,16 +3269,20 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestReportTestActionComponent | undefined = TestReportTestActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setAction(null);
-        } else {
-          instance.addAction(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setAction(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestReportTestActionComponent | undefined = TestReportTestActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setAction(null);
+          } else {
+            instance.addAction(component);
+          }
+        });
+      }
     } else {
       instance.setAction(null);
     }
@@ -3601,8 +3597,6 @@ export class TestReportTestComponent extends BackboneElement implements IBackbon
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    } else {
-      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -3873,16 +3867,20 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
     fieldName = 'action';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: TestReportTeardownActionComponent | undefined = TestReportTeardownActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.setAction(null);
-        } else {
-          instance.addAction(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.setAction(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: TestReportTeardownActionComponent | undefined = TestReportTeardownActionComponent.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.setAction(null);
+          } else {
+            instance.addAction(component);
+          }
+        });
+      }
     } else {
       instance.setAction(null);
     }
@@ -4029,8 +4027,6 @@ export class TestReportTeardownComponent extends BackboneElement implements IBac
 
     if (this.hasAction()) {
       setFhirBackboneElementListJson(this.getAction(), 'action', jsonObj);
-    } else {
-      jsonObj['action'] = null;
     }
 
     return jsonObj;
@@ -4209,8 +4205,6 @@ export class TestReportTeardownActionComponent extends BackboneElement implement
 
     if (this.hasOperation()) {
       setFhirBackboneElementJson(this.getOperation(), 'operation', jsonObj);
-    } else {
-      jsonObj['operation'] = null;
     }
 
     return jsonObj;

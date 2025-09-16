@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-09-16]
+
+### Changed
+
+- Updated dependencies
+
+### Fixed
+
+- [issue #26](https://github.com/Paqrat76/ts-fhir-datamodels/issues/26): Fixed the issue with generated static `parse()`
+  methods throwing a JsonError when the JSON array element has null as its value.
+
+
 ## [2025-09-13]
 
 ### Changed

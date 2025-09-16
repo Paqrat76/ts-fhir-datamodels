@@ -176,14 +176,16 @@ export class Subscription extends DomainResource implements IDomainResource {
     fieldName = 'contact';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: ContactPoint | undefined = ContactPoint.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.addContact(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: ContactPoint | undefined = ContactPoint.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.addContact(datatype);
+          }
+        });
+      }
     }
 
     fieldName = 'end';
@@ -911,8 +913,6 @@ export class Subscription extends DomainResource implements IDomainResource {
     if (this.hasStatusElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getStatusElement()!, 'status', jsonObj);
-    } else {
-      jsonObj['status'] = null;
     }
 
     if (this.hasContact()) {
@@ -925,14 +925,10 @@ export class Subscription extends DomainResource implements IDomainResource {
 
     if (this.hasReasonElement()) {
       setFhirPrimitiveJson<fhirString>(this.getReasonElement(), 'reason', jsonObj);
-    } else {
-      jsonObj['reason'] = null;
     }
 
     if (this.hasCriteriaElement()) {
       setFhirPrimitiveJson<fhirString>(this.getCriteriaElement(), 'criteria', jsonObj);
-    } else {
-      jsonObj['criteria'] = null;
     }
 
     if (this.hasErrorElement()) {
@@ -941,8 +937,6 @@ export class Subscription extends DomainResource implements IDomainResource {
 
     if (this.hasChannel()) {
       setFhirBackboneElementJson(this.getChannel(), 'channel', jsonObj);
-    } else {
-      jsonObj['channel'] = null;
     }
 
     return jsonObj;
@@ -1035,18 +1029,20 @@ export class SubscriptionChannelComponent extends BackboneElement implements IBa
     sourceField = `${optSourceValue}.${fieldName}`;
     primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.addHeaderElement(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: StringType | undefined = fhirParser.parseStringType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.addHeaderElement(datatype);
+          }
+        });
+      }
     }
 
     return instance;
@@ -1559,8 +1555,6 @@ export class SubscriptionChannelComponent extends BackboneElement implements IBa
     if (this.hasTypeElement()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setFhirPrimitiveJson<fhirCode>(this.getTypeElement()!, 'type', jsonObj);
-    } else {
-      jsonObj['type'] = null;
     }
 
     if (this.hasEndpointElement()) {

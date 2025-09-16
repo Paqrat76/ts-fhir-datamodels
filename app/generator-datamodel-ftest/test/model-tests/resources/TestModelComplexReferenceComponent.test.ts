@@ -21,7 +21,7 @@
  *
  */
 
-import { EnumCodeType, IBackboneElement, InvalidTypeError } from '@paq-ts-fhir/fhir-core';
+import { EnumCodeType, IBackboneElement, InvalidCodeError, InvalidTypeError, JsonError } from '@paq-ts-fhir/fhir-core';
 import { ConsentStateCodesEnum } from '../../../src/code-systems/ConsentStateCodesEnum';
 import { ContributorTypeEnum } from '../../../src/code-systems/ContributorTypeEnum';
 import { Reference } from '../../../src/complex-types/complex-datatypes';
@@ -55,6 +55,7 @@ import {
 describe('TestModelComplexReferenceComponent', () => {
   let testTestModelComplexReferenceEnumCodeComponent: TestModelComplexReferenceEnumCodeComponent;
   let testTestModelComplexReferenceEnumCodeComponent_2: TestModelComplexReferenceEnumCodeComponent;
+  let testTestModelComplexReferenceEnumCodeComponent_Empty: TestModelComplexReferenceEnumCodeComponent;
   beforeAll(() => {
     const contributorTypeEnum = new ContributorTypeEnum();
     const consentStateCodesEnum = new ConsentStateCodesEnum();
@@ -70,6 +71,8 @@ describe('TestModelComplexReferenceComponent', () => {
     testTestModelComplexReferenceEnumCodeComponent_2 = new TestModelComplexReferenceEnumCodeComponent(enumCode11, [
       enumCode1x,
     ]);
+
+    testTestModelComplexReferenceEnumCodeComponent_Empty = new TestModelComplexReferenceEnumCodeComponent();
   });
 
   describe('Base Tests', () => {
@@ -371,6 +374,84 @@ describe('TestModelComplexReferenceComponent', () => {
         },
       ],
     };
+    const INVALID_JSON_1 = {
+      reference01: [
+        {
+          reference: 'Location/LOC-12345',
+        },
+      ],
+    };
+    const INVALID_JSON_2 = {
+      reference0x: [
+        {
+          reference: false,
+        },
+      ],
+    };
+    const INVALID_JSON_3 = {
+      reference0x: {
+        reference: 'Organization/ORG-54321',
+      },
+    };
+    const INVALID_JSON_4 = {
+      enumCode: [
+        {
+          enumCode11: 'bogus',
+        },
+      ],
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      modifierExtension: [
+        {
+          url: 'modExtUrl',
+          valueString: 'Modifier Extension string value',
+        },
+        {
+          url: 'modExtUrl2',
+          valueString: 'Modifier Extension string value two',
+        },
+      ],
+      reference01: null,
+      reference0x: null,
+      reference11: null,
+      reference1x: null,
+      enumCode: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new TestModelComplexReferenceComponent();
@@ -416,6 +497,35 @@ describe('TestModelComplexReferenceComponent', () => {
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
     });
 
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new TestModelComplexReferenceComponent();
+
+      initializeBackboneElementProperties(testInstance, 2);
+
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelComplexReferenceComponent',
+        'TestModel.complex.reference',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expectInitializedBackboneElementProperties(testInstance, 2);
+
+      expect(testInstance.hasReference01()).toBe(false);
+      expect(testInstance.getReference01()).toEqual(new Reference());
+      expect(testInstance.hasReference0x()).toBe(false);
+      expect(testInstance.getReference0x()).toEqual([] as Reference[]);
+      expect(testInstance.hasReference11()).toBe(false);
+      expect(testInstance.getReference11()).toEqual(new Reference());
+      expect(testInstance.hasReference1x()).toEqual(false);
+      expect(testInstance.getReference1x()).toEqual([] as Reference[]);
+      expect(testInstance.hasEnumCode()).toBe(false);
+      expect(testInstance.getEnumCode()).toEqual([] as TestModelComplexReferenceEnumCodeComponent[]);
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
     it('should return undefined when parsed with no json', () => {
       let testInstance: TestModelComplexReferenceComponent | undefined;
       testInstance = TestModelComplexReferenceComponent.parse({});
@@ -428,7 +538,39 @@ describe('TestModelComplexReferenceComponent', () => {
       expect(testInstance).toBeUndefined();
     });
 
-    it('should return parsed TestModelComplexComponent for valid json', () => {
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        TestModelComplexReferenceComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelComplexReferenceComponent JSON is not a JSON object.`);
+
+      t = () => {
+        TestModelComplexReferenceComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelComplexReferenceComponent.reference01 JSON is not a JSON object.`);
+
+      t = () => {
+        TestModelComplexReferenceComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelComplexReferenceComponent.reference0x[0].reference is not a string.`);
+
+      t = () => {
+        TestModelComplexReferenceComponent.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TestModelComplexReferenceComponent.reference0x is not a JSON array.`);
+
+      t = () => {
+        TestModelComplexReferenceComponent.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(InvalidCodeError);
+      expect(t).toThrow(`Unknown ContributorTypeEnum 'code' value 'bogus'`);
+    });
+
+    it('should return parsed TestModelComplexReferenceComponent for valid json', () => {
       const testInstance: TestModelComplexReferenceComponent | undefined =
         TestModelComplexReferenceComponent.parse(VALID_JSON);
 
@@ -459,6 +601,60 @@ describe('TestModelComplexReferenceComponent', () => {
         testTestModelComplexReferenceEnumCodeComponent,
         testTestModelComplexReferenceEnumCodeComponent_2,
       ]);
+    });
+
+    it('should return parsed TestModelComplexReferenceComponent for valid json with no fields', () => {
+      const testInstance: TestModelComplexReferenceComponent | undefined =
+        TestModelComplexReferenceComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelComplexReferenceComponent',
+        'TestModel.complex.reference',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedBackboneElementProperties(testInstance, 2);
+
+      expect(testInstance.hasReference01()).toBe(false);
+      expect(testInstance.getReference01()).toEqual(new Reference());
+      expect(testInstance.hasReference0x()).toBe(false);
+      expect(testInstance.getReference0x()).toEqual([] as Reference[]);
+      expect(testInstance.hasReference11()).toBe(false);
+      expect(testInstance.getReference11()).toEqual(new Reference());
+      expect(testInstance.hasReference1x()).toEqual(false);
+      expect(testInstance.getReference1x()).toEqual([] as Reference[]);
+      expect(testInstance.hasEnumCode()).toBe(false);
+      expect(testInstance.getEnumCode()).toEqual([] as TestModelComplexReferenceEnumCodeComponent[]);
+    });
+
+    it('should return parsed TestModelComplexReferenceComponent for valid json with null fields', () => {
+      const testInstance: TestModelComplexReferenceComponent | undefined =
+        TestModelComplexReferenceComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectBackboneElementBase(
+        TestModelComplexReferenceComponent as unknown as IBackboneElement,
+        testInstance,
+        'TestModelComplexReferenceComponent',
+        'TestModel.complex.reference',
+      );
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isRequiredFieldsEmpty()).toBe(true);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+      expectInitializedBackboneElementProperties(testInstance, 2);
+
+      expect(testInstance.hasReference01()).toBe(false);
+      expect(testInstance.getReference01()).toEqual(new Reference());
+      expect(testInstance.hasReference0x()).toBe(false);
+      expect(testInstance.getReference0x()).toEqual([] as Reference[]);
+      expect(testInstance.hasReference11()).toBe(false);
+      expect(testInstance.getReference11()).toEqual(new Reference());
+      expect(testInstance.hasReference1x()).toEqual(false);
+      expect(testInstance.getReference1x()).toEqual([] as Reference[]);
+      expect(testInstance.hasEnumCode()).toBe(false);
+      expect(testInstance.getEnumCode()).toEqual([] as TestModelComplexReferenceEnumCodeComponent[]);
     });
   });
 

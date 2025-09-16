@@ -30,6 +30,7 @@ import {
   IElement,
   InvalidCodeError,
   InvalidTypeError,
+  JsonError,
   PositiveIntType,
   PrimitiveTypeError,
   TimeType,
@@ -1203,6 +1204,130 @@ describe('TimingRepeatComponent', () => {
         ],
       },
     };
+    const INVALID_JSON_1 = {
+      boundsPeriod: [
+        {
+          start: '2024-03-15T00:00:00.000Z',
+          end: '2024-07-03T01:00:00.000Z',
+        },
+      ],
+      count: 1,
+      countMax: 2,
+      duration: 1,
+      durationMax: 2,
+      durationUnit: 'testCodeType',
+      frequency: 1,
+      frequencyMax: 2,
+      period: 1,
+      periodMax: 2,
+      periodUnit: 'testCodeType',
+      dayOfWeek: ['mon', 'fri'],
+      timeOfDay: ['08:00:00', '17:00:00'],
+      when: ['testCodeType'],
+      offset: 0,
+    };
+    const INVALID_JSON_2 = {
+      boundsPeriod: {
+        start: '2024-03-15T00:00:00.000Z',
+        end: '2024-07-03T01:00:00.000Z',
+      },
+      count: '1',
+      countMax: 2,
+      duration: 1,
+      durationMax: 2,
+      durationUnit: 'testCodeType',
+      frequency: 1,
+      frequencyMax: 2,
+      period: 1,
+      periodMax: 2,
+      periodUnit: 'testCodeType',
+      dayOfWeek: ['mon', 'fri'],
+      timeOfDay: ['08:00:00', '17:00:00'],
+      when: ['testCodeType'],
+      offset: 0,
+    };
+    const INVALID_JSON_3 = {
+      boundsPeriod: {
+        start: '2024-03-15T00:00:00.000Z',
+        end: '2024-07-03T01:00:00.000Z',
+      },
+      count: 1,
+      countMax: 2,
+      duration: 1,
+      durationMax: 2,
+      durationUnit: ' test Code Type ',
+      frequency: 1,
+      frequencyMax: 2,
+      period: 1,
+      periodMax: 2,
+      periodUnit: 'testCodeType',
+      dayOfWeek: ['mon', 'fri'],
+      timeOfDay: ['08:00:00', '17:00:00'],
+      when: ['testCodeType'],
+      offset: 0,
+    };
+    const INVALID_JSON_4 = {
+      boundsPeriod: {
+        start: '2024-03-15T00:00:00.000Z',
+        end: '2024-07-03T01:00:00.000Z',
+      },
+      count: 1,
+      countMax: 2,
+      duration: 1,
+      durationMax: 2,
+      durationUnit: 'testCodeType',
+      frequency: 1,
+      frequencyMax: 2,
+      period: 1,
+      periodMax: 2,
+      periodUnit: 'testCodeType',
+      dayOfWeek: ['mon', 'fri'],
+      timeOfDay: ['08:00:00', '17:00:00'],
+      when: 'testCodeType',
+      offset: 0,
+    };
+    const VALID_JSON_NO_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+    };
+    const VALID_JSON_NULL_FIELDS = {
+      id: 'id12345',
+      extension: [
+        {
+          url: 'extUrl',
+          valueString: 'Extension string value',
+        },
+        {
+          url: 'extUrl2',
+          valueString: 'Extension string value two',
+        },
+      ],
+      boundsPeriod: null,
+      count: null,
+      countMax: null,
+      duration: null,
+      durationMax: null,
+      durationUnit: null,
+      frequency: null,
+      frequencyMax: null,
+      period: null,
+      periodMax: null,
+      periodUnit: null,
+      dayOfWeek: null,
+      timeOfDay: null,
+      when: null,
+      offset: null,
+      unexpectedField: 'should be ignored without error',
+    };
 
     it('should properly create serialized content', () => {
       const testInstance = new TimingRepeatComponent();
@@ -1231,7 +1356,6 @@ describe('TimingRepeatComponent', () => {
         'TimingRepeatComponent',
         'Timing.repeat',
       );
-
       expectInitializedElementProperties(testInstance, 2);
       expect(testInstance.isEmpty()).toBe(false);
       expect(testInstance.isComplexDataType()).toBe(false);
@@ -1315,6 +1439,131 @@ describe('TimingRepeatComponent', () => {
       expect(testInstance.getOffset()).toStrictEqual(0);
 
       expect(testInstance.toJSON()).toEqual(VALID_JSON);
+    });
+
+    it('should properly create serialized content with no fields', () => {
+      const testInstance = new TimingRepeatComponent();
+
+      initializeElementProperties(testInstance, 2);
+
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
+        testInstance,
+        'TimingRepeatComponent',
+        'Timing.repeat',
+      );
+      expectInitializedElementProperties(testInstance, 2);
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isComplexDataType()).toBe(false);
+
+      expect(testInstance.hasBounds()).toBe(false);
+      expect(testInstance.getBounds()).toBeUndefined();
+
+      expect(testInstance.hasCountElement()).toBe(false);
+      expect(testInstance.getCountElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasCount()).toBe(false);
+      expect(testInstance.getCount()).toBeUndefined();
+
+      expect(testInstance.hasCountMaxElement()).toBe(false);
+      expect(testInstance.getCountMaxElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasCountMax()).toBe(false);
+      expect(testInstance.getCountMax()).toBeUndefined();
+
+      expect(testInstance.hasDurationElement()).toBe(false);
+      expect(testInstance.getDurationElement()).toEqual(new DecimalType());
+      expect(testInstance.hasDuration()).toBe(false);
+      expect(testInstance.getDuration()).toBeUndefined();
+
+      expect(testInstance.hasDurationMaxElement()).toBe(false);
+      expect(testInstance.getDurationMaxElement()).toEqual(new DecimalType());
+      expect(testInstance.hasDurationMax()).toBe(false);
+      expect(testInstance.getDurationMax()).toBeUndefined();
+
+      expect(testInstance.hasDurationUnitElement()).toBe(false);
+      expect(testInstance.getDurationUnitElement()).toEqual(new CodeType());
+      expect(testInstance.hasDurationUnit()).toBe(false);
+      expect(testInstance.getDurationUnit()).toBeUndefined();
+
+      expect(testInstance.hasFrequencyElement()).toBe(false);
+      expect(testInstance.getFrequencyElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasFrequency()).toBe(false);
+      expect(testInstance.getFrequency()).toBeUndefined();
+
+      expect(testInstance.hasFrequencyMaxElement()).toBe(false);
+      expect(testInstance.getFrequencyMaxElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasFrequencyMax()).toBe(false);
+      expect(testInstance.getFrequencyMax()).toBeUndefined();
+
+      expect(testInstance.hasPeriodElement()).toBe(false);
+      expect(testInstance.getPeriodElement()).toEqual(new DecimalType());
+      expect(testInstance.hasPeriod()).toBe(false);
+      expect(testInstance.getPeriod()).toBeUndefined();
+
+      expect(testInstance.hasPeriodMaxElement()).toBe(false);
+      expect(testInstance.getPeriodMaxElement()).toEqual(new DecimalType());
+      expect(testInstance.hasPeriodMax()).toBe(false);
+      expect(testInstance.getPeriodMax()).toBeUndefined();
+
+      expect(testInstance.hasPeriodUnitElement()).toBe(false);
+      expect(testInstance.getPeriodUnitElement()).toEqual(new CodeType());
+      expect(testInstance.hasPeriodUnit()).toBe(false);
+      expect(testInstance.getPeriodUnit()).toBeUndefined();
+
+      expect(testInstance.hasDayOfWeekEnumType()).toBe(false);
+      expect(testInstance.getDayOfWeekEnumType()).toEqual(new Array<EnumCodeType>());
+      expect(testInstance.hasDayOfWeekElement()).toBe(false);
+      expect(testInstance.getDayOfWeekElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasDayOfWeek()).toBe(false);
+      expect(testInstance.getDayOfWeek()).toEqual([] as fhirCode[]);
+
+      expect(testInstance.hasTimeOfDayElement()).toBe(false);
+      expect(testInstance.getTimeOfDayElement()).toEqual([] as TimeType[]);
+      expect(testInstance.hasTimeOfDay()).toBe(false);
+      expect(testInstance.getTimeOfDay()).toEqual([] as fhirTime[]);
+
+      expect(testInstance.hasWhenElement()).toBe(false);
+      expect(testInstance.getWhenElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasWhen()).toBe(false);
+      expect(testInstance.getWhen()).toEqual([] as fhirCode[]);
+
+      expect(testInstance.hasOffsetElement()).toBe(false);
+      expect(testInstance.getOffsetElement()).toEqual(new UnsignedIntType());
+      expect(testInstance.hasOffset()).toBe(false);
+      expect(testInstance.getOffset()).toBeUndefined();
+
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+    });
+
+    it('should throw Errors for invalid json types', () => {
+      let t = () => {
+        TimingRepeatComponent.parse('NOT AN OBJECT');
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TimingRepeatComponent JSON is not a JSON object.`);
+
+      t = () => {
+        TimingRepeatComponent.parse(INVALID_JSON_1);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`Failed to parse TimingRepeatComponent.bounds[x]: Period JSON is not a JSON object.`);
+
+      t = () => {
+        TimingRepeatComponent.parse(INVALID_JSON_2);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TimingRepeatComponent.count is not a number.`);
+
+      t = () => {
+        TimingRepeatComponent.parse(INVALID_JSON_3);
+      };
+      expect(t).toThrow(PrimitiveTypeError);
+      expect(t).toThrow(`Invalid value for CodeType ( test Code Type )`);
+
+      t = () => {
+        TimingRepeatComponent.parse(INVALID_JSON_4);
+      };
+      expect(t).toThrow(JsonError);
+      expect(t).toThrow(`TimingRepeatComponent.when is not a JSON array.`);
     });
 
     it('should return undefined when parsed with no json', () => {
@@ -1421,6 +1670,188 @@ describe('TimingRepeatComponent', () => {
       expect(testInstance.getOffsetElement()).toEqual(altOffset);
       expect(testInstance.hasOffset()).toBe(true);
       expect(testInstance.getOffset()).toStrictEqual(0);
+    });
+
+    it('should return parsed Timing for valid json with no field values', () => {
+      const testInstance: TimingRepeatComponent = TimingRepeatComponent.parse(VALID_JSON_NO_FIELDS);
+
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
+        testInstance,
+        'TimingRepeatComponent',
+        'Timing.repeat',
+      );
+
+      expectInitializedElementProperties(testInstance, 2);
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isComplexDataType()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      expect(testInstance.hasBounds()).toBe(false);
+      expect(testInstance.getBounds()).toBeUndefined();
+
+      expect(testInstance.hasCountElement()).toBe(false);
+      expect(testInstance.getCountElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasCount()).toBe(false);
+      expect(testInstance.getCount()).toBeUndefined();
+
+      expect(testInstance.hasCountMaxElement()).toBe(false);
+      expect(testInstance.getCountMaxElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasCountMax()).toBe(false);
+      expect(testInstance.getCountMax()).toBeUndefined();
+
+      expect(testInstance.hasDurationElement()).toBe(false);
+      expect(testInstance.getDurationElement()).toEqual(new DecimalType());
+      expect(testInstance.hasDuration()).toBe(false);
+      expect(testInstance.getDuration()).toBeUndefined();
+
+      expect(testInstance.hasDurationMaxElement()).toBe(false);
+      expect(testInstance.getDurationMaxElement()).toEqual(new DecimalType());
+      expect(testInstance.hasDurationMax()).toBe(false);
+      expect(testInstance.getDurationMax()).toBeUndefined();
+
+      expect(testInstance.hasDurationUnitElement()).toBe(false);
+      expect(testInstance.getDurationUnitElement()).toEqual(new CodeType());
+      expect(testInstance.hasDurationUnit()).toBe(false);
+      expect(testInstance.getDurationUnit()).toBeUndefined();
+
+      expect(testInstance.hasFrequencyElement()).toBe(false);
+      expect(testInstance.getFrequencyElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasFrequency()).toBe(false);
+      expect(testInstance.getFrequency()).toBeUndefined();
+
+      expect(testInstance.hasFrequencyMaxElement()).toBe(false);
+      expect(testInstance.getFrequencyMaxElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasFrequencyMax()).toBe(false);
+      expect(testInstance.getFrequencyMax()).toBeUndefined();
+
+      expect(testInstance.hasPeriodElement()).toBe(false);
+      expect(testInstance.getPeriodElement()).toEqual(new DecimalType());
+      expect(testInstance.hasPeriod()).toBe(false);
+      expect(testInstance.getPeriod()).toBeUndefined();
+
+      expect(testInstance.hasPeriodMaxElement()).toBe(false);
+      expect(testInstance.getPeriodMaxElement()).toEqual(new DecimalType());
+      expect(testInstance.hasPeriodMax()).toBe(false);
+      expect(testInstance.getPeriodMax()).toBeUndefined();
+
+      expect(testInstance.hasPeriodUnitElement()).toBe(false);
+      expect(testInstance.getPeriodUnitElement()).toEqual(new CodeType());
+      expect(testInstance.hasPeriodUnit()).toBe(false);
+      expect(testInstance.getPeriodUnit()).toBeUndefined();
+
+      expect(testInstance.hasDayOfWeekEnumType()).toBe(false);
+      expect(testInstance.getDayOfWeekEnumType()).toEqual(new Array<EnumCodeType>());
+      expect(testInstance.hasDayOfWeekElement()).toBe(false);
+      expect(testInstance.getDayOfWeekElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasDayOfWeek()).toBe(false);
+      expect(testInstance.getDayOfWeek()).toEqual([] as fhirCode[]);
+
+      expect(testInstance.hasTimeOfDayElement()).toBe(false);
+      expect(testInstance.getTimeOfDayElement()).toEqual([] as TimeType[]);
+      expect(testInstance.hasTimeOfDay()).toBe(false);
+      expect(testInstance.getTimeOfDay()).toEqual([] as fhirTime[]);
+
+      expect(testInstance.hasWhenElement()).toBe(false);
+      expect(testInstance.getWhenElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasWhen()).toBe(false);
+      expect(testInstance.getWhen()).toEqual([] as fhirCode[]);
+
+      expect(testInstance.hasOffsetElement()).toBe(false);
+      expect(testInstance.getOffsetElement()).toEqual(new UnsignedIntType());
+      expect(testInstance.hasOffset()).toBe(false);
+      expect(testInstance.getOffset()).toBeUndefined();
+    });
+
+    it('should return parsed Timing for valid json with null field values', () => {
+      const testInstance: TimingRepeatComponent = TimingRepeatComponent.parse(VALID_JSON_NULL_FIELDS);
+
+      expectElementBase(
+        TimingRepeatComponent as unknown as IElement,
+        testInstance,
+        'TimingRepeatComponent',
+        'Timing.repeat',
+      );
+
+      expectInitializedElementProperties(testInstance, 2);
+      expect(testInstance.isEmpty()).toBe(false);
+      expect(testInstance.isComplexDataType()).toBe(false);
+      expect(testInstance.toJSON()).toEqual(VALID_JSON_NO_FIELDS);
+
+      expect(testInstance.hasBounds()).toBe(false);
+      expect(testInstance.getBounds()).toBeUndefined();
+
+      expect(testInstance.hasCountElement()).toBe(false);
+      expect(testInstance.getCountElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasCount()).toBe(false);
+      expect(testInstance.getCount()).toBeUndefined();
+
+      expect(testInstance.hasCountMaxElement()).toBe(false);
+      expect(testInstance.getCountMaxElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasCountMax()).toBe(false);
+      expect(testInstance.getCountMax()).toBeUndefined();
+
+      expect(testInstance.hasDurationElement()).toBe(false);
+      expect(testInstance.getDurationElement()).toEqual(new DecimalType());
+      expect(testInstance.hasDuration()).toBe(false);
+      expect(testInstance.getDuration()).toBeUndefined();
+
+      expect(testInstance.hasDurationMaxElement()).toBe(false);
+      expect(testInstance.getDurationMaxElement()).toEqual(new DecimalType());
+      expect(testInstance.hasDurationMax()).toBe(false);
+      expect(testInstance.getDurationMax()).toBeUndefined();
+
+      expect(testInstance.hasDurationUnitElement()).toBe(false);
+      expect(testInstance.getDurationUnitElement()).toEqual(new CodeType());
+      expect(testInstance.hasDurationUnit()).toBe(false);
+      expect(testInstance.getDurationUnit()).toBeUndefined();
+
+      expect(testInstance.hasFrequencyElement()).toBe(false);
+      expect(testInstance.getFrequencyElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasFrequency()).toBe(false);
+      expect(testInstance.getFrequency()).toBeUndefined();
+
+      expect(testInstance.hasFrequencyMaxElement()).toBe(false);
+      expect(testInstance.getFrequencyMaxElement()).toEqual(new PositiveIntType());
+      expect(testInstance.hasFrequencyMax()).toBe(false);
+      expect(testInstance.getFrequencyMax()).toBeUndefined();
+
+      expect(testInstance.hasPeriodElement()).toBe(false);
+      expect(testInstance.getPeriodElement()).toEqual(new DecimalType());
+      expect(testInstance.hasPeriod()).toBe(false);
+      expect(testInstance.getPeriod()).toBeUndefined();
+
+      expect(testInstance.hasPeriodMaxElement()).toBe(false);
+      expect(testInstance.getPeriodMaxElement()).toEqual(new DecimalType());
+      expect(testInstance.hasPeriodMax()).toBe(false);
+      expect(testInstance.getPeriodMax()).toBeUndefined();
+
+      expect(testInstance.hasPeriodUnitElement()).toBe(false);
+      expect(testInstance.getPeriodUnitElement()).toEqual(new CodeType());
+      expect(testInstance.hasPeriodUnit()).toBe(false);
+      expect(testInstance.getPeriodUnit()).toBeUndefined();
+
+      expect(testInstance.hasDayOfWeekEnumType()).toBe(false);
+      expect(testInstance.getDayOfWeekEnumType()).toEqual(new Array<EnumCodeType>());
+      expect(testInstance.hasDayOfWeekElement()).toBe(false);
+      expect(testInstance.getDayOfWeekElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasDayOfWeek()).toBe(false);
+      expect(testInstance.getDayOfWeek()).toEqual([] as fhirCode[]);
+
+      expect(testInstance.hasTimeOfDayElement()).toBe(false);
+      expect(testInstance.getTimeOfDayElement()).toEqual([] as TimeType[]);
+      expect(testInstance.hasTimeOfDay()).toBe(false);
+      expect(testInstance.getTimeOfDay()).toEqual([] as fhirTime[]);
+
+      expect(testInstance.hasWhenElement()).toBe(false);
+      expect(testInstance.getWhenElement()).toEqual([] as CodeType[]);
+      expect(testInstance.hasWhen()).toBe(false);
+      expect(testInstance.getWhen()).toEqual([] as fhirCode[]);
+
+      expect(testInstance.hasOffsetElement()).toBe(false);
+      expect(testInstance.getOffsetElement()).toEqual(new UnsignedIntType());
+      expect(testInstance.hasOffset()).toBe(false);
+      expect(testInstance.getOffset()).toBeUndefined();
     });
   });
 

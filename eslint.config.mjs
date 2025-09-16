@@ -149,6 +149,7 @@ export default tsEslint.config(
       'jsdoc/empty-tags': 'off', // override of 'plugin:jsdoc/recommended'
       'jsdoc/require-param-type': 'off', // override of 'plugin:jsdoc/recommended'
       'jsdoc/require-returns-type': 'off', // override of 'plugin:jsdoc/recommended'
+      'jsdoc/require-throws-type': 'off', // override of 'plugin:jsdoc/recommended'
     },
   },
   {

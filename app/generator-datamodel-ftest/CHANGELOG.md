@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2025-09-16]
+
+### Changed
+
+- Updated dependency
+- Updated data model tests to include additional tests for different parsing errors
+
+### Fixed
+
+- Resolved [issue #26](https://github.com/Paqrat76/ts-fhir-datamodels/issues/26) ensuring proper field handling
+  for missing  "required" field values in `toJSON()` methods. Also, the `toJSON()` methods will no longer return
+  `fieldName: null` for missing "required" field values.
+
+
 ## [2025-08-30]
 
 ### Changed

@@ -83,14 +83,16 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: {{this.type.code}} | undefined = {{this.type.code}}.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component !== undefined) {
-          instance.add{{upperFirst this.fieldName}}(component);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: {{this.type.code}} | undefined = {{this.type.code}}.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component !== undefined) {
+            instance.add{{upperFirst this.fieldName}}(component);
+          }
+        });
+      }
     }
 
     {{/if}}
@@ -98,16 +100,20 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
-        const component: {{this.type.code}} | undefined = {{this.type.code}}.parse(componentJson, `${sourceField}[${String(idx)}]`);
-        if (component === undefined) {
-          instance.set{{upperFirst this.fieldName}}(null);
-        } else {
-          instance.add{{upperFirst this.fieldName}}(component);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.set{{upperFirst this.fieldName}}(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const componentJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        componentJsonArray.forEach((componentJson: JSON.Value, idx) => {
+          const component: {{this.type.code}} | undefined = {{this.type.code}}.parse(componentJson, `${sourceField}[${String(idx)}]`);
+          if (component === undefined) {
+            instance.set{{upperFirst this.fieldName}}(null);
+          } else {
+            instance.add{{upperFirst this.fieldName}}(component);
+          }
+        });
+      }
     } else {
       instance.set{{upperFirst this.fieldName}}(null);
     }
@@ -175,14 +181,16 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.add{{upperFirst this.fieldName}}(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.add{{upperFirst this.fieldName}}(datatype);
+          }
+        });
+      }
     }
 
     {{/if}}
@@ -190,16 +198,20 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype === undefined) {
-          instance.set{{upperFirst this.fieldName}}(null);
-        } else {
-          instance.add{{upperFirst this.fieldName}}(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.set{{upperFirst this.fieldName}}(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: {{this.type.code}} | undefined = {{this.type.code}}.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype === undefined) {
+            instance.set{{upperFirst this.fieldName}}(null);
+          } else {
+            instance.add{{upperFirst this.fieldName}}(datatype);
+          }
+        });
+      }
     } else {
       instance.set{{upperFirst this.fieldName}}(null);
     }
@@ -240,18 +252,20 @@
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.add{{upperFirst this.fieldName}}Element(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.add{{upperFirst this.fieldName}}Element(datatype);
+          }
+        });
+      }
     }
 
     {{/if}}
@@ -260,20 +274,24 @@
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = 'string';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.set{{upperFirst this.fieldName}}(null);
-        } else {
-          instance.add{{upperFirst this.fieldName}}Element(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.set{{upperFirst this.fieldName}}(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: CodeType | undefined = fhirParser.parseCodeType(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.set{{upperFirst this.fieldName}}(null);
+          } else {
+            instance.add{{upperFirst this.fieldName}}Element(datatype);
+          }
+        });
+      }
     } else {
       instance.set{{upperFirst this.fieldName}}(null);
     }
@@ -314,18 +332,20 @@
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: {{this.type.code}} | undefined = fhirParser.parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype !== undefined) {
-          instance.add{{upperFirst this.fieldName}}Element(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: {{this.type.code}} | undefined = fhirParser.parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype !== undefined) {
+            instance.add{{upperFirst this.fieldName}}Element(datatype);
+          }
+        });
+      }
     }
 
     {{/if}}
@@ -334,20 +354,24 @@
     sourceField = `${optSourceValue}.${fieldName}`;
     {{#if ../hasOnlyOnePrimitiveField}}const {{/if}}primitiveJsonType = '{{this.type.primitiveJsonType}}';
     if (fieldName in classJsonObj) {
-      const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
-        classJsonObj,
-        sourceField,
-        fieldName,
-        primitiveJsonType,
-      );
-      dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
-        const datatype: {{this.type.code}} | undefined = fhirParser.parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
-        if (datatype === undefined) {
-          instance.set{{upperFirst this.fieldName}}(null);
-        } else {
-          instance.add{{upperFirst this.fieldName}}Element(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.set{{upperFirst this.fieldName}}(null);
+      } else {
+        const dataJsonArray: PrimitiveTypeJson[] = getPrimitiveTypeListJson(
+          classJsonObj,
+          sourceField,
+          fieldName,
+          primitiveJsonType,
+        );
+        dataJsonArray.forEach((dataJson: PrimitiveTypeJson) => {
+          const datatype: {{this.type.code}} | undefined = fhirParser.parse{{this.type.code}}(dataJson.dtJson, dataJson.dtSiblingJson);
+          if (datatype === undefined) {
+            instance.set{{upperFirst this.fieldName}}(null);
+          } else {
+            instance.add{{upperFirst this.fieldName}}Element(datatype);
+          }
+        });
+      }
     } else {
       instance.set{{upperFirst this.fieldName}}(null);
     }
@@ -385,14 +409,16 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype !== undefined) {
-          instance.add{{upperFirst this.fieldName}}(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype !== undefined) {
+            instance.add{{upperFirst this.fieldName}}(datatype);
+          }
+        });
+      }
   }
 
     {{/if}}
@@ -400,16 +426,20 @@
     fieldName = '{{this.fieldName}}';
     sourceField = `${optSourceValue}.${fieldName}`;
     if (fieldName in classJsonObj) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
-      dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
-        const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
-        if (datatype === undefined) {
-          instance.set{{upperFirst this.fieldName}}(null);
-        } else {
-          instance.add{{upperFirst this.fieldName}}(datatype);
-        }
-      });
+      if (classJsonObj[fieldName] === null) {
+        instance.set{{upperFirst this.fieldName}}(null);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const dataElementJsonArray: JSON.Array = JSON.asArray(classJsonObj[fieldName]!, sourceField);
+        dataElementJsonArray.forEach((dataElementJson: JSON.Value, idx) => {
+          const datatype: Reference | undefined = Reference.parse(dataElementJson, `${sourceField}[${String(idx)}]`);
+          if (datatype === undefined) {
+            instance.set{{upperFirst this.fieldName}}(null);
+          } else {
+            instance.add{{upperFirst this.fieldName}}(datatype);
+          }
+        });
+      }
     } else {
       instance.set{{upperFirst this.fieldName}}(null);
     }
