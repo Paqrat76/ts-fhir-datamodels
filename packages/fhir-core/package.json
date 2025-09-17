@@ -34,7 +34,8 @@
     "precoverage": "rm -rf coverage",
     "coverage": "jest --coverage",
     "postcoverage": "opener ./coverage/lcov-report/index.html",
-    "jest:clear": "jest --clearCache"
+    "jest:clear": "jest --clearCache",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "luxon": "^3.7.2",
