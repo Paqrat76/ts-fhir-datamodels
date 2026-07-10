@@ -170,8 +170,7 @@ export class TypescriptDataModelGenerator {
         if (codeSystemUrl !== undefined) {
           options = { type: ['CodeSystem'] };
           const codeSystemJson = this._packageLoader?.findResourceJSON(codeSystemUrl, options) as
-            | CodeSystem
-            | undefined;
+            CodeSystem | undefined;
           if (codeSystemJson !== undefined) {
             return codeSystemJson;
           }

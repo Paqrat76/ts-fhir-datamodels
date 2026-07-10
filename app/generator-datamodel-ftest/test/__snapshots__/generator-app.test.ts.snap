@@ -2,7 +2,7 @@
 
 exports[`generator-datamodel-ftest Functional Test Suite generator-app generate and write should generate and write all FHIR R4 artifacts from ftest-cache FHIR cache 1`] = `
 "/*
- * Copyright (c) 2025. Joe Paquette
+ * Copyright (c) 2026. Joe Paquette
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62927,7 +62927,7 @@ exports[`generator-datamodel-ftest Functional Test Suite generator-app verify ge
   },
   "fhirType": "Resource",
   "fileContents": "/*
- * Copyright (c) 2025. Joe Paquette
+ * Copyright (c) 2026. Joe Paquette
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

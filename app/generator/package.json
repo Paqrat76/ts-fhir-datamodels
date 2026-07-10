@@ -16,11 +16,11 @@
     "sushi": "sushi build ./sushi -s -o ./sushi/output"
   },
   "dependencies": {
-    "fhir-package-loader": "^2.2.2",
-    "fs-extra": "^11.3.2",
-    "fsh-sushi": "^3.16.4",
-    "handlebars": "^4.7.8",
-    "lodash": "^4.17.21"
+    "fhir-package-loader": "^2.2.4",
+    "fs-extra": "^11.3.6",
+    "fsh-sushi": "^3.20.0",
+    "handlebars": "4.7.9",
+    "lodash": "4.18.1"
   },
   "engines": {
     "node": ">=22.11",
