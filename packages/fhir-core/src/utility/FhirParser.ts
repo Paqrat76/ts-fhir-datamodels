@@ -460,6 +460,7 @@ export class FhirParser {
     } else if (valueKeys.length > 1) {
       throw new FhirError(`${INVALID_VALUEX_MULTIPLE_PROPERTIES} ${valueKeys.join(', ')}`);
     } else if (valueKeys[0] !== undefined && supportedFieldNames.includes(valueKeys[0])) {
+      // eslint-disable-next-line no-useless-assignment -- False positive
       let instance: IDataType | undefined = undefined;
       try {
         instance = this.getFhirDataTypeParseResults(jsonObj, fieldName);

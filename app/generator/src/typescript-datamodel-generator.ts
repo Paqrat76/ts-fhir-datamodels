@@ -223,11 +223,7 @@ export class TypescriptDataModelGenerator {
 
     valueSetBindingUrls.forEach((value: string, key: string) => {
       const codeSystem: CodeSystem | undefined = this.getCodeSystemFromBindingValueSetUrl(value);
-      if (
-        codeSystem?.content === 'complete' &&
-        codeSystem.concept !== undefined &&
-        codeSystem.concept.length > 0
-      ) {
+      if (codeSystem?.content === 'complete' && codeSystem.concept !== undefined && codeSystem.concept.length > 0) {
         // CodeSystems can be used in multiple ValueSets/StructureDefinitions, so we capture only its first use
         if (codeSystems.findIndex((cs) => cs.url === codeSystem.url) === -1) {
           codeSystems.push(codeSystem);

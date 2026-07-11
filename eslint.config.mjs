@@ -167,11 +167,18 @@ export default tsEslint.config(
   },
   {
     name: 'generated/datamodels',
-    files: ['app/generator-datamodel-ftest/src/**/*.ts', 'packages/r*-datamodels/src/**/*.ts'],
+    files: [
+      'app/generator-datamodel-ftest/src/**/*.ts',
+      'packages/fhir-core/src/data-types/**/*.ts',
+      'packages/r*-datamodels/src/**/*.ts',
+    ],
     linterOptions: {
       // Set to 'off' to NOT report unused disable directives with generated files.
       // https://eslint.org/docs/latest/use/configure/configuration-files#reporting-unused-disable-directives
       reportUnusedDisableDirectives: 'off',
+    },
+    rules: {
+      'no-useless-assignment': 'off', // Ignore - too many false positives in data models
     },
   },
   {
