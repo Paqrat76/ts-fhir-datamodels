@@ -24,8 +24,8 @@
  */
 
 /**
- * This code was copied from @paq-ts-fhir/fhir-core/src/base-models/fhir-data-types.ts so this Generator
- * does not take a dependency on @paq-ts-fhir/fhir-core.
+ * This code was copied from `@paq-ts-fhir/fhir-core/src/base-models/fhir-data-types.ts` so this Generator
+ * does not take a dependency on `@paq-ts-fhir/fhir-core`.
  */
 
 import { upperFirst } from 'lodash';

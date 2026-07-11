@@ -463,8 +463,7 @@ function getHbsElementComponentRoots(structureDef: StructureDefinition): HbsElem
   const componentRootElements = elementDefinitions.filter(
     (element: ElementDefinition) =>
       element.path.split('.').length >= 2 &&
-      element.type &&
-      element.type.length === 1 &&
+      element.type?.length === 1 &&
       (element.type[0]?.code === 'Element' ||
         element.type[0]?.code === 'BackboneType' ||
         element.type[0]?.code === 'BackboneElement') &&
@@ -1535,13 +1534,12 @@ export function fixPrimitiveElementType(type: ElementDefinitionType[]): ElementD
   const clonedType: ElementDefinitionType[] = cloneDeep(type);
   return clonedType.map((edt: ElementDefinitionType) => {
     if (
-      edt.extension &&
-      edt.extension.length === 1 &&
+      edt.extension?.length === 1 &&
       edt.extension[0]?.url === 'http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type' &&
       edt.extension[0].valueUrl &&
       DATA_TYPES.includes(edt.extension[0].valueUrl as FhirDataType)
     ) {
-      edt.code = edt.extension[0].valueUrl;
+      edt.code = edt.extension[0].valueUrl as string;
     } else if (edt.code === 'http://hl7.org/fhirpath/System.String') {
       edt.code = 'string';
     }

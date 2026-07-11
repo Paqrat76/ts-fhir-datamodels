@@ -325,7 +325,7 @@ export interface IBackboneType extends IDataType, IBaseModifierExtension {}
  * Represents a generic primitive type interface, extending the `IDataType` interface.
  * Provides methods to interact with and manipulate the underlying value of the primitive type.
  *
- * @template T - The type of the primitive value.
+ * @typeParam T - The type of the primitive value.
  *
  * @category Base Models
  */

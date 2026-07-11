@@ -1,6 +1,6 @@
 {
   "name": "@paq-ts-fhir/r4-datamodels",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Generated FHIR R4 data model package",
   "keywords": [
     "node",
@@ -9,11 +9,11 @@
     "models",
     "data models"
   ],
-  "author": "Joe Paquette <paqrat76@gmail.com>",
+  "author": "Joe Paquette <paqdev76@protonmail.com.com>",
   "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/r4-datamodels/README.md",
   "bugs": {
     "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
-    "email": "paqrat76@gmail.com"
+    "email": "paqdev76@protonmail.com.com"
   },
   "license": "MIT",
   "main": "lib/index.js",
@@ -31,7 +31,7 @@
     "prepublishOnly": "npm run compile"
   },
   "dependencies": {
-    "@paq-ts-fhir/fhir-core": "~1.2.0"
+    "@paq-ts-fhir/fhir-core": "~1.2.1"
   },
   "engines": {
     "node": ">=22.11",

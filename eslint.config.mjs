@@ -79,6 +79,9 @@ export default tsEslint.config(
       'node-import/prefer-node-protocol': 'error',
       // https://typescript-eslint.io/rules/method-signature-style/
       '@typescript-eslint/method-signature-style': ['error', 'property'],
+      // https://typescript-eslint.io/rules/no-unnecessary-type-assertion/
+      // Legacy use - This rule is disabled because it conflicts with the 'consistent-type-assertions' rule.
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
       // JSDoc overrides
       'jsdoc/tag-lines': [
         'error',
@@ -151,14 +154,31 @@ export default tsEslint.config(
       'jsdoc/require-returns-type': 'off', // override of 'plugin:jsdoc/recommended'
       'jsdoc/require-throws-type': 'off', // override of 'plugin:jsdoc/recommended'
     },
+    settings: {
+      jsdoc: {
+        tagNamePreference: {
+          // https://typedoc.org/documents/Tags._template.html
+          // TypeDoc recognizes the @template tag as an alias of @typeParam for compatibility with JavaScript projects
+          // using TypeScript via doc comments. For TypeScript projects, the TSDoc standard @typeParam tag should be preferred.
+          template: 'typeParam',
+        },
+      },
+    },
   },
   {
     name: 'generated/datamodels',
-    files: ['app/generator-datamodel-ftest/src/**/*.ts', 'packages/r*-datamodels/src/**/*.ts'],
+    files: [
+      'app/generator-datamodel-ftest/src/**/*.ts',
+      'packages/fhir-core/src/data-types/**/*.ts',
+      'packages/r*-datamodels/src/**/*.ts',
+    ],
     linterOptions: {
       // Set to 'off' to NOT report unused disable directives with generated files.
       // https://eslint.org/docs/latest/use/configure/configuration-files#reporting-unused-disable-directives
       reportUnusedDisableDirectives: 'off',
+    },
+    rules: {
+      'no-useless-assignment': 'off', // Ignore - too many false positives in data models
     },
   },
   {

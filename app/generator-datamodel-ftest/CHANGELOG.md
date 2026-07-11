@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2026-07-11]
+
+### Changed
+
+- Updated several generated copyright dates in Jest snapshots
+
+
 ## [2025-09-16]
 
 ### Changed

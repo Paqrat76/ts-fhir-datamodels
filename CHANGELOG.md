@@ -19,6 +19,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2026-07-11]
+
+### Changed
+
+- Updated dependencies
+- Updated eslint version and configuration
+- Updated several generated copyright dates in Jest snapshots
+- Updated email address in all package.json files
+
+### Fixed
+
+- Fixed several minor eslint issues
+
+
 ## [2025-09-16]
 
 ### Changed
