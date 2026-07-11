@@ -24,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Updated dependencies
-- Updated eslint configuration
+- Updated eslint version and configuration
 - Updated several generated copyright dates in Jest snapshots
 - Updated email address in all package.json files
 
