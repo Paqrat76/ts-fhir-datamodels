@@ -178,7 +178,7 @@ export class FhirParser {
   /**
    * Parses the provided JSON source into an instance of the specified data type.
    *
-   * @template {string} T - the specific complex data type
+   * @typeParam {string} T - the specific complex data type
    * @param {ParsableDataType<T>} className - The class defining the data type to which the JSON should be parsed.
    * @param {JSON.Value} sourceJson - The JSON value that serves as the source for parsing.
    * @param {string} [optSourceField] - An optional source field name to identify the data model source field.
@@ -195,7 +195,7 @@ export class FhirParser {
   /**
    * Parses the provided JSON source into an instance of the specified resource.
    *
-   * @template {string} T - the specific resource
+   * @typeParam {string} T - the specific resource
    * @param {ParsableResource<T>} className - The class defining the resource to which the JSON should be parsed.
    * @param {JSON.Value} sourceJson - The JSON value that serves as the source for parsing.
    * @param {string} [optSourceField] - An optional source field name to identify the data model source field.

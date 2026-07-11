@@ -149,7 +149,7 @@ export function getChoiceDatatypeDefsForField(
  * in the `ChoiceDatatypes` property. This property is an array of `ChoiceDatatypeDef` ({ fieldName; fieldNames })
  * objects having one array item for each polymorphic data type field capturing the specified data types.
  *
- * NOTE: The @ChoiceDataTypes() decorator depends on this metadata!
+ * NOTE: The `@ChoiceDataTypes()` decorator depends on this metadata!
  *
  * @param sourceField - source field name
  * @param choiceDataTypes - array of FhirDataType values for supported polymorphic data types

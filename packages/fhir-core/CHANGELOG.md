@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.2.1] - 2026-07-11
+
+### Changed
+
+- Updated dependencies
+- Updated email address in package.json
+
+### Fixed
+
+- Fixed TypeDoc tags to be consistent
+
+
 ## [1.2.0] - 2025-09-16
 
 ### Changed

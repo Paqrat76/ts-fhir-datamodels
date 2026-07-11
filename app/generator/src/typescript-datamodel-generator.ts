@@ -208,11 +208,9 @@ export class TypescriptDataModelGenerator {
       const elementDefinitions: ElementDefinition[] = sd.snapshot.element;
       elementDefinitions.forEach((ed) => {
         if (
-          ed.type !== undefined &&
-          ed.type.length === 1 &&
+          ed.type?.length === 1 &&
           ed.type[0]?.code === 'code' &&
-          ed.binding !== undefined &&
-          ed.binding.strength === 'required' &&
+          ed.binding?.strength === 'required' &&
           ed.binding.valueSet !== undefined
         ) {
           valueSetBindingUrls.set(ed.path, ed.binding.valueSet);
@@ -226,8 +224,7 @@ export class TypescriptDataModelGenerator {
     valueSetBindingUrls.forEach((value: string, key: string) => {
       const codeSystem: CodeSystem | undefined = this.getCodeSystemFromBindingValueSetUrl(value);
       if (
-        codeSystem !== undefined &&
-        codeSystem.content === 'complete' &&
+        codeSystem?.content === 'complete' &&
         codeSystem.concept !== undefined &&
         codeSystem.concept.length > 0
       ) {
