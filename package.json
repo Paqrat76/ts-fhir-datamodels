@@ -94,5 +94,8 @@
       "npm run lint -- --max-warnings 0 --no-warn-ignored"
     ]
   },
-  "repository": "github:Paqrat76/ts-fhir-datamodels"
+  "repository": "github:Paqrat76/ts-fhir-datamodels",
+  "allowScripts": {
+    "unrs-resolver@1.12.2": true
+  }
 }
