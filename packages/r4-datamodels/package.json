@@ -34,8 +34,8 @@
     "@paq-ts-fhir/fhir-core": "~1.2.1"
   },
   "engines": {
-    "node": ">=22.11",
-    "npm": ">=10.9"
+    "node": ">=24.11",
+    "npm": ">=11.6.1"
   },
   "repository": {
     "type": "git",
