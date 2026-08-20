@@ -19,6 +19,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [No version bump] - 2026-08-20
+
+### Changed
+
+- Changed the minimum Node/NPM version to lts/krypton (24.11/11.6.1)
+
+### Fixed
+
+- Fixed the project developer's email address
+
+
 ## [1.2.1] - 2026-07-11
 
 ### Changed
