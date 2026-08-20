@@ -19,6 +19,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2026-08-20]
+
+### Added
+
+- Generated (JetBrains AI) src/generator-lib/README-generator-lib.md to document the core data model generator code for future maintenance
+
+### Changed
+
+- Changed the minimum Node/NPM version to lts/krypton (24.11/11.6.1)
+- Updated dependencies
+
+### Fixed
+
+- Fixed the project developer's email address
+
+
 ## [2026-07-11]
 
 ### Changed

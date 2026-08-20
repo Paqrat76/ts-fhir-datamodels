@@ -19,6 +19,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2026-08-20]
+
+### Added
+
+- Generated (JetBrains AI) app/generator/src/generator-lib/README-generator-lib.md to document the core data model generator code for future maintenance
+
+### Changed
+
+- Changed minimum Node/NPM versions to lts/krypton (24.11/11.6.1) throughout the mono-repo
+- Updated dependencies/devDependencies throughout the mono-repo
+- Minor content fixes to dev-docs/fhir-data-model-design.md
+- Updated tsconfig's compilerOptions for module, target, and lib supporting Node v24 LTS
+
+### Fixed
+
+- Fixed the project developer's email address throughout the mono-repo
+
+### Security
+
+- Added "allowScripts" for "unrs-resolver@1.12.2"
+- Fixed CVE-2026-14257 and CVE-2026-69152
+
+
 ## [2026-07-11]
 
 ### Changed

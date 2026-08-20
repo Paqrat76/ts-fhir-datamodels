@@ -12,7 +12,7 @@ A proof-of-concept (POC) project was undertaken to arrive at a design for TypeSc
 generated data models.
 This POC project resulted in contents for a core library that contains the base data models, implementations of the FHIR
 primitive data types, and various utilities required by the data models.
-These are implemented in the `@paq-ts-fhir/fhir-core` library.
+These are implemented in the `@paq-ts-fhir/fhir-core` [library](https://www.npmjs.com/package/@paq-ts-fhir/fhir-core).
 The generated data model projects take this library as their sole dependency.
 Additionally, a set of implementation patterns were identified to facilitate code generation of data models for
 resources and complex data types.
@@ -20,7 +20,7 @@ resources and complex data types.
 ## Class Hierarchy
 
 The FHIR data model class hierarchy is based on the [FHIR Type Framework](https://hl7.org/fhir/types.html) as documented
-in [FHIR Type Framework](fhir-type-framework.md).
+in [FHIR Type Framework](data-model-framework.md).
 
 All FHIR resource data models extend either `Resource` or `DomainResource`.
 According to the FHIR specification, only `DomainResource`, `Bundle`, `Parameters`, and `Binary` extend `Resource`.
@@ -32,7 +32,7 @@ library.
 
 ## Element Definition Patterns
 
-Th FHIR `StructureDefinition.snapshot.element` defines a set of FHIR `ElementDefinition`s.
+The FHIR `StructureDefinition.snapshot.element` defines a set of FHIR `ElementDefinition`s.
 These `ElementDefinition`s are used to define each data model class private fields that are accessed via public class
 methods.
 Furthermore, these public class methods can be grouped into common patterns based on the element's cardinality and its
@@ -71,8 +71,8 @@ These patterns are:
 ### Pattern Notes
 
 - BackboneElement/BackboneType types are treated as base implementations
-  - [BackboneElement](https://hl7.org/fhir/types.html#BackboneElement): "The base definition for complex elements
-    defined as part of a resource definition — that is, elements that have children that are defined in the resource.'
+  - [BackboneElement](https://hl7.org/fhir/types.html#BackboneElement): The base definition for complex elements
+    defined as part of a resource definition — that is, elements that have children that are defined in the resource.
     These are implemented as separate data model classes.
   - [BackboneType](https://www.hl7.org/fhir/types.html#BackboneType): "The base definition for the few datatypes that
     allow modifier extensions"
@@ -83,7 +83,7 @@ These patterns are:
   They are also used to generate data type specific public "has" and "get" methods.
 - Complex data type is generated from its FHIR `StructureDefinition` and has no additional implementation specialization.
 - EnumCodeType is a derived primitive data type used to support/enforce the `code` values using a "pseudo-enum" set of
-  valid code values. This data type is not defined by FHIR. It is an implementation approach inspired by HAPI FHIR.
+  valid code values. FHIR does not define this data type. It is an implementation approach inspired by HAPI FHIR.
   It makes use of a generated class that defines the allowed code values as defined by the ValueSet identified in the
   `ElementDefinition.binding` element in the `StructureDefinition`.
 - Primitive data types are defined in the `@paq-ts-fhir/fhir-core` library.
@@ -98,7 +98,7 @@ These patterns are:
 To support EnumCodeType, pseudo-enum classes are generated that provide enumerations of the allowed code values.
 FHIR CodeSystem artifacts are identified to get the allowed codes used to create the pseudo-enum classes.
 The following rules determine these CodeSystem artifacts.
-For a each `ElementDefinition` item included in the `StructureDefinition.snapshot.element`:
+For each `ElementDefinition` item included in the `StructureDefinition.snapshot.element`:
 
 - A single `ElementDefinition.type` having a primitive `code` data type is selected
 - Its `ElementDefinition.binding` must exist having `ElementDefinition.binding.strength` of `required` and a defined

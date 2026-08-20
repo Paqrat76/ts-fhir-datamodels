@@ -9,11 +9,11 @@
     "models",
     "data models"
   ],
-  "author": "Joe Paquette <paqdev76@protonmail.com.com>",
+  "author": "Joe Paquette <paqdev76@protonmail.com>",
   "homepage": "https://github.com/Paqrat76/ts-fhir-datamodels/blob/main/packages/r5-datamodels/README.md",
   "bugs": {
     "url": "https://github.com/Paqrat76/ts-fhir-datamodels/issues",
-    "email": "paqdev76@protonmail.com.com"
+    "email": "paqdev76@protonmail.com"
   },
   "license": "MIT",
   "main": "lib/index.js",
@@ -34,8 +34,8 @@
     "@paq-ts-fhir/fhir-core": "~1.2.1"
   },
   "engines": {
-    "node": ">=22.11",
-    "npm": ">=10.9"
+    "node": ">=24.11",
+    "npm": ">=11.6.1"
   },
   "repository": {
     "type": "git",
